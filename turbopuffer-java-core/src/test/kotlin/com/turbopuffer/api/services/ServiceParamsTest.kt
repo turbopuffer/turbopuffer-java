@@ -5,19 +5,22 @@ package com.turbopuffer.api.services
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
-import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath
 import com.github.tomakehurst.wiremock.client.WireMock.ok
+import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.turbopuffer.api.client.TurbopufferClient
 import com.turbopuffer.api.client.okhttp.TurbopufferOkHttpClient
+import com.turbopuffer.api.core.JsonValue
 import com.turbopuffer.api.core.jsonMapper
-import com.turbopuffer.api.models.NamespaceListParams
+import com.turbopuffer.api.models.NamespaceQueryParams
+import com.turbopuffer.api.models.NamespaceUpsertParams
+import com.turbopuffer.api.models.NamespaceUpsertResponse
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 @WireMockTest
@@ -31,14 +34,60 @@ class ServiceParamsTest {
     fun beforeEach(wmRuntimeInfo: WireMockRuntimeInfo) {
         client =
             TurbopufferOkHttpClient.builder()
-                .bearerToken("My Bearer Token")
+                .apiKey("My API Key")
                 .baseUrl(wmRuntimeInfo.getHttpBaseUrl())
                 .build()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun namespacesListWithAdditionalParams() {
+    fun namespacesQueryWithAdditionalParams() {
+        val additionalHeaders = mutableMapOf<String, List<String>>()
+
+        additionalHeaders.put("x-test-header", listOf("abc1234"))
+
+        val additionalQueryParams = mutableMapOf<String, List<String>>()
+
+        additionalQueryParams.put("test_query_param", listOf("def567"))
+
+        val additionalBodyProperties = mutableMapOf<String, JsonValue>()
+
+        additionalBodyProperties.put("testBodyProperty", JsonValue.from("ghi890"))
+
+        val params =
+            NamespaceQueryParams.builder()
+                .namespace("namespace")
+                .consistency(
+                    NamespaceQueryParams.Consistency.builder()
+                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                        .build()
+                )
+                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .filter(JsonValue.from(mapOf<String, Any>()))
+                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                .includeVectors(true)
+                .rankBy(JsonValue.from(mapOf<String, Any>()))
+                .topK(0L)
+                .addVector(0.0)
+                .additionalHeaders(additionalHeaders)
+                .additionalBodyProperties(additionalBodyProperties)
+                .additionalQueryParams(additionalQueryParams)
+                .build()
+
+        stubFor(
+            post(anyUrl())
+                .withHeader("x-test-header", equalTo("abc1234"))
+                .withQueryParam("test_query_param", equalTo("def567"))
+                .withRequestBody(matchingJsonPath("$.testBodyProperty", equalTo("ghi890")))
+                .willReturn(ok("[]"))
+        )
+
+        client.namespaces().query(params)
+
+        verify(postRequestedFor(anyUrl()))
+    }
+
+    @Test
+    fun namespacesUpsertWithAdditionalParams() {
         val additionalHeaders = mutableMapOf<String, List<String>>()
 
         additionalHeaders.put("x-test-header", listOf("abc1234"))
@@ -48,20 +97,29 @@ class ServiceParamsTest {
         additionalQueryParams.put("test_query_param", listOf("def567"))
 
         val params =
-            NamespaceListParams.builder()
+            NamespaceUpsertParams.builder()
+                .forUpsertColumnar(
+                    NamespaceUpsertParams.UpsertColumnar.builder()
+                        .allOf(JsonValue.from(mapOf<String, Any>()))
+                        .build()
+                )
+                .namespace("namespace")
                 .additionalHeaders(additionalHeaders)
                 .additionalQueryParams(additionalQueryParams)
                 .build()
 
+        val apiResponse =
+            NamespaceUpsertResponse.builder().status(NamespaceUpsertResponse.Status.OK).build()
+
         stubFor(
-            get(anyUrl())
+            post(anyUrl())
                 .withHeader("x-test-header", equalTo("abc1234"))
                 .withQueryParam("test_query_param", equalTo("def567"))
-                .willReturn(ok("[]"))
+                .willReturn(ok(JSON_MAPPER.writeValueAsString(apiResponse)))
         )
 
-        client.namespaces().list(params)
+        client.namespaces().upsert(params)
 
-        verify(getRequestedFor(anyUrl()))
+        verify(postRequestedFor(anyUrl()))
     }
 }

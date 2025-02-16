@@ -3,16 +3,15 @@
 package com.turbopuffer.api.models
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class NamespaceUpsertResponseTest {
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun createNamespaceUpsertResponse() {
-        val namespaceUpsertResponse = NamespaceUpsertResponse.builder().status("ok").build()
+        val namespaceUpsertResponse =
+            NamespaceUpsertResponse.builder().status(NamespaceUpsertResponse.Status.OK).build()
         assertThat(namespaceUpsertResponse).isNotNull
-        assertThat(namespaceUpsertResponse.status()).contains("ok")
+        assertThat(namespaceUpsertResponse.status()).contains(NamespaceUpsertResponse.Status.OK)
     }
 }
