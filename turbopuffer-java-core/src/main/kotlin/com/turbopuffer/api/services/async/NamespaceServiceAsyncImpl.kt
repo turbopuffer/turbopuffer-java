@@ -13,11 +13,14 @@ import com.turbopuffer.api.core.http.HttpResponse.Handler
 import com.turbopuffer.api.core.json
 import com.turbopuffer.api.core.prepareAsync
 import com.turbopuffer.api.errors.TurbopufferError
+import com.turbopuffer.api.models.DocumentRow
+import com.turbopuffer.api.models.NamespaceDeleteAllParams
+import com.turbopuffer.api.models.NamespaceDeleteAllResponse
+import com.turbopuffer.api.models.NamespaceGetSchemaParams
+import com.turbopuffer.api.models.NamespaceGetSchemaResponse
+import com.turbopuffer.api.models.NamespaceListPageAsync
 import com.turbopuffer.api.models.NamespaceListParams
 import com.turbopuffer.api.models.NamespaceQueryParams
-import com.turbopuffer.api.models.NamespaceQueryResponse
-import com.turbopuffer.api.models.NamespaceRetrieveParams
-import com.turbopuffer.api.models.NamespaceRetrieveResponse
 import com.turbopuffer.api.models.NamespaceUpsertParams
 import com.turbopuffer.api.models.NamespaceUpsertResponse
 import java.util.concurrent.CompletableFuture
@@ -29,43 +32,15 @@ internal constructor(
 
     private val errorHandler: Handler<TurbopufferError> = errorHandler(clientOptions.jsonMapper)
 
-    private val retrieveHandler: Handler<NamespaceRetrieveResponse> =
-        jsonHandler<NamespaceRetrieveResponse>(clientOptions.jsonMapper)
+    private val listHandler: Handler<NamespaceListPageAsync.Response> =
+        jsonHandler<NamespaceListPageAsync.Response>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
-    /** Retrieve metadata for a specific namespace. */
-    override fun retrieve(
-        params: NamespaceRetrieveParams,
-        requestOptions: RequestOptions
-    ): CompletableFuture<NamespaceRetrieveResponse> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "namespaces", params.getPathParam(0))
-                .build()
-                .prepareAsync(clientOptions, params)
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { retrieveHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
-
-    private val listHandler: Handler<List<UnnamedSchemaWithArrayParent0>> =
-        jsonHandler<List<UnnamedSchemaWithArrayParent0>>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /** Retrieve a list of all namespaces. */
+    /** List namespaces */
     override fun list(
         params: NamespaceListParams,
         requestOptions: RequestOptions
-    ): CompletableFuture<List<UnnamedSchemaWithArrayParent0>> {
+    ): CompletableFuture<NamespaceListPageAsync> {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.GET)
@@ -79,23 +54,77 @@ internal constructor(
                     .use { listHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                            it.forEach { it.validate() }
+                            it.validate()
+                        }
+                    }
+                    .let { NamespaceListPageAsync.of(this, params, it) }
+            }
+    }
+
+    private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
+        jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
+            .withErrorHandler(errorHandler)
+
+    /** Delete namespace */
+    override fun deleteAll(
+        params: NamespaceDeleteAllParams,
+        requestOptions: RequestOptions
+    ): CompletableFuture<NamespaceDeleteAllResponse> {
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.DELETE)
+                .addPathSegments("v1", "namespaces", params.getPathParam(0))
+                .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                .build()
+                .prepareAsync(clientOptions, params)
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            .thenApply { response ->
+                response
+                    .use { deleteAllHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                            it.validate()
                         }
                     }
             }
     }
 
-    private val queryHandler: Handler<NamespaceQueryResponse> =
-        jsonHandler<NamespaceQueryResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val getSchemaHandler: Handler<NamespaceGetSchemaResponse> =
+        jsonHandler<NamespaceGetSchemaResponse>(clientOptions.jsonMapper)
+            .withErrorHandler(errorHandler)
 
-    /**
-     * Searches documents in a namespace using a vector (and optionally attribute filters). Provide
-     * a query vector, filters, ranking, and other parameters to retrieve matching documents.
-     */
+    /** Get namespace schema. */
+    override fun getSchema(
+        params: NamespaceGetSchemaParams,
+        requestOptions: RequestOptions
+    ): CompletableFuture<NamespaceGetSchemaResponse> {
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .addPathSegments("v1", "namespaces", params.getPathParam(0), "schema")
+                .build()
+                .prepareAsync(clientOptions, params)
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            .thenApply { response ->
+                response
+                    .use { getSchemaHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                            it.validate()
+                        }
+                    }
+            }
+    }
+
+    private val queryHandler: Handler<List<DocumentRow>> =
+        jsonHandler<List<DocumentRow>>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions
-    ): CompletableFuture<NamespaceQueryResponse> {
+    ): CompletableFuture<List<DocumentRow>> {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
@@ -110,7 +139,7 @@ internal constructor(
                     .use { queryHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                            it.validate()
+                            it.forEach { it.validate() }
                         }
                     }
             }
@@ -120,11 +149,7 @@ internal constructor(
         jsonHandler<NamespaceUpsertResponse>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
-    /**
-     * Creates, updates, or deletes documents in a namespace. Documents are upserted in a
-     * column-oriented format (using `ids`, `vectors`, `attributes`, etc.) or in a row-based format
-     * (using `upserts`). To delete a document, send a `null` vector.
-     */
+    /** Create, update, or delete documents. */
     override fun upsert(
         params: NamespaceUpsertParams,
         requestOptions: RequestOptions

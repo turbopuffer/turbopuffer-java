@@ -4,29 +4,20 @@ package com.turbopuffer.api.models
 
 import com.turbopuffer.api.core.NoAutoDetect
 import com.turbopuffer.api.core.Params
+import com.turbopuffer.api.core.checkRequired
 import com.turbopuffer.api.core.http.Headers
 import com.turbopuffer.api.core.http.QueryParams
 import java.util.Objects
-import java.util.Optional
 
-/** List namespaces */
-class NamespaceListParams
+/** Get namespace schema. */
+class NamespaceGetSchemaParams
 private constructor(
-    private val cursor: String?,
-    private val pageSize: Long?,
-    private val prefix: String?,
+    private val namespace: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /** Retrieve the next page of results. */
-    fun cursor(): Optional<String> = Optional.ofNullable(cursor)
-
-    /** Limit the number of results per page. */
-    fun pageSize(): Optional<Long> = Optional.ofNullable(pageSize)
-
-    /** Retrieve only namespaces that match the prefix. */
-    fun prefix(): Optional<String> = Optional.ofNullable(prefix)
+    fun namespace(): String = namespace
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -34,13 +25,13 @@ private constructor(
 
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams {
-        val queryParams = QueryParams.builder()
-        this.cursor?.let { queryParams.put("cursor", listOf(it.toString())) }
-        this.pageSize?.let { queryParams.put("page_size", listOf(it.toString())) }
-        this.prefix?.let { queryParams.put("prefix", listOf(it.toString())) }
-        queryParams.putAll(additionalQueryParams)
-        return queryParams.build()
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    fun getPathParam(index: Int): String {
+        return when (index) {
+            0 -> namespace
+            else -> ""
+        }
     }
 
     fun toBuilder() = Builder().from(this)
@@ -50,46 +41,22 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceListParams]. */
+    /** A builder for [NamespaceGetSchemaParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var cursor: String? = null
-        private var pageSize: Long? = null
-        private var prefix: String? = null
+        private var namespace: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(namespaceListParams: NamespaceListParams) = apply {
-            cursor = namespaceListParams.cursor
-            pageSize = namespaceListParams.pageSize
-            prefix = namespaceListParams.prefix
-            additionalHeaders = namespaceListParams.additionalHeaders.toBuilder()
-            additionalQueryParams = namespaceListParams.additionalQueryParams.toBuilder()
+        internal fun from(namespaceGetSchemaParams: NamespaceGetSchemaParams) = apply {
+            namespace = namespaceGetSchemaParams.namespace
+            additionalHeaders = namespaceGetSchemaParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceGetSchemaParams.additionalQueryParams.toBuilder()
         }
 
-        /** Retrieve the next page of results. */
-        fun cursor(cursor: String?) = apply { this.cursor = cursor }
-
-        /** Retrieve the next page of results. */
-        fun cursor(cursor: Optional<String>) = cursor(cursor.orElse(null))
-
-        /** Limit the number of results per page. */
-        fun pageSize(pageSize: Long?) = apply { this.pageSize = pageSize }
-
-        /** Limit the number of results per page. */
-        fun pageSize(pageSize: Long) = pageSize(pageSize as Long?)
-
-        /** Limit the number of results per page. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun pageSize(pageSize: Optional<Long>) = pageSize(pageSize.orElse(null) as Long?)
-
-        /** Retrieve only namespaces that match the prefix. */
-        fun prefix(prefix: String?) = apply { this.prefix = prefix }
-
-        /** Retrieve only namespaces that match the prefix. */
-        fun prefix(prefix: Optional<String>) = prefix(prefix.orElse(null))
+        fun namespace(namespace: String) = apply { this.namespace = namespace }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -189,11 +156,9 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun build(): NamespaceListParams =
-            NamespaceListParams(
-                cursor,
-                pageSize,
-                prefix,
+        fun build(): NamespaceGetSchemaParams =
+            NamespaceGetSchemaParams(
+                checkRequired("namespace", namespace),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -204,11 +169,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceListParams && cursor == other.cursor && pageSize == other.pageSize && prefix == other.prefix && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceGetSchemaParams && namespace == other.namespace && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(cursor, pageSize, prefix, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceListParams{cursor=$cursor, pageSize=$pageSize, prefix=$prefix, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceGetSchemaParams{namespace=$namespace, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

@@ -13,11 +13,14 @@ import com.turbopuffer.api.core.http.HttpResponse.Handler
 import com.turbopuffer.api.core.json
 import com.turbopuffer.api.core.prepare
 import com.turbopuffer.api.errors.TurbopufferError
+import com.turbopuffer.api.models.DocumentRow
+import com.turbopuffer.api.models.NamespaceDeleteAllParams
+import com.turbopuffer.api.models.NamespaceDeleteAllResponse
+import com.turbopuffer.api.models.NamespaceGetSchemaParams
+import com.turbopuffer.api.models.NamespaceGetSchemaResponse
+import com.turbopuffer.api.models.NamespaceListPage
 import com.turbopuffer.api.models.NamespaceListParams
 import com.turbopuffer.api.models.NamespaceQueryParams
-import com.turbopuffer.api.models.NamespaceQueryResponse
-import com.turbopuffer.api.models.NamespaceRetrieveParams
-import com.turbopuffer.api.models.NamespaceRetrieveResponse
 import com.turbopuffer.api.models.NamespaceUpsertParams
 import com.turbopuffer.api.models.NamespaceUpsertResponse
 
@@ -28,40 +31,15 @@ internal constructor(
 
     private val errorHandler: Handler<TurbopufferError> = errorHandler(clientOptions.jsonMapper)
 
-    private val retrieveHandler: Handler<NamespaceRetrieveResponse> =
-        jsonHandler<NamespaceRetrieveResponse>(clientOptions.jsonMapper)
+    private val listHandler: Handler<NamespaceListPage.Response> =
+        jsonHandler<NamespaceListPage.Response>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
-    /** Retrieve metadata for a specific namespace. */
-    override fun retrieve(
-        params: NamespaceRetrieveParams,
-        requestOptions: RequestOptions
-    ): NamespaceRetrieveResponse {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("v1", "namespaces", params.getPathParam(0))
-                .build()
-                .prepare(clientOptions, params)
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { retrieveHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                    it.validate()
-                }
-            }
-    }
-
-    private val listHandler: Handler<List<UnnamedSchemaWithArrayParent0>> =
-        jsonHandler<List<UnnamedSchemaWithArrayParent0>>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /** Retrieve a list of all namespaces. */
+    /** List namespaces */
     override fun list(
         params: NamespaceListParams,
         requestOptions: RequestOptions
-    ): List<UnnamedSchemaWithArrayParent0> {
+    ): NamespaceListPage {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.GET)
@@ -73,22 +51,70 @@ internal constructor(
             .use { listHandler.handle(it) }
             .also {
                 if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                    it.forEach { it.validate() }
+                    it.validate()
+                }
+            }
+            .let { NamespaceListPage.of(this, params, it) }
+    }
+
+    private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
+        jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
+            .withErrorHandler(errorHandler)
+
+    /** Delete namespace */
+    override fun deleteAll(
+        params: NamespaceDeleteAllParams,
+        requestOptions: RequestOptions
+    ): NamespaceDeleteAllResponse {
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.DELETE)
+                .addPathSegments("v1", "namespaces", params.getPathParam(0))
+                .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                .build()
+                .prepare(clientOptions, params)
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { deleteAllHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
             }
     }
 
-    private val queryHandler: Handler<NamespaceQueryResponse> =
-        jsonHandler<NamespaceQueryResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val getSchemaHandler: Handler<NamespaceGetSchemaResponse> =
+        jsonHandler<NamespaceGetSchemaResponse>(clientOptions.jsonMapper)
+            .withErrorHandler(errorHandler)
 
-    /**
-     * Searches documents in a namespace using a vector (and optionally attribute filters). Provide
-     * a query vector, filters, ranking, and other parameters to retrieve matching documents.
-     */
+    /** Get namespace schema. */
+    override fun getSchema(
+        params: NamespaceGetSchemaParams,
+        requestOptions: RequestOptions
+    ): NamespaceGetSchemaResponse {
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .addPathSegments("v1", "namespaces", params.getPathParam(0), "schema")
+                .build()
+                .prepare(clientOptions, params)
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { getSchemaHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
+                }
+            }
+    }
+
+    private val queryHandler: Handler<List<DocumentRow>> =
+        jsonHandler<List<DocumentRow>>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions
-    ): NamespaceQueryResponse {
+    ): List<DocumentRow> {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
@@ -101,7 +127,7 @@ internal constructor(
             .use { queryHandler.handle(it) }
             .also {
                 if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                    it.validate()
+                    it.forEach { it.validate() }
                 }
             }
     }
@@ -110,11 +136,7 @@ internal constructor(
         jsonHandler<NamespaceUpsertResponse>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
-    /**
-     * Creates, updates, or deletes documents in a namespace. Documents are upserted in a
-     * column-oriented format (using `ids`, `vectors`, `attributes`, etc.) or in a row-based format
-     * (using `upserts`). To delete a document, send a `null` vector.
-     */
+    /** Create, update, or delete documents. */
     override fun upsert(
         params: NamespaceUpsertParams,
         requestOptions: RequestOptions

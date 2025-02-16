@@ -2,19 +2,23 @@
 
 package com.turbopuffer.api.models
 
+import com.turbopuffer.api.core.JsonValue
 import com.turbopuffer.api.core.NoAutoDetect
 import com.turbopuffer.api.core.Params
 import com.turbopuffer.api.core.checkRequired
 import com.turbopuffer.api.core.http.Headers
 import com.turbopuffer.api.core.http.QueryParams
+import com.turbopuffer.api.core.toImmutable
 import java.util.Objects
+import java.util.Optional
 
-/** Retrieve metadata for a specific namespace. */
-class NamespaceRetrieveParams
+/** Delete namespace */
+class NamespaceDeleteAllParams
 private constructor(
     private val namespace: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
+    private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     fun namespace(): String = namespace
@@ -22,6 +26,12 @@ private constructor(
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
+    @JvmSynthetic
+    internal fun _body(): Optional<Map<String, JsonValue>> =
+        Optional.ofNullable(additionalBodyProperties.ifEmpty { null })
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -41,19 +51,22 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceRetrieveParams]. */
+    /** A builder for [NamespaceDeleteAllParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
         private var namespace: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(namespaceRetrieveParams: NamespaceRetrieveParams) = apply {
-            namespace = namespaceRetrieveParams.namespace
-            additionalHeaders = namespaceRetrieveParams.additionalHeaders.toBuilder()
-            additionalQueryParams = namespaceRetrieveParams.additionalQueryParams.toBuilder()
+        internal fun from(namespaceDeleteAllParams: NamespaceDeleteAllParams) = apply {
+            namespace = namespaceDeleteAllParams.namespace
+            additionalHeaders = namespaceDeleteAllParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceDeleteAllParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                namespaceDeleteAllParams.additionalBodyProperties.toMutableMap()
         }
 
         fun namespace(namespace: String) = apply { this.namespace = namespace }
@@ -156,11 +169,34 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun build(): NamespaceRetrieveParams =
-            NamespaceRetrieveParams(
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            this.additionalBodyProperties.clear()
+            putAllAdditionalBodyProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            additionalBodyProperties.put(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalBodyProperties.putAll(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply {
+            additionalBodyProperties.remove(key)
+        }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalBodyProperty)
+        }
+
+        fun build(): NamespaceDeleteAllParams =
+            NamespaceDeleteAllParams(
                 checkRequired("namespace", namespace),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
+                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -169,11 +205,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceRetrieveParams && namespace == other.namespace && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceDeleteAllParams && namespace == other.namespace && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
 
     override fun toString() =
-        "NamespaceRetrieveParams{namespace=$namespace, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceDeleteAllParams{namespace=$namespace, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

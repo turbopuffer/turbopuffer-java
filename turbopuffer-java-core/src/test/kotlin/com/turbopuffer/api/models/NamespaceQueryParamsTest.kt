@@ -4,12 +4,10 @@ package com.turbopuffer.api.models
 
 import com.turbopuffer.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class NamespaceQueryParamsTest {
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
         NamespaceQueryParams.builder()
@@ -20,16 +18,15 @@ class NamespaceQueryParamsTest {
                     .build()
             )
             .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
-            .filters(NamespaceQueryParams.Filters.ofJsonValue(JsonValue.from(mapOf<String, Any>())))
-            .includeAttributesOfStrings(listOf("string"))
+            .filter(JsonValue.from(mapOf<String, Any>()))
+            .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
             .includeVectors(true)
-            .addRankBy("string")
+            .rankBy(JsonValue.from(mapOf<String, Any>()))
             .topK(0L)
             .addVector(0.0)
             .build()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun body() {
         val params =
@@ -41,12 +38,10 @@ class NamespaceQueryParamsTest {
                         .build()
                 )
                 .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
-                .filters(
-                    NamespaceQueryParams.Filters.ofJsonValue(JsonValue.from(mapOf<String, Any>()))
-                )
-                .includeAttributesOfStrings(listOf("string"))
+                .filter(JsonValue.from(mapOf<String, Any>()))
+                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
-                .addRankBy("string")
+                .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)
                 .addVector(0.0)
                 .build()
@@ -60,19 +55,15 @@ class NamespaceQueryParamsTest {
             )
         assertThat(body.distanceMetric())
             .contains(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
-        assertThat(body.filters())
-            .contains(
-                NamespaceQueryParams.Filters.ofJsonValue(JsonValue.from(mapOf<String, Any>()))
-            )
+        assertThat(body._filter()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.includeAttributes())
-            .contains(NamespaceQueryParams.IncludeAttributes.ofStrings(listOf("string")))
+            .contains(NamespaceQueryParams.IncludeAttributes.ofBool(true))
         assertThat(body.includeVectors()).contains(true)
-        assertThat(body.rankBy()).contains(listOf("string"))
+        assertThat(body._rankBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.topK()).contains(0L)
         assertThat(body.vector()).contains(listOf(0.0))
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun bodyWithoutOptionalFields() {
         val params = NamespaceQueryParams.builder().namespace("namespace").build()
@@ -80,7 +71,6 @@ class NamespaceQueryParamsTest {
         assertThat(body).isNotNull
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun getPathParam() {
         val params = NamespaceQueryParams.builder().namespace("namespace").build()

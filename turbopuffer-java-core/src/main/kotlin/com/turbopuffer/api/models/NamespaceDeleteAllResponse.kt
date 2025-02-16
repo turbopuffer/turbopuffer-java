@@ -19,7 +19,7 @@ import java.util.Objects
 import java.util.Optional
 
 @NoAutoDetect
-class NamespaceUpsertResponse
+class NamespaceDeleteAllResponse
 @JsonCreator
 private constructor(
     @JsonProperty("status")
@@ -40,7 +40,7 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): NamespaceUpsertResponse = apply {
+    fun validate(): NamespaceDeleteAllResponse = apply {
         if (validated) {
             return@apply
         }
@@ -56,16 +56,16 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceUpsertResponse]. */
+    /** A builder for [NamespaceDeleteAllResponse]. */
     class Builder internal constructor() {
 
         private var status: JsonField<Status> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(namespaceUpsertResponse: NamespaceUpsertResponse) = apply {
-            status = namespaceUpsertResponse.status
-            additionalProperties = namespaceUpsertResponse.additionalProperties.toMutableMap()
+        internal fun from(namespaceDeleteAllResponse: NamespaceDeleteAllResponse) = apply {
+            status = namespaceDeleteAllResponse.status
+            additionalProperties = namespaceDeleteAllResponse.additionalProperties.toMutableMap()
         }
 
         /** The status of the request. */
@@ -93,8 +93,8 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
-        fun build(): NamespaceUpsertResponse =
-            NamespaceUpsertResponse(status, additionalProperties.toImmutable())
+        fun build(): NamespaceDeleteAllResponse =
+            NamespaceDeleteAllResponse(status, additionalProperties.toImmutable())
     }
 
     /** The status of the request. */
@@ -116,7 +116,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val OK = of("OK")
+            @JvmField val OK = of("ok")
 
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
@@ -189,7 +189,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceUpsertResponse && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is NamespaceDeleteAllResponse && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -199,5 +199,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceUpsertResponse{status=$status, additionalProperties=$additionalProperties}"
+        "NamespaceDeleteAllResponse{status=$status, additionalProperties=$additionalProperties}"
 }

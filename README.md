@@ -6,7 +6,7 @@ The Turbopuffer Java SDK provides convenient access to the Turbopuffer REST API 
 
 It is generated with [Stainless](https://www.stainlessapi.com/).
 
-The REST API documentation can be found on [docs.turbopuffer.com](https://docs.turbopuffer.com).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs).
 
 ## Installation
 
@@ -34,18 +34,18 @@ This library requires Java 8 or later.
 
 ### Configure the client
 
-Use `TurbopufferOkHttpClient.builder()` to configure the client. At a minimum you need to set `.bearerToken()`:
+Use `TurbopufferOkHttpClient.builder()` to configure the client. At a minimum you need to set `.apiKey()`:
 
 ```java
 import com.turbopuffer.api.client.TurbopufferClient;
 import com.turbopuffer.api.client.okhttp.TurbopufferOkHttpClient;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
-    .bearerToken("My Bearer Token")
+    .apiKey("My API Key")
     .build();
 ```
 
-Alternately, set the environment with `BEARER_TOKEN`, and use `TurbopufferOkHttpClient.fromEnv()` to read from the environment.
+Alternately, set the environment with `TURBOPUFFER_API_KEY`, and use `TurbopufferOkHttpClient.fromEnv()` to read from the environment.
 
 ```java
 import com.turbopuffer.api.client.TurbopufferClient;
@@ -60,9 +60,9 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
     .build();
 ```
 
-| Property    | Environment variable | Required | Default value |
-| ----------- | -------------------- | -------- | ------------- |
-| bearerToken | `BEARER_TOKEN`       | true     | —             |
+| Property | Environment variable  | Required | Default value |
+| -------- | --------------------- | -------- | ------------- |
+| apiKey   | `TURBOPUFFER_API_KEY` | true     | —             |
 
 Read the documentation for more configuration options.
 
@@ -70,15 +70,57 @@ Read the documentation for more configuration options.
 
 ### Example: creating a resource
 
-To create a new namespace, first use the `NamespaceListParams` builder to specify attributes, then pass that to the `list` method of the `namespaces` service.
+To create a new namespace, first use the `NamespaceUpsertParams` builder to specify attributes, then pass that to the `upsert` method of the `namespaces` service.
 
 ```java
-import com.turbopuffer.api.models;
+import com.turbopuffer.api.models.NamespaceUpsertParams;
+import com.turbopuffer.api.models.NamespaceUpsertResponse;
+
+NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+    .forUpsertColumnar(NamespaceUpsertParams.UpsertColumnar.builder().build())
+    .namespace("products")
+    .build();
+NamespaceUpsertResponse response = client.namespaces().upsert(params);
+```
+
+### Example: listing resources
+
+The Turbopuffer API provides a `list` method to get a paginated list of namespaces. You can retrieve the first page by:
+
+```java
+import com.turbopuffer.api.models.NamespaceListPage;
+import com.turbopuffer.api.models.NamespaceSummary;
+
+NamespaceListPage page = client.namespaces().list();
+for (NamespaceSummary namespace : page.namespaces()) {
+    System.out.println(namespace);
+}
+```
+
+Use the `NamespaceListParams` builder to set parameters:
+
+```java
+import com.turbopuffer.api.models.NamespaceListPage;
 import com.turbopuffer.api.models.NamespaceListParams;
 
-NamespaceListParams params = NamespaceListParams.builder().build();
-List<UnnamedSchemaWithArrayParent0> namespaces = client.namespaces().list(params);
+NamespaceListParams params = NamespaceListParams.builder()
+    .cursor("cursor")
+    .pageSize(1L)
+    .prefix("products")
+    .build();
+NamespaceListPage page1 = client.namespaces().list(params);
+
+// Using the `from` method of the builder you can reuse previous params values:
+NamespaceListPage page2 = client.namespaces().list(NamespaceListParams.builder()
+    .from(params)
+    .nextCursor("abc123...")
+    .build());
+
+// Or easily get params for the next page by using the helper `getNextPageParams`:
+NamespaceListPage page3 = client.namespaces().list(params.getNextPageParams(page2));
 ```
+
+See [Pagination](#pagination) below for more information on transparently working with lists of objects without worrying about fetching each page.
 
 ---
 
@@ -97,9 +139,9 @@ See [Undocumented request params](#undocumented-request-params) for how to send 
 When receiving a response, the Turbopuffer Java SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Java type. If you directly access the mistaken property, the SDK will throw an unchecked `TurbopufferInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
 
 ```java
-import com.turbopuffer.api.models;
+import com.turbopuffer.api.models.DocumentRow;
 
-List<UnnamedSchemaWithArrayParent0> namespaces = client.namespaces().list().validate();
+List<DocumentRow> documentRows = client.namespaces().query().validate();
 ```
 
 ### Response properties as JSON
@@ -133,10 +175,62 @@ Sometimes, the server response may include additional properties that are not ye
 ```java
 import com.turbopuffer.api.core.JsonValue;
 
-JsonValue secret = namespaceRetrieveResponse._additionalProperties().get("secret_field");
+JsonValue secret = documentColumns._additionalProperties().get("secret_field");
 ```
 
 ---
+
+## Pagination
+
+For methods that return a paginated list of results, this library provides convenient ways access the results either one page at a time, or item-by-item across all pages.
+
+### Auto-pagination
+
+To iterate through all results across all pages, you can use `autoPager`, which automatically handles fetching more pages for you:
+
+### Synchronous
+
+```java
+import com.turbopuffer.api.models.NamespaceListPage;
+import com.turbopuffer.api.models.NamespaceSummary;
+
+// As an Iterable:
+NamespaceListPage page = client.namespaces().list(params);
+for (NamespaceSummary namespace : page.autoPager()) {
+    System.out.println(namespace);
+};
+
+// As a Stream:
+client.namespaces().list(params).autoPager().stream()
+    .limit(50)
+    .forEach(namespace -> System.out.println(namespace));
+```
+
+### Asynchronous
+
+```java
+// Using forEach, which returns CompletableFuture<Void>:
+asyncClient.namespaces().list(params).autoPager()
+    .forEach(namespace -> System.out.println(namespace), executor);
+```
+
+### Manual pagination
+
+If none of the above helpers meet your needs, you can also manually request pages one-by-one. A page of results has a `data()` method to fetch the list of objects, as well as top-level `response` and other methods to fetch top-level data about the page. It also has methods `hasNextPage`, `getNextPage`, and `getNextPageParams` methods to help with pagination.
+
+```java
+import com.turbopuffer.api.models.NamespaceListPage;
+import com.turbopuffer.api.models.NamespaceSummary;
+
+NamespaceListPage page = client.namespaces().list(params);
+while (page != null) {
+    for (NamespaceSummary namespace : page.namespaces()) {
+        System.out.println(namespace);
+    }
+
+    page = page.getNextPage().orElse(null);
+}
+```
 
 ---
 
@@ -216,15 +310,15 @@ This library is typed for convenient access to the documented API. If you need t
 
 ### Undocumented request params
 
-In [Example: creating a resource](#example-creating-a-resource) above, we used the `NamespaceListParams.builder()` to pass to the `list` method of the `namespaces` service.
+In [Example: creating a resource](#example-creating-a-resource) above, we used the `NamespaceQueryParams.builder()` to pass to the `query` method of the `namespaces` service.
 
 Sometimes, the API may support other properties that are not yet supported in the Java SDK types. In that case, you can attach them using raw setters:
 
 ```java
 import com.turbopuffer.api.core.JsonValue;
-import com.turbopuffer.api.models.NamespaceListParams;
+import com.turbopuffer.api.models.NamespaceQueryParams;
 
-NamespaceListParams params = NamespaceListParams.builder()
+NamespaceQueryParams params = NamespaceQueryParams.builder()
     .putAdditionalHeader("Secret-Header", "42")
     .putAdditionalQueryParam("secret_query_param", "42")
     .putAdditionalBodyProperty("secretProperty", JsonValue.from("42"))

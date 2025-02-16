@@ -10,19 +10,19 @@ configure<PublishingExtension> {
 
             pom {
                 name.set("turbopuffer API")
-                description.set("turbopuffer is a fast search engine that combines vector and full-text search\nusing object storage. This API allows you to manage namespaces and perform\ndocument operations (upsert, and delete) as well as query documents.")
-                url.set("https://docs.turbopuffer.com")
+                description.set("turbopuffer is a fast search engine that combines vector and full-text search\nusing object storage.")
+                url.set("https://turbopuffer.com/docs")
 
                 licenses {
                     license {
-                        name.set("Apache-2.0")
+                        name.set("MIT")
                     }
                 }
 
                 developers {
                     developer {
                         name.set("Turbopuffer")
-                        email.set("dev-feedback@turbopuffer.com")
+                        email.set("info@turbopuffer.com")
                     }
                 }
 

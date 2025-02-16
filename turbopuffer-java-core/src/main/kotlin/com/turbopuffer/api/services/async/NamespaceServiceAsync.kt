@@ -5,46 +5,48 @@
 package com.turbopuffer.api.services.async
 
 import com.turbopuffer.api.core.RequestOptions
+import com.turbopuffer.api.models.DocumentRow
+import com.turbopuffer.api.models.NamespaceDeleteAllParams
+import com.turbopuffer.api.models.NamespaceDeleteAllResponse
+import com.turbopuffer.api.models.NamespaceGetSchemaParams
+import com.turbopuffer.api.models.NamespaceGetSchemaResponse
+import com.turbopuffer.api.models.NamespaceListPageAsync
 import com.turbopuffer.api.models.NamespaceListParams
 import com.turbopuffer.api.models.NamespaceQueryParams
-import com.turbopuffer.api.models.NamespaceQueryResponse
-import com.turbopuffer.api.models.NamespaceRetrieveParams
-import com.turbopuffer.api.models.NamespaceRetrieveResponse
 import com.turbopuffer.api.models.NamespaceUpsertParams
 import com.turbopuffer.api.models.NamespaceUpsertResponse
 import java.util.concurrent.CompletableFuture
 
 interface NamespaceServiceAsync {
 
-    /** Retrieve metadata for a specific namespace. */
-    @JvmOverloads
-    fun retrieve(
-        params: NamespaceRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
-    ): CompletableFuture<NamespaceRetrieveResponse>
-
-    /** Retrieve a list of all namespaces. */
+    /** List namespaces */
     @JvmOverloads
     fun list(
         params: NamespaceListParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): CompletableFuture<List<UnnamedSchemaWithArrayParent0>>
+    ): CompletableFuture<NamespaceListPageAsync>
 
-    /**
-     * Searches documents in a namespace using a vector (and optionally attribute filters). Provide
-     * a query vector, filters, ranking, and other parameters to retrieve matching documents.
-     */
+    /** Delete namespace */
+    @JvmOverloads
+    fun deleteAll(
+        params: NamespaceDeleteAllParams,
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): CompletableFuture<NamespaceDeleteAllResponse>
+
+    /** Get namespace schema. */
+    @JvmOverloads
+    fun getSchema(
+        params: NamespaceGetSchemaParams,
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): CompletableFuture<NamespaceGetSchemaResponse>
+
     @JvmOverloads
     fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none()
-    ): CompletableFuture<NamespaceQueryResponse>
+    ): CompletableFuture<List<DocumentRow>>
 
-    /**
-     * Creates, updates, or deletes documents in a namespace. Documents are upserted in a
-     * column-oriented format (using `ids`, `vectors`, `attributes`, etc.) or in a row-based format
-     * (using `upserts`). To delete a document, send a `null` vector.
-     */
+    /** Create, update, or delete documents. */
     @JvmOverloads
     fun upsert(
         params: NamespaceUpsertParams,

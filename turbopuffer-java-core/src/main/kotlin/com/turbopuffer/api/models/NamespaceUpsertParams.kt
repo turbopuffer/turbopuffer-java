@@ -32,11 +32,7 @@ import com.turbopuffer.api.errors.TurbopufferInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
-/**
- * Creates, updates, or deletes documents in a namespace. Documents are upserted in a
- * column-oriented format (using `ids`, `vectors`, `attributes`, etc.) or in a row-based format
- * (using `upserts`). To delete a document, send a `null` vector.
- */
+/** Create, update, or delete documents. */
 class NamespaceUpsertParams
 private constructor(
     private val namespace: String,
@@ -47,9 +43,17 @@ private constructor(
 
     fun namespace(): String = namespace
 
-    fun variant0(): Optional<UnionMember0> = body.variant0()
+    /** Upsert documents in columnar format. */
+    fun upsertColumnar(): Optional<UpsertColumnar> = body.upsertColumnar()
 
-    fun variant1(): Optional<Upserts> = body.variant1()
+    /** Upsert documents in row-based format. */
+    fun upsertRowBased(): Optional<UpsertRowBased> = body.upsertRowBased()
+
+    /** Copy documents from another namespace. */
+    fun copyFromNamespace(): Optional<CopyFromNamespace> = body.copyFromNamespace()
+
+    /** Delete documents by filter. */
+    fun deleteByFilter(): Optional<DeleteByFilter> = body.deleteByFilter()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -68,33 +72,60 @@ private constructor(
         }
     }
 
+    /** Upsert documents in columnar format. */
     @JsonDeserialize(using = NamespaceUpsertBody.Deserializer::class)
     @JsonSerialize(using = NamespaceUpsertBody.Serializer::class)
     class NamespaceUpsertBody
     internal constructor(
-        private val unionMember0: UnionMember0? = null,
-        private val upserts: Upserts? = null,
+        private val upsertColumnar: UpsertColumnar? = null,
+        private val upsertRowBased: UpsertRowBased? = null,
+        private val copyFromNamespace: CopyFromNamespace? = null,
+        private val deleteByFilter: DeleteByFilter? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        fun unionMember0(): Optional<UnionMember0> = Optional.ofNullable(unionMember0)
+        /** Upsert documents in columnar format. */
+        fun upsertColumnar(): Optional<UpsertColumnar> = Optional.ofNullable(upsertColumnar)
 
-        fun upserts(): Optional<Upserts> = Optional.ofNullable(upserts)
+        /** Upsert documents in row-based format. */
+        fun upsertRowBased(): Optional<UpsertRowBased> = Optional.ofNullable(upsertRowBased)
 
-        fun isUnionMember0(): Boolean = unionMember0 != null
+        /** Copy documents from another namespace. */
+        fun copyFromNamespace(): Optional<CopyFromNamespace> =
+            Optional.ofNullable(copyFromNamespace)
 
-        fun isUpserts(): Boolean = upserts != null
+        /** Delete documents by filter. */
+        fun deleteByFilter(): Optional<DeleteByFilter> = Optional.ofNullable(deleteByFilter)
 
-        fun asUnionMember0(): UnionMember0 = unionMember0.getOrThrow("unionMember0")
+        fun isUpsertColumnar(): Boolean = upsertColumnar != null
 
-        fun asUpserts(): Upserts = upserts.getOrThrow("upserts")
+        fun isUpsertRowBased(): Boolean = upsertRowBased != null
+
+        fun isCopyFromNamespace(): Boolean = copyFromNamespace != null
+
+        fun isDeleteByFilter(): Boolean = deleteByFilter != null
+
+        /** Upsert documents in columnar format. */
+        fun asUpsertColumnar(): UpsertColumnar = upsertColumnar.getOrThrow("upsertColumnar")
+
+        /** Upsert documents in row-based format. */
+        fun asUpsertRowBased(): UpsertRowBased = upsertRowBased.getOrThrow("upsertRowBased")
+
+        /** Copy documents from another namespace. */
+        fun asCopyFromNamespace(): CopyFromNamespace =
+            copyFromNamespace.getOrThrow("copyFromNamespace")
+
+        /** Delete documents by filter. */
+        fun asDeleteByFilter(): DeleteByFilter = deleteByFilter.getOrThrow("deleteByFilter")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                unionMember0 != null -> visitor.visitUnionMember0(unionMember0)
-                upserts != null -> visitor.visitUpserts(upserts)
+                upsertColumnar != null -> visitor.visitUpsertColumnar(upsertColumnar)
+                upsertRowBased != null -> visitor.visitUpsertRowBased(upsertRowBased)
+                copyFromNamespace != null -> visitor.visitCopyFromNamespace(copyFromNamespace)
+                deleteByFilter != null -> visitor.visitDeleteByFilter(deleteByFilter)
                 else -> visitor.unknown(_json)
             }
         }
@@ -104,26 +135,43 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is NamespaceUpsertBody && unionMember0 == other.unionMember0 && upserts == other.upserts /* spotless:on */
+            return /* spotless:off */ other is NamespaceUpsertBody && upsertColumnar == other.upsertColumnar && upsertRowBased == other.upsertRowBased && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(unionMember0, upserts) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(upsertColumnar, upsertRowBased, copyFromNamespace, deleteByFilter) /* spotless:on */
 
         override fun toString(): String =
             when {
-                unionMember0 != null -> "NamespaceUpsertBody{unionMember0=$unionMember0}"
-                upserts != null -> "NamespaceUpsertBody{upserts=$upserts}"
+                upsertColumnar != null -> "NamespaceUpsertBody{upsertColumnar=$upsertColumnar}"
+                upsertRowBased != null -> "NamespaceUpsertBody{upsertRowBased=$upsertRowBased}"
+                copyFromNamespace != null ->
+                    "NamespaceUpsertBody{copyFromNamespace=$copyFromNamespace}"
+                deleteByFilter != null -> "NamespaceUpsertBody{deleteByFilter=$deleteByFilter}"
                 _json != null -> "NamespaceUpsertBody{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid NamespaceUpsertBody")
             }
 
         companion object {
 
+            /** Upsert documents in columnar format. */
             @JvmStatic
-            fun ofUnionMember0(unionMember0: UnionMember0) =
-                NamespaceUpsertBody(unionMember0 = unionMember0)
+            fun ofUpsertColumnar(upsertColumnar: UpsertColumnar) =
+                NamespaceUpsertBody(upsertColumnar = upsertColumnar)
 
-            @JvmStatic fun ofUpserts(upserts: Upserts) = NamespaceUpsertBody(upserts = upserts)
+            /** Upsert documents in row-based format. */
+            @JvmStatic
+            fun ofUpsertRowBased(upsertRowBased: UpsertRowBased) =
+                NamespaceUpsertBody(upsertRowBased = upsertRowBased)
+
+            /** Copy documents from another namespace. */
+            @JvmStatic
+            fun ofCopyFromNamespace(copyFromNamespace: CopyFromNamespace) =
+                NamespaceUpsertBody(copyFromNamespace = copyFromNamespace)
+
+            /** Delete documents by filter. */
+            @JvmStatic
+            fun ofDeleteByFilter(deleteByFilter: DeleteByFilter) =
+                NamespaceUpsertBody(deleteByFilter = deleteByFilter)
         }
 
         /**
@@ -132,9 +180,17 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitUnionMember0(unionMember0: UnionMember0): T
+            /** Upsert documents in columnar format. */
+            fun visitUpsertColumnar(upsertColumnar: UpsertColumnar): T
 
-            fun visitUpserts(upserts: Upserts): T
+            /** Upsert documents in row-based format. */
+            fun visitUpsertRowBased(upsertRowBased: UpsertRowBased): T
+
+            /** Copy documents from another namespace. */
+            fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace): T
+
+            /** Delete documents by filter. */
+            fun visitDeleteByFilter(deleteByFilter: DeleteByFilter): T
 
             /**
              * Maps an unknown variant of [NamespaceUpsertBody] to a value of type [T].
@@ -157,11 +213,17 @@ private constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): NamespaceUpsertBody {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<UnionMember0>())?.let {
-                    return NamespaceUpsertBody(unionMember0 = it, _json = json)
+                tryDeserialize(node, jacksonTypeRef<UpsertColumnar>())?.let {
+                    return NamespaceUpsertBody(upsertColumnar = it, _json = json)
                 }
-                tryDeserialize(node, jacksonTypeRef<Upserts>())?.let {
-                    return NamespaceUpsertBody(upserts = it, _json = json)
+                tryDeserialize(node, jacksonTypeRef<UpsertRowBased>())?.let {
+                    return NamespaceUpsertBody(upsertRowBased = it, _json = json)
+                }
+                tryDeserialize(node, jacksonTypeRef<CopyFromNamespace>())?.let {
+                    return NamespaceUpsertBody(copyFromNamespace = it, _json = json)
+                }
+                tryDeserialize(node, jacksonTypeRef<DeleteByFilter>())?.let {
+                    return NamespaceUpsertBody(deleteByFilter = it, _json = json)
                 }
 
                 return NamespaceUpsertBody(_json = json)
@@ -177,8 +239,11 @@ private constructor(
                 provider: SerializerProvider
             ) {
                 when {
-                    value.unionMember0 != null -> generator.writeObject(value.unionMember0)
-                    value.upserts != null -> generator.writeObject(value.upserts)
+                    value.upsertColumnar != null -> generator.writeObject(value.upsertColumnar)
+                    value.upsertRowBased != null -> generator.writeObject(value.upsertRowBased)
+                    value.copyFromNamespace != null ->
+                        generator.writeObject(value.copyFromNamespace)
+                    value.deleteByFilter != null -> generator.writeObject(value.deleteByFilter)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid NamespaceUpsertBody")
                 }
@@ -212,12 +277,24 @@ private constructor(
 
         fun namespace(namespace: String) = apply { this.namespace = namespace }
 
-        fun forVariant0(variant0: UnionMember0) = apply {
-            body = NamespaceUpsertBody.ofUnionMember0(variant0)
+        /** Upsert documents in columnar format. */
+        fun forUpsertColumnar(upsertColumnar: UpsertColumnar) = apply {
+            body = NamespaceUpsertBody.ofUpsertColumnar(upsertColumnar)
         }
 
-        fun forVariant1(variant1: Upserts) = apply {
-            body = NamespaceUpsertBody.ofUpserts(variant1)
+        /** Upsert documents in row-based format. */
+        fun forUpsertRowBased(upsertRowBased: UpsertRowBased) = apply {
+            body = NamespaceUpsertBody.ofUpsertRowBased(upsertRowBased)
+        }
+
+        /** Copy documents from another namespace. */
+        fun forCopyFromNamespace(copyFromNamespace: CopyFromNamespace) = apply {
+            body = NamespaceUpsertBody.ofCopyFromNamespace(copyFromNamespace)
+        }
+
+        /** Delete documents by filter. */
+        fun forDeleteByFilter(deleteByFilter: DeleteByFilter) = apply {
+            body = NamespaceUpsertBody.ofDeleteByFilter(deleteByFilter)
         }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
@@ -327,76 +404,17 @@ private constructor(
             )
     }
 
+    /** Upsert documents in columnar format. */
     @NoAutoDetect
-    class UnionMember0
+    class UpsertColumnar
     @JsonCreator
     private constructor(
-        @JsonProperty("distance_metric")
-        @ExcludeMissing
-        private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
-        @JsonProperty("ids")
-        @ExcludeMissing
-        private val ids: JsonField<List<Id>> = JsonMissing.of(),
-        @JsonProperty("vectors")
-        @ExcludeMissing
-        private val vectors: JsonField<List<List<Double>?>> = JsonMissing.of(),
-        @JsonProperty("attributes")
-        @ExcludeMissing
-        private val attributes: JsonField<Attributes> = JsonMissing.of(),
-        @JsonProperty("copy_from_namespace")
-        @ExcludeMissing
-        private val copyFromNamespace: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("schema") @ExcludeMissing private val schema: JsonValue = JsonMissing.of(),
+        @JsonProperty("allOf") @ExcludeMissing private val allOf: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The function used to calculate vector similarity. */
-        fun distanceMetric(): DistanceMetric = distanceMetric.getRequired("distance_metric")
-
-        /** Array of document IDs (unsigned 64-bit integers, UUIDs, or strings). */
-        fun ids(): List<Id> = ids.getRequired("ids")
-
-        /**
-         * Array of vectors. Each vector is an array of numbers. Use `null` to delete a document.
-         */
-        fun vectors(): List<List<Double>?> = vectors.getRequired("vectors")
-
-        /** Object mapping attribute names to arrays of attribute values. */
-        fun attributes(): Optional<Attributes> =
-            Optional.ofNullable(attributes.getNullable("attributes"))
-
-        /** Copy all documents from another namespace into this one. */
-        fun copyFromNamespace(): Optional<String> =
-            Optional.ofNullable(copyFromNamespace.getNullable("copy_from_namespace"))
-
-        /** Manually specify the schema for the documents. */
-        @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonValue = schema
-
-        /** The function used to calculate vector similarity. */
-        @JsonProperty("distance_metric")
-        @ExcludeMissing
-        fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
-
-        /** Array of document IDs (unsigned 64-bit integers, UUIDs, or strings). */
-        @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<Id>> = ids
-
-        /**
-         * Array of vectors. Each vector is an array of numbers. Use `null` to delete a document.
-         */
-        @JsonProperty("vectors")
-        @ExcludeMissing
-        fun _vectors(): JsonField<List<List<Double>?>> = vectors
-
-        /** Object mapping attribute names to arrays of attribute values. */
-        @JsonProperty("attributes")
-        @ExcludeMissing
-        fun _attributes(): JsonField<Attributes> = attributes
-
-        /** Copy all documents from another namespace into this one. */
-        @JsonProperty("copy_from_namespace")
-        @ExcludeMissing
-        fun _copyFromNamespace(): JsonField<String> = copyFromNamespace
+        @JsonProperty("allOf") @ExcludeMissing fun _allOf(): JsonValue = allOf
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -404,16 +422,11 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): UnionMember0 = apply {
+        fun validate(): UpsertColumnar = apply {
             if (validated) {
                 return@apply
             }
 
-            distanceMetric()
-            ids().forEach { it.validate() }
-            vectors()
-            attributes().ifPresent { it.validate() }
-            copyFromNamespace()
             validated = true
         }
 
@@ -424,113 +437,19 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [UnionMember0]. */
+        /** A builder for [UpsertColumnar]. */
         class Builder internal constructor() {
 
-            private var distanceMetric: JsonField<DistanceMetric>? = null
-            private var ids: JsonField<MutableList<Id>>? = null
-            private var vectors: JsonField<MutableList<List<Double>?>>? = null
-            private var attributes: JsonField<Attributes> = JsonMissing.of()
-            private var copyFromNamespace: JsonField<String> = JsonMissing.of()
-            private var schema: JsonValue = JsonMissing.of()
+            private var allOf: JsonValue = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(unionMember0: UnionMember0) = apply {
-                distanceMetric = unionMember0.distanceMetric
-                ids = unionMember0.ids.map { it.toMutableList() }
-                vectors = unionMember0.vectors.map { it.toMutableList() }
-                attributes = unionMember0.attributes
-                copyFromNamespace = unionMember0.copyFromNamespace
-                schema = unionMember0.schema
-                additionalProperties = unionMember0.additionalProperties.toMutableMap()
+            internal fun from(upsertColumnar: UpsertColumnar) = apply {
+                allOf = upsertColumnar.allOf
+                additionalProperties = upsertColumnar.additionalProperties.toMutableMap()
             }
 
-            /** The function used to calculate vector similarity. */
-            fun distanceMetric(distanceMetric: DistanceMetric) =
-                distanceMetric(JsonField.of(distanceMetric))
-
-            /** The function used to calculate vector similarity. */
-            fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
-                this.distanceMetric = distanceMetric
-            }
-
-            /** Array of document IDs (unsigned 64-bit integers, UUIDs, or strings). */
-            fun ids(ids: List<Id>) = ids(JsonField.of(ids))
-
-            /** Array of document IDs (unsigned 64-bit integers, UUIDs, or strings). */
-            fun ids(ids: JsonField<List<Id>>) = apply { this.ids = ids.map { it.toMutableList() } }
-
-            /** Array of document IDs (unsigned 64-bit integers, UUIDs, or strings). */
-            fun addId(id: Id) = apply {
-                ids =
-                    (ids ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(id)
-                    }
-            }
-
-            /** Array of document IDs (unsigned 64-bit integers, UUIDs, or strings). */
-            fun addId(integer: Long) = addId(Id.ofInteger(integer))
-
-            /** Array of document IDs (unsigned 64-bit integers, UUIDs, or strings). */
-            fun addId(string: String) = addId(Id.ofString(string))
-
-            /**
-             * Array of vectors. Each vector is an array of numbers. Use `null` to delete a
-             * document.
-             */
-            fun vectors(vectors: List<List<Double>?>) = vectors(JsonField.of(vectors))
-
-            /**
-             * Array of vectors. Each vector is an array of numbers. Use `null` to delete a
-             * document.
-             */
-            fun vectors(vectors: JsonField<List<List<Double>?>>) = apply {
-                this.vectors = vectors.map { it.toMutableList() }
-            }
-
-            /**
-             * Array of vectors. Each vector is an array of numbers. Use `null` to delete a
-             * document.
-             */
-            fun addVector(vector: List<Double>) = apply {
-                vectors =
-                    (vectors ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(vector)
-                    }
-            }
-
-            /** Object mapping attribute names to arrays of attribute values. */
-            fun attributes(attributes: Attributes) = attributes(JsonField.of(attributes))
-
-            /** Object mapping attribute names to arrays of attribute values. */
-            fun attributes(attributes: JsonField<Attributes>) = apply {
-                this.attributes = attributes
-            }
-
-            /** Copy all documents from another namespace into this one. */
-            fun copyFromNamespace(copyFromNamespace: String) =
-                copyFromNamespace(JsonField.of(copyFromNamespace))
-
-            /** Copy all documents from another namespace into this one. */
-            fun copyFromNamespace(copyFromNamespace: JsonField<String>) = apply {
-                this.copyFromNamespace = copyFromNamespace
-            }
-
-            /** Manually specify the schema for the documents. */
-            fun schema(schema: JsonValue) = apply { this.schema = schema }
+            fun allOf(allOf: JsonValue) = apply { this.allOf = allOf }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -551,19 +470,151 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): UnionMember0 =
-                UnionMember0(
-                    checkRequired("distanceMetric", distanceMetric),
-                    checkRequired("ids", ids).map { it.toImmutable() },
-                    checkRequired("vectors", vectors).map { it.toImmutable() },
-                    attributes,
-                    copyFromNamespace,
-                    schema,
+            fun build(): UpsertColumnar = UpsertColumnar(allOf, additionalProperties.toImmutable())
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is UpsertColumnar && allOf == other.allOf && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(allOf, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "UpsertColumnar{allOf=$allOf, additionalProperties=$additionalProperties}"
+    }
+
+    /** Upsert documents in row-based format. */
+    @NoAutoDetect
+    class UpsertRowBased
+    @JsonCreator
+    private constructor(
+        @JsonProperty("distance_metric")
+        @ExcludeMissing
+        private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
+        @JsonProperty("upserts")
+        @ExcludeMissing
+        private val upserts: JsonField<List<DocumentRow>> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    ) {
+
+        /** A function used to calculate vector similarity. */
+        fun distanceMetric(): Optional<DistanceMetric> =
+            Optional.ofNullable(distanceMetric.getNullable("distance_metric"))
+
+        fun upserts(): Optional<List<DocumentRow>> =
+            Optional.ofNullable(upserts.getNullable("upserts"))
+
+        /** A function used to calculate vector similarity. */
+        @JsonProperty("distance_metric")
+        @ExcludeMissing
+        fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
+
+        @JsonProperty("upserts")
+        @ExcludeMissing
+        fun _upserts(): JsonField<List<DocumentRow>> = upserts
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): UpsertRowBased = apply {
+            if (validated) {
+                return@apply
+            }
+
+            distanceMetric()
+            upserts().ifPresent { it.forEach { it.validate() } }
+            validated = true
+        }
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [UpsertRowBased]. */
+        class Builder internal constructor() {
+
+            private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
+            private var upserts: JsonField<MutableList<DocumentRow>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(upsertRowBased: UpsertRowBased) = apply {
+                distanceMetric = upsertRowBased.distanceMetric
+                upserts = upsertRowBased.upserts.map { it.toMutableList() }
+                additionalProperties = upsertRowBased.additionalProperties.toMutableMap()
+            }
+
+            /** A function used to calculate vector similarity. */
+            fun distanceMetric(distanceMetric: DistanceMetric) =
+                distanceMetric(JsonField.of(distanceMetric))
+
+            /** A function used to calculate vector similarity. */
+            fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
+                this.distanceMetric = distanceMetric
+            }
+
+            fun upserts(upserts: List<DocumentRow>) = upserts(JsonField.of(upserts))
+
+            fun upserts(upserts: JsonField<List<DocumentRow>>) = apply {
+                this.upserts = upserts.map { it.toMutableList() }
+            }
+
+            fun addUpsert(upsert: DocumentRow) = apply {
+                upserts =
+                    (upserts ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(upsert)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            fun build(): UpsertRowBased =
+                UpsertRowBased(
+                    distanceMetric,
+                    (upserts ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
 
-        /** The function used to calculate vector similarity. */
+        /** A function used to calculate vector similarity. */
         class DistanceMetric
         @JsonCreator
         private constructor(
@@ -582,8 +633,10 @@ private constructor(
 
             companion object {
 
+                /** Defined as `1 - cosine_similarity` and ranges from 0 to 2. Lower is better. */
                 @JvmField val COSINE_DISTANCE = of("cosine_distance")
 
+                /** Defined as `sum((x - y)^2)`. Lower is better. */
                 @JvmField val EUCLIDEAN_SQUARED = of("euclidean_squared")
 
                 @JvmStatic fun of(value: String) = DistanceMetric(JsonField.of(value))
@@ -591,7 +644,9 @@ private constructor(
 
             /** An enum containing [DistanceMetric]'s known values. */
             enum class Known {
+                /** Defined as `1 - cosine_similarity` and ranges from 0 to 2. Lower is better. */
                 COSINE_DISTANCE,
+                /** Defined as `sum((x - y)^2)`. Lower is better. */
                 EUCLIDEAN_SQUARED,
             }
 
@@ -605,7 +660,9 @@ private constructor(
              * - It was constructed with an arbitrary value using the [of] method.
              */
             enum class Value {
+                /** Defined as `1 - cosine_similarity` and ranges from 0 to 2. Lower is better. */
                 COSINE_DISTANCE,
+                /** Defined as `sum((x - y)^2)`. Lower is better. */
                 EUCLIDEAN_SQUARED,
                 /**
                  * An enum member indicating that [DistanceMetric] was instantiated with an unknown
@@ -659,250 +716,44 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        @JsonDeserialize(using = Id.Deserializer::class)
-        @JsonSerialize(using = Id.Serializer::class)
-        class Id
-        private constructor(
-            private val integer: Long? = null,
-            private val string: String? = null,
-            private val _json: JsonValue? = null,
-        ) {
-
-            fun integer(): Optional<Long> = Optional.ofNullable(integer)
-
-            fun string(): Optional<String> = Optional.ofNullable(string)
-
-            fun isInteger(): Boolean = integer != null
-
-            fun isString(): Boolean = string != null
-
-            fun asInteger(): Long = integer.getOrThrow("integer")
-
-            fun asString(): String = string.getOrThrow("string")
-
-            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-            fun <T> accept(visitor: Visitor<T>): T {
-                return when {
-                    integer != null -> visitor.visitInteger(integer)
-                    string != null -> visitor.visitString(string)
-                    else -> visitor.unknown(_json)
-                }
-            }
-
-            private var validated: Boolean = false
-
-            fun validate(): Id = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                accept(
-                    object : Visitor<Unit> {
-                        override fun visitInteger(integer: Long) {}
-
-                        override fun visitString(string: String) {}
-                    }
-                )
-                validated = true
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Id && integer == other.integer && string == other.string /* spotless:on */
-            }
-
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(integer, string) /* spotless:on */
-
-            override fun toString(): String =
-                when {
-                    integer != null -> "Id{integer=$integer}"
-                    string != null -> "Id{string=$string}"
-                    _json != null -> "Id{_unknown=$_json}"
-                    else -> throw IllegalStateException("Invalid Id")
-                }
-
-            companion object {
-
-                @JvmStatic fun ofInteger(integer: Long) = Id(integer = integer)
-
-                @JvmStatic fun ofString(string: String) = Id(string = string)
-            }
-
-            /** An interface that defines how to map each variant of [Id] to a value of type [T]. */
-            interface Visitor<out T> {
-
-                fun visitInteger(integer: Long): T
-
-                fun visitString(string: String): T
-
-                /**
-                 * Maps an unknown variant of [Id] to a value of type [T].
-                 *
-                 * An instance of [Id] can contain an unknown variant if it was deserialized from
-                 * data that doesn't match any known variant. For example, if the SDK is on an older
-                 * version than the API, then the API may respond with new variants that the SDK is
-                 * unaware of.
-                 *
-                 * @throws TurbopufferInvalidDataException in the default implementation.
-                 */
-                fun unknown(json: JsonValue?): T {
-                    throw TurbopufferInvalidDataException("Unknown Id: $json")
-                }
-            }
-
-            internal class Deserializer : BaseDeserializer<Id>(Id::class) {
-
-                override fun ObjectCodec.deserialize(node: JsonNode): Id {
-                    val json = JsonValue.fromJsonNode(node)
-
-                    tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                        return Id(integer = it, _json = json)
-                    }
-                    tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                        return Id(string = it, _json = json)
-                    }
-
-                    return Id(_json = json)
-                }
-            }
-
-            internal class Serializer : BaseSerializer<Id>(Id::class) {
-
-                override fun serialize(
-                    value: Id,
-                    generator: JsonGenerator,
-                    provider: SerializerProvider
-                ) {
-                    when {
-                        value.integer != null -> generator.writeObject(value.integer)
-                        value.string != null -> generator.writeObject(value.string)
-                        value._json != null -> generator.writeObject(value._json)
-                        else -> throw IllegalStateException("Invalid Id")
-                    }
-                }
-            }
-        }
-
-        /** Object mapping attribute names to arrays of attribute values. */
-        @NoAutoDetect
-        class Attributes
-        @JsonCreator
-        private constructor(
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-        ) {
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Attributes = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                validated = true
-            }
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Attributes]. */
-            class Builder internal constructor() {
-
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(attributes: Attributes) = apply {
-                    additionalProperties = attributes.additionalProperties.toMutableMap()
-                }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                fun build(): Attributes = Attributes(additionalProperties.toImmutable())
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Attributes && additionalProperties == other.additionalProperties /* spotless:on */
-            }
-
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-            /* spotless:on */
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() = "Attributes{additionalProperties=$additionalProperties}"
-        }
-
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return /* spotless:off */ other is UnionMember0 && distanceMetric == other.distanceMetric && ids == other.ids && vectors == other.vectors && attributes == other.attributes && copyFromNamespace == other.copyFromNamespace && schema == other.schema && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is UpsertRowBased && distanceMetric == other.distanceMetric && upserts == other.upserts && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(distanceMetric, ids, vectors, attributes, copyFromNamespace, schema, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(distanceMetric, upserts, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "UnionMember0{distanceMetric=$distanceMetric, ids=$ids, vectors=$vectors, attributes=$attributes, copyFromNamespace=$copyFromNamespace, schema=$schema, additionalProperties=$additionalProperties}"
+            "UpsertRowBased{distanceMetric=$distanceMetric, upserts=$upserts, additionalProperties=$additionalProperties}"
     }
 
+    /** Copy documents from another namespace. */
     @NoAutoDetect
-    class Upserts
+    class CopyFromNamespace
     @JsonCreator
     private constructor(
-        @JsonProperty("upserts")
+        @JsonProperty("copy_from_namespace")
         @ExcludeMissing
-        private val upserts: JsonField<List<Upsert>> = JsonMissing.of(),
+        private val copyFromNamespace: JsonField<String> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Array of document operations in row-based format. */
-        fun upserts(): List<Upsert> = upserts.getRequired("upserts")
+        /** The namespace to copy documents from. */
+        fun copyFromNamespace(): Optional<String> =
+            Optional.ofNullable(copyFromNamespace.getNullable("copy_from_namespace"))
 
-        /** Array of document operations in row-based format. */
-        @JsonProperty("upserts") @ExcludeMissing fun _upserts(): JsonField<List<Upsert>> = upserts
+        /** The namespace to copy documents from. */
+        @JsonProperty("copy_from_namespace")
+        @ExcludeMissing
+        fun _copyFromNamespace(): JsonField<String> = copyFromNamespace
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -910,12 +761,12 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Upserts = apply {
+        fun validate(): CopyFromNamespace = apply {
             if (validated) {
                 return@apply
             }
 
-            upserts().forEach { it.validate() }
+            copyFromNamespace()
             validated = true
         }
 
@@ -926,38 +777,25 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [Upserts]. */
+        /** A builder for [CopyFromNamespace]. */
         class Builder internal constructor() {
 
-            private var upserts: JsonField<MutableList<Upsert>>? = null
+            private var copyFromNamespace: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(upserts: Upserts) = apply {
-                this.upserts = upserts.upserts.map { it.toMutableList() }
-                additionalProperties = upserts.additionalProperties.toMutableMap()
+            internal fun from(copyFromNamespace: CopyFromNamespace) = apply {
+                this.copyFromNamespace = copyFromNamespace.copyFromNamespace
+                additionalProperties = copyFromNamespace.additionalProperties.toMutableMap()
             }
 
-            /** Array of document operations in row-based format. */
-            fun upserts(upserts: List<Upsert>) = upserts(JsonField.of(upserts))
+            /** The namespace to copy documents from. */
+            fun copyFromNamespace(copyFromNamespace: String) =
+                copyFromNamespace(JsonField.of(copyFromNamespace))
 
-            /** Array of document operations in row-based format. */
-            fun upserts(upserts: JsonField<List<Upsert>>) = apply {
-                this.upserts = upserts.map { it.toMutableList() }
-            }
-
-            /** Array of document operations in row-based format. */
-            fun addUpsert(upsert: Upsert) = apply {
-                upserts =
-                    (upserts ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(upsert)
-                    }
+            /** The namespace to copy documents from. */
+            fun copyFromNamespace(copyFromNamespace: JsonField<String>) = apply {
+                this.copyFromNamespace = copyFromNamespace
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -979,300 +817,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): Upserts =
-                Upserts(
-                    checkRequired("upserts", upserts).map { it.toImmutable() },
-                    additionalProperties.toImmutable()
-                )
-        }
-
-        @NoAutoDetect
-        class Upsert
-        @JsonCreator
-        private constructor(
-            @JsonProperty("id") @ExcludeMissing private val id: JsonField<Id> = JsonMissing.of(),
-            @JsonProperty("attributes")
-            @ExcludeMissing
-            private val attributes: JsonValue = JsonMissing.of(),
-            @JsonProperty("vector")
-            @ExcludeMissing
-            private val vector: JsonField<List<Double>> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-        ) {
-
-            /** Document ID. */
-            fun id(): Id = id.getRequired("id")
-
-            /** Object mapping attribute names to values. */
-            @JsonProperty("attributes") @ExcludeMissing fun _attributes(): JsonValue = attributes
-
-            /** Document vector. Use `null` to indicate deletion. */
-            fun vector(): Optional<List<Double>> = Optional.ofNullable(vector.getNullable("vector"))
-
-            /** Document ID. */
-            @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<Id> = id
-
-            /** Document vector. Use `null` to indicate deletion. */
-            @JsonProperty("vector") @ExcludeMissing fun _vector(): JsonField<List<Double>> = vector
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Upsert = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                id().validate()
-                vector()
-                validated = true
-            }
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Upsert]. */
-            class Builder internal constructor() {
-
-                private var id: JsonField<Id>? = null
-                private var attributes: JsonValue = JsonMissing.of()
-                private var vector: JsonField<MutableList<Double>>? = null
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(upsert: Upsert) = apply {
-                    id = upsert.id
-                    attributes = upsert.attributes
-                    vector = upsert.vector.map { it.toMutableList() }
-                    additionalProperties = upsert.additionalProperties.toMutableMap()
-                }
-
-                /** Document ID. */
-                fun id(id: Id) = id(JsonField.of(id))
-
-                /** Document ID. */
-                fun id(id: JsonField<Id>) = apply { this.id = id }
-
-                /** Document ID. */
-                fun id(integer: Long) = id(Id.ofInteger(integer))
-
-                /** Document ID. */
-                fun id(string: String) = id(Id.ofString(string))
-
-                /** Object mapping attribute names to values. */
-                fun attributes(attributes: JsonValue) = apply { this.attributes = attributes }
-
-                /** Document vector. Use `null` to indicate deletion. */
-                fun vector(vector: List<Double>?) = vector(JsonField.ofNullable(vector))
-
-                /** Document vector. Use `null` to indicate deletion. */
-                fun vector(vector: Optional<List<Double>>) = vector(vector.orElse(null))
-
-                /** Document vector. Use `null` to indicate deletion. */
-                fun vector(vector: JsonField<List<Double>>) = apply {
-                    this.vector = vector.map { it.toMutableList() }
-                }
-
-                /** Document vector. Use `null` to indicate deletion. */
-                fun addVector(vector: Double) = apply {
-                    this.vector =
-                        (this.vector ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(vector)
-                        }
-                }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                fun build(): Upsert =
-                    Upsert(
-                        checkRequired("id", id),
-                        attributes,
-                        (vector ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
-                    )
-            }
-
-            /** Document ID. */
-            @JsonDeserialize(using = Id.Deserializer::class)
-            @JsonSerialize(using = Id.Serializer::class)
-            class Id
-            private constructor(
-                private val integer: Long? = null,
-                private val string: String? = null,
-                private val _json: JsonValue? = null,
-            ) {
-
-                fun integer(): Optional<Long> = Optional.ofNullable(integer)
-
-                fun string(): Optional<String> = Optional.ofNullable(string)
-
-                fun isInteger(): Boolean = integer != null
-
-                fun isString(): Boolean = string != null
-
-                fun asInteger(): Long = integer.getOrThrow("integer")
-
-                fun asString(): String = string.getOrThrow("string")
-
-                fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-                fun <T> accept(visitor: Visitor<T>): T {
-                    return when {
-                        integer != null -> visitor.visitInteger(integer)
-                        string != null -> visitor.visitString(string)
-                        else -> visitor.unknown(_json)
-                    }
-                }
-
-                private var validated: Boolean = false
-
-                fun validate(): Id = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    accept(
-                        object : Visitor<Unit> {
-                            override fun visitInteger(integer: Long) {}
-
-                            override fun visitString(string: String) {}
-                        }
-                    )
-                    validated = true
-                }
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Id && integer == other.integer && string == other.string /* spotless:on */
-                }
-
-                override fun hashCode(): Int = /* spotless:off */ Objects.hash(integer, string) /* spotless:on */
-
-                override fun toString(): String =
-                    when {
-                        integer != null -> "Id{integer=$integer}"
-                        string != null -> "Id{string=$string}"
-                        _json != null -> "Id{_unknown=$_json}"
-                        else -> throw IllegalStateException("Invalid Id")
-                    }
-
-                companion object {
-
-                    @JvmStatic fun ofInteger(integer: Long) = Id(integer = integer)
-
-                    @JvmStatic fun ofString(string: String) = Id(string = string)
-                }
-
-                /**
-                 * An interface that defines how to map each variant of [Id] to a value of type [T].
-                 */
-                interface Visitor<out T> {
-
-                    fun visitInteger(integer: Long): T
-
-                    fun visitString(string: String): T
-
-                    /**
-                     * Maps an unknown variant of [Id] to a value of type [T].
-                     *
-                     * An instance of [Id] can contain an unknown variant if it was deserialized
-                     * from data that doesn't match any known variant. For example, if the SDK is on
-                     * an older version than the API, then the API may respond with new variants
-                     * that the SDK is unaware of.
-                     *
-                     * @throws TurbopufferInvalidDataException in the default implementation.
-                     */
-                    fun unknown(json: JsonValue?): T {
-                        throw TurbopufferInvalidDataException("Unknown Id: $json")
-                    }
-                }
-
-                internal class Deserializer : BaseDeserializer<Id>(Id::class) {
-
-                    override fun ObjectCodec.deserialize(node: JsonNode): Id {
-                        val json = JsonValue.fromJsonNode(node)
-
-                        tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                            return Id(integer = it, _json = json)
-                        }
-                        tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                            return Id(string = it, _json = json)
-                        }
-
-                        return Id(_json = json)
-                    }
-                }
-
-                internal class Serializer : BaseSerializer<Id>(Id::class) {
-
-                    override fun serialize(
-                        value: Id,
-                        generator: JsonGenerator,
-                        provider: SerializerProvider
-                    ) {
-                        when {
-                            value.integer != null -> generator.writeObject(value.integer)
-                            value.string != null -> generator.writeObject(value.string)
-                            value._json != null -> generator.writeObject(value._json)
-                            else -> throw IllegalStateException("Invalid Id")
-                        }
-                    }
-                }
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Upsert && id == other.id && attributes == other.attributes && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
-            }
-
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(id, attributes, vector, additionalProperties) }
-            /* spotless:on */
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Upsert{id=$id, attributes=$attributes, vector=$vector, additionalProperties=$additionalProperties}"
+            fun build(): CopyFromNamespace =
+                CopyFromNamespace(copyFromNamespace, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1280,17 +826,111 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Upserts && upserts == other.upserts && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is CopyFromNamespace && copyFromNamespace == other.copyFromNamespace && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(upserts, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(copyFromNamespace, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Upserts{upserts=$upserts, additionalProperties=$additionalProperties}"
+            "CopyFromNamespace{copyFromNamespace=$copyFromNamespace, additionalProperties=$additionalProperties}"
+    }
+
+    /** Delete documents by filter. */
+    @NoAutoDetect
+    class DeleteByFilter
+    @JsonCreator
+    private constructor(
+        @JsonProperty("delete_by_filter")
+        @ExcludeMissing
+        private val deleteByFilter: JsonValue = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    ) {
+
+        @JsonProperty("delete_by_filter")
+        @ExcludeMissing
+        fun _deleteByFilter(): JsonValue = deleteByFilter
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): DeleteByFilter = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [DeleteByFilter]. */
+        class Builder internal constructor() {
+
+            private var deleteByFilter: JsonValue = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(deleteByFilter: DeleteByFilter) = apply {
+                this.deleteByFilter = deleteByFilter.deleteByFilter
+                additionalProperties = deleteByFilter.additionalProperties.toMutableMap()
+            }
+
+            fun deleteByFilter(deleteByFilter: JsonValue) = apply {
+                this.deleteByFilter = deleteByFilter
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            fun build(): DeleteByFilter =
+                DeleteByFilter(deleteByFilter, additionalProperties.toImmutable())
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is DeleteByFilter && deleteByFilter == other.deleteByFilter && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(deleteByFilter, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "DeleteByFilter{deleteByFilter=$deleteByFilter, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
