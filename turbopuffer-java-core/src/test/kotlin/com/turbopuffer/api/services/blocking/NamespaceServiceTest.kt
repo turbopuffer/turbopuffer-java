@@ -107,7 +107,51 @@ class NamespaceServiceTest {
                 NamespaceUpsertParams.builder()
                     .forUpsertColumnar(
                         NamespaceUpsertParams.UpsertColumnar.builder()
-                            .allOf(JsonValue.from(mapOf<String, Any>()))
+                            .attributes(
+                                NamespaceUpsertParams.UpsertColumnar.Attributes.builder()
+                                    .putAdditionalProperty(
+                                        "foo",
+                                        JsonValue.from(
+                                            listOf(
+                                                mapOf(
+                                                    "filterable" to true,
+                                                    "full_text_search" to true,
+                                                    "type" to "string",
+                                                )
+                                            )
+                                        )
+                                    )
+                                    .build()
+                            )
+                            .distanceMetric(
+                                NamespaceUpsertParams.UpsertColumnar.DistanceMetric.COSINE_DISTANCE
+                            )
+                            .ids(
+                                listOf(
+                                    NamespaceUpsertParams.UpsertColumnar.Id.ofString(
+                                        "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"
+                                    )
+                                )
+                            )
+                            .schema(
+                                NamespaceUpsertParams.UpsertColumnar.Schema.builder()
+                                    .putAdditionalProperty(
+                                        "foo",
+                                        JsonValue.from(
+                                            listOf(
+                                                mapOf(
+                                                    "filterable" to true,
+                                                    "full_text_search" to true,
+                                                    "type" to "string",
+                                                )
+                                            )
+                                        )
+                                    )
+                                    .build()
+                            )
+                            .vectors(
+                                listOf(NamespaceUpsertParams.UpsertColumnar.Vector.ofNumber(0.0))
+                            )
                             .build()
                     )
                     .namespace("namespace")

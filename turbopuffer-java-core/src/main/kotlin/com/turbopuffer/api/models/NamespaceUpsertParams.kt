@@ -409,16 +409,70 @@ private constructor(
     class UpsertColumnar
     @JsonCreator
     private constructor(
-        @JsonProperty("allOf") @ExcludeMissing private val allOf: JsonValue = JsonMissing.of(),
+        @JsonProperty("attributes")
+        @ExcludeMissing
+        private val attributes: JsonField<DocumentColumns.Attributes> = JsonMissing.of(),
+        @JsonProperty("ids")
+        @ExcludeMissing
+        private val ids: JsonField<List<DocumentColumns.Id>> = JsonMissing.of(),
+        @JsonProperty("vectors")
+        @ExcludeMissing
+        private val vectors: JsonField<List<DocumentColumns.Vector?>> = JsonMissing.of(),
+        @JsonProperty("distance_metric")
+        @ExcludeMissing
+        private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
+        @JsonProperty("schema")
+        @ExcludeMissing
+        private val schema: JsonField<Schema> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        @JsonProperty("allOf") @ExcludeMissing fun _allOf(): JsonValue = allOf
+        /** The attributes attached to each of the documents. */
+        fun attributes(): Optional<DocumentColumns.Attributes> =
+            Optional.ofNullable(attributes.getNullable("attributes"))
+
+        /** The IDs of the documents. */
+        fun ids(): Optional<List<DocumentColumns.Id>> = Optional.ofNullable(ids.getNullable("ids"))
+
+        /** Vectors describing each of the documents. */
+        fun vectors(): Optional<List<DocumentColumns.Vector?>> =
+            Optional.ofNullable(vectors.getNullable("vectors"))
+
+        /** A function used to calculate vector similarity. */
+        fun distanceMetric(): Optional<DistanceMetric> =
+            Optional.ofNullable(distanceMetric.getNullable("distance_metric"))
+
+        /** The schema of the attributes attached to the documents. */
+        fun schema(): Optional<Schema> = Optional.ofNullable(schema.getNullable("schema"))
+
+        /** The attributes attached to each of the documents. */
+        @JsonProperty("attributes")
+        @ExcludeMissing
+        fun _attributes(): JsonField<DocumentColumns.Attributes> = attributes
+
+        /** The IDs of the documents. */
+        @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<DocumentColumns.Id>> = ids
+
+        /** Vectors describing each of the documents. */
+        @JsonProperty("vectors")
+        @ExcludeMissing
+        fun _vectors(): JsonField<List<DocumentColumns.Vector?>> = vectors
+
+        /** A function used to calculate vector similarity. */
+        @JsonProperty("distance_metric")
+        @ExcludeMissing
+        fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
+
+        /** The schema of the attributes attached to the documents. */
+        @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toDocumentColumns(): DocumentColumns =
+            DocumentColumns.builder().attributes(attributes).ids(ids).vectors(vectors).build()
 
         private var validated: Boolean = false
 
@@ -427,6 +481,11 @@ private constructor(
                 return@apply
             }
 
+            attributes().ifPresent { it.validate() }
+            ids().ifPresent { it.forEach { it.validate() } }
+            vectors().ifPresent { it.forEach { it?.validate() } }
+            distanceMetric()
+            schema().ifPresent { it.validate() }
             validated = true
         }
 
@@ -440,16 +499,103 @@ private constructor(
         /** A builder for [UpsertColumnar]. */
         class Builder internal constructor() {
 
-            private var allOf: JsonValue = JsonMissing.of()
+            private var attributes: JsonField<DocumentColumns.Attributes> = JsonMissing.of()
+            private var ids: JsonField<MutableList<DocumentColumns.Id>>? = null
+            private var vectors: JsonField<MutableList<DocumentColumns.Vector?>>? = null
+            private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
+            private var schema: JsonField<Schema> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(upsertColumnar: UpsertColumnar) = apply {
-                allOf = upsertColumnar.allOf
+                attributes = upsertColumnar.attributes
+                ids = upsertColumnar.ids.map { it.toMutableList() }
+                vectors = upsertColumnar.vectors.map { it.toMutableList() }
+                distanceMetric = upsertColumnar.distanceMetric
+                schema = upsertColumnar.schema
                 additionalProperties = upsertColumnar.additionalProperties.toMutableMap()
             }
 
-            fun allOf(allOf: JsonValue) = apply { this.allOf = allOf }
+            /** The attributes attached to each of the documents. */
+            fun attributes(attributes: DocumentColumns.Attributes) =
+                attributes(JsonField.of(attributes))
+
+            /** The attributes attached to each of the documents. */
+            fun attributes(attributes: JsonField<DocumentColumns.Attributes>) = apply {
+                this.attributes = attributes
+            }
+
+            /** The IDs of the documents. */
+            fun ids(ids: List<DocumentColumns.Id>) = ids(JsonField.of(ids))
+
+            /** The IDs of the documents. */
+            fun ids(ids: JsonField<List<DocumentColumns.Id>>) = apply {
+                this.ids = ids.map { it.toMutableList() }
+            }
+
+            /** The IDs of the documents. */
+            fun addId(id: DocumentColumns.Id) = apply {
+                ids =
+                    (ids ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(id)
+                    }
+            }
+
+            /** A UUID. */
+            fun addId(string: String) = addId(DocumentColumns.Id.ofString(string))
+
+            /** An integer ID. */
+            fun addId(integer: Long) = addId(DocumentColumns.Id.ofInteger(integer))
+
+            /** Vectors describing each of the documents. */
+            fun vectors(vectors: List<DocumentColumns.Vector?>) = vectors(JsonField.of(vectors))
+
+            /** Vectors describing each of the documents. */
+            fun vectors(vectors: JsonField<List<DocumentColumns.Vector?>>) = apply {
+                this.vectors = vectors.map { it.toMutableList() }
+            }
+
+            /** Vectors describing each of the documents. */
+            fun addVector(vector: DocumentColumns.Vector) = apply {
+                vectors =
+                    (vectors ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(vector)
+                    }
+            }
+
+            /** Vectors describing each of the documents. */
+            fun addVector(number: Double) = addVector(DocumentColumns.Vector.ofNumber(number))
+
+            /** Vectors describing each of the documents. */
+            fun addVectorOfNumber(number: List<Double>) =
+                addVector(DocumentColumns.Vector.ofNumber(number))
+
+            /** A function used to calculate vector similarity. */
+            fun distanceMetric(distanceMetric: DistanceMetric) =
+                distanceMetric(JsonField.of(distanceMetric))
+
+            /** A function used to calculate vector similarity. */
+            fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
+                this.distanceMetric = distanceMetric
+            }
+
+            /** The schema of the attributes attached to the documents. */
+            fun schema(schema: Schema) = schema(JsonField.of(schema))
+
+            /** The schema of the attributes attached to the documents. */
+            fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -470,7 +616,199 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): UpsertColumnar = UpsertColumnar(allOf, additionalProperties.toImmutable())
+            fun build(): UpsertColumnar =
+                UpsertColumnar(
+                    attributes,
+                    (ids ?: JsonMissing.of()).map { it.toImmutable() },
+                    (vectors ?: JsonMissing.of()).map { it.toImmutable() },
+                    distanceMetric,
+                    schema,
+                    additionalProperties.toImmutable(),
+                )
+        }
+
+        /** A function used to calculate vector similarity. */
+        class DistanceMetric
+        @JsonCreator
+        private constructor(
+            private val value: JsonField<String>,
+        ) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                /** Defined as `1 - cosine_similarity` and ranges from 0 to 2. Lower is better. */
+                @JvmField val COSINE_DISTANCE = of("cosine_distance")
+
+                /** Defined as `sum((x - y)^2)`. Lower is better. */
+                @JvmField val EUCLIDEAN_SQUARED = of("euclidean_squared")
+
+                @JvmStatic fun of(value: String) = DistanceMetric(JsonField.of(value))
+            }
+
+            /** An enum containing [DistanceMetric]'s known values. */
+            enum class Known {
+                /** Defined as `1 - cosine_similarity` and ranges from 0 to 2. Lower is better. */
+                COSINE_DISTANCE,
+                /** Defined as `sum((x - y)^2)`. Lower is better. */
+                EUCLIDEAN_SQUARED,
+            }
+
+            /**
+             * An enum containing [DistanceMetric]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [DistanceMetric] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                /** Defined as `1 - cosine_similarity` and ranges from 0 to 2. Lower is better. */
+                COSINE_DISTANCE,
+                /** Defined as `sum((x - y)^2)`. Lower is better. */
+                EUCLIDEAN_SQUARED,
+                /**
+                 * An enum member indicating that [DistanceMetric] was instantiated with an unknown
+                 * value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    COSINE_DISTANCE -> Value.COSINE_DISTANCE
+                    EUCLIDEAN_SQUARED -> Value.EUCLIDEAN_SQUARED
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws TurbopufferInvalidDataException if this class instance's value is a not a
+             *   known member.
+             */
+            fun known(): Known =
+                when (this) {
+                    COSINE_DISTANCE -> Known.COSINE_DISTANCE
+                    EUCLIDEAN_SQUARED -> Known.EUCLIDEAN_SQUARED
+                    else -> throw TurbopufferInvalidDataException("Unknown DistanceMetric: $value")
+                }
+
+            fun asString(): String = _value().asStringOrThrow()
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is DistanceMetric && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /** The schema of the attributes attached to the documents. */
+        @NoAutoDetect
+        class Schema
+        @JsonCreator
+        private constructor(
+            @JsonAnySetter
+            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        ) {
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
+
+            fun validate(): Schema = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                validated = true
+            }
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Schema]. */
+            class Builder internal constructor() {
+
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(schema: Schema) = apply {
+                    additionalProperties = schema.additionalProperties.toMutableMap()
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                fun build(): Schema = Schema(additionalProperties.toImmutable())
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() = "Schema{additionalProperties=$additionalProperties}"
         }
 
         override fun equals(other: Any?): Boolean {
@@ -478,17 +816,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is UpsertColumnar && allOf == other.allOf && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is UpsertColumnar && attributes == other.attributes && ids == other.ids && vectors == other.vectors && distanceMetric == other.distanceMetric && schema == other.schema && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(allOf, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(attributes, ids, vectors, distanceMetric, schema, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "UpsertColumnar{allOf=$allOf, additionalProperties=$additionalProperties}"
+            "UpsertColumnar{attributes=$attributes, ids=$ids, vectors=$vectors, distanceMetric=$distanceMetric, schema=$schema, additionalProperties=$additionalProperties}"
     }
 
     /** Upsert documents in row-based format. */
