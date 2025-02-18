@@ -25,7 +25,7 @@ class NamespaceUpsertParamsTest {
                                             "type" to "string",
                                         )
                                     )
-                                )
+                                ),
                             )
                             .build()
                     )
@@ -51,7 +51,7 @@ class NamespaceUpsertParamsTest {
                                             "type" to "string",
                                         )
                                     )
-                                )
+                                ),
                             )
                             .build()
                     )

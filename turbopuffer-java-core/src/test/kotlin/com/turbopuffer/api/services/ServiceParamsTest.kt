@@ -112,7 +112,7 @@ class ServiceParamsTest {
                                                 "type" to "string",
                                             )
                                         )
-                                    )
+                                    ),
                                 )
                                 .build()
                         )
@@ -138,7 +138,7 @@ class ServiceParamsTest {
                                                 "type" to "string",
                                             )
                                         )
-                                    )
+                                    ),
                                 )
                                 .build()
                         )

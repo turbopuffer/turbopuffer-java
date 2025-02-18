@@ -82,13 +82,8 @@ private constructor(
         fun of(
             namespacesService: NamespaceServiceAsync,
             params: NamespaceListParams,
-            response: Response
-        ) =
-            NamespaceListPageAsync(
-                namespacesService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = NamespaceListPageAsync(namespacesService, params, response)
     }
 
     @NoAutoDetect
@@ -178,26 +173,19 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    namespaces,
-                    nextCursor,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(namespaces, nextCursor, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: NamespaceListPageAsync,
-    ) {
+    class AutoPager(private val firstPage: NamespaceListPageAsync) {
 
         fun forEach(
             action: Predicate<NamespaceSummary>,
-            executor: Executor
+            executor: Executor,
         ): CompletableFuture<Void> {
             fun CompletableFuture<Optional<NamespaceListPageAsync>>.forEach(
                 action: (NamespaceSummary) -> Boolean,
-                executor: Executor
+                executor: Executor,
             ): CompletableFuture<Void> =
                 thenComposeAsync(
                     { page ->
@@ -206,7 +194,7 @@ private constructor(
                             .map { it.getNextPage().forEach(action, executor) }
                             .orElseGet { CompletableFuture.completedFuture(null) }
                     },
-                    executor
+                    executor,
                 )
             return CompletableFuture.completedFuture(Optional.of(firstPage))
                 .forEach(action::test, executor)

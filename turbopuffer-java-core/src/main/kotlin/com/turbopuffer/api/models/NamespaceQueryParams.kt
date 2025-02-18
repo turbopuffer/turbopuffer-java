@@ -724,11 +724,7 @@ private constructor(
         }
 
         /** The query's consistency level. */
-        class Level
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Level @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -861,11 +857,8 @@ private constructor(
     }
 
     /** A function used to calculate vector similarity. */
-    class DistanceMetric
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class DistanceMetric @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -1103,7 +1096,7 @@ private constructor(
             override fun serialize(
                 value: IncludeAttributes,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.bool != null -> generator.writeObject(value.bool)

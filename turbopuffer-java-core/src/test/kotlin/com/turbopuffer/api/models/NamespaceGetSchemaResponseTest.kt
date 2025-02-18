@@ -22,7 +22,7 @@ class NamespaceGetSchemaResponseTest {
                                 "type" to "string",
                             )
                         )
-                    )
+                    ),
                 )
                 .build()
         assertThat(namespaceGetSchemaResponse).isNotNull

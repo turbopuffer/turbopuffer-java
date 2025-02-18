@@ -22,33 +22,33 @@ interface NamespaceService {
     @JvmOverloads
     fun list(
         params: NamespaceListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceListPage
 
     /** Delete namespace */
     @JvmOverloads
     fun deleteAll(
         params: NamespaceDeleteAllParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceDeleteAllResponse
 
     /** Get namespace schema. */
     @JvmOverloads
     fun getSchema(
         params: NamespaceGetSchemaParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceGetSchemaResponse
 
     @JvmOverloads
     fun query(
         params: NamespaceQueryParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): List<DocumentRow>
 
     /** Create, update, or delete documents. */
     @JvmOverloads
     fun upsert(
         params: NamespaceUpsertParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceUpsertResponse
 }
