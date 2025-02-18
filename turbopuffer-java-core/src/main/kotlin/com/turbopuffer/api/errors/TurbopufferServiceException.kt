@@ -10,7 +10,7 @@ constructor(
     private val body: String,
     private val error: TurbopufferError,
     message: String = "$statusCode: $error",
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : TurbopufferException(message, cause) {
 
     fun statusCode(): Int = statusCode

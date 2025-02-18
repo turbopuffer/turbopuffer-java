@@ -79,13 +79,8 @@ private constructor(
         fun of(
             namespacesService: NamespaceService,
             params: NamespaceListParams,
-            response: Response
-        ) =
-            NamespaceListPage(
-                namespacesService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = NamespaceListPage(namespacesService, params, response)
     }
 
     @NoAutoDetect
@@ -175,18 +170,11 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    namespaces,
-                    nextCursor,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(namespaces, nextCursor, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: NamespaceListPage,
-    ) : Iterable<NamespaceSummary> {
+    class AutoPager(private val firstPage: NamespaceListPage) : Iterable<NamespaceSummary> {
 
         override fun iterator(): Iterator<NamespaceSummary> = iterator {
             var page = firstPage

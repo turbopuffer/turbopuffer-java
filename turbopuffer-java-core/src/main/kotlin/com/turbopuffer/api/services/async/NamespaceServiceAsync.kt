@@ -23,33 +23,33 @@ interface NamespaceServiceAsync {
     @JvmOverloads
     fun list(
         params: NamespaceListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceListPageAsync>
 
     /** Delete namespace */
     @JvmOverloads
     fun deleteAll(
         params: NamespaceDeleteAllParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceDeleteAllResponse>
 
     /** Get namespace schema. */
     @JvmOverloads
     fun getSchema(
         params: NamespaceGetSchemaParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceGetSchemaResponse>
 
     @JvmOverloads
     fun query(
         params: NamespaceQueryParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<List<DocumentRow>>
 
     /** Create, update, or delete documents. */
     @JvmOverloads
     fun upsert(
         params: NamespaceUpsertParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceUpsertResponse>
 }

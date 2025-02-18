@@ -24,7 +24,7 @@ class DocumentColumnsTest {
                                         "type" to "string",
                                     )
                                 )
-                            )
+                            ),
                         )
                         .build()
                 )
@@ -45,7 +45,7 @@ class DocumentColumnsTest {
                                     "type" to "string",
                                 )
                             )
-                        )
+                        ),
                     )
                     .build()
             )

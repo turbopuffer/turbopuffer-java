@@ -7,9 +7,7 @@ import com.turbopuffer.api.core.getPackageVersion
 import com.turbopuffer.api.services.blocking.NamespaceService
 import com.turbopuffer.api.services.blocking.NamespaceServiceImpl
 
-class TurbopufferClientImpl(
-    private val clientOptions: ClientOptions,
-) : TurbopufferClient {
+class TurbopufferClientImpl(private val clientOptions: ClientOptions) : TurbopufferClient {
 
     private val clientOptionsWithUserAgent =
         if (clientOptions.headers.names().contains("User-Agent")) clientOptions

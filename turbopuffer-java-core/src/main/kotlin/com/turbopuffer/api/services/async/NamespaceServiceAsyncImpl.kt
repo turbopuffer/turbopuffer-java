@@ -25,10 +25,8 @@ import com.turbopuffer.api.models.NamespaceUpsertParams
 import com.turbopuffer.api.models.NamespaceUpsertResponse
 import java.util.concurrent.CompletableFuture
 
-class NamespaceServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : NamespaceServiceAsync {
+class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    NamespaceServiceAsync {
 
     private val errorHandler: Handler<TurbopufferError> = errorHandler(clientOptions.jsonMapper)
 
@@ -39,7 +37,7 @@ internal constructor(
     /** List namespaces */
     override fun list(
         params: NamespaceListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceListPageAsync> {
         val request =
             HttpRequest.builder()
@@ -68,7 +66,7 @@ internal constructor(
     /** Delete namespace */
     override fun deleteAll(
         params: NamespaceDeleteAllParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceDeleteAllResponse> {
         val request =
             HttpRequest.builder()
@@ -97,7 +95,7 @@ internal constructor(
     /** Get namespace schema. */
     override fun getSchema(
         params: NamespaceGetSchemaParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceGetSchemaResponse> {
         val request =
             HttpRequest.builder()
@@ -123,7 +121,7 @@ internal constructor(
 
     override fun query(
         params: NamespaceQueryParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<List<DocumentRow>> {
         val request =
             HttpRequest.builder()
@@ -152,7 +150,7 @@ internal constructor(
     /** Create, update, or delete documents. */
     override fun upsert(
         params: NamespaceUpsertParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceUpsertResponse> {
         val request =
             HttpRequest.builder()

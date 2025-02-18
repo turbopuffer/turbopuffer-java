@@ -119,7 +119,7 @@ class NamespaceServiceTest {
                                                     "type" to "string",
                                                 )
                                             )
-                                        )
+                                        ),
                                     )
                                     .build()
                             )
@@ -145,7 +145,7 @@ class NamespaceServiceTest {
                                                     "type" to "string",
                                                 )
                                             )
-                                        )
+                                        ),
                                     )
                                     .build()
                             )

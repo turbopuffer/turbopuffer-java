@@ -85,7 +85,7 @@ class ErrorHandlingTest {
                                         "full_text_search" to true,
                                         "type" to "string",
                                     )
-                                )
+                                ),
                             )
                             .build()
                     )
@@ -161,7 +161,7 @@ class ErrorHandlingTest {
                 assertUnauthorized(
                     e,
                     Headers.builder().put("Foo", "Bar").build(),
-                    TURBOPUFFER_ERROR
+                    TURBOPUFFER_ERROR,
                 )
             })
     }
@@ -197,7 +197,7 @@ class ErrorHandlingTest {
                 assertPermissionDenied(
                     e,
                     Headers.builder().put("Foo", "Bar").build(),
-                    TURBOPUFFER_ERROR
+                    TURBOPUFFER_ERROR,
                 )
             })
     }
@@ -265,7 +265,7 @@ class ErrorHandlingTest {
                 assertUnprocessableEntity(
                     e,
                     Headers.builder().put("Foo", "Bar").build(),
-                    TURBOPUFFER_ERROR
+                    TURBOPUFFER_ERROR,
                 )
             })
     }
@@ -333,7 +333,7 @@ class ErrorHandlingTest {
                 assertInternalServer(
                     e,
                     Headers.builder().put("Foo", "Bar").build(),
-                    TURBOPUFFER_ERROR
+                    TURBOPUFFER_ERROR,
                 )
             })
     }
@@ -370,7 +370,7 @@ class ErrorHandlingTest {
                     e,
                     999,
                     Headers.builder().put("Foo", "Bar").build(),
-                    toJson(TURBOPUFFER_ERROR)
+                    toJson(TURBOPUFFER_ERROR),
                 )
             })
     }
@@ -439,7 +439,7 @@ class ErrorHandlingTest {
         throwable: Throwable,
         statusCode: Int,
         headers: Headers,
-        responseBody: ByteArray
+        responseBody: ByteArray,
     ) {
         assertThat(throwable)
             .asInstanceOf(
@@ -465,7 +465,7 @@ class ErrorHandlingTest {
     private fun assertUnauthorized(
         throwable: Throwable,
         headers: Headers,
-        error: TurbopufferError
+        error: TurbopufferError,
     ) {
         assertThat(throwable)
             .asInstanceOf(InstanceOfAssertFactories.throwable(UnauthorizedException::class.java))
@@ -479,7 +479,7 @@ class ErrorHandlingTest {
     private fun assertPermissionDenied(
         throwable: Throwable,
         headers: Headers,
-        error: TurbopufferError
+        error: TurbopufferError,
     ) {
         assertThat(throwable)
             .asInstanceOf(
@@ -505,7 +505,7 @@ class ErrorHandlingTest {
     private fun assertUnprocessableEntity(
         throwable: Throwable,
         headers: Headers,
-        error: TurbopufferError
+        error: TurbopufferError,
     ) {
         assertThat(throwable)
             .asInstanceOf(
@@ -531,7 +531,7 @@ class ErrorHandlingTest {
     private fun assertInternalServer(
         throwable: Throwable,
         headers: Headers,
-        error: TurbopufferError
+        error: TurbopufferError,
     ) {
         assertThat(throwable)
             .asInstanceOf(InstanceOfAssertFactories.throwable(InternalServerException::class.java))

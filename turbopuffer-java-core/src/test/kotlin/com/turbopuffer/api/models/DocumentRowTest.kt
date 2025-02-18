@@ -23,7 +23,7 @@ class DocumentRowTest {
                                     "full_text_search" to true,
                                     "type" to "string",
                                 )
-                            )
+                            ),
                         )
                         .build()
                 )
@@ -43,7 +43,7 @@ class DocumentRowTest {
                                 "full_text_search" to true,
                                 "type" to "string",
                             )
-                        )
+                        ),
                     )
                     .build()
             )
