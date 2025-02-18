@@ -27,9 +27,9 @@ configure<PublishingExtension> {
                 }
 
                 scm {
-                    connection.set("scm:git:git://github.com/stainless-sdks/turbopuffer-java.git")
-                    developerConnection.set("scm:git:git://github.com/stainless-sdks/turbopuffer-java.git")
-                    url.set("https://github.com/stainless-sdks/turbopuffer-java")
+                    connection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java.git")
+                    developerConnection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java.git")
+                    url.set("https://github.com/turbopuffer/turbopuffer-java")
                 }
 
                 versionMapping {
