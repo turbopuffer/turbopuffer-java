@@ -77,8 +77,8 @@ import com.turbopuffer.api.models.NamespaceUpsertParams;
 import com.turbopuffer.api.models.NamespaceUpsertResponse;
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
-    .forUpsertColumnar(NamespaceUpsertParams.UpsertColumnar.builder().build())
     .namespace("products")
+    .body(NamespaceUpsertParams.Body.UpsertColumnar.builder().build())
     .build();
 NamespaceUpsertResponse response = client.namespaces().upsert(params);
 ```
