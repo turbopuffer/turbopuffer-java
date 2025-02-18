@@ -17,6 +17,7 @@ import com.turbopuffer.api.client.TurbopufferClient
 import com.turbopuffer.api.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.api.core.JsonValue
 import com.turbopuffer.api.core.jsonMapper
+import com.turbopuffer.api.models.DocumentColumns
 import com.turbopuffer.api.models.NamespaceQueryParams
 import com.turbopuffer.api.models.NamespaceUpsertParams
 import com.turbopuffer.api.models.NamespaceUpsertResponse
@@ -98,10 +99,11 @@ class ServiceParamsTest {
 
         val params =
             NamespaceUpsertParams.builder()
-                .forUpsertColumnar(
-                    NamespaceUpsertParams.UpsertColumnar.builder()
+                .namespace("namespace")
+                .body(
+                    NamespaceUpsertParams.Body.UpsertColumnar.builder()
                         .attributes(
-                            NamespaceUpsertParams.UpsertColumnar.Attributes.builder()
+                            DocumentColumns.Attributes.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
@@ -116,18 +118,13 @@ class ServiceParamsTest {
                                 )
                                 .build()
                         )
+                        .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .addVector(0.0)
                         .distanceMetric(
-                            NamespaceUpsertParams.UpsertColumnar.DistanceMetric.COSINE_DISTANCE
-                        )
-                        .ids(
-                            listOf(
-                                NamespaceUpsertParams.UpsertColumnar.Id.ofString(
-                                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"
-                                )
-                            )
+                            NamespaceUpsertParams.Body.UpsertColumnar.DistanceMetric.COSINE_DISTANCE
                         )
                         .schema(
-                            NamespaceUpsertParams.UpsertColumnar.Schema.builder()
+                            NamespaceUpsertParams.Body.UpsertColumnar.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
@@ -142,10 +139,8 @@ class ServiceParamsTest {
                                 )
                                 .build()
                         )
-                        .vectors(listOf(NamespaceUpsertParams.UpsertColumnar.Vector.ofNumber(0.0)))
                         .build()
                 )
-                .namespace("namespace")
                 .additionalHeaders(additionalHeaders)
                 .additionalQueryParams(additionalQueryParams)
                 .build()

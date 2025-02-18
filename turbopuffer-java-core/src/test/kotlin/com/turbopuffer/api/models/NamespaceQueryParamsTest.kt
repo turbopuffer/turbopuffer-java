@@ -45,7 +45,9 @@ class NamespaceQueryParamsTest {
                 .topK(0L)
                 .addVector(0.0)
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.consistency())
             .contains(
@@ -67,7 +69,9 @@ class NamespaceQueryParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = NamespaceQueryParams.builder().namespace("namespace").build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
     }
 
