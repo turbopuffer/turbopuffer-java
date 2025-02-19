@@ -18,6 +18,7 @@ import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 
+/** The response to a successful namespace deletion request. */
 @NoAutoDetect
 class NamespaceDeleteAllResponse
 @JsonCreator

@@ -9,7 +9,7 @@ import com.turbopuffer.core.http.QueryParams
 import java.util.Objects
 import java.util.Optional
 
-/** List namespaces */
+/** List namespaces. */
 class NamespaceListParams
 private constructor(
     private val cursor: String?,

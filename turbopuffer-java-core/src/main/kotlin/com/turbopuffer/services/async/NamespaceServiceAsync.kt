@@ -5,7 +5,7 @@
 package com.turbopuffer.services.async
 
 import com.turbopuffer.core.RequestOptions
-import com.turbopuffer.models.DocumentRowResponse
+import com.turbopuffer.models.DocumentRowWithScore
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
 import com.turbopuffer.models.NamespaceGetSchemaParams
@@ -19,14 +19,14 @@ import java.util.concurrent.CompletableFuture
 
 interface NamespaceServiceAsync {
 
-    /** List namespaces */
+    /** List namespaces. */
     @JvmOverloads
     fun list(
         params: NamespaceListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceListPageAsync>
 
-    /** Delete namespace */
+    /** Delete namespace. */
     @JvmOverloads
     fun deleteAll(
         params: NamespaceDeleteAllParams,
@@ -40,11 +40,12 @@ interface NamespaceServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceGetSchemaResponse>
 
+    /** Query, filter, full-text search and vector search documents. */
     @JvmOverloads
     fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<List<DocumentRowResponse>>
+    ): CompletableFuture<List<DocumentRowWithScore>>
 
     /** Create, update, or delete documents. */
     @JvmOverloads

@@ -13,7 +13,7 @@ import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.json
 import com.turbopuffer.core.prepareAsync
 import com.turbopuffer.errors.TurbopufferError
-import com.turbopuffer.models.DocumentRowResponse
+import com.turbopuffer.models.DocumentRowWithScore
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
 import com.turbopuffer.models.NamespaceGetSchemaParams
@@ -34,7 +34,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         jsonHandler<NamespaceListPageAsync.Response>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
-    /** List namespaces */
+    /** List namespaces. */
     override fun list(
         params: NamespaceListParams,
         requestOptions: RequestOptions,
@@ -63,7 +63,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
-    /** Delete namespace */
+    /** Delete namespace. */
     override fun deleteAll(
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions,
@@ -116,14 +116,15 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             }
     }
 
-    private val queryHandler: Handler<List<DocumentRowResponse>> =
-        jsonHandler<List<DocumentRowResponse>>(clientOptions.jsonMapper)
+    private val queryHandler: Handler<List<DocumentRowWithScore>> =
+        jsonHandler<List<DocumentRowWithScore>>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
+    /** Query, filter, full-text search and vector search documents. */
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<List<DocumentRowResponse>> {
+    ): CompletableFuture<List<DocumentRowWithScore>> {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)

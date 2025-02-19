@@ -12,6 +12,7 @@ import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
 import java.util.Objects
 
+/** The response to a successful namespace schema request. */
 @NoAutoDetect
 class NamespaceGetSchemaResponse
 @JsonCreator

@@ -19,7 +19,7 @@ import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
-/** List namespaces */
+/** List namespaces. */
 class NamespaceListPage
 private constructor(
     private val namespacesService: NamespaceService,

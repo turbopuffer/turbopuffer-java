@@ -5,7 +5,7 @@
 package com.turbopuffer.services.blocking
 
 import com.turbopuffer.core.RequestOptions
-import com.turbopuffer.models.DocumentRowResponse
+import com.turbopuffer.models.DocumentRowWithScore
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
 import com.turbopuffer.models.NamespaceGetSchemaParams
@@ -18,14 +18,14 @@ import com.turbopuffer.models.NamespaceUpsertResponse
 
 interface NamespaceService {
 
-    /** List namespaces */
+    /** List namespaces. */
     @JvmOverloads
     fun list(
         params: NamespaceListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceListPage
 
-    /** Delete namespace */
+    /** Delete namespace. */
     @JvmOverloads
     fun deleteAll(
         params: NamespaceDeleteAllParams,
@@ -39,11 +39,12 @@ interface NamespaceService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceGetSchemaResponse
 
+    /** Query, filter, full-text search and vector search documents. */
     @JvmOverloads
     fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): List<DocumentRowResponse>
+    ): List<DocumentRowWithScore>
 
     /** Create, update, or delete documents. */
     @JvmOverloads

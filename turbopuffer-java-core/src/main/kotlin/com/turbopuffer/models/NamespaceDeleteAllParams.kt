@@ -12,7 +12,7 @@ import com.turbopuffer.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
-/** Delete namespace */
+/** Delete namespace. */
 class NamespaceDeleteAllParams
 private constructor(
     private val namespace: String,

@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
-/** List namespaces */
+/** List namespaces. */
 class NamespaceListPageAsync
 private constructor(
     private val namespacesService: NamespaceServiceAsync,

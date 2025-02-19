@@ -32,6 +32,7 @@ import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Query, filter, full-text search and vector search documents. */
 class NamespaceQueryParams
 private constructor(
     private val namespace: String,
@@ -42,6 +43,7 @@ private constructor(
 
     fun namespace(): String = namespace
 
+    /** The consistency level for a query. */
     fun consistency(): Optional<Consistency> = body.consistency()
 
     /** A function used to calculate vector similarity. */
@@ -73,6 +75,7 @@ private constructor(
      */
     fun vector(): Optional<List<Double>> = body.vector()
 
+    /** The consistency level for a query. */
     fun _consistency(): JsonField<Consistency> = body._consistency()
 
     /** A function used to calculate vector similarity. */
@@ -142,6 +145,7 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
+        /** The consistency level for a query. */
         fun consistency(): Optional<Consistency> =
             Optional.ofNullable(consistency.getNullable("consistency"))
 
@@ -178,6 +182,7 @@ private constructor(
          */
         fun vector(): Optional<List<Double>> = Optional.ofNullable(vector.getNullable("vector"))
 
+        /** The consistency level for a query. */
         @JsonProperty("consistency")
         @ExcludeMissing
         fun _consistency(): JsonField<Consistency> = consistency
@@ -262,8 +267,10 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
+            /** The consistency level for a query. */
             fun consistency(consistency: Consistency) = consistency(JsonField.of(consistency))
 
+            /** The consistency level for a query. */
             fun consistency(consistency: JsonField<Consistency>) = apply {
                 this.consistency = consistency
             }
@@ -434,8 +441,10 @@ private constructor(
 
         fun namespace(namespace: String) = apply { this.namespace = namespace }
 
+        /** The consistency level for a query. */
         fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
 
+        /** The consistency level for a query. */
         fun consistency(consistency: JsonField<Consistency>) = apply {
             body.consistency(consistency)
         }
@@ -644,6 +653,7 @@ private constructor(
             )
     }
 
+    /** The consistency level for a query. */
     @NoAutoDetect
     class Consistency
     @JsonCreator

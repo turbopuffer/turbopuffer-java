@@ -2,7 +2,7 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.1)
 
 <!-- x-release-please-end -->
 
@@ -10,7 +10,7 @@ The Turbopuffer Java SDK provides convenient access to the Turbopuffer REST API 
 
 It is generated with [Stainless](https://www.stainlessapi.com/).
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/latest/index.html).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs).
 
 ## Installation
 
@@ -19,7 +19,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.0")
+implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.1")
 ```
 
 ### Maven
@@ -28,7 +28,7 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.0")
 <dependency>
     <groupId>com.turbopuffer</groupId>
     <artifactId>turbopuffer-java</artifactId>
-    <version>0.1.0-beta.0</version>
+    <version>0.1.0-beta.1</version>
 </dependency>
 ```
 
@@ -150,9 +150,9 @@ See [Undocumented request params](#undocumented-request-params) for how to send 
 When receiving a response, the Turbopuffer Java SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Java type. If you directly access the mistaken property, the SDK will throw an unchecked `TurbopufferInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
 
 ```java
-import com.turbopuffer.models.DocumentRowResponse;
+import com.turbopuffer.models.DocumentRowWithScore;
 
-List<DocumentRowResponse> documentRowResponses = client.namespaces().query().validate();
+List<DocumentRowWithScore> documentRowWithScores = client.namespaces().query().validate();
 ```
 
 ### Response properties as JSON

@@ -18,7 +18,7 @@ import java.util.Optional
 
 /** A single document, in a row-based format. */
 @NoAutoDetect
-class DocumentRowResponse
+class DocumentRowWithScore
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<Id> = JsonMissing.of(),
@@ -74,7 +74,7 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): DocumentRowResponse = apply {
+    fun validate(): DocumentRowWithScore = apply {
         if (validated) {
             return@apply
         }
@@ -93,7 +93,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [DocumentRowResponse]. */
+    /** A builder for [DocumentRowWithScore]. */
     class Builder internal constructor() {
 
         private var id: JsonField<Id> = JsonMissing.of()
@@ -103,12 +103,12 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(documentRowResponse: DocumentRowResponse) = apply {
-            id = documentRowResponse.id
-            attributes = documentRowResponse.attributes
-            vector = documentRowResponse.vector.map { it.toMutableList() }
-            dist = documentRowResponse.dist
-            additionalProperties = documentRowResponse.additionalProperties.toMutableMap()
+        internal fun from(documentRowWithScore: DocumentRowWithScore) = apply {
+            id = documentRowWithScore.id
+            attributes = documentRowWithScore.attributes
+            vector = documentRowWithScore.vector.map { it.toMutableList() }
+            dist = documentRowWithScore.dist
+            additionalProperties = documentRowWithScore.additionalProperties.toMutableMap()
         }
 
         /** An identifier for a document. */
@@ -187,8 +187,8 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
-        fun build(): DocumentRowResponse =
-            DocumentRowResponse(
+        fun build(): DocumentRowWithScore =
+            DocumentRowWithScore(
                 id,
                 attributes,
                 (vector ?: JsonMissing.of()).map { it.toImmutable() },
@@ -202,7 +202,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is DocumentRowResponse && id == other.id && attributes == other.attributes && vector == other.vector && dist == other.dist && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is DocumentRowWithScore && id == other.id && attributes == other.attributes && vector == other.vector && dist == other.dist && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -212,5 +212,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "DocumentRowResponse{id=$id, attributes=$attributes, vector=$vector, dist=$dist, additionalProperties=$additionalProperties}"
+        "DocumentRowWithScore{id=$id, attributes=$attributes, vector=$vector, dist=$dist, additionalProperties=$additionalProperties}"
 }
