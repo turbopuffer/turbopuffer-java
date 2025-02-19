@@ -14,8 +14,8 @@ class NamespaceUpsertParamsTest {
     fun create() {
         NamespaceUpsertParams.builder()
             .namespace("namespace")
-            .body(
-                NamespaceUpsertParams.Body.UpsertColumnar.builder()
+            .documents(
+                NamespaceUpsertParams.Documents.UpsertColumnar.builder()
                     .attributes(
                         DocumentColumns.Attributes.builder()
                             .putAdditionalProperty(
@@ -28,7 +28,7 @@ class NamespaceUpsertParamsTest {
                     .addVector(listOf(0.0))
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .schema(
-                        NamespaceUpsertParams.Body.UpsertColumnar.Schema.builder()
+                        NamespaceUpsertParams.Documents.UpsertColumnar.Schema.builder()
                             .putAdditionalProperty(
                                 "foo",
                                 JsonValue.from(
@@ -54,8 +54,8 @@ class NamespaceUpsertParamsTest {
         val params =
             NamespaceUpsertParams.builder()
                 .namespace("namespace")
-                .body(
-                    NamespaceUpsertParams.Body.UpsertColumnar.builder()
+                .documents(
+                    NamespaceUpsertParams.Documents.UpsertColumnar.builder()
                         .attributes(
                             DocumentColumns.Attributes.builder()
                                 .putAdditionalProperty(
@@ -68,7 +68,7 @@ class NamespaceUpsertParamsTest {
                         .addVector(listOf(0.0))
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .schema(
-                            NamespaceUpsertParams.Body.UpsertColumnar.Schema.builder()
+                            NamespaceUpsertParams.Documents.UpsertColumnar.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
@@ -92,8 +92,8 @@ class NamespaceUpsertParamsTest {
         assertThat(body).isNotNull
         assertThat(body)
             .isEqualTo(
-                NamespaceUpsertParams.Body.ofUpsertColumnar(
-                    NamespaceUpsertParams.Body.UpsertColumnar.builder()
+                NamespaceUpsertParams.Documents.ofUpsertColumnar(
+                    NamespaceUpsertParams.Documents.UpsertColumnar.builder()
                         .attributes(
                             DocumentColumns.Attributes.builder()
                                 .putAdditionalProperty(
@@ -106,7 +106,7 @@ class NamespaceUpsertParamsTest {
                         .addVector(listOf(0.0))
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .schema(
-                            NamespaceUpsertParams.Body.UpsertColumnar.Schema.builder()
+                            NamespaceUpsertParams.Documents.UpsertColumnar.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
@@ -132,8 +132,8 @@ class NamespaceUpsertParamsTest {
         val params =
             NamespaceUpsertParams.builder()
                 .namespace("namespace")
-                .body(
-                    NamespaceUpsertParams.Body.UpsertColumnar.builder()
+                .documents(
+                    NamespaceUpsertParams.Documents.UpsertColumnar.builder()
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .build()
                 )
@@ -144,8 +144,8 @@ class NamespaceUpsertParamsTest {
         assertThat(body).isNotNull
         assertThat(body)
             .isEqualTo(
-                NamespaceUpsertParams.Body.ofUpsertColumnar(
-                    NamespaceUpsertParams.Body.UpsertColumnar.builder()
+                NamespaceUpsertParams.Documents.ofUpsertColumnar(
+                    NamespaceUpsertParams.Documents.UpsertColumnar.builder()
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .build()
                 )
@@ -158,8 +158,8 @@ class NamespaceUpsertParamsTest {
         val params =
             NamespaceUpsertParams.builder()
                 .namespace("namespace")
-                .body(
-                    NamespaceUpsertParams.Body.UpsertColumnar.builder()
+                .documents(
+                    NamespaceUpsertParams.Documents.UpsertColumnar.builder()
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .build()
                 )

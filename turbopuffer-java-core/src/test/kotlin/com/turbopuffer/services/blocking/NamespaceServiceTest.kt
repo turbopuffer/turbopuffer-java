@@ -7,7 +7,6 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.DistanceMetric
 import com.turbopuffer.models.DocumentColumns
-import com.turbopuffer.models.DocumentRow
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceGetSchemaParams
 import com.turbopuffer.models.NamespaceListParams
@@ -96,9 +95,6 @@ class NamespaceServiceTest {
                     .build()
             )
         println(namespaceQueryResponse)
-        for (documentRow: DocumentRow in namespaceQueryResponse) {
-            documentRow.validate()
-        }
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -114,8 +110,8 @@ class NamespaceServiceTest {
             namespaceService.upsert(
                 NamespaceUpsertParams.builder()
                     .namespace("namespace")
-                    .body(
-                        NamespaceUpsertParams.Body.UpsertColumnar.builder()
+                    .documents(
+                        NamespaceUpsertParams.Documents.UpsertColumnar.builder()
                             .attributes(
                                 DocumentColumns.Attributes.builder()
                                     .putAdditionalProperty(
@@ -128,7 +124,7 @@ class NamespaceServiceTest {
                             .addVector(listOf(0.0))
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .schema(
-                                NamespaceUpsertParams.Body.UpsertColumnar.Schema.builder()
+                                NamespaceUpsertParams.Documents.UpsertColumnar.Schema.builder()
                                     .putAdditionalProperty(
                                         "foo",
                                         JsonValue.from(

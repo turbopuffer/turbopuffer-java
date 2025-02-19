@@ -13,7 +13,7 @@ import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.json
 import com.turbopuffer.core.prepareAsync
 import com.turbopuffer.errors.TurbopufferError
-import com.turbopuffer.models.DocumentRow
+import com.turbopuffer.models.DocumentRowResponse
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
 import com.turbopuffer.models.NamespaceGetSchemaParams
@@ -116,13 +116,14 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             }
     }
 
-    private val queryHandler: Handler<List<DocumentRow>> =
-        jsonHandler<List<DocumentRow>>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val queryHandler: Handler<List<DocumentRowResponse>> =
+        jsonHandler<List<DocumentRowResponse>>(clientOptions.jsonMapper)
+            .withErrorHandler(errorHandler)
 
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<List<DocumentRow>> {
+    ): CompletableFuture<List<DocumentRowResponse>> {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)

@@ -27,6 +27,7 @@ import com.turbopuffer.errors.UnexpectedStatusCodeException
 import com.turbopuffer.errors.UnprocessableEntityException
 import com.turbopuffer.models.DistanceMetric
 import com.turbopuffer.models.DocumentRow
+import com.turbopuffer.models.DocumentRowResponse
 import com.turbopuffer.models.NamespaceQueryParams
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -76,7 +77,7 @@ class ErrorHandlingTest {
 
         val expected =
             listOf(
-                DocumentRow.builder()
+                DocumentRowResponse.builder()
                     .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .attributes(
                         DocumentRow.Attributes.builder()
@@ -84,6 +85,7 @@ class ErrorHandlingTest {
                             .build()
                     )
                     .addVector(0.0)
+                    .dist(0.0)
                     .build()
             )
 

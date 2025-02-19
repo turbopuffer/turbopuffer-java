@@ -5,7 +5,7 @@
 package com.turbopuffer.services.async
 
 import com.turbopuffer.core.RequestOptions
-import com.turbopuffer.models.DocumentRow
+import com.turbopuffer.models.DocumentRowResponse
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
 import com.turbopuffer.models.NamespaceGetSchemaParams
@@ -44,7 +44,7 @@ interface NamespaceServiceAsync {
     fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<List<DocumentRow>>
+    ): CompletableFuture<List<DocumentRowResponse>>
 
     /** Create, update, or delete documents. */
     @JvmOverloads

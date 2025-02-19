@@ -2,7 +2,7 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-alpha.6)
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-alpha.7)
 
 <!-- x-release-please-end -->
 
@@ -19,7 +19,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-alpha.6")
+implementation("com.turbopuffer:turbopuffer-java:0.1.0-alpha.7")
 ```
 
 ### Maven
@@ -28,7 +28,7 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-alpha.6")
 <dependency>
     <groupId>com.turbopuffer</groupId>
     <artifactId>turbopuffer-java</artifactId>
-    <version>0.1.0-alpha.6</version>
+    <version>0.1.0-alpha.7</version>
 </dependency>
 ```
 
@@ -87,7 +87,7 @@ import com.turbopuffer.models.NamespaceUpsertResponse;
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .body(NamespaceUpsertParams.Body.UpsertColumnar.builder()
+    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
         .build())
     .build();
@@ -150,9 +150,9 @@ See [Undocumented request params](#undocumented-request-params) for how to send 
 When receiving a response, the Turbopuffer Java SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Java type. If you directly access the mistaken property, the SDK will throw an unchecked `TurbopufferInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
 
 ```java
-import com.turbopuffer.models.DocumentRow;
+import com.turbopuffer.models.DocumentRowResponse;
 
-List<DocumentRow> documentRows = client.namespaces().query().validate();
+List<DocumentRowResponse> documentRowResponses = client.namespaces().query().validate();
 ```
 
 ### Response properties as JSON
@@ -186,7 +186,7 @@ Sometimes, the server response may include additional properties that are not ye
 ```java
 import com.turbopuffer.core.JsonValue;
 
-JsonValue secret = documentColumns._additionalProperties().get("secret_field");
+JsonValue secret = attributeSchema._additionalProperties().get("secret_field");
 ```
 
 ---
