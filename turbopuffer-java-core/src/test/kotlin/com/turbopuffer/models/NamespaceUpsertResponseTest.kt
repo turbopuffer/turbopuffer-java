@@ -14,6 +14,6 @@ class NamespaceUpsertResponseTest {
         val namespaceUpsertResponse =
             NamespaceUpsertResponse.builder().status(NamespaceUpsertResponse.Status.OK).build()
         assertThat(namespaceUpsertResponse).isNotNull
-        assertThat(namespaceUpsertResponse.status()).contains(NamespaceUpsertResponse.Status.OK)
+        assertThat(namespaceUpsertResponse.status()).isEqualTo(NamespaceUpsertResponse.Status.OK)
     }
 }
