@@ -81,12 +81,15 @@ Read the documentation for more configuration options.
 To create a new namespace, first use the `NamespaceUpsertParams` builder to specify attributes, then pass that to the `upsert` method of the `namespaces` service.
 
 ```java
+import com.turbopuffer.models.DistanceMetric;
 import com.turbopuffer.models.NamespaceUpsertParams;
 import com.turbopuffer.models.NamespaceUpsertResponse;
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder().build())
+    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
+        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+        .build())
     .build();
 NamespaceUpsertResponse response = client.namespaces().upsert(params);
 ```
