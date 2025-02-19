@@ -5,6 +5,7 @@
 package com.turbopuffer.services.blocking
 
 import com.turbopuffer.core.RequestOptions
+import com.turbopuffer.models.DocumentRowWithScore
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
 import com.turbopuffer.models.NamespaceGetSchemaParams
