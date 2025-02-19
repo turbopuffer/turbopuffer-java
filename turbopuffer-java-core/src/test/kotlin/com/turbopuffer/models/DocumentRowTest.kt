@@ -32,8 +32,7 @@ class DocumentRowTest {
                 .addVector(0.0)
                 .build()
         assertThat(documentRow).isNotNull
-        assertThat(documentRow.id())
-            .contains(DocumentRow.Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(documentRow.id()).contains(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
         assertThat(documentRow.attributes())
             .contains(
                 DocumentRow.Attributes.builder()
