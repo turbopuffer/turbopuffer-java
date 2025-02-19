@@ -24,7 +24,7 @@ private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<Id> = JsonMissing.of(),
     @JsonProperty("attributes")
     @ExcludeMissing
-    private val attributes: JsonValue = JsonMissing.of(),
+    private val attributes: JsonField<Attributes> = JsonMissing.of(),
     @JsonProperty("vector")
     @ExcludeMissing
     private val vector: JsonField<List<Double>> = JsonMissing.of(),
@@ -35,13 +35,19 @@ private constructor(
     fun id(): Optional<Id> = Optional.ofNullable(id.getNullable("id"))
 
     /** The attributes attached to the document. */
-    @JsonProperty("attributes") @ExcludeMissing fun _attributes(): JsonValue = attributes
+    fun attributes(): Optional<Attributes> =
+        Optional.ofNullable(attributes.getNullable("attributes"))
 
     /** A vector describing the document. */
     fun vector(): Optional<List<Double>> = Optional.ofNullable(vector.getNullable("vector"))
 
     /** An identifier for a document. */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<Id> = id
+
+    /** The attributes attached to the document. */
+    @JsonProperty("attributes")
+    @ExcludeMissing
+    fun _attributes(): JsonField<Attributes> = attributes
 
     /** A vector describing the document. */
     @JsonProperty("vector") @ExcludeMissing fun _vector(): JsonField<List<Double>> = vector
@@ -58,6 +64,7 @@ private constructor(
         }
 
         id().ifPresent { it.validate() }
+        attributes().ifPresent { it.validate() }
         vector()
         validated = true
     }
@@ -73,7 +80,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<Id> = JsonMissing.of()
-        private var attributes: JsonValue = JsonMissing.of()
+        private var attributes: JsonField<Attributes> = JsonMissing.of()
         private var vector: JsonField<MutableList<Double>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -98,7 +105,10 @@ private constructor(
         fun id(integer: Long) = id(Id.ofInteger(integer))
 
         /** The attributes attached to the document. */
-        fun attributes(attributes: JsonValue) = apply { this.attributes = attributes }
+        fun attributes(attributes: Attributes) = attributes(JsonField.of(attributes))
+
+        /** The attributes attached to the document. */
+        fun attributes(attributes: JsonField<Attributes>) = apply { this.attributes = attributes }
 
         /** A vector describing the document. */
         fun vector(vector: List<Double>?) = vector(JsonField.ofNullable(vector))
@@ -151,6 +161,85 @@ private constructor(
                 (vector ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
+    }
+
+    /** The attributes attached to the document. */
+    @NoAutoDetect
+    class Attributes
+    @JsonCreator
+    private constructor(
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
+    ) {
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): Attributes = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Attributes]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(attributes: Attributes) = apply {
+                additionalProperties = attributes.additionalProperties.toMutableMap()
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            fun build(): Attributes = Attributes(additionalProperties.toImmutable())
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Attributes && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Attributes{additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

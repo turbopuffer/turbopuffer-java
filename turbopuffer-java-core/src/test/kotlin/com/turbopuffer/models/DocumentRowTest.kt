@@ -15,12 +15,21 @@ class DocumentRowTest {
         val documentRow =
             DocumentRow.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .attributes(JsonValue.from(mapOf<String, Any>()))
+                .attributes(
+                    DocumentRow.Attributes.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
                 .addVector(0.0)
                 .build()
         assertThat(documentRow).isNotNull
         assertThat(documentRow.id()).contains(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        assertThat(documentRow._attributes()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(documentRow.attributes())
+            .contains(
+                DocumentRow.Attributes.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
         assertThat(documentRow.vector().get()).containsExactly(0.0)
     }
 }
