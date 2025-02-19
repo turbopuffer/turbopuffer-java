@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.0-beta.9 (2025-02-19)
+
+Full Changelog: [v0.1.0-beta.8...v0.1.0-beta.9](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.8...v0.1.0-beta.9)
+
+### Features
+
+* fix: try even harder to avoid merge conflicts with Stainless ([5c4be22](https://github.com/turbopuffer/turbopuffer-java/commit/5c4be22ea673f753b4f8b3215274eeeb2263a400))
+
+
+### Chores
+
+* **internal:** version bump ([#71](https://github.com/turbopuffer/turbopuffer-java/issues/71)) ([ac6872a](https://github.com/turbopuffer/turbopuffer-java/commit/ac6872a72ab86f0b102e8c8376b9069eb80ce28f))
+
 ## 0.1.0-beta.8 (2025-02-19)
 
 Full Changelog: [v0.1.0-beta.7...v0.1.0-beta.8](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.7...v0.1.0-beta.8)
