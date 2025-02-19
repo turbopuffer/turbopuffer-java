@@ -105,14 +105,14 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             }
     }
 
-    private val queryHandler: Handler<List<UnnamedSchemaWithArrayParent0>> =
-        jsonHandler<List<UnnamedSchemaWithArrayParent0>>(clientOptions.jsonMapper)
+    private val queryHandler: Handler<List<DocumentRowResponse>> =
+        jsonHandler<List<DocumentRowResponse>>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
-    ): List<UnnamedSchemaWithArrayParent0> {
+    ): List<DocumentRowResponse> {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)

@@ -43,7 +43,7 @@ interface NamespaceServiceAsync {
     fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<List<UnnamedSchemaWithArrayParent0>>
+    ): CompletableFuture<List<DocumentRowResponse>>
 
     /** Create, update, or delete documents. */
     @JvmOverloads

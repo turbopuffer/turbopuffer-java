@@ -115,14 +115,14 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             }
     }
 
-    private val queryHandler: Handler<List<UnnamedSchemaWithArrayParent0>> =
-        jsonHandler<List<UnnamedSchemaWithArrayParent0>>(clientOptions.jsonMapper)
+    private val queryHandler: Handler<List<DocumentRowResponse>> =
+        jsonHandler<List<DocumentRowResponse>>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<List<UnnamedSchemaWithArrayParent0>> {
+    ): CompletableFuture<List<DocumentRowResponse>> {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)

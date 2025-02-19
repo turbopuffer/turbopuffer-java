@@ -110,8 +110,8 @@ class NamespaceServiceTest {
             namespaceService.upsert(
                 NamespaceUpsertParams.builder()
                     .namespace("namespace")
-                    .body(
-                        NamespaceUpsertParams.Body.UpsertColumnar.builder()
+                    .documents(
+                        NamespaceUpsertParams.Documents.UpsertColumnar.builder()
                             .attributes(
                                 DocumentColumns.Attributes.builder()
                                     .putAdditionalProperty(
@@ -124,7 +124,7 @@ class NamespaceServiceTest {
                             .addVector(listOf(0.0))
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .schema(
-                                NamespaceUpsertParams.Body.UpsertColumnar.Schema.builder()
+                                NamespaceUpsertParams.Documents.UpsertColumnar.Schema.builder()
                                     .putAdditionalProperty(
                                         "foo",
                                         JsonValue.from(
