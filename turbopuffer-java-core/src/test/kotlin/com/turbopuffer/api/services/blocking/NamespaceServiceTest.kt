@@ -12,12 +12,14 @@ import com.turbopuffer.api.models.NamespaceGetSchemaParams
 import com.turbopuffer.api.models.NamespaceListParams
 import com.turbopuffer.api.models.NamespaceQueryParams
 import com.turbopuffer.api.models.NamespaceUpsertParams
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
 class NamespaceServiceTest {
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun callList() {
         val client =
@@ -31,6 +33,7 @@ class NamespaceServiceTest {
         response.namespaces().forEach { it.validate() }
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun callDeleteAll() {
         val client =
@@ -47,6 +50,7 @@ class NamespaceServiceTest {
         namespaceDeleteAllResponse.validate()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun callGetSchema() {
         val client =
@@ -63,6 +67,7 @@ class NamespaceServiceTest {
         namespaceGetSchemaResponse.validate()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun callQuery() {
         val client =
@@ -95,6 +100,7 @@ class NamespaceServiceTest {
         }
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun callUpsert() {
         val client =

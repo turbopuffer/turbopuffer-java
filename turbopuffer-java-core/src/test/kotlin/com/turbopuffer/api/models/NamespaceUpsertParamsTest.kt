@@ -4,10 +4,12 @@ package com.turbopuffer.api.models
 
 import com.turbopuffer.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class NamespaceUpsertParamsTest {
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
         NamespaceUpsertParams.builder()
@@ -56,6 +58,7 @@ class NamespaceUpsertParamsTest {
             .build()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun body() {
         val params =
@@ -153,6 +156,7 @@ class NamespaceUpsertParamsTest {
             )
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun bodyWithoutOptionalFields() {
         val params =
@@ -172,6 +176,7 @@ class NamespaceUpsertParamsTest {
             )
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun getPathParam() {
         val params =

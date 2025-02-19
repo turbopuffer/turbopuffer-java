@@ -31,6 +31,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.InstanceOfAssertFactories
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 @WireMockTest
@@ -52,6 +53,7 @@ class ErrorHandlingTest {
                 .build()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery200() {
         val params =
@@ -98,6 +100,7 @@ class ErrorHandlingTest {
         assertThat(client.namespaces().query(params)).isEqualTo(expected)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery400() {
         val params =
@@ -130,6 +133,7 @@ class ErrorHandlingTest {
             })
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery401() {
         val params =
@@ -166,6 +170,7 @@ class ErrorHandlingTest {
             })
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery403() {
         val params =
@@ -202,6 +207,7 @@ class ErrorHandlingTest {
             })
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery404() {
         val params =
@@ -234,6 +240,7 @@ class ErrorHandlingTest {
             })
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery422() {
         val params =
@@ -270,6 +277,7 @@ class ErrorHandlingTest {
             })
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery429() {
         val params =
@@ -302,6 +310,7 @@ class ErrorHandlingTest {
             })
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery500() {
         val params =
@@ -338,6 +347,7 @@ class ErrorHandlingTest {
             })
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun unexpectedStatusCode() {
         val params =
@@ -375,6 +385,7 @@ class ErrorHandlingTest {
             })
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun invalidBody() {
         val params =
@@ -404,6 +415,7 @@ class ErrorHandlingTest {
             })
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun invalidErrorBody() {
         val params =

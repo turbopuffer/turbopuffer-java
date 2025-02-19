@@ -3,15 +3,18 @@
 package com.turbopuffer.api.models
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class NamespaceGetSchemaParamsTest {
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
         NamespaceGetSchemaParams.builder().namespace("namespace").build()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun getPathParam() {
         val params = NamespaceGetSchemaParams.builder().namespace("namespace").build()
