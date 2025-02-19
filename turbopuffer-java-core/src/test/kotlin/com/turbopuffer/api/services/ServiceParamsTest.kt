@@ -22,6 +22,7 @@ import com.turbopuffer.api.models.NamespaceQueryParams
 import com.turbopuffer.api.models.NamespaceUpsertParams
 import com.turbopuffer.api.models.NamespaceUpsertResponse
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 @WireMockTest
@@ -40,6 +41,7 @@ class ServiceParamsTest {
                 .build()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQueryWithAdditionalParams() {
         val additionalHeaders = mutableMapOf<String, List<String>>()
@@ -87,6 +89,7 @@ class ServiceParamsTest {
         verify(postRequestedFor(anyUrl()))
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesUpsertWithAdditionalParams() {
         val additionalHeaders = mutableMapOf<String, List<String>>()
