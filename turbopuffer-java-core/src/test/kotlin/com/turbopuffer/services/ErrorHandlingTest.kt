@@ -27,6 +27,7 @@ import com.turbopuffer.errors.UnexpectedStatusCodeException
 import com.turbopuffer.errors.UnprocessableEntityException
 import com.turbopuffer.models.DistanceMetric
 import com.turbopuffer.models.DocumentRow
+import com.turbopuffer.models.DocumentRowResponse
 import com.turbopuffer.models.NamespaceQueryParams
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
