@@ -1,61 +1,47 @@
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
-    `maven-publish`
-    signing
+    id("com.vanniktech.maven.publish")
 }
 
-configure<PublishingExtension> {
-    publications {
-        register<MavenPublication>("maven") {
-            from(components["java"])
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
+}
 
-            pom {
-                name.set("turbopuffer API")
-                description.set("turbopuffer is a fast search engine that combines vector and full-text search\nusing object storage.")
-                url.set("https://turbopuffer.com/docs")
+extra["signingInMemoryKey"] = System.getenv("GPG_SIGNING_KEY")
+extra["signingInMemoryKeyId"] = System.getenv("GPG_SIGNING_KEY_ID")
+extra["signingInMemoryKeyPassword"] = System.getenv("GPG_SIGNING_PASSWORD")
 
-                licenses {
-                    license {
-                        name.set("MIT")
-                    }
-                }
+configure<MavenPublishBaseExtension> {
+    signAllPublications()
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
-                developers {
-                    developer {
-                        name.set("Turbopuffer")
-                        email.set("info@turbopuffer.com")
-                    }
-                }
+    coordinates(project.group.toString(), project.name, project.version.toString())
 
-                scm {
-                    connection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java.git")
-                    developerConnection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java.git")
-                    url.set("https://github.com/turbopuffer/turbopuffer-java")
-                }
+    pom {
+        name.set("turbopuffer API")
+        description.set("turbopuffer is a fast search engine that combines vector and full-text search\nusing object storage.")
+        url.set("https://turbopuffer.com/docs")
 
-                versionMapping {
-                    allVariants {
-                        fromResolutionResult()
-                    }
-                }
+        licenses {
+            license {
+                name.set("MIT")
             }
         }
-    }
-}
 
-signing {
-    val signingKeyId = System.getenv("GPG_SIGNING_KEY_ID")?.ifBlank { null }
-    val signingKey = System.getenv("GPG_SIGNING_KEY")?.ifBlank { null }
-    val signingPassword = System.getenv("GPG_SIGNING_PASSWORD")?.ifBlank { null }
-    if (signingKey != null && signingPassword != null) {
-        useInMemoryPgpKeys(
-            signingKeyId,
-            signingKey,
-            signingPassword,
-        )
-        sign(publishing.publications["maven"])
-    }
-}
+        developers {
+            developer {
+                name.set("Turbopuffer")
+                email.set("info@turbopuffer.com")
+            }
+        }
 
-tasks.named("publish") {
-    dependsOn(":closeAndReleaseSonatypeStagingRepository")
+        scm {
+            connection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java.git")
+            developerConnection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java.git")
+            url.set("https://github.com/turbopuffer/turbopuffer-java")
+        }
+    }
 }
