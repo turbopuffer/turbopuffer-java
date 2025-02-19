@@ -2,7 +2,7 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-alpha.5)
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-alpha.6)
 
 <!-- x-release-please-end -->
 
@@ -19,7 +19,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-alpha.5")
+implementation("com.turbopuffer:turbopuffer-java:0.1.0-alpha.6")
 ```
 
 ### Maven
@@ -28,7 +28,7 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-alpha.5")
 <dependency>
     <groupId>com.turbopuffer</groupId>
     <artifactId>turbopuffer-java</artifactId>
-    <version>0.1.0-alpha.5</version>
+    <version>0.1.0-alpha.6</version>
 </dependency>
 ```
 
@@ -81,12 +81,15 @@ Read the documentation for more configuration options.
 To create a new namespace, first use the `NamespaceUpsertParams` builder to specify attributes, then pass that to the `upsert` method of the `namespaces` service.
 
 ```java
+import com.turbopuffer.models.DistanceMetric;
 import com.turbopuffer.models.NamespaceUpsertParams;
 import com.turbopuffer.models.NamespaceUpsertResponse;
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .body(NamespaceUpsertParams.Body.UpsertColumnar.builder().build())
+    .body(NamespaceUpsertParams.Body.UpsertColumnar.builder()
+        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+        .build())
     .build();
 NamespaceUpsertResponse response = client.namespaces().upsert(params);
 ```

@@ -17,6 +17,7 @@ import com.turbopuffer.client.TurbopufferClient
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
+import com.turbopuffer.models.DistanceMetric
 import com.turbopuffer.models.DocumentColumns
 import com.turbopuffer.models.NamespaceQueryParams
 import com.turbopuffer.models.NamespaceUpsertParams
@@ -64,7 +65,7 @@ class ServiceParamsTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -109,23 +110,13 @@ class ServiceParamsTest {
                             DocumentColumns.Attributes.builder()
                                 .putAdditionalProperty(
                                     "foo",
-                                    JsonValue.from(
-                                        listOf(
-                                            mapOf(
-                                                "filterable" to true,
-                                                "full_text_search" to true,
-                                                "type" to "string",
-                                            )
-                                        )
-                                    ),
+                                    JsonValue.from(listOf(mapOf("foo" to "bar"))),
                                 )
                                 .build()
                         )
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .addVector(listOf(0.0))
-                        .distanceMetric(
-                            NamespaceUpsertParams.Body.UpsertColumnar.DistanceMetric.COSINE_DISTANCE
-                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .schema(
                             NamespaceUpsertParams.Body.UpsertColumnar.Schema.builder()
                                 .putAdditionalProperty(

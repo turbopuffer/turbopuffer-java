@@ -17,36 +17,17 @@ class DocumentRowTest {
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .attributes(
                     DocumentRow.Attributes.builder()
-                        .putAdditionalProperty(
-                            "foo",
-                            JsonValue.from(
-                                mapOf(
-                                    "filterable" to true,
-                                    "full_text_search" to true,
-                                    "type" to "string",
-                                )
-                            ),
-                        )
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
                 .addVector(0.0)
                 .build()
         assertThat(documentRow).isNotNull
-        assertThat(documentRow.id())
-            .contains(DocumentRow.Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(documentRow.id()).contains(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
         assertThat(documentRow.attributes())
             .contains(
                 DocumentRow.Attributes.builder()
-                    .putAdditionalProperty(
-                        "foo",
-                        JsonValue.from(
-                            mapOf(
-                                "filterable" to true,
-                                "full_text_search" to true,
-                                "type" to "string",
-                            )
-                        ),
-                    )
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
         assertThat(documentRow.vector().get()).containsExactly(0.0)

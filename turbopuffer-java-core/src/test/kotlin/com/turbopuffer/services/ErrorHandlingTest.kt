@@ -25,6 +25,7 @@ import com.turbopuffer.errors.TurbopufferException
 import com.turbopuffer.errors.UnauthorizedException
 import com.turbopuffer.errors.UnexpectedStatusCodeException
 import com.turbopuffer.errors.UnprocessableEntityException
+import com.turbopuffer.models.DistanceMetric
 import com.turbopuffer.models.DocumentRow
 import com.turbopuffer.models.NamespaceQueryParams
 import org.assertj.core.api.Assertions.assertThat
@@ -64,7 +65,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -79,16 +80,7 @@ class ErrorHandlingTest {
                     .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .attributes(
                         DocumentRow.Attributes.builder()
-                            .putAdditionalProperty(
-                                "foo",
-                                JsonValue.from(
-                                    mapOf(
-                                        "filterable" to true,
-                                        "full_text_search" to true,
-                                        "type" to "string",
-                                    )
-                                ),
-                            )
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
                     .addVector(0.0)
@@ -111,7 +103,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -144,7 +136,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -181,7 +173,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -218,7 +210,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -251,7 +243,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -288,7 +280,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -321,7 +313,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -358,7 +350,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -396,7 +388,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)
@@ -426,7 +418,7 @@ class ErrorHandlingTest {
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
-                .distanceMetric(NamespaceQueryParams.DistanceMetric.COSINE_DISTANCE)
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filter(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                 .includeVectors(true)

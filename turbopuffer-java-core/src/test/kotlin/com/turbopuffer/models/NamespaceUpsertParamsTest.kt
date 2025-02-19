@@ -20,23 +20,13 @@ class NamespaceUpsertParamsTest {
                         DocumentColumns.Attributes.builder()
                             .putAdditionalProperty(
                                 "foo",
-                                JsonValue.from(
-                                    listOf(
-                                        mapOf(
-                                            "filterable" to true,
-                                            "full_text_search" to true,
-                                            "type" to "string",
-                                        )
-                                    )
-                                ),
+                                JsonValue.from(listOf(mapOf("foo" to "bar"))),
                             )
                             .build()
                     )
                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .addVector(listOf(0.0))
-                    .distanceMetric(
-                        NamespaceUpsertParams.Body.UpsertColumnar.DistanceMetric.COSINE_DISTANCE
-                    )
+                    .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .schema(
                         NamespaceUpsertParams.Body.UpsertColumnar.Schema.builder()
                             .putAdditionalProperty(
@@ -70,23 +60,13 @@ class NamespaceUpsertParamsTest {
                             DocumentColumns.Attributes.builder()
                                 .putAdditionalProperty(
                                     "foo",
-                                    JsonValue.from(
-                                        listOf(
-                                            mapOf(
-                                                "filterable" to true,
-                                                "full_text_search" to true,
-                                                "type" to "string",
-                                            )
-                                        )
-                                    ),
+                                    JsonValue.from(listOf(mapOf("foo" to "bar"))),
                                 )
                                 .build()
                         )
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .addVector(listOf(0.0))
-                        .distanceMetric(
-                            NamespaceUpsertParams.Body.UpsertColumnar.DistanceMetric.COSINE_DISTANCE
-                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .schema(
                             NamespaceUpsertParams.Body.UpsertColumnar.Schema.builder()
                                 .putAdditionalProperty(
@@ -118,23 +98,13 @@ class NamespaceUpsertParamsTest {
                             DocumentColumns.Attributes.builder()
                                 .putAdditionalProperty(
                                     "foo",
-                                    JsonValue.from(
-                                        listOf(
-                                            mapOf(
-                                                "filterable" to true,
-                                                "full_text_search" to true,
-                                                "type" to "string",
-                                            )
-                                        )
-                                    ),
+                                    JsonValue.from(listOf(mapOf("foo" to "bar"))),
                                 )
                                 .build()
                         )
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .addVector(listOf(0.0))
-                        .distanceMetric(
-                            NamespaceUpsertParams.Body.UpsertColumnar.DistanceMetric.COSINE_DISTANCE
-                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .schema(
                             NamespaceUpsertParams.Body.UpsertColumnar.Schema.builder()
                                 .putAdditionalProperty(
@@ -162,7 +132,11 @@ class NamespaceUpsertParamsTest {
         val params =
             NamespaceUpsertParams.builder()
                 .namespace("namespace")
-                .body(NamespaceUpsertParams.Body.UpsertColumnar.builder().build())
+                .body(
+                    NamespaceUpsertParams.Body.UpsertColumnar.builder()
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .build()
+                )
                 .build()
 
         val body = params._body()
@@ -171,7 +145,9 @@ class NamespaceUpsertParamsTest {
         assertThat(body)
             .isEqualTo(
                 NamespaceUpsertParams.Body.ofUpsertColumnar(
-                    NamespaceUpsertParams.Body.UpsertColumnar.builder().build()
+                    NamespaceUpsertParams.Body.UpsertColumnar.builder()
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .build()
                 )
             )
     }
@@ -182,7 +158,11 @@ class NamespaceUpsertParamsTest {
         val params =
             NamespaceUpsertParams.builder()
                 .namespace("namespace")
-                .body(NamespaceUpsertParams.Body.UpsertColumnar.builder().build())
+                .body(
+                    NamespaceUpsertParams.Body.UpsertColumnar.builder()
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .build()
+                )
                 .build()
         assertThat(params).isNotNull
         // path param "namespace"
