@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.0-beta.8 (2025-02-19)
+
+Full Changelog: [v0.1.0-beta.7...v0.1.0-beta.8](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.7...v0.1.0-beta.8)
+
+### Features
+
+* **api:** api update ([#61](https://github.com/turbopuffer/turbopuffer-java/issues/61)) ([90fad10](https://github.com/turbopuffer/turbopuffer-java/commit/90fad108bc861833e3f7477e6e04be1a0e53238d))
+* **api:** api update ([#63](https://github.com/turbopuffer/turbopuffer-java/issues/63)) ([bfef9e3](https://github.com/turbopuffer/turbopuffer-java/commit/bfef9e3f58613c21dc68a8a377903167b8b52216))
+
+
+### Chores
+
+* **internal:** version bump ([#50](https://github.com/turbopuffer/turbopuffer-java/issues/50)) ([da2ca00](https://github.com/turbopuffer/turbopuffer-java/commit/da2ca00f16ef129ee41edce8dddcfd80c1bfa4cb))
+* **internal:** version bump ([#54](https://github.com/turbopuffer/turbopuffer-java/issues/54)) ([356e04c](https://github.com/turbopuffer/turbopuffer-java/commit/356e04c55452c667374eb6327eb479b1d50bb35d))
+* **internal:** version bump ([#57](https://github.com/turbopuffer/turbopuffer-java/issues/57)) ([9521ad7](https://github.com/turbopuffer/turbopuffer-java/commit/9521ad719e7c5696878b2b07dbe579e677d096af))
+* **internal:** version bump ([#60](https://github.com/turbopuffer/turbopuffer-java/issues/60)) ([d441d00](https://github.com/turbopuffer/turbopuffer-java/commit/d441d003eb2c157df7c24e817d72a59b7d852b20))
+* **internal:** version bump ([#65](https://github.com/turbopuffer/turbopuffer-java/issues/65)) ([8026864](https://github.com/turbopuffer/turbopuffer-java/commit/802686476f05220cc8b5a2ed9e2c52c18fbe62bb))
+
 ## 0.1.0-beta.7 (2025-02-19)
 
 Full Changelog: [v0.1.0-beta.6...v0.1.0-beta.7](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.6...v0.1.0-beta.7)
