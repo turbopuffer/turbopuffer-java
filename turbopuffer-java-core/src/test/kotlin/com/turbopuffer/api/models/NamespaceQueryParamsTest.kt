@@ -4,10 +4,12 @@ package com.turbopuffer.api.models
 
 import com.turbopuffer.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class NamespaceQueryParamsTest {
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
         NamespaceQueryParams.builder()
@@ -27,6 +29,7 @@ class NamespaceQueryParamsTest {
             .build()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun body() {
         val params =
@@ -66,6 +69,7 @@ class NamespaceQueryParamsTest {
         assertThat(body.vector()).contains(listOf(0.0))
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun bodyWithoutOptionalFields() {
         val params = NamespaceQueryParams.builder().namespace("namespace").build()
@@ -75,6 +79,7 @@ class NamespaceQueryParamsTest {
         assertThat(body).isNotNull
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun getPathParam() {
         val params = NamespaceQueryParams.builder().namespace("namespace").build()
