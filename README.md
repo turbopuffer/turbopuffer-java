@@ -2,7 +2,7 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.2)
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.3)
 
 <!-- x-release-please-end -->
 
@@ -19,7 +19,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.2")
+implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.3")
 ```
 
 ### Maven
@@ -28,7 +28,7 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.2")
 <dependency>
     <groupId>com.turbopuffer</groupId>
     <artifactId>turbopuffer-java</artifactId>
-    <version>0.1.0-beta.2</version>
+    <version>0.1.0-beta.3</version>
 </dependency>
 ```
 
