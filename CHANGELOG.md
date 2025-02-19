@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-beta.6 (2025-02-19)
+
+Full Changelog: [v0.1.0-beta.5...v0.1.0-beta.6](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.5...v0.1.0-beta.6)
+
+### Features
+
+* fix: try another way to avoid merge conflicts ([453dd5b](https://github.com/turbopuffer/turbopuffer-java/commit/453dd5b92e0c98194798a24a7de38e4682e656fe))
+
 ## 0.1.0-beta.5 (2025-02-19)
 
 Full Changelog: [v0.1.0-beta.4...v0.1.0-beta.5](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.4...v0.1.0-beta.5)
