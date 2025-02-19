@@ -38,7 +38,7 @@ private constructor(
     @JsonProperty("ids") @ExcludeMissing private val ids: JsonField<List<Id>> = JsonMissing.of(),
     @JsonProperty("vectors")
     @ExcludeMissing
-    private val vectors: JsonField<List<Vector?>> = JsonMissing.of(),
+    private val vectors: JsonField<List<List<Double>?>> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -50,7 +50,8 @@ private constructor(
     fun ids(): Optional<List<Id>> = Optional.ofNullable(ids.getNullable("ids"))
 
     /** Vectors describing each of the documents. */
-    fun vectors(): Optional<List<Vector?>> = Optional.ofNullable(vectors.getNullable("vectors"))
+    fun vectors(): Optional<List<List<Double>?>> =
+        Optional.ofNullable(vectors.getNullable("vectors"))
 
     /** The attributes attached to each of the documents. */
     @JsonProperty("attributes")
@@ -61,7 +62,9 @@ private constructor(
     @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<Id>> = ids
 
     /** Vectors describing each of the documents. */
-    @JsonProperty("vectors") @ExcludeMissing fun _vectors(): JsonField<List<Vector?>> = vectors
+    @JsonProperty("vectors")
+    @ExcludeMissing
+    fun _vectors(): JsonField<List<List<Double>?>> = vectors
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -76,7 +79,7 @@ private constructor(
 
         attributes().ifPresent { it.validate() }
         ids().ifPresent { it.forEach { it.validate() } }
-        vectors().ifPresent { it.forEach { it?.validate() } }
+        vectors()
         validated = true
     }
 
@@ -92,7 +95,7 @@ private constructor(
 
         private var attributes: JsonField<Attributes> = JsonMissing.of()
         private var ids: JsonField<MutableList<Id>>? = null
-        private var vectors: JsonField<MutableList<Vector?>>? = null
+        private var vectors: JsonField<MutableList<List<Double>?>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -136,15 +139,15 @@ private constructor(
         fun addId(integer: Long) = addId(Id.ofInteger(integer))
 
         /** Vectors describing each of the documents. */
-        fun vectors(vectors: List<Vector?>) = vectors(JsonField.of(vectors))
+        fun vectors(vectors: List<List<Double>?>) = vectors(JsonField.of(vectors))
 
         /** Vectors describing each of the documents. */
-        fun vectors(vectors: JsonField<List<Vector?>>) = apply {
+        fun vectors(vectors: JsonField<List<List<Double>?>>) = apply {
             this.vectors = vectors.map { it.toMutableList() }
         }
 
         /** Vectors describing each of the documents. */
-        fun addVector(vector: Vector) = apply {
+        fun addVector(vector: List<Double>) = apply {
             vectors =
                 (vectors ?: JsonField.of(mutableListOf())).apply {
                     asKnown()
@@ -156,12 +159,6 @@ private constructor(
                         .add(vector)
                 }
         }
-
-        /** Vectors describing each of the documents. */
-        fun addVector(number: Double) = addVector(Vector.ofNumber(number))
-
-        /** Vectors describing each of the documents. */
-        fun addVectorOfNumber(number: List<Double>) = addVector(Vector.ofNumber(number))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -401,134 +398,6 @@ private constructor(
                     value.integer != null -> generator.writeObject(value.integer)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Id")
-                }
-            }
-        }
-    }
-
-    @JsonDeserialize(using = Vector.Deserializer::class)
-    @JsonSerialize(using = Vector.Serializer::class)
-    class Vector
-    private constructor(
-        private val number: Double? = null,
-        private val number: List<Double>? = null,
-        private val _json: JsonValue? = null,
-    ) {
-
-        fun number(): Optional<Double> = Optional.ofNullable(number)
-
-        fun number(): Optional<List<Double>> = Optional.ofNullable(number)
-
-        fun isNumber(): Boolean = number != null
-
-        fun isNumber(): Boolean = number != null
-
-        fun asNumber(): Double = number.getOrThrow("number")
-
-        fun asNumber(): List<Double> = number.getOrThrow("number")
-
-        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
-                number != null -> visitor.visitNumber(number)
-                number != null -> visitor.visitNumber(number)
-                else -> visitor.unknown(_json)
-            }
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): Vector = apply {
-            if (validated) {
-                return@apply
-            }
-
-            accept(
-                object : Visitor<Unit> {
-                    override fun visitNumber(number: Double) {}
-
-                    override fun visitNumber(number: List<Double>) {}
-                }
-            )
-            validated = true
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Vector && number == other.number && number == other.number /* spotless:on */
-        }
-
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(number, number) /* spotless:on */
-
-        override fun toString(): String =
-            when {
-                number != null -> "Vector{number=$number}"
-                number != null -> "Vector{number=$number}"
-                _json != null -> "Vector{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid Vector")
-            }
-
-        companion object {
-
-            @JvmStatic fun ofNumber(number: Double) = Vector(number = number)
-
-            @JvmStatic fun ofNumber(number: List<Double>) = Vector(number = number)
-        }
-
-        /** An interface that defines how to map each variant of [Vector] to a value of type [T]. */
-        interface Visitor<out T> {
-
-            fun visitNumber(number: Double): T
-
-            fun visitNumber(number: List<Double>): T
-
-            /**
-             * Maps an unknown variant of [Vector] to a value of type [T].
-             *
-             * An instance of [Vector] can contain an unknown variant if it was deserialized from
-             * data that doesn't match any known variant. For example, if the SDK is on an older
-             * version than the API, then the API may respond with new variants that the SDK is
-             * unaware of.
-             *
-             * @throws TurbopufferInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw TurbopufferInvalidDataException("Unknown Vector: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<Vector>(Vector::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Vector {
-                val json = JsonValue.fromJsonNode(node)
-
-                tryDeserialize(node, jacksonTypeRef<Double>())?.let {
-                    return Vector(number = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<List<Double>>())?.let {
-                    return Vector(number = it, _json = json)
-                }
-
-                return Vector(_json = json)
-            }
-        }
-
-        internal class Serializer : BaseSerializer<Vector>(Vector::class) {
-
-            override fun serialize(
-                value: Vector,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.number != null -> generator.writeObject(value.number)
-                    value.number != null -> generator.writeObject(value.number)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Vector")
                 }
             }
         }
