@@ -302,8 +302,7 @@ private constructor(
                 Optional.ofNullable(vectors.getNullable("vectors"))
 
             /** A function used to calculate vector similarity. */
-            fun distanceMetric(): Optional<DistanceMetric> =
-                Optional.ofNullable(distanceMetric.getNullable("distance_metric"))
+            fun distanceMetric(): DistanceMetric = distanceMetric.getRequired("distance_metric")
 
             /** The schema of the attributes attached to the documents. */
             fun schema(): Optional<Schema> = Optional.ofNullable(schema.getNullable("schema"))
@@ -364,7 +363,7 @@ private constructor(
                 private var attributes: JsonField<DocumentColumns.Attributes> = JsonMissing.of()
                 private var ids: JsonField<MutableList<Id>>? = null
                 private var vectors: JsonField<MutableList<List<Double>?>>? = null
-                private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
+                private var distanceMetric: JsonField<DistanceMetric>? = null
                 private var schema: JsonField<Schema> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -479,7 +478,7 @@ private constructor(
                         attributes,
                         (ids ?: JsonMissing.of()).map { it.toImmutable() },
                         (vectors ?: JsonMissing.of()).map { it.toImmutable() },
-                        distanceMetric,
+                        checkRequired("distanceMetric", distanceMetric),
                         schema,
                         additionalProperties.toImmutable(),
                     )
@@ -593,37 +592,35 @@ private constructor(
             @JsonProperty("distance_metric")
             @ExcludeMissing
             private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
-            @JsonProperty("schema")
-            @ExcludeMissing
-            private val schema: JsonField<Schema> = JsonMissing.of(),
             @JsonProperty("upserts")
             @ExcludeMissing
             private val upserts: JsonField<List<DocumentRow>> = JsonMissing.of(),
+            @JsonProperty("schema")
+            @ExcludeMissing
+            private val schema: JsonField<Schema> = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
             /** A function used to calculate vector similarity. */
-            fun distanceMetric(): Optional<DistanceMetric> =
-                Optional.ofNullable(distanceMetric.getNullable("distance_metric"))
+            fun distanceMetric(): DistanceMetric = distanceMetric.getRequired("distance_metric")
+
+            fun upserts(): List<DocumentRow> = upserts.getRequired("upserts")
 
             /** The schema of the attributes attached to the documents. */
             fun schema(): Optional<Schema> = Optional.ofNullable(schema.getNullable("schema"))
-
-            fun upserts(): Optional<List<DocumentRow>> =
-                Optional.ofNullable(upserts.getNullable("upserts"))
 
             /** A function used to calculate vector similarity. */
             @JsonProperty("distance_metric")
             @ExcludeMissing
             fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
 
-            /** The schema of the attributes attached to the documents. */
-            @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
-
             @JsonProperty("upserts")
             @ExcludeMissing
             fun _upserts(): JsonField<List<DocumentRow>> = upserts
+
+            /** The schema of the attributes attached to the documents. */
+            @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -637,8 +634,8 @@ private constructor(
                 }
 
                 distanceMetric()
+                upserts().forEach { it.validate() }
                 schema().ifPresent { it.validate() }
-                upserts().ifPresent { it.forEach { it.validate() } }
                 validated = true
             }
 
@@ -652,16 +649,16 @@ private constructor(
             /** A builder for [UpsertRowBased]. */
             class Builder internal constructor() {
 
-                private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
-                private var schema: JsonField<Schema> = JsonMissing.of()
+                private var distanceMetric: JsonField<DistanceMetric>? = null
                 private var upserts: JsonField<MutableList<DocumentRow>>? = null
+                private var schema: JsonField<Schema> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(upsertRowBased: UpsertRowBased) = apply {
                     distanceMetric = upsertRowBased.distanceMetric
-                    schema = upsertRowBased.schema
                     upserts = upsertRowBased.upserts.map { it.toMutableList() }
+                    schema = upsertRowBased.schema
                     additionalProperties = upsertRowBased.additionalProperties.toMutableMap()
                 }
 
@@ -673,12 +670,6 @@ private constructor(
                 fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
                     this.distanceMetric = distanceMetric
                 }
-
-                /** The schema of the attributes attached to the documents. */
-                fun schema(schema: Schema) = schema(JsonField.of(schema))
-
-                /** The schema of the attributes attached to the documents. */
-                fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
 
                 fun upserts(upserts: List<DocumentRow>) = upserts(JsonField.of(upserts))
 
@@ -698,6 +689,12 @@ private constructor(
                                 .add(upsert)
                         }
                 }
+
+                /** The schema of the attributes attached to the documents. */
+                fun schema(schema: Schema) = schema(JsonField.of(schema))
+
+                /** The schema of the attributes attached to the documents. */
+                fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -723,9 +720,9 @@ private constructor(
 
                 fun build(): UpsertRowBased =
                     UpsertRowBased(
-                        distanceMetric,
+                        checkRequired("distanceMetric", distanceMetric),
+                        checkRequired("upserts", upserts).map { it.toImmutable() },
                         schema,
-                        (upserts ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toImmutable(),
                     )
             }
@@ -817,17 +814,17 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is UpsertRowBased && distanceMetric == other.distanceMetric && schema == other.schema && upserts == other.upserts && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is UpsertRowBased && distanceMetric == other.distanceMetric && upserts == other.upserts && schema == other.schema && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(distanceMetric, schema, upserts, additionalProperties) }
+            private val hashCode: Int by lazy { Objects.hash(distanceMetric, upserts, schema, additionalProperties) }
             /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "UpsertRowBased{distanceMetric=$distanceMetric, schema=$schema, upserts=$upserts, additionalProperties=$additionalProperties}"
+                "UpsertRowBased{distanceMetric=$distanceMetric, upserts=$upserts, schema=$schema, additionalProperties=$additionalProperties}"
         }
 
         /** Copy documents from another namespace. */
@@ -843,8 +840,7 @@ private constructor(
         ) {
 
             /** The namespace to copy documents from. */
-            fun copyFromNamespace(): Optional<String> =
-                Optional.ofNullable(copyFromNamespace.getNullable("copy_from_namespace"))
+            fun copyFromNamespace(): String = copyFromNamespace.getRequired("copy_from_namespace")
 
             /** The namespace to copy documents from. */
             @JsonProperty("copy_from_namespace")
@@ -876,7 +872,7 @@ private constructor(
             /** A builder for [CopyFromNamespace]. */
             class Builder internal constructor() {
 
-                private var copyFromNamespace: JsonField<String> = JsonMissing.of()
+                private var copyFromNamespace: JsonField<String>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -917,7 +913,10 @@ private constructor(
                 }
 
                 fun build(): CopyFromNamespace =
-                    CopyFromNamespace(copyFromNamespace, additionalProperties.toImmutable())
+                    CopyFromNamespace(
+                        checkRequired("copyFromNamespace", copyFromNamespace),
+                        additionalProperties.toImmutable(),
+                    )
             }
 
             override fun equals(other: Any?): Boolean {
@@ -978,7 +977,7 @@ private constructor(
             /** A builder for [DeleteByFilter]. */
             class Builder internal constructor() {
 
-                private var deleteByFilter: JsonValue = JsonMissing.of()
+                private var deleteByFilter: JsonValue? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -1014,7 +1013,10 @@ private constructor(
                 }
 
                 fun build(): DeleteByFilter =
-                    DeleteByFilter(deleteByFilter, additionalProperties.toImmutable())
+                    DeleteByFilter(
+                        checkRequired("deleteByFilter", deleteByFilter),
+                        additionalProperties.toImmutable(),
+                    )
             }
 
             override fun equals(other: Any?): Boolean {
