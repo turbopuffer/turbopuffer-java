@@ -12,11 +12,11 @@ import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.NoAutoDetect
+import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
-import java.util.Optional
 
 @NoAutoDetect
 class NamespaceDeleteAllResponse
@@ -29,7 +29,7 @@ private constructor(
 ) {
 
     /** The status of the request. */
-    fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
+    fun status(): Status = status.getRequired("status")
 
     /** The status of the request. */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
@@ -59,7 +59,7 @@ private constructor(
     /** A builder for [NamespaceDeleteAllResponse]. */
     class Builder internal constructor() {
 
-        private var status: JsonField<Status> = JsonMissing.of()
+        private var status: JsonField<Status>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -94,7 +94,10 @@ private constructor(
         }
 
         fun build(): NamespaceDeleteAllResponse =
-            NamespaceDeleteAllResponse(status, additionalProperties.toImmutable())
+            NamespaceDeleteAllResponse(
+                checkRequired("status", status),
+                additionalProperties.toImmutable(),
+            )
     }
 
     /** The status of the request. */
