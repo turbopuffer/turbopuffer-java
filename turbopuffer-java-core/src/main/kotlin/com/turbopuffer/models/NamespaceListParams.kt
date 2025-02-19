@@ -25,7 +25,7 @@ private constructor(
     /** Limit the number of results per page. */
     fun pageSize(): Optional<Long> = Optional.ofNullable(pageSize)
 
-    /** Retrieve only namespaces that match the prefix. */
+    /** Retrieve only the namespaces that match the prefix. */
     fun prefix(): Optional<String> = Optional.ofNullable(prefix)
 
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -85,10 +85,10 @@ private constructor(
         @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun pageSize(pageSize: Optional<Long>) = pageSize(pageSize.orElse(null) as Long?)
 
-        /** Retrieve only namespaces that match the prefix. */
+        /** Retrieve only the namespaces that match the prefix. */
         fun prefix(prefix: String?) = apply { this.prefix = prefix }
 
-        /** Retrieve only namespaces that match the prefix. */
+        /** Retrieve only the namespaces that match the prefix. */
         fun prefix(prefix: Optional<String>) = prefix(prefix.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
