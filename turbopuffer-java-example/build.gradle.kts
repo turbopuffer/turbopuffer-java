@@ -14,5 +14,5 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 application {
-    mainClass = "com.turbopuffer.api.example.Main"
+    mainClass = "com.turbopuffer.example.Main"
 }
