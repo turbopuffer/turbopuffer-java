@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.0-beta.1 (2025-02-19)
+
+Full Changelog: [v0.1.0-beta.0...v0.1.0-beta.1](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.0...v0.1.0-beta.1)
+
+### Features
+
+* **api:** manual updates ([#34](https://github.com/turbopuffer/turbopuffer-java/issues/34)) ([4201967](https://github.com/turbopuffer/turbopuffer-java/commit/42019678e9592fd042f43048c6e0e6fe24a3f5b9))
+
+
+### Bug Fixes
+
+* dokkaJavadoc task name ([af73ce3](https://github.com/turbopuffer/turbopuffer-java/commit/af73ce3c25e85f661c34bb4912b7625f4824e79e))
+* generate Javadocs on publish ([50fa88c](https://github.com/turbopuffer/turbopuffer-java/commit/50fa88c868c226f840ab568e22e3a4bb2d75ed1d))
+* more representative batch size ([239a6b4](https://github.com/turbopuffer/turbopuffer-java/commit/239a6b493d61156450aeb98a021c0e96f59969d4))
+* produce more specific timings in bulk upsert test ([70122fd](https://github.com/turbopuffer/turbopuffer-java/commit/70122fdbb8f98d73c230cb46187b26bf9523bfa5))
+* **README:** add link to javadoc.io ([cf4d941](https://github.com/turbopuffer/turbopuffer-java/commit/cf4d9414b13c17319f9d00213e3fa0cc94125924))
+
 ## 0.1.0-beta.0 (2025-02-19)
 
 Full Changelog: [v0.1.0-alpha.7...v0.1.0-beta.0](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-alpha.7...v0.1.0-beta.0)
