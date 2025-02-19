@@ -2,7 +2,7 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer.api/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer.api/turbopuffer-java/0.1.0-beta.0)
 
 <!-- x-release-please-end -->
 
@@ -19,14 +19,14 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.0")
+implementation("com.turbopuffer.api:turbopuffer-java:0.1.0-beta.0")
 ```
 
 ### Maven
 
 ```xml
 <dependency>
-    <groupId>com.turbopuffer</groupId>
+    <groupId>com.turbopuffer.api</groupId>
     <artifactId>turbopuffer-java</artifactId>
     <version>0.1.0-beta.0</version>
 </dependency>
@@ -45,8 +45,8 @@ This library requires Java 8 or later.
 Use `TurbopufferOkHttpClient.builder()` to configure the client. At a minimum you need to set `.apiKey()`:
 
 ```java
-import com.turbopuffer.client.TurbopufferClient;
-import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.api.client.TurbopufferClient;
+import com.turbopuffer.api.client.okhttp.TurbopufferOkHttpClient;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
     .apiKey("My API Key")
@@ -56,8 +56,8 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
 Alternately, set the environment with `TURBOPUFFER_API_KEY`, and use `TurbopufferOkHttpClient.fromEnv()` to read from the environment.
 
 ```java
-import com.turbopuffer.client.TurbopufferClient;
-import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.api.client.TurbopufferClient;
+import com.turbopuffer.api.client.okhttp.TurbopufferOkHttpClient;
 
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
@@ -81,15 +81,12 @@ Read the documentation for more configuration options.
 To create a new namespace, first use the `NamespaceUpsertParams` builder to specify attributes, then pass that to the `upsert` method of the `namespaces` service.
 
 ```java
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.NamespaceUpsertParams;
-import com.turbopuffer.models.NamespaceUpsertResponse;
+import com.turbopuffer.api.models.NamespaceUpsertParams;
+import com.turbopuffer.api.models.NamespaceUpsertResponse;
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
-        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-        .build())
+    .body(NamespaceUpsertParams.Body.UpsertColumnar.builder().build())
     .build();
 NamespaceUpsertResponse response = client.namespaces().upsert(params);
 ```
@@ -99,8 +96,8 @@ NamespaceUpsertResponse response = client.namespaces().upsert(params);
 The Turbopuffer API provides a `list` method to get a paginated list of namespaces. You can retrieve the first page by:
 
 ```java
-import com.turbopuffer.models.NamespaceListPage;
-import com.turbopuffer.models.NamespaceSummary;
+import com.turbopuffer.api.models.NamespaceListPage;
+import com.turbopuffer.api.models.NamespaceSummary;
 
 NamespaceListPage page = client.namespaces().list();
 for (NamespaceSummary namespace : page.namespaces()) {
@@ -111,8 +108,8 @@ for (NamespaceSummary namespace : page.namespaces()) {
 Use the `NamespaceListParams` builder to set parameters:
 
 ```java
-import com.turbopuffer.models.NamespaceListPage;
-import com.turbopuffer.models.NamespaceListParams;
+import com.turbopuffer.api.models.NamespaceListPage;
+import com.turbopuffer.api.models.NamespaceListParams;
 
 NamespaceListParams params = NamespaceListParams.builder()
     .cursor("cursor")
@@ -150,9 +147,9 @@ See [Undocumented request params](#undocumented-request-params) for how to send 
 When receiving a response, the Turbopuffer Java SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Java type. If you directly access the mistaken property, the SDK will throw an unchecked `TurbopufferInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
 
 ```java
-import com.turbopuffer.models.DocumentRowResponse;
+import com.turbopuffer.api.models.DocumentRow;
 
-List<DocumentRowResponse> documentRowResponses = client.namespaces().query().validate();
+List<DocumentRow> documentRows = client.namespaces().query().validate();
 ```
 
 ### Response properties as JSON
@@ -160,7 +157,7 @@ List<DocumentRowResponse> documentRowResponses = client.namespaces().query().val
 In rare cases, you may want to access the underlying JSON value for a response property rather than using the typed version provided by this SDK. Each model property has a corresponding JSON version, with an underscore before the method name, which returns a `JsonField` value.
 
 ```java
-import com.turbopuffer.core.JsonField;
+import com.turbopuffer.api.core.JsonField;
 import java.util.Optional;
 
 JsonField field = responseObj._field();
@@ -184,9 +181,9 @@ if (field.isMissing()) {
 Sometimes, the server response may include additional properties that are not yet available in this library's types. You can access them using the model's `_additionalProperties` method:
 
 ```java
-import com.turbopuffer.core.JsonValue;
+import com.turbopuffer.api.core.JsonValue;
 
-JsonValue secret = attributeSchema._additionalProperties().get("secret_field");
+JsonValue secret = documentColumns._additionalProperties().get("secret_field");
 ```
 
 ---
@@ -202,8 +199,8 @@ To iterate through all results across all pages, you can use `autoPager`, which 
 ### Synchronous
 
 ```java
-import com.turbopuffer.models.NamespaceListPage;
-import com.turbopuffer.models.NamespaceSummary;
+import com.turbopuffer.api.models.NamespaceListPage;
+import com.turbopuffer.api.models.NamespaceSummary;
 
 // As an Iterable:
 NamespaceListPage page = client.namespaces().list(params);
@@ -230,8 +227,8 @@ asyncClient.namespaces().list(params).autoPager()
 If none of the above helpers meet your needs, you can also manually request pages one-by-one. A page of results has a `data()` method to fetch the list of objects, as well as top-level `response` and other methods to fetch top-level data about the page. It also has methods `hasNextPage`, `getNextPage`, and `getNextPageParams` methods to help with pagination.
 
 ```java
-import com.turbopuffer.models.NamespaceListPage;
-import com.turbopuffer.models.NamespaceSummary;
+import com.turbopuffer.api.models.NamespaceListPage;
+import com.turbopuffer.api.models.NamespaceSummary;
 
 NamespaceListPage page = client.namespaces().list(params);
 while (page != null) {
@@ -275,8 +272,8 @@ This library throws exceptions in a single hierarchy for easy handling:
 Requests that experience certain errors are automatically retried 2 times by default, with a short exponential backoff. Connection errors (for example, due to a network connectivity problem), 408 Request Timeout, 409 Conflict, 429 Rate Limit, and >=500 Internal errors will all be retried by default. You can provide a `maxRetries` on the client builder to configure this:
 
 ```java
-import com.turbopuffer.client.TurbopufferClient;
-import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.api.client.TurbopufferClient;
+import com.turbopuffer.api.client.okhttp.TurbopufferOkHttpClient;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
     .fromEnv()
@@ -289,8 +286,8 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
 Requests time out after 1 minute by default. You can configure this on the client builder:
 
 ```java
-import com.turbopuffer.client.TurbopufferClient;
-import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.api.client.TurbopufferClient;
+import com.turbopuffer.api.client.okhttp.TurbopufferOkHttpClient;
 import java.time.Duration;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
@@ -304,8 +301,8 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
 Requests can be routed through a proxy. You can configure this on the client builder:
 
 ```java
-import com.turbopuffer.client.TurbopufferClient;
-import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.api.client.TurbopufferClient;
+import com.turbopuffer.api.client.okhttp.TurbopufferOkHttpClient;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
@@ -326,8 +323,8 @@ In [Example: creating a resource](#example-creating-a-resource) above, we used t
 Sometimes, the API may support other properties that are not yet supported in the Java SDK types. In that case, you can attach them using raw setters:
 
 ```java
-import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.NamespaceQueryParams;
+import com.turbopuffer.api.core.JsonValue;
+import com.turbopuffer.api.models.NamespaceQueryParams;
 
 NamespaceQueryParams params = NamespaceQueryParams.builder()
     .putAdditionalHeader("Secret-Header", "42")
