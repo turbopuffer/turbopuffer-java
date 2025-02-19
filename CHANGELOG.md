@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-alpha.4 (2025-02-19)
+
+Full Changelog: [v0.1.0-alpha.3...v0.1.0-alpha.4](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-alpha.3...v0.1.0-alpha.4)
+
+### Features
+
+* **api:** manual updates ([#12](https://github.com/turbopuffer/turbopuffer-java/issues/12)) ([584d4e5](https://github.com/turbopuffer/turbopuffer-java/commit/584d4e57b27091c29ca8304861a057d42e9b3ab6))
+
 ## 0.1.0-alpha.3 (2025-02-19)
 
 Full Changelog: [v0.1.0-alpha.2...v0.1.0-alpha.3](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-alpha.2...v0.1.0-alpha.3)
