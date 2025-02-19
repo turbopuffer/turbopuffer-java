@@ -5,7 +5,10 @@ plugins {
 allprojects {
     group = "com.turbopuffer"
     version = "0.1.0-beta.3" // x-release-please-version
+}
 
+// Separate block from above to avoid merge conflicts with Stainless.
+allprojects {
     repositories {
         mavenCentral()
     }
