@@ -42,7 +42,7 @@ interface NamespaceService {
     fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): List<UnnamedSchemaWithArrayParent0>
+    ): List<DocumentRowResponse>
 
     /** Create, update, or delete documents. */
     @JvmOverloads
