@@ -186,7 +186,7 @@ Sometimes, the server response may include additional properties that are not ye
 ```java
 import com.turbopuffer.core.JsonValue;
 
-JsonValue secret = attributeSchema._additionalProperties().get("secret_field");
+JsonValue secret = documentColumns._additionalProperties().get("secret_field");
 ```
 
 ---

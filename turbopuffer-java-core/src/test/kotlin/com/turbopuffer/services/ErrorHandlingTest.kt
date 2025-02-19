@@ -78,7 +78,11 @@ class ErrorHandlingTest {
             listOf(
                 DocumentRow.builder()
                     .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .attributes(JsonValue.from(mapOf<String, Any>()))
+                    .attributes(
+                        DocumentRow.Attributes.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
                     .addVector(0.0)
                     .build()
             )
