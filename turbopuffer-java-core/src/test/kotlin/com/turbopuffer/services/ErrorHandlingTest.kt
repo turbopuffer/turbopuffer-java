@@ -78,20 +78,7 @@ class ErrorHandlingTest {
             listOf(
                 DocumentRow.builder()
                     .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .attributes(
-                        DocumentRow.Attributes.builder()
-                            .putAdditionalProperty(
-                                "foo",
-                                JsonValue.from(
-                                    mapOf(
-                                        "filterable" to true,
-                                        "full_text_search" to true,
-                                        "type" to "string",
-                                    )
-                                ),
-                            )
-                            .build()
-                    )
+                    .attributes(JsonValue.from(mapOf<String, Any>()))
                     .addVector(0.0)
                     .build()
             )

@@ -120,15 +120,7 @@ class NamespaceServiceTest {
                                 DocumentColumns.Attributes.builder()
                                     .putAdditionalProperty(
                                         "foo",
-                                        JsonValue.from(
-                                            listOf(
-                                                mapOf(
-                                                    "filterable" to true,
-                                                    "full_text_search" to true,
-                                                    "type" to "string",
-                                                )
-                                            )
-                                        ),
+                                        JsonValue.from(listOf(mapOf<String, Any>())),
                                     )
                                     .build()
                             )
