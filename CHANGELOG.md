@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-beta.4 (2025-02-19)
+
+Full Changelog: [v0.1.0-beta.3...v0.1.0-beta.4](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.3...v0.1.0-beta.4)
+
+### Features
+
+* fix: avoid merge conflicts in build.gradle.kts ([58f1a36](https://github.com/turbopuffer/turbopuffer-java/commit/58f1a3603f772fa028ff46e9f1c0a0a62201820f))
+
 ## 0.1.0-beta.3 (2025-02-19)
 
 Full Changelog: [v0.1.0-beta.2...v0.1.0-beta.3](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.2...v0.1.0-beta.3)
