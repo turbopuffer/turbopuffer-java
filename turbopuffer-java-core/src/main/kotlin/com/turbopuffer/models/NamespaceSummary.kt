@@ -22,11 +22,14 @@ class NamespaceSummary
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("required") @ExcludeMissing private val required: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The namespace ID. */
     fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
+
+    @JsonProperty("required") @ExcludeMissing fun _required(): JsonValue = required
 
     /** The namespace ID. */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
@@ -57,11 +60,13 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String> = JsonMissing.of()
+        private var required: JsonValue = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(namespaceSummary: NamespaceSummary) = apply {
             id = namespaceSummary.id
+            required = namespaceSummary.required
             additionalProperties = namespaceSummary.additionalProperties.toMutableMap()
         }
 
@@ -70,6 +75,8 @@ private constructor(
 
         /** The namespace ID. */
         fun id(id: JsonField<String>) = apply { this.id = id }
+
+        fun required(required: JsonValue) = apply { this.required = required }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -90,7 +97,8 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
-        fun build(): NamespaceSummary = NamespaceSummary(id, additionalProperties.toImmutable())
+        fun build(): NamespaceSummary =
+            NamespaceSummary(id, required, additionalProperties.toImmutable())
     }
 
     override fun equals(other: Any?): Boolean {
@@ -98,14 +106,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceSummary && id == other.id && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is NamespaceSummary && id == other.id && required == other.required && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, required, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
-    override fun toString() = "NamespaceSummary{id=$id, additionalProperties=$additionalProperties}"
+    override fun toString() =
+        "NamespaceSummary{id=$id, required=$required, additionalProperties=$additionalProperties}"
 }
