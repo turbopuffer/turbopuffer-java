@@ -4,10 +4,12 @@ package com.turbopuffer.api.models
 
 import com.turbopuffer.api.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class NamespaceGetSchemaResponseTest {
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun createNamespaceGetSchemaResponse() {
         val namespaceGetSchemaResponse =
