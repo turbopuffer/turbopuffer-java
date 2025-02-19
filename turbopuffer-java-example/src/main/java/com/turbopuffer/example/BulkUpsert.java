@@ -16,15 +16,18 @@ import com.turbopuffer.models.NamespaceUpsertParams.Documents.UpsertRowBased;
 public class BulkUpsert {
 
     private static final int NUM_BATCHES = 10;
-    private static final int BATCH_SIZE = 100;
     private static final int VECTOR_DIM = 1024;
+
+    // Batch size is tuned to produce 32MB payloads. This achieves the maximum
+    // discount (50%) without being close to the limit (256MB).
+    private static final int BATCH_SIZE = 1500;
 
     public static void main(String[] args) {
         var client = TurbopufferOkHttpClient.builder()
                 .fromEnv()
                 .build();
 
-        var namespace = "turbopuffer-java-bulk-upsert-test2";
+        var namespace = "turbopuffer-java-bulk-upsert-test";
         System.out.printf("Operating on namespace: %s\n", namespace);
 
         long startTime = System.currentTimeMillis();
@@ -32,6 +35,8 @@ public class BulkUpsert {
         Random random = new Random();
 
         for (int batch = 0; batch < NUM_BATCHES; batch++) {
+            long batchStartTime = System.currentTimeMillis();
+
             List<DocumentRow> documents = new ArrayList<>(BATCH_SIZE);
 
             for (int i = 0; i < BATCH_SIZE; i++) {
@@ -55,7 +60,10 @@ public class BulkUpsert {
                             .build())
                     .build());
 
-            System.out.printf("Batch %d complete, status: %s\n", batch + 1, upsert.status());
+            var batchEndTime = System.currentTimeMillis();
+            var batchSeconds = (batchEndTime - batchStartTime) / 1000.0;
+
+            System.out.printf("Batch %d complete, status: %s, time: %.2f seconds\n", batch + 1, upsert.status(), batchSeconds);
         }
 
         long endTime = System.currentTimeMillis();
