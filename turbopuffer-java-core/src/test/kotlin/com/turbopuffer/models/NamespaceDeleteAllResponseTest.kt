@@ -17,6 +17,6 @@ class NamespaceDeleteAllResponseTest {
                 .build()
         assertThat(namespaceDeleteAllResponse).isNotNull
         assertThat(namespaceDeleteAllResponse.status())
-            .contains(NamespaceDeleteAllResponse.Status.OK)
+            .isEqualTo(NamespaceDeleteAllResponse.Status.OK)
     }
 }
