@@ -10,7 +10,7 @@ The Turbopuffer Java SDK provides convenient access to the Turbopuffer REST API 
 
 It is generated with [Stainless](https://www.stainlessapi.com/).
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/latest/index.html).
 
 ## Installation
 
