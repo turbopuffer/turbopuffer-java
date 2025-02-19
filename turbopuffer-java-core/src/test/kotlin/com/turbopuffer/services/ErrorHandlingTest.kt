@@ -76,7 +76,7 @@ class ErrorHandlingTest {
 
         val expected =
             listOf(
-                DocumentRow.builder()
+                UnnamedSchemaWithArrayParent0.builder()
                     .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .attributes(
                         DocumentRow.Attributes.builder()
@@ -84,6 +84,7 @@ class ErrorHandlingTest {
                             .build()
                     )
                     .addVector(0.0)
+                    .dist(0.0)
                     .build()
             )
 

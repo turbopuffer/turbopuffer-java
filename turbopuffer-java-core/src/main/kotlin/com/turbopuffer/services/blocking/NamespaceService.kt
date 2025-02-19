@@ -5,7 +5,6 @@
 package com.turbopuffer.services.blocking
 
 import com.turbopuffer.core.RequestOptions
-import com.turbopuffer.models.DocumentRow
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
 import com.turbopuffer.models.NamespaceGetSchemaParams
@@ -43,7 +42,7 @@ interface NamespaceService {
     fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): List<DocumentRow>
+    ): List<UnnamedSchemaWithArrayParent0>
 
     /** Create, update, or delete documents. */
     @JvmOverloads
