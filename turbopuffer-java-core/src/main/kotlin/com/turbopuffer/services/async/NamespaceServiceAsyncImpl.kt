@@ -13,6 +13,7 @@ import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.json
 import com.turbopuffer.core.prepareAsync
 import com.turbopuffer.errors.TurbopufferError
+import com.turbopuffer.models.DocumentRowWithScore
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
 import com.turbopuffer.models.NamespaceGetSchemaParams
