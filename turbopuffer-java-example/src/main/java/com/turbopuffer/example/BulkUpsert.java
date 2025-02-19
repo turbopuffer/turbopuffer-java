@@ -16,7 +16,7 @@ import com.turbopuffer.models.NamespaceUpsertParams.Documents.UpsertRowBased;
 public class BulkUpsert {
 
     private static final int NUM_BATCHES = 10;
-    private static final int BATCH_SIZE = 100;
+    private static final int BATCH_SIZE = 1500;
     private static final int VECTOR_DIM = 1024;
 
     public static void main(String[] args) {
@@ -24,7 +24,7 @@ public class BulkUpsert {
                 .fromEnv()
                 .build();
 
-        var namespace = "turbopuffer-java-bulk-upsert-test2";
+        var namespace = "turbopuffer-java-bulk-upsert-test";
         System.out.printf("Operating on namespace: %s\n", namespace);
 
         long startTime = System.currentTimeMillis();
