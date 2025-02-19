@@ -150,9 +150,9 @@ See [Undocumented request params](#undocumented-request-params) for how to send 
 When receiving a response, the Turbopuffer Java SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Java type. If you directly access the mistaken property, the SDK will throw an unchecked `TurbopufferInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
 
 ```java
-import com.turbopuffer.models.DocumentRowResponse;
+import com.turbopuffer.models;
 
-List<DocumentRowResponse> documentRowResponses = client.namespaces().query().validate();
+List<DocumentRowWithScore> response = client.namespaces().query().validate();
 ```
 
 ### Response properties as JSON

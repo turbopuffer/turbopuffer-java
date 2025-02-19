@@ -13,7 +13,6 @@ import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.json
 import com.turbopuffer.core.prepare
 import com.turbopuffer.errors.TurbopufferError
-import com.turbopuffer.models.DocumentRowResponse
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
 import com.turbopuffer.models.NamespaceGetSchemaParams
@@ -106,15 +105,15 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             }
     }
 
-    private val queryHandler: Handler<List<DocumentRowResponse>> =
-        jsonHandler<List<DocumentRowResponse>>(clientOptions.jsonMapper)
+    private val queryHandler: Handler<List<DocumentRowWithScore>> =
+        jsonHandler<List<DocumentRowWithScore>>(clientOptions.jsonMapper)
             .withErrorHandler(errorHandler)
 
     /** Query, filter, full-text search and vector search documents. */
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
-    ): List<DocumentRowResponse> {
+    ): List<DocumentRowWithScore> {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
