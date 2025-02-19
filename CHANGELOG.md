@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.0-beta.0 (2025-02-19)
+
+Full Changelog: [v0.1.0-alpha.7...v0.1.0-beta.0](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-alpha.7...v0.1.0-beta.0)
+
+### Features
+
+* add basic examples ([97996bc](https://github.com/turbopuffer/turbopuffer-java/commit/97996bc5758ab8d7806762cb3ecc91015d42cbf7))
+
+
+### Bug Fixes
+
+* disable configuration cache ([47e035b](https://github.com/turbopuffer/turbopuffer-java/commit/47e035ba7ddbdbe815e8e5f77b1e9347596c91af))
+
 ## 0.1.0-alpha.7 (2025-02-19)
 
 Full Changelog: [v0.1.0-alpha.6...v0.1.0-alpha.7](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-alpha.6...v0.1.0-alpha.7)
