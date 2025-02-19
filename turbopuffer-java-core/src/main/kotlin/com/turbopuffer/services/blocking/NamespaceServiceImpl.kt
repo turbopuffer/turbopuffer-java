@@ -13,7 +13,6 @@ import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.json
 import com.turbopuffer.core.prepare
 import com.turbopuffer.errors.TurbopufferError
-import com.turbopuffer.models.DocumentRow
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
 import com.turbopuffer.models.NamespaceGetSchemaParams
@@ -106,13 +105,14 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             }
     }
 
-    private val queryHandler: Handler<List<DocumentRow>> =
-        jsonHandler<List<DocumentRow>>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    private val queryHandler: Handler<List<UnnamedSchemaWithArrayParent0>> =
+        jsonHandler<List<UnnamedSchemaWithArrayParent0>>(clientOptions.jsonMapper)
+            .withErrorHandler(errorHandler)
 
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
-    ): List<DocumentRow> {
+    ): List<UnnamedSchemaWithArrayParent0> {
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
