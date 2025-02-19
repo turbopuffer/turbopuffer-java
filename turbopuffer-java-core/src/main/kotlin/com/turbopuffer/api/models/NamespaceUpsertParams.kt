@@ -280,7 +280,7 @@ private constructor(
             private val ids: JsonField<List<DocumentColumns.Id>> = JsonMissing.of(),
             @JsonProperty("vectors")
             @ExcludeMissing
-            private val vectors: JsonField<List<DocumentColumns.Vector?>> = JsonMissing.of(),
+            private val vectors: JsonField<List<List<Double>?>> = JsonMissing.of(),
             @JsonProperty("distance_metric")
             @ExcludeMissing
             private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
@@ -300,7 +300,7 @@ private constructor(
                 Optional.ofNullable(ids.getNullable("ids"))
 
             /** Vectors describing each of the documents. */
-            fun vectors(): Optional<List<DocumentColumns.Vector?>> =
+            fun vectors(): Optional<List<List<Double>?>> =
                 Optional.ofNullable(vectors.getNullable("vectors"))
 
             /** A function used to calculate vector similarity. */
@@ -323,7 +323,7 @@ private constructor(
             /** Vectors describing each of the documents. */
             @JsonProperty("vectors")
             @ExcludeMissing
-            fun _vectors(): JsonField<List<DocumentColumns.Vector?>> = vectors
+            fun _vectors(): JsonField<List<List<Double>?>> = vectors
 
             /** A function used to calculate vector similarity. */
             @JsonProperty("distance_metric")
@@ -349,7 +349,7 @@ private constructor(
 
                 attributes().ifPresent { it.validate() }
                 ids().ifPresent { it.forEach { it.validate() } }
-                vectors().ifPresent { it.forEach { it?.validate() } }
+                vectors()
                 distanceMetric()
                 schema().ifPresent { it.validate() }
                 validated = true
@@ -367,7 +367,7 @@ private constructor(
 
                 private var attributes: JsonField<DocumentColumns.Attributes> = JsonMissing.of()
                 private var ids: JsonField<MutableList<DocumentColumns.Id>>? = null
-                private var vectors: JsonField<MutableList<DocumentColumns.Vector?>>? = null
+                private var vectors: JsonField<MutableList<List<Double>?>>? = null
                 private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
                 private var schema: JsonField<Schema> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -420,15 +420,15 @@ private constructor(
                 fun addId(integer: Long) = addId(DocumentColumns.Id.ofInteger(integer))
 
                 /** Vectors describing each of the documents. */
-                fun vectors(vectors: List<DocumentColumns.Vector?>) = vectors(JsonField.of(vectors))
+                fun vectors(vectors: List<List<Double>?>) = vectors(JsonField.of(vectors))
 
                 /** Vectors describing each of the documents. */
-                fun vectors(vectors: JsonField<List<DocumentColumns.Vector?>>) = apply {
+                fun vectors(vectors: JsonField<List<List<Double>?>>) = apply {
                     this.vectors = vectors.map { it.toMutableList() }
                 }
 
                 /** Vectors describing each of the documents. */
-                fun addVector(vector: DocumentColumns.Vector) = apply {
+                fun addVector(vector: List<Double>) = apply {
                     vectors =
                         (vectors ?: JsonField.of(mutableListOf())).apply {
                             asKnown()
@@ -440,13 +440,6 @@ private constructor(
                                 .add(vector)
                         }
                 }
-
-                /** Vectors describing each of the documents. */
-                fun addVector(number: Double) = addVector(DocumentColumns.Vector.ofNumber(number))
-
-                /** Vectors describing each of the documents. */
-                fun addVectorOfNumber(number: List<Double>) =
-                    addVector(DocumentColumns.Vector.ofNumber(number))
 
                 /** A function used to calculate vector similarity. */
                 fun distanceMetric(distanceMetric: DistanceMetric) =
