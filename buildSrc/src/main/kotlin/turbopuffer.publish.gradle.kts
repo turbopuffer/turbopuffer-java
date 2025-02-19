@@ -39,9 +39,9 @@ configure<MavenPublishBaseExtension> {
         }
 
         scm {
-            connection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java.git")
-            developerConnection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java.git")
-            url.set("https://github.com/turbopuffer/turbopuffer-java")
+            connection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java-2.git")
+            developerConnection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java-2.git")
+            url.set("https://github.com/turbopuffer/turbopuffer-java-2")
         }
     }
 }
