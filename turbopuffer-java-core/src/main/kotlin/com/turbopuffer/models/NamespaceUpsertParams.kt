@@ -35,7 +35,7 @@ import java.util.Optional
 class NamespaceUpsertParams
 private constructor(
     private val namespace: String,
-    private val body: Body,
+    private val documents: Documents,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -43,13 +43,13 @@ private constructor(
     fun namespace(): String = namespace
 
     /** Upsert documents in columnar format. */
-    fun body(): Body = body
+    fun documents(): Documents = documents
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Body = body
+    @JvmSynthetic internal fun _body(): Documents = documents
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -63,9 +63,9 @@ private constructor(
     }
 
     /** Upsert documents in columnar format. */
-    @JsonDeserialize(using = Body.Deserializer::class)
-    @JsonSerialize(using = Body.Serializer::class)
-    class Body
+    @JsonDeserialize(using = Documents.Deserializer::class)
+    @JsonSerialize(using = Documents.Serializer::class)
+    class Documents
     private constructor(
         private val upsertColumnar: UpsertColumnar? = null,
         private val upsertRowBased: UpsertRowBased? = null,
@@ -122,7 +122,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Body = apply {
+        fun validate(): Documents = apply {
             if (validated) {
                 return@apply
             }
@@ -154,19 +154,19 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && upsertColumnar == other.upsertColumnar && upsertRowBased == other.upsertRowBased && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
+            return /* spotless:off */ other is Documents && upsertColumnar == other.upsertColumnar && upsertRowBased == other.upsertRowBased && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
         }
 
         override fun hashCode(): Int = /* spotless:off */ Objects.hash(upsertColumnar, upsertRowBased, copyFromNamespace, deleteByFilter) /* spotless:on */
 
         override fun toString(): String =
             when {
-                upsertColumnar != null -> "Body{upsertColumnar=$upsertColumnar}"
-                upsertRowBased != null -> "Body{upsertRowBased=$upsertRowBased}"
-                copyFromNamespace != null -> "Body{copyFromNamespace=$copyFromNamespace}"
-                deleteByFilter != null -> "Body{deleteByFilter=$deleteByFilter}"
-                _json != null -> "Body{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid Body")
+                upsertColumnar != null -> "Documents{upsertColumnar=$upsertColumnar}"
+                upsertRowBased != null -> "Documents{upsertRowBased=$upsertRowBased}"
+                copyFromNamespace != null -> "Documents{copyFromNamespace=$copyFromNamespace}"
+                deleteByFilter != null -> "Documents{deleteByFilter=$deleteByFilter}"
+                _json != null -> "Documents{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Documents")
             }
 
         companion object {
@@ -174,25 +174,27 @@ private constructor(
             /** Upsert documents in columnar format. */
             @JvmStatic
             fun ofUpsertColumnar(upsertColumnar: UpsertColumnar) =
-                Body(upsertColumnar = upsertColumnar)
+                Documents(upsertColumnar = upsertColumnar)
 
             /** Upsert documents in row-based format. */
             @JvmStatic
             fun ofUpsertRowBased(upsertRowBased: UpsertRowBased) =
-                Body(upsertRowBased = upsertRowBased)
+                Documents(upsertRowBased = upsertRowBased)
 
             /** Copy documents from another namespace. */
             @JvmStatic
             fun ofCopyFromNamespace(copyFromNamespace: CopyFromNamespace) =
-                Body(copyFromNamespace = copyFromNamespace)
+                Documents(copyFromNamespace = copyFromNamespace)
 
             /** Delete documents by filter. */
             @JvmStatic
             fun ofDeleteByFilter(deleteByFilter: DeleteByFilter) =
-                Body(deleteByFilter = deleteByFilter)
+                Documents(deleteByFilter = deleteByFilter)
         }
 
-        /** An interface that defines how to map each variant of [Body] to a value of type [T]. */
+        /**
+         * An interface that defines how to map each variant of [Documents] to a value of type [T].
+         */
         interface Visitor<out T> {
 
             /** Upsert documents in columnar format. */
@@ -208,49 +210,50 @@ private constructor(
             fun visitDeleteByFilter(deleteByFilter: DeleteByFilter): T
 
             /**
-             * Maps an unknown variant of [Body] to a value of type [T].
+             * Maps an unknown variant of [Documents] to a value of type [T].
              *
-             * An instance of [Body] can contain an unknown variant if it was deserialized from data
-             * that doesn't match any known variant. For example, if the SDK is on an older version
-             * than the API, then the API may respond with new variants that the SDK is unaware of.
+             * An instance of [Documents] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
              *
              * @throws TurbopufferInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw TurbopufferInvalidDataException("Unknown Body: $json")
+                throw TurbopufferInvalidDataException("Unknown Documents: $json")
             }
         }
 
-        internal class Deserializer : BaseDeserializer<Body>(Body::class) {
+        internal class Deserializer : BaseDeserializer<Documents>(Documents::class) {
 
-            override fun ObjectCodec.deserialize(node: JsonNode): Body {
+            override fun ObjectCodec.deserialize(node: JsonNode): Documents {
                 val json = JsonValue.fromJsonNode(node)
 
                 tryDeserialize(node, jacksonTypeRef<UpsertColumnar>()) { it.validate() }
                     ?.let {
-                        return Body(upsertColumnar = it, _json = json)
+                        return Documents(upsertColumnar = it, _json = json)
                     }
                 tryDeserialize(node, jacksonTypeRef<UpsertRowBased>()) { it.validate() }
                     ?.let {
-                        return Body(upsertRowBased = it, _json = json)
+                        return Documents(upsertRowBased = it, _json = json)
                     }
                 tryDeserialize(node, jacksonTypeRef<CopyFromNamespace>()) { it.validate() }
                     ?.let {
-                        return Body(copyFromNamespace = it, _json = json)
+                        return Documents(copyFromNamespace = it, _json = json)
                     }
                 tryDeserialize(node, jacksonTypeRef<DeleteByFilter>()) { it.validate() }
                     ?.let {
-                        return Body(deleteByFilter = it, _json = json)
+                        return Documents(deleteByFilter = it, _json = json)
                     }
 
-                return Body(_json = json)
+                return Documents(_json = json)
             }
         }
 
-        internal class Serializer : BaseSerializer<Body>(Body::class) {
+        internal class Serializer : BaseSerializer<Documents>(Documents::class) {
 
             override fun serialize(
-                value: Body,
+                value: Documents,
                 generator: JsonGenerator,
                 provider: SerializerProvider,
             ) {
@@ -261,7 +264,7 @@ private constructor(
                         generator.writeObject(value.copyFromNamespace)
                     value.deleteByFilter != null -> generator.writeObject(value.deleteByFilter)
                     value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Body")
+                    else -> throw IllegalStateException("Invalid Documents")
                 }
             }
         }
@@ -949,6 +952,7 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
+            /** The filter specifying which documents to delete. */
             @JsonProperty("delete_by_filter")
             @ExcludeMissing
             fun _deleteByFilter(): JsonValue = deleteByFilter
@@ -986,6 +990,7 @@ private constructor(
                     additionalProperties = deleteByFilter.additionalProperties.toMutableMap()
                 }
 
+                /** The filter specifying which documents to delete. */
                 fun deleteByFilter(deleteByFilter: JsonValue) = apply {
                     this.deleteByFilter = deleteByFilter
                 }
@@ -1050,14 +1055,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var namespace: String? = null
-        private var body: Body? = null
+        private var documents: Documents? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(namespaceUpsertParams: NamespaceUpsertParams) = apply {
             namespace = namespaceUpsertParams.namespace
-            body = namespaceUpsertParams.body
+            documents = namespaceUpsertParams.documents
             additionalHeaders = namespaceUpsertParams.additionalHeaders.toBuilder()
             additionalQueryParams = namespaceUpsertParams.additionalQueryParams.toBuilder()
         }
@@ -1065,20 +1070,23 @@ private constructor(
         fun namespace(namespace: String) = apply { this.namespace = namespace }
 
         /** Upsert documents in columnar format. */
-        fun body(body: Body) = apply { this.body = body }
+        fun documents(documents: Documents) = apply { this.documents = documents }
 
         /** Upsert documents in columnar format. */
-        fun body(upsertColumnar: Body.UpsertColumnar) = body(Body.ofUpsertColumnar(upsertColumnar))
+        fun documents(upsertColumnar: Documents.UpsertColumnar) =
+            documents(Documents.ofUpsertColumnar(upsertColumnar))
 
         /** Upsert documents in row-based format. */
-        fun body(upsertRowBased: Body.UpsertRowBased) = body(Body.ofUpsertRowBased(upsertRowBased))
+        fun documents(upsertRowBased: Documents.UpsertRowBased) =
+            documents(Documents.ofUpsertRowBased(upsertRowBased))
 
         /** Copy documents from another namespace. */
-        fun body(copyFromNamespace: Body.CopyFromNamespace) =
-            body(Body.ofCopyFromNamespace(copyFromNamespace))
+        fun documents(copyFromNamespace: Documents.CopyFromNamespace) =
+            documents(Documents.ofCopyFromNamespace(copyFromNamespace))
 
         /** Delete documents by filter. */
-        fun body(deleteByFilter: Body.DeleteByFilter) = body(Body.ofDeleteByFilter(deleteByFilter))
+        fun documents(deleteByFilter: Documents.DeleteByFilter) =
+            documents(Documents.ofDeleteByFilter(deleteByFilter))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -1181,7 +1189,7 @@ private constructor(
         fun build(): NamespaceUpsertParams =
             NamespaceUpsertParams(
                 checkRequired("namespace", namespace),
-                checkRequired("body", body),
+                checkRequired("documents", documents),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -1192,11 +1200,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceUpsertParams && namespace == other.namespace && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceUpsertParams && namespace == other.namespace && documents == other.documents && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, documents, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceUpsertParams{namespace=$namespace, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceUpsertParams{namespace=$namespace, documents=$documents, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

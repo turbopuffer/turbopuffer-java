@@ -87,7 +87,7 @@ import com.turbopuffer.models.NamespaceUpsertResponse;
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .body(NamespaceUpsertParams.Body.UpsertColumnar.builder()
+    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
         .build())
     .build();
@@ -152,7 +152,7 @@ When receiving a response, the Turbopuffer Java SDK will deserialize it into ins
 ```java
 import com.turbopuffer.models;
 
-List<UnnamedSchemaWithArrayParent0> response = client.namespaces().query().validate();
+List<DocumentRowResponse> response = client.namespaces().query().validate();
 ```
 
 ### Response properties as JSON
@@ -186,7 +186,7 @@ Sometimes, the server response may include additional properties that are not ye
 ```java
 import com.turbopuffer.core.JsonValue;
 
-JsonValue secret = documentColumns._additionalProperties().get("secret_field");
+JsonValue secret = attributeSchema._additionalProperties().get("secret_field");
 ```
 
 ---
