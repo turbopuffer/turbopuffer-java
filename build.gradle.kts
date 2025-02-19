@@ -6,11 +6,6 @@ repositories {
     mavenCentral()
 }
 
-allprojects {
-    group = "com.turbopuffer"
-    version = "0.1.0-beta.8" // x-release-please-version
-}
-
 subprojects {
     apply(plugin = "org.jetbrains.dokka")
 }
@@ -22,4 +17,9 @@ tasks.named("dokkaJavadocCollector").configure {
     subprojects.flatMap { it.tasks }
         .filter { it.project.name != "turbopuffer-java" && it.name == "dokkaJavadocJar" }
         .forEach { mustRunAfter(it) }
+}
+
+allprojects {
+    group = "com.turbopuffer"
+    version = "0.1.0-beta.8" // x-release-please-version
 }
