@@ -119,7 +119,7 @@ class ServiceParamsTest {
                                 .build()
                         )
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .addVector(0.0)
+                        .addVector(listOf(0.0))
                         .distanceMetric(
                             NamespaceUpsertParams.Body.UpsertColumnar.DistanceMetric.COSINE_DISTANCE
                         )
