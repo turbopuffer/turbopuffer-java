@@ -1,4 +1,4 @@
 allprojects {
     group = "com.turbopuffer"
-    version = "0.1.0-alpha.7" // x-release-please-version
+    version = "0.1.0-beta.0" // x-release-please-version
 }
