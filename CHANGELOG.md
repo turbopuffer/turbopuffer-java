@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-beta.5 (2025-02-19)
+
+Full Changelog: [v0.1.0-beta.4...v0.1.0-beta.5](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.4...v0.1.0-beta.5)
+
+### Features
+
+* fix: avoid races in dokka ([c023cda](https://github.com/turbopuffer/turbopuffer-java/commit/c023cda5ee19c14c9e565efb3de8fffa7c5f8c78))
+
 ## 0.1.0-beta.4 (2025-02-19)
 
 Full Changelog: [v0.1.0-beta.3...v0.1.0-beta.4](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.3...v0.1.0-beta.4)
