@@ -1,4 +1,4 @@
 allprojects {
-    group = "com.turbopuffer.api"
-    version = "0.1.0-alpha.2" // x-release-please-version
+    group = "com.turbopuffer"
+    version = "0.1.0-alpha.3" // x-release-please-version
 }
