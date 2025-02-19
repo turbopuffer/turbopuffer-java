@@ -9,7 +9,7 @@ jobs:
   release_doctor:
     name: release doctor
     runs-on: ubuntu-latest
-    if: github.repository == 'turbopuffer/turbopuffer-java-2' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please') || github.head_ref == 'next')
+    if: github.repository == 'turbopuffer/turbopuffer-java' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please') || github.head_ref == 'next')
 
     steps:
       - uses: actions/checkout@v4
@@ -18,7 +18,6 @@ jobs:
         run: |
           bash ./bin/check-release-environment
         env:
-          STAINLESS_API_KEY: ${{ secrets.STAINLESS_API_KEY }}
           SONATYPE_USERNAME: ${{ secrets.TURBOPUFFER_SONATYPE_USERNAME || secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.TURBOPUFFER_SONATYPE_PASSWORD || secrets.SONATYPE_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.TURBOPUFFER_SONATYPE_GPG_SIGNING_KEY || secrets.GPG_SIGNING_KEY }}
