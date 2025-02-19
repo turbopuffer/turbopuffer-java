@@ -16,7 +16,7 @@ class DocumentColumnsTest {
             DocumentColumns.builder()
                 .attributes(
                     DocumentColumns.Attributes.builder()
-                        .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf<String, Any>())))
+                        .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf("foo" to "bar"))))
                         .build()
                 )
                 .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -26,7 +26,7 @@ class DocumentColumnsTest {
         assertThat(documentColumns.attributes())
             .contains(
                 DocumentColumns.Attributes.builder()
-                    .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf<String, Any>())))
+                    .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf("foo" to "bar"))))
                     .build()
             )
         assertThat(documentColumns.ids().get())

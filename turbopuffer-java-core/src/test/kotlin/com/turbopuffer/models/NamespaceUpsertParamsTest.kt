@@ -20,7 +20,7 @@ class NamespaceUpsertParamsTest {
                         DocumentColumns.Attributes.builder()
                             .putAdditionalProperty(
                                 "foo",
-                                JsonValue.from(listOf(mapOf<String, Any>())),
+                                JsonValue.from(listOf(mapOf("foo" to "bar"))),
                             )
                             .build()
                     )
@@ -60,7 +60,7 @@ class NamespaceUpsertParamsTest {
                             DocumentColumns.Attributes.builder()
                                 .putAdditionalProperty(
                                     "foo",
-                                    JsonValue.from(listOf(mapOf<String, Any>())),
+                                    JsonValue.from(listOf(mapOf("foo" to "bar"))),
                                 )
                                 .build()
                         )
@@ -98,7 +98,7 @@ class NamespaceUpsertParamsTest {
                             DocumentColumns.Attributes.builder()
                                 .putAdditionalProperty(
                                     "foo",
-                                    JsonValue.from(listOf(mapOf<String, Any>())),
+                                    JsonValue.from(listOf(mapOf("foo" to "bar"))),
                                 )
                                 .build()
                         )
