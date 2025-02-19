@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.0-beta.3 (2025-02-19)
+
+Full Changelog: [v0.1.0-beta.2...v0.1.0-beta.3](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.2...v0.1.0-beta.3)
+
+### Features
+
+* **api:** api update ([#49](https://github.com/turbopuffer/turbopuffer-java/issues/49)) ([abb8e60](https://github.com/turbopuffer/turbopuffer-java/commit/abb8e60f295f0a46062a82f74cd979b7c249649c))
+* fix: Javadoc publishing task ([845f26e](https://github.com/turbopuffer/turbopuffer-java/commit/845f26eb563ffc1b899c107af031f12418b017b7))
+
+
+### Chores
+
+* **internal:** version bump ([#46](https://github.com/turbopuffer/turbopuffer-java/issues/46)) ([1abe1af](https://github.com/turbopuffer/turbopuffer-java/commit/1abe1af65e2d639631625e26f1e31243d57c8fbf))
+
 ## 0.1.0-beta.2 (2025-02-19)
 
 Full Changelog: [v0.1.0-beta.1...v0.1.0-beta.2](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.1...v0.1.0-beta.2)
