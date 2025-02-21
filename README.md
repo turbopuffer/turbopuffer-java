@@ -1,15 +1,15 @@
 # turbopuffer Java API Library
 
-> [!IMPORTANT]
-> **The turbopuffer Java client is still in beta.**
->
-> Please let us know about any bugs or performance issues.
-
 <!-- x-release-please-start-version -->
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.9)
 
 <!-- x-release-please-end -->
+
+> [!IMPORTANT]
+> **The turbopuffer Java client is still in beta.**
+>
+> Please let us know about any bugs or performance issues.
 
 The turbopuffer Java SDK provides convenient access to the Turbopuffer REST API from applications written in Java.
 
