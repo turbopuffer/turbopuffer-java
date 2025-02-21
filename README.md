@@ -1,4 +1,9 @@
-# Turbopuffer Java API Library
+# turbopuffer Java API Library
+
+> [!IMPORTANT]
+> **The turbopuffer Java client is still in beta.**
+>
+> Please let us know about any bugs or performance issues.
 
 <!-- x-release-please-start-version -->
 
@@ -6,7 +11,7 @@
 
 <!-- x-release-please-end -->
 
-The Turbopuffer Java SDK provides convenient access to the Turbopuffer REST API from applications written in Java.
+The turbopuffer Java SDK provides convenient access to the Turbopuffer REST API from applications written in Java.
 
 It is generated with [Stainless](https://www.stainlessapi.com/).
 
@@ -147,7 +152,7 @@ See [Undocumented request params](#undocumented-request-params) for how to send 
 
 ### Response validation
 
-When receiving a response, the Turbopuffer Java SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Java type. If you directly access the mistaken property, the SDK will throw an unchecked `TurbopufferInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
+When receiving a response, the turbopuffer Java SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Java type. If you directly access the mistaken property, the SDK will throw an unchecked `TurbopufferInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
 
 ```java
 import com.turbopuffer.models.DocumentRowWithScore;
