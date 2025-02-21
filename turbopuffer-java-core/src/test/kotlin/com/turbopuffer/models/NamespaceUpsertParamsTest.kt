@@ -3,6 +3,7 @@
 package com.turbopuffer.models
 
 import com.turbopuffer.core.JsonValue
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -87,9 +88,8 @@ class NamespaceUpsertParamsTest {
                 )
                 .build()
 
-        val body = params._body()
+        val body = params._body().getOrNull()
 
-        assertThat(body).isNotNull
         assertThat(body)
             .isEqualTo(
                 NamespaceUpsertParams.Documents.ofUpsertColumnar(
@@ -129,41 +129,15 @@ class NamespaceUpsertParamsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun bodyWithoutOptionalFields() {
-        val params =
-            NamespaceUpsertParams.builder()
-                .namespace("namespace")
-                .documents(
-                    NamespaceUpsertParams.Documents.UpsertColumnar.builder()
-                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .build()
-                )
-                .build()
+        val params = NamespaceUpsertParams.builder().namespace("namespace").build()
 
-        val body = params._body()
-
-        assertThat(body).isNotNull
-        assertThat(body)
-            .isEqualTo(
-                NamespaceUpsertParams.Documents.ofUpsertColumnar(
-                    NamespaceUpsertParams.Documents.UpsertColumnar.builder()
-                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .build()
-                )
-            )
+        val body = params._body().getOrNull()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun getPathParam() {
-        val params =
-            NamespaceUpsertParams.builder()
-                .namespace("namespace")
-                .documents(
-                    NamespaceUpsertParams.Documents.UpsertColumnar.builder()
-                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .build()
-                )
-                .build()
+        val params = NamespaceUpsertParams.builder().namespace("namespace").build()
         assertThat(params).isNotNull
         // path param "namespace"
         assertThat(params.getPathParam(0)).isEqualTo("namespace")
