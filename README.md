@@ -7,7 +7,7 @@
 <!-- x-release-please-end -->
 
 > [!IMPORTANT]
-> **The turbopuffer Java client is still in beta.**
+> **The turbopuffer Java client is in beta.**
 >
 > Please let us know about any bugs or performance issues.
 
