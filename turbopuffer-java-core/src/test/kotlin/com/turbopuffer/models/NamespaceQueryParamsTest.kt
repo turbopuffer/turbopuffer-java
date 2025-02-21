@@ -3,6 +3,7 @@
 package com.turbopuffer.models
 
 import com.turbopuffer.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -51,7 +52,7 @@ class NamespaceQueryParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.consistency())
             .contains(
                 NamespaceQueryParams.Consistency.builder()
@@ -75,7 +76,7 @@ class NamespaceQueryParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
