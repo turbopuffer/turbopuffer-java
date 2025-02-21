@@ -35,7 +35,7 @@ import java.util.Optional
 class NamespaceUpsertParams
 private constructor(
     private val namespace: String,
-    private val documents: Documents,
+    private val documents: Documents?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -43,13 +43,13 @@ private constructor(
     fun namespace(): String = namespace
 
     /** Upsert documents in columnar format. */
-    fun documents(): Documents = documents
+    fun documents(): Optional<Documents> = Optional.ofNullable(documents)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Documents = documents
+    @JvmSynthetic internal fun _body(): Optional<Documents> = Optional.ofNullable(documents)
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -1070,7 +1070,10 @@ private constructor(
         fun namespace(namespace: String) = apply { this.namespace = namespace }
 
         /** Upsert documents in columnar format. */
-        fun documents(documents: Documents) = apply { this.documents = documents }
+        fun documents(documents: Documents?) = apply { this.documents = documents }
+
+        /** Upsert documents in columnar format. */
+        fun documents(documents: Optional<Documents>) = documents(documents.orElse(null))
 
         /** Upsert documents in columnar format. */
         fun documents(upsertColumnar: Documents.UpsertColumnar) =
@@ -1189,7 +1192,7 @@ private constructor(
         fun build(): NamespaceUpsertParams =
             NamespaceUpsertParams(
                 checkRequired("namespace", namespace),
-                checkRequired("documents", documents),
+                documents,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
