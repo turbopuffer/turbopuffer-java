@@ -45,50 +45,15 @@ This library requires Java 8 or later.
 
 ## Usage
 
-### Configure the client
-
-Use `TurbopufferOkHttpClient.builder()` to configure the client. At a minimum you need to set `.apiKey()`:
-
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-
-TurbopufferClient client = TurbopufferOkHttpClient.builder()
-    .apiKey("My API Key")
-    .build();
-```
-
-Alternately, set the environment with `TURBOPUFFER_API_KEY`, and use `TurbopufferOkHttpClient.fromEnv()` to read from the environment.
-
-```java
-import com.turbopuffer.client.TurbopufferClient;
-import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-
-TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
-
-// Note: you can also call fromEnv() from the client builder, for example if you need to set additional properties
-TurbopufferClient client = TurbopufferOkHttpClient.builder()
-    .fromEnv()
-    // ... set properties on the builder
-    .build();
-```
-
-| Property | Environment variable  | Required | Default value |
-| -------- | --------------------- | -------- | ------------- |
-| apiKey   | `TURBOPUFFER_API_KEY` | true     | —             |
-
-Read the documentation for more configuration options.
-
----
-
-### Example: creating a resource
-
-To create a new namespace, first use the `NamespaceUpsertParams` builder to specify attributes, then pass that to the `upsert` method of the `namespaces` service.
-
-```java
 import com.turbopuffer.models.DistanceMetric;
 import com.turbopuffer.models.NamespaceUpsertParams;
 import com.turbopuffer.models.NamespaceUpsertResponse;
+
+// Configures using the `TURBOPUFFER_API_KEY` environment variable
+TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
@@ -99,102 +64,128 @@ NamespaceUpsertParams params = NamespaceUpsertParams.builder()
 NamespaceUpsertResponse response = client.namespaces().upsert(params);
 ```
 
-### Example: listing resources
+## Client configuration
 
-The Turbopuffer API provides a `list` method to get a paginated list of namespaces. You can retrieve the first page by:
+Configure the client using environment variables:
 
 ```java
-import com.turbopuffer.models.NamespaceListPage;
-import com.turbopuffer.models.NamespaceSummary;
+import com.turbopuffer.client.TurbopufferClient;
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
-NamespaceListPage page = client.namespaces().list();
-for (NamespaceSummary namespace : page.namespaces()) {
-    System.out.println(namespace);
-}
+// Configures using the `TURBOPUFFER_API_KEY` environment variable
+TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 ```
 
-Use the `NamespaceListParams` builder to set parameters:
+Or manually:
 
 ```java
-import com.turbopuffer.models.NamespaceListPage;
-import com.turbopuffer.models.NamespaceListParams;
+import com.turbopuffer.client.TurbopufferClient;
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
-NamespaceListParams params = NamespaceListParams.builder()
-    .cursor("cursor")
-    .pageSize(1L)
-    .prefix("products")
+TurbopufferClient client = TurbopufferOkHttpClient.builder()
+    .apiKey("My API Key")
     .build();
-NamespaceListPage page1 = client.namespaces().list(params);
-
-// Using the `from` method of the builder you can reuse previous params values:
-NamespaceListPage page2 = client.namespaces().list(NamespaceListParams.builder()
-    .from(params)
-    .nextCursor("abc123...")
-    .build());
-
-// Or easily get params for the next page by using the helper `getNextPageParams`:
-NamespaceListPage page3 = client.namespaces().list(params.getNextPageParams(page2));
 ```
 
-See [Pagination](#pagination) below for more information on transparently working with lists of objects without worrying about fetching each page.
-
----
-
-## Requests
-
-### Parameters and bodies
-
-To make a request to the Turbopuffer API, you generally build an instance of the appropriate `Params` class.
-
-See [Undocumented request params](#undocumented-request-params) for how to send arbitrary parameters.
-
-## Responses
-
-### Response validation
-
-When receiving a response, the turbopuffer Java SDK will deserialize it into instances of the typed model classes. In rare cases, the API may return a response property that doesn't match the expected Java type. If you directly access the mistaken property, the SDK will throw an unchecked `TurbopufferInvalidDataException` at runtime. If you would prefer to check in advance that that response is completely well-typed, call `.validate()` on the returned model.
+Or using a combination of the two approaches:
 
 ```java
-import com.turbopuffer.models.DocumentRowWithScore;
+import com.turbopuffer.client.TurbopufferClient;
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
-List<DocumentRowWithScore> documentRowWithScores = client.namespaces().query().validate();
+TurbopufferClient client = TurbopufferOkHttpClient.builder()
+    // Configures using the `TURBOPUFFER_API_KEY` environment variable
+    .fromEnv()
+    .apiKey("My API Key")
+    .build();
 ```
 
-### Response properties as JSON
+See this table for the available options:
 
-In rare cases, you may want to access the underlying JSON value for a response property rather than using the typed version provided by this SDK. Each model property has a corresponding JSON version, with an underscore before the method name, which returns a `JsonField` value.
+| Setter   | Environment variable  | Required | Default value |
+| -------- | --------------------- | -------- | ------------- |
+| `apiKey` | `TURBOPUFFER_API_KEY` | true     | -             |
+
+> [!TIP]
+> Don't create more than one client in the same application. Each client has a connection pool and
+> thread pools, which are more efficient to share between requests.
+
+## Requests and responses
+
+To send a request to the turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
+
+For example, `client.namespaces().upsert(...)` should be called with an instance of `NamespaceUpsertParams`, and it will return an instance of `NamespaceUpsertResponse`.
+
+## Asynchronous execution
+
+The default client is synchronous. To switch to asynchronous execution, call the `async()` method:
 
 ```java
-import com.turbopuffer.core.JsonField;
-import java.util.Optional;
+import com.turbopuffer.client.TurbopufferClient;
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.models.DistanceMetric;
+import com.turbopuffer.models.NamespaceUpsertParams;
+import com.turbopuffer.models.NamespaceUpsertResponse;
+import java.util.concurrent.CompletableFuture;
 
-JsonField field = responseObj._field();
+// Configures using the `TURBOPUFFER_API_KEY` environment variable
+TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
-if (field.isMissing()) {
-  // Value was not specified in the JSON response
-} else if (field.isNull()) {
-  // Value was provided as a literal null
-} else {
-  // See if value was provided as a string
-  Optional<String> jsonString = field.asString();
-
-  // If the value given by the API did not match the shape that the SDK expects
-  // you can deserialise into a custom type
-  MyClass myObj = responseObj._field().asUnknown().orElseThrow().convert(MyClass.class);
-}
+NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+    .namespace("products")
+    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
+        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+        .build())
+    .build();
+CompletableFuture<NamespaceUpsertResponse> response = client.async().namespaces().upsert(params);
 ```
 
-### Additional model properties
-
-Sometimes, the server response may include additional properties that are not yet available in this library's types. You can access them using the model's `_additionalProperties` method:
+Or create an asynchronous client from the beginning:
 
 ```java
-import com.turbopuffer.core.JsonValue;
+import com.turbopuffer.client.TurbopufferClientAsync;
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync;
+import com.turbopuffer.models.DistanceMetric;
+import com.turbopuffer.models.NamespaceUpsertParams;
+import com.turbopuffer.models.NamespaceUpsertResponse;
+import java.util.concurrent.CompletableFuture;
 
-JsonValue secret = attributeSchema._additionalProperties().get("secret_field");
+// Configures using the `TURBOPUFFER_API_KEY` environment variable
+TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
+
+NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+    .namespace("products")
+    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
+        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+        .build())
+    .build();
+CompletableFuture<NamespaceUpsertResponse> response = client.namespaces().upsert(params);
 ```
 
----
+The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
+
+## Error handling
+
+The SDK throws custom unchecked exception types:
+
+- `TurbopufferServiceException`: Base class for HTTP errors. See this table for which exception subclass is thrown for each HTTP status code:
+
+  | Status | Exception                       |
+  | ------ | ------------------------------- |
+  | 400    | `BadRequestException`           |
+  | 401    | `AuthenticationException`       |
+  | 403    | `PermissionDeniedException`     |
+  | 404    | `NotFoundException`             |
+  | 422    | `UnprocessableEntityException`  |
+  | 429    | `RateLimitException`            |
+  | 5xx    | `InternalServerException`       |
+  | others | `UnexpectedStatusCodeException` |
+
+- `TurbopufferIoException`: I/O networking errors.
+
+- `TurbopufferInvalidDataException`: Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
+
+- `TurbopufferException`: Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
 
 ## Pagination
 
@@ -248,36 +239,39 @@ while (page != null) {
 }
 ```
 
----
+## Logging
 
-## Error handling
+The SDK uses the standard [OkHttp logging interceptor](https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor).
 
-This library throws exceptions in a single hierarchy for easy handling:
+Enable logging by setting the `TURBOPUFFER_LOG` environment variable to `info`:
 
-- **`TurbopufferException`** - Base exception for all exceptions
+```sh
+$ export TURBOPUFFER_LOG=info
+```
 
-- **`TurbopufferServiceException`** - HTTP errors with a well-formed response body we were able to parse. The exception message and the `.debuggingRequestId()` will be set by the server.
+Or to `debug` for more verbose logging:
 
-  | 400    | BadRequestException           |
-  | ------ | ----------------------------- |
-  | 401    | AuthenticationException       |
-  | 403    | PermissionDeniedException     |
-  | 404    | NotFoundException             |
-  | 422    | UnprocessableEntityException  |
-  | 429    | RateLimitException            |
-  | 5xx    | InternalServerException       |
-  | others | UnexpectedStatusCodeException |
-
-- **`TurbopufferIoException`** - I/O networking errors
-- **`TurbopufferInvalidDataException`** - any other exceptions on the client side, e.g.:
-  - We failed to serialize the request body
-  - We failed to parse the response body (has access to response code and body)
+```sh
+$ export TURBOPUFFER_LOG=debug
+```
 
 ## Network options
 
 ### Retries
 
-Requests that experience certain errors are automatically retried 2 times by default, with a short exponential backoff. Connection errors (for example, due to a network connectivity problem), 408 Request Timeout, 409 Conflict, 429 Rate Limit, and >=500 Internal errors will all be retried by default. You can provide a `maxRetries` on the client builder to configure this:
+The SDK automatically retries 2 times by default, with a short exponential backoff.
+
+Only the following error types are retried:
+
+- Connection errors (for example, due to a network connectivity problem)
+- 408 Request Timeout
+- 409 Conflict
+- 429 Rate Limit
+- 5xx Internal
+
+The API may also explicitly instruct the SDK to retry or not retry a response.
+
+To set a custom number of retries, configure the client using the `maxRetries` method:
 
 ```java
 import com.turbopuffer.client.TurbopufferClient;
@@ -291,7 +285,21 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
 
 ### Timeouts
 
-Requests time out after 1 minute by default. You can configure this on the client builder:
+Requests time out after 1 minute by default.
+
+To set a custom timeout, configure the method call using the `timeout` method:
+
+```java
+import com.turbopuffer.models.DistanceMetric;
+import com.turbopuffer.models.NamespaceUpsertParams;
+import com.turbopuffer.models.NamespaceUpsertResponse;
+
+NamespaceUpsertResponse response = client.namespaces().upsert(
+  params, RequestOptions.builder().timeout(Duration.ofSeconds(30)).build()
+);
+```
+
+Or configure the default for all method calls at the client level:
 
 ```java
 import com.turbopuffer.client.TurbopufferClient;
@@ -306,7 +314,7 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
 
 ### Proxies
 
-Requests can be routed through a proxy. You can configure this on the client builder:
+To route requests through a proxy, configure the client using the `proxy` method:
 
 ```java
 import com.turbopuffer.client.TurbopufferClient;
@@ -316,51 +324,137 @@ import java.net.Proxy;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
     .fromEnv()
-    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("example.com", 8080)))
+    .proxy(new Proxy(
+      Proxy.Type.HTTP, new InetSocketAddress(
+        "https://example.com", 8080
+      )
+    ))
     .build();
 ```
 
-## Making custom/undocumented requests
+## Undocumented API functionality
 
-This library is typed for convenient access to the documented API. If you need to access undocumented params or response properties, the library can still be used.
+The SDK is typed for convenient usage of the documented API. However, it also supports working with undocumented or not yet supported parts of the API.
 
-### Undocumented request params
+### Parameters
 
-In [Example: creating a resource](#example-creating-a-resource) above, we used the `NamespaceQueryParams.builder()` to pass to the `query` method of the `namespaces` service.
-
-Sometimes, the API may support other properties that are not yet supported in the Java SDK types. In that case, you can attach them using raw setters:
+To set undocumented parameters, call the `putAdditionalHeader`, `putAdditionalQueryParam`, or `putAdditionalBodyProperty` methods on any `Params` class:
 
 ```java
 import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.NamespaceQueryParams;
+import com.turbopuffer.models.NamespaceUpsertParams;
 
-NamespaceQueryParams params = NamespaceQueryParams.builder()
+NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .putAdditionalHeader("Secret-Header", "42")
     .putAdditionalQueryParam("secret_query_param", "42")
     .putAdditionalBodyProperty("secretProperty", JsonValue.from("42"))
     .build();
 ```
 
-You can also use the `putAdditionalProperty` method on nested headers, query params, or body objects.
+These can be accessed on the built object later using the `_additionalHeaders()`, `_additionalQueryParams()`, and `_additionalBodyProperties()` methods. You can also set undocumented parameters on nested headers, query params, or body classes using the `putAdditionalProperty` method. These properties can be accessed on the built object later using the `_additionalProperties()` method.
 
-### Undocumented response properties
+To set a documented parameter or property to an undocumented or not yet supported _value_, pass a `JsonValue` object to its setter:
 
-To access undocumented response properties, you can use `res._additionalProperties()` on a response object to get a map of untyped fields of type `Map<String, JsonValue>`. You can then access fields like `res._additionalProperties().get("secret_prop").asString()` or use other helpers defined on the `JsonValue` class to extract it to a desired type.
+```java
+import com.turbopuffer.core.JsonValue;
+import com.turbopuffer.models.NamespaceUpsertParams;
 
-## Logging
-
-We use the standard [OkHttp logging interceptor](https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor).
-
-You can enable logging by setting the environment variable `TURBOPUFFER_LOG` to `info`.
-
-```sh
-$ export TURBOPUFFER_LOG=info
+NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+    .namespace("products")
+    .documents(JsonValue.from(42))
+    .build();
 ```
 
-Or to `debug` for more verbose logging.
+### Response properties
 
-```sh
-$ export TURBOPUFFER_LOG=debug
+To access undocumented response properties, call the `_additionalProperties()` method:
+
+```java
+import com.turbopuffer.core.JsonValue;
+import java.util.Map;
+
+Map<String, JsonValue> additionalProperties = client.namespaces().upsert(params)._additionalProperties();
+JsonValue secretPropertyValue = additionalProperties.get("secretProperty");
+
+String result = secretPropertyValue.accept(new JsonValue.Visitor<>() {
+    @Override
+    public String visitNull() {
+        return "It's null!";
+    }
+
+    @Override
+    public String visitBoolean(boolean value) {
+        return "It's a boolean!";
+    }
+
+    @Override
+    public String visitNumber(Number value) {
+        return "It's a number!";
+    }
+
+    // Other methods include `visitMissing`, `visitString`, `visitArray`, and `visitObject`
+    // The default implementation of each unimplemented method delegates to `visitDefault`, which throws by default, but can also be overridden
+});
+```
+
+To access a property's raw JSON value, which may be undocumented, call its `_` prefixed method:
+
+```java
+import com.turbopuffer.core.JsonField;
+import java.util.Optional;
+
+JsonField<Object> field = client.namespaces().upsert(params)._field();
+
+if (field.isMissing()) {
+  // The property is absent from the JSON response
+} else if (field.isNull()) {
+  // The property was set to literal null
+} else {
+  // Check if value was provided as a string
+  // Other methods include `asNumber()`, `asBoolean()`, etc.
+  Optional<String> jsonString = field.asString();
+
+  // Try to deserialize into a custom type
+  MyClass myObject = field.asUnknown().orElseThrow().convert(MyClass.class);
+}
+```
+
+### Response validation
+
+In rare cases, the API may return a response that doesn't match the expected type. For example, the SDK may expect a property to contain a `String`, but the API could return something else.
+
+By default, the SDK will not throw an exception in this case. It will throw `TurbopufferInvalidDataException` only if you directly access the property.
+
+If you would prefer to check that the response is completely well-typed upfront, then either call `validate()`:
+
+```java
+import com.turbopuffer.models.NamespaceUpsertResponse;
+
+NamespaceUpsertResponse response = client.namespaces().upsert(params).validate();
+```
+
+Or configure the method call to validate the response using the `responseValidation` method:
+
+```java
+import com.turbopuffer.models.DistanceMetric;
+import com.turbopuffer.models.NamespaceUpsertParams;
+import com.turbopuffer.models.NamespaceUpsertResponse;
+
+NamespaceUpsertResponse response = client.namespaces().upsert(
+  params, RequestOptions.builder().responseValidation(true).build()
+);
+```
+
+Or configure the default for all method calls at the client level:
+
+```java
+import com.turbopuffer.client.TurbopufferClient;
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+
+TurbopufferClient client = TurbopufferOkHttpClient.builder()
+    .fromEnv()
+    .responseValidation(true)
+    .build();
 ```
 
 ## Semantic versioning
