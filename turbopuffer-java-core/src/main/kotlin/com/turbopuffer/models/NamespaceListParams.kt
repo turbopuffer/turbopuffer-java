@@ -47,6 +47,8 @@ private constructor(
 
     companion object {
 
+        fun none(): NamespaceListParams = builder().build()
+
         @JvmStatic fun builder() = Builder()
     }
 
