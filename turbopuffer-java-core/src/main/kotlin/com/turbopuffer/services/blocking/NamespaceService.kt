@@ -21,9 +21,13 @@ interface NamespaceService {
     /** List namespaces. */
     @JvmOverloads
     fun list(
-        params: NamespaceListParams,
+        params: NamespaceListParams = NamespaceListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceListPage
+
+    /** List namespaces. */
+    fun list(requestOptions: RequestOptions): NamespaceListPage =
+        list(NamespaceListParams.none(), requestOptions)
 
     /** Delete namespace. */
     @JvmOverloads

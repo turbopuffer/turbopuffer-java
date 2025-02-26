@@ -9,7 +9,6 @@ import com.turbopuffer.models.DistanceMetric
 import com.turbopuffer.models.DocumentColumns
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceGetSchemaParams
-import com.turbopuffer.models.NamespaceListParams
 import com.turbopuffer.models.NamespaceQueryParams
 import com.turbopuffer.models.NamespaceUpsertParams
 import org.junit.jupiter.api.Disabled
@@ -28,7 +27,7 @@ class NamespaceServiceTest {
                 .apiKey("My API Key")
                 .build()
         val namespaceService = client.namespaces()
-        val response = namespaceService.list(NamespaceListParams.builder().build())
+        val response = namespaceService.list()
         println(response)
         response.namespaces().forEach { it.validate() }
     }
