@@ -2,9 +2,7 @@
 
 package com.turbopuffer.services
 
-import com.fasterxml.jackson.databind.json.JsonMapper
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
-import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.status
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
@@ -26,23 +24,32 @@ import com.turbopuffer.errors.UnauthorizedException
 import com.turbopuffer.errors.UnexpectedStatusCodeException
 import com.turbopuffer.errors.UnprocessableEntityException
 import com.turbopuffer.models.DistanceMetric
-import com.turbopuffer.models.DocumentRow
-import com.turbopuffer.models.DocumentRowWithScore
 import com.turbopuffer.models.NamespaceQueryParams
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.assertj.core.api.InstanceOfAssertFactories
+import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 @WireMockTest
 class ErrorHandlingTest {
 
-    private val JSON_MAPPER: JsonMapper = jsonMapper()
+    companion object {
 
-    private val TURBOPUFFER_ERROR: TurbopufferError =
-        TurbopufferError.builder().putAdditionalProperty("key", JsonValue.from("value")).build()
+        private val ERROR: TurbopufferError =
+            TurbopufferError.builder()
+                .putAdditionalProperty("errorProperty", JsonValue.from("42"))
+                .build()
+
+        private val ERROR_JSON: ByteArray = jsonMapper().writeValueAsBytes(ERROR)
+
+        private const val HEADER_NAME: String = "Error-Header"
+
+        private const val HEADER_VALUE: String = "42"
+
+        private const val NOT_JSON: String = "Not JSON"
+    }
 
     private lateinit var client: TurbopufferClient
 
@@ -50,502 +57,322 @@ class ErrorHandlingTest {
     fun beforeEach(wmRuntimeInfo: WireMockRuntimeInfo) {
         client =
             TurbopufferOkHttpClient.builder()
-                .baseUrl(wmRuntimeInfo.getHttpBaseUrl())
+                .baseUrl(wmRuntimeInfo.httpBaseUrl)
                 .apiKey("My API Key")
                 .build()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun namespacesQuery200() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
-
-        val expected =
-            listOf(
-                DocumentRowWithScore.builder()
-                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .attributes(
-                        DocumentRow.Attributes.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("bar"))
-                            .build()
-                    )
-                    .addVector(0.0)
-                    .dist(0.0)
-                    .build()
-            )
-
-        stubFor(post(anyUrl()).willReturn(ok().withBody(toJson(expected))))
-
-        assertThat(client.namespaces().query(params)).isEqualTo(expected)
-    }
-
-    @Disabled("skipped: tests are disabled for the time being")
-    @Test
     fun namespacesQuery400() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
-
+        val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(
-                    status(400).withHeader("Foo", "Bar").withBody(toJson(TURBOPUFFER_ERROR))
-                )
+                .willReturn(status(400).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
         )
 
-        assertThatThrownBy({ client.namespaces().query(params) })
-            .satisfies({ e ->
-                assertBadRequest(e, Headers.builder().put("Foo", "Bar").build(), TURBOPUFFER_ERROR)
-            })
+        val e =
+            assertThrows<BadRequestException> {
+                namespaceService.query(
+                    NamespaceQueryParams.builder()
+                        .namespace("namespace")
+                        .consistency(
+                            NamespaceQueryParams.Consistency.builder()
+                                .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                                .build()
+                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .filter(JsonValue.from(mapOf<String, Any>()))
+                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeVectors(true)
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
+                        .topK(0L)
+                        .addVector(0.0)
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(400)
+        assertThat(e.error()).isEqualTo(ERROR)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery401() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
-
+        val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(
-                    status(401).withHeader("Foo", "Bar").withBody(toJson(TURBOPUFFER_ERROR))
-                )
+                .willReturn(status(401).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
         )
 
-        assertThatThrownBy({ client.namespaces().query(params) })
-            .satisfies({ e ->
-                assertUnauthorized(
-                    e,
-                    Headers.builder().put("Foo", "Bar").build(),
-                    TURBOPUFFER_ERROR,
+        val e =
+            assertThrows<UnauthorizedException> {
+                namespaceService.query(
+                    NamespaceQueryParams.builder()
+                        .namespace("namespace")
+                        .consistency(
+                            NamespaceQueryParams.Consistency.builder()
+                                .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                                .build()
+                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .filter(JsonValue.from(mapOf<String, Any>()))
+                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeVectors(true)
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
+                        .topK(0L)
+                        .addVector(0.0)
+                        .build()
                 )
-            })
+            }
+
+        assertThat(e.statusCode()).isEqualTo(401)
+        assertThat(e.error()).isEqualTo(ERROR)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery403() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
-
+        val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(
-                    status(403).withHeader("Foo", "Bar").withBody(toJson(TURBOPUFFER_ERROR))
-                )
+                .willReturn(status(403).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
         )
 
-        assertThatThrownBy({ client.namespaces().query(params) })
-            .satisfies({ e ->
-                assertPermissionDenied(
-                    e,
-                    Headers.builder().put("Foo", "Bar").build(),
-                    TURBOPUFFER_ERROR,
+        val e =
+            assertThrows<PermissionDeniedException> {
+                namespaceService.query(
+                    NamespaceQueryParams.builder()
+                        .namespace("namespace")
+                        .consistency(
+                            NamespaceQueryParams.Consistency.builder()
+                                .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                                .build()
+                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .filter(JsonValue.from(mapOf<String, Any>()))
+                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeVectors(true)
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
+                        .topK(0L)
+                        .addVector(0.0)
+                        .build()
                 )
-            })
+            }
+
+        assertThat(e.statusCode()).isEqualTo(403)
+        assertThat(e.error()).isEqualTo(ERROR)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery404() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
-
+        val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(
-                    status(404).withHeader("Foo", "Bar").withBody(toJson(TURBOPUFFER_ERROR))
-                )
+                .willReturn(status(404).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
         )
 
-        assertThatThrownBy({ client.namespaces().query(params) })
-            .satisfies({ e ->
-                assertNotFound(e, Headers.builder().put("Foo", "Bar").build(), TURBOPUFFER_ERROR)
-            })
+        val e =
+            assertThrows<NotFoundException> {
+                namespaceService.query(
+                    NamespaceQueryParams.builder()
+                        .namespace("namespace")
+                        .consistency(
+                            NamespaceQueryParams.Consistency.builder()
+                                .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                                .build()
+                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .filter(JsonValue.from(mapOf<String, Any>()))
+                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeVectors(true)
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
+                        .topK(0L)
+                        .addVector(0.0)
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(404)
+        assertThat(e.error()).isEqualTo(ERROR)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery422() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
-
+        val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(
-                    status(422).withHeader("Foo", "Bar").withBody(toJson(TURBOPUFFER_ERROR))
-                )
+                .willReturn(status(422).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
         )
 
-        assertThatThrownBy({ client.namespaces().query(params) })
-            .satisfies({ e ->
-                assertUnprocessableEntity(
-                    e,
-                    Headers.builder().put("Foo", "Bar").build(),
-                    TURBOPUFFER_ERROR,
+        val e =
+            assertThrows<UnprocessableEntityException> {
+                namespaceService.query(
+                    NamespaceQueryParams.builder()
+                        .namespace("namespace")
+                        .consistency(
+                            NamespaceQueryParams.Consistency.builder()
+                                .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                                .build()
+                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .filter(JsonValue.from(mapOf<String, Any>()))
+                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeVectors(true)
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
+                        .topK(0L)
+                        .addVector(0.0)
+                        .build()
                 )
-            })
+            }
+
+        assertThat(e.statusCode()).isEqualTo(422)
+        assertThat(e.error()).isEqualTo(ERROR)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery429() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
-
+        val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(
-                    status(429).withHeader("Foo", "Bar").withBody(toJson(TURBOPUFFER_ERROR))
-                )
+                .willReturn(status(429).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
         )
 
-        assertThatThrownBy({ client.namespaces().query(params) })
-            .satisfies({ e ->
-                assertRateLimit(e, Headers.builder().put("Foo", "Bar").build(), TURBOPUFFER_ERROR)
-            })
+        val e =
+            assertThrows<RateLimitException> {
+                namespaceService.query(
+                    NamespaceQueryParams.builder()
+                        .namespace("namespace")
+                        .consistency(
+                            NamespaceQueryParams.Consistency.builder()
+                                .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                                .build()
+                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .filter(JsonValue.from(mapOf<String, Any>()))
+                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeVectors(true)
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
+                        .topK(0L)
+                        .addVector(0.0)
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(429)
+        assertThat(e.error()).isEqualTo(ERROR)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery500() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
-
+        val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(
-                    status(500).withHeader("Foo", "Bar").withBody(toJson(TURBOPUFFER_ERROR))
-                )
+                .willReturn(status(500).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
         )
 
-        assertThatThrownBy({ client.namespaces().query(params) })
-            .satisfies({ e ->
-                assertInternalServer(
-                    e,
-                    Headers.builder().put("Foo", "Bar").build(),
-                    TURBOPUFFER_ERROR,
+        val e =
+            assertThrows<InternalServerException> {
+                namespaceService.query(
+                    NamespaceQueryParams.builder()
+                        .namespace("namespace")
+                        .consistency(
+                            NamespaceQueryParams.Consistency.builder()
+                                .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                                .build()
+                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .filter(JsonValue.from(mapOf<String, Any>()))
+                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeVectors(true)
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
+                        .topK(0L)
+                        .addVector(0.0)
+                        .build()
                 )
-            })
+            }
+
+        assertThat(e.statusCode()).isEqualTo(500)
+        assertThat(e.error()).isEqualTo(ERROR)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun unexpectedStatusCode() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
-
+    fun namespacesQuery999() {
+        val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(
-                    status(999).withHeader("Foo", "Bar").withBody(toJson(TURBOPUFFER_ERROR))
-                )
+                .willReturn(status(999).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
         )
 
-        assertThatThrownBy({ client.namespaces().query(params) })
-            .satisfies({ e ->
-                assertUnexpectedStatusCodeException(
-                    e,
-                    999,
-                    Headers.builder().put("Foo", "Bar").build(),
-                    toJson(TURBOPUFFER_ERROR),
+        val e =
+            assertThrows<UnexpectedStatusCodeException> {
+                namespaceService.query(
+                    NamespaceQueryParams.builder()
+                        .namespace("namespace")
+                        .consistency(
+                            NamespaceQueryParams.Consistency.builder()
+                                .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                                .build()
+                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .filter(JsonValue.from(mapOf<String, Any>()))
+                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeVectors(true)
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
+                        .topK(0L)
+                        .addVector(0.0)
+                        .build()
                 )
-            })
+            }
+
+        assertThat(e.statusCode()).isEqualTo(999)
+        assertThat(e.error()).isEqualTo(ERROR)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun invalidBody() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
+    fun namespacesQueryInvalidJsonBody() {
+        val namespaceService = client.namespaces()
+        stubFor(
+            post(anyUrl())
+                .willReturn(status(200).withHeader(HEADER_NAME, HEADER_VALUE).withBody(NOT_JSON))
+        )
+
+        val e =
+            assertThrows<TurbopufferException> {
+                namespaceService.query(
+                    NamespaceQueryParams.builder()
+                        .namespace("namespace")
+                        .consistency(
+                            NamespaceQueryParams.Consistency.builder()
+                                .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                                .build()
+                        )
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .filter(JsonValue.from(mapOf<String, Any>()))
+                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeVectors(true)
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
+                        .topK(0L)
+                        .addVector(0.0)
                         .build()
                 )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
+            }
 
-        stubFor(post(anyUrl()).willReturn(status(200).withBody("Not JSON")))
-
-        assertThatThrownBy({ client.namespaces().query(params) })
-            .satisfies({ e ->
-                assertThat(e)
-                    .isInstanceOf(TurbopufferException::class.java)
-                    .hasMessage("Error reading response")
-            })
-    }
-
-    @Disabled("skipped: tests are disabled for the time being")
-    @Test
-    fun invalidErrorBody() {
-        val params =
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filter(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-                .includeVectors(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .addVector(0.0)
-                .build()
-
-        stubFor(post(anyUrl()).willReturn(status(400).withBody("Not JSON")))
-
-        assertThatThrownBy({ client.namespaces().query(params) })
-            .satisfies({ e ->
-                assertBadRequest(e, Headers.builder().build(), TurbopufferError.builder().build())
-            })
-    }
-
-    private fun <T> toJson(body: T): ByteArray {
-        return JSON_MAPPER.writeValueAsBytes(body)
-    }
-
-    private fun assertUnexpectedStatusCodeException(
-        throwable: Throwable,
-        statusCode: Int,
-        headers: Headers,
-        responseBody: ByteArray,
-    ) {
-        assertThat(throwable)
-            .asInstanceOf(
-                InstanceOfAssertFactories.throwable(UnexpectedStatusCodeException::class.java)
-            )
-            .satisfies({ e ->
-                assertThat(e.statusCode()).isEqualTo(statusCode)
-                assertThat(e.body()).isEqualTo(String(responseBody))
-                assertThat(e.headers().toMap()).containsAllEntriesOf(headers.toMap())
-            })
-    }
-
-    private fun assertBadRequest(throwable: Throwable, headers: Headers, error: TurbopufferError) {
-        assertThat(throwable)
-            .asInstanceOf(InstanceOfAssertFactories.throwable(BadRequestException::class.java))
-            .satisfies({ e ->
-                assertThat(e.statusCode()).isEqualTo(400)
-                assertThat(e.error()).isEqualTo(error)
-                assertThat(e.headers().toMap()).containsAllEntriesOf(headers.toMap())
-            })
-    }
-
-    private fun assertUnauthorized(
-        throwable: Throwable,
-        headers: Headers,
-        error: TurbopufferError,
-    ) {
-        assertThat(throwable)
-            .asInstanceOf(InstanceOfAssertFactories.throwable(UnauthorizedException::class.java))
-            .satisfies({ e ->
-                assertThat(e.statusCode()).isEqualTo(401)
-                assertThat(e.error()).isEqualTo(error)
-                assertThat(e.headers().toMap()).containsAllEntriesOf(headers.toMap())
-            })
-    }
-
-    private fun assertPermissionDenied(
-        throwable: Throwable,
-        headers: Headers,
-        error: TurbopufferError,
-    ) {
-        assertThat(throwable)
-            .asInstanceOf(
-                InstanceOfAssertFactories.throwable(PermissionDeniedException::class.java)
-            )
-            .satisfies({ e ->
-                assertThat(e.statusCode()).isEqualTo(403)
-                assertThat(e.error()).isEqualTo(error)
-                assertThat(e.headers().toMap()).containsAllEntriesOf(headers.toMap())
-            })
-    }
-
-    private fun assertNotFound(throwable: Throwable, headers: Headers, error: TurbopufferError) {
-        assertThat(throwable)
-            .asInstanceOf(InstanceOfAssertFactories.throwable(NotFoundException::class.java))
-            .satisfies({ e ->
-                assertThat(e.statusCode()).isEqualTo(404)
-                assertThat(e.error()).isEqualTo(error)
-                assertThat(e.headers().toMap()).containsAllEntriesOf(headers.toMap())
-            })
-    }
-
-    private fun assertUnprocessableEntity(
-        throwable: Throwable,
-        headers: Headers,
-        error: TurbopufferError,
-    ) {
-        assertThat(throwable)
-            .asInstanceOf(
-                InstanceOfAssertFactories.throwable(UnprocessableEntityException::class.java)
-            )
-            .satisfies({ e ->
-                assertThat(e.statusCode()).isEqualTo(422)
-                assertThat(e.error()).isEqualTo(error)
-                assertThat(e.headers().toMap()).containsAllEntriesOf(headers.toMap())
-            })
-    }
-
-    private fun assertRateLimit(throwable: Throwable, headers: Headers, error: TurbopufferError) {
-        assertThat(throwable)
-            .asInstanceOf(InstanceOfAssertFactories.throwable(RateLimitException::class.java))
-            .satisfies({ e ->
-                assertThat(e.statusCode()).isEqualTo(429)
-                assertThat(e.error()).isEqualTo(error)
-                assertThat(e.headers().toMap()).containsAllEntriesOf(headers.toMap())
-            })
-    }
-
-    private fun assertInternalServer(
-        throwable: Throwable,
-        headers: Headers,
-        error: TurbopufferError,
-    ) {
-        assertThat(throwable)
-            .asInstanceOf(InstanceOfAssertFactories.throwable(InternalServerException::class.java))
-            .satisfies({ e ->
-                assertThat(e.statusCode()).isEqualTo(500)
-                assertThat(e.error()).isEqualTo(error)
-                assertThat(e.headers().toMap()).containsAllEntriesOf(headers.toMap())
-            })
+        assertThat(e).hasMessage("Error reading response")
     }
 
     private fun Headers.toMap(): Map<String, List<String>> =

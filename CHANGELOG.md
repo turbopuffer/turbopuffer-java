@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.1.0-beta.10 (2025-03-04)
+
+Full Changelog: [v0.1.0-beta.9...v0.1.0-beta.10](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.9...v0.1.0-beta.10)
+
+### Features
+
+* **client:** allow omitting params object when none required ([#88](https://github.com/turbopuffer/turbopuffer-java/issues/88)) ([a64f971](https://github.com/turbopuffer/turbopuffer-java/commit/a64f971ea96b30434e719b9d8ffbca2c689917d0))
+* **client:** get rid of annoying checked exceptions ([#83](https://github.com/turbopuffer/turbopuffer-java/issues/83)) ([08f8453](https://github.com/turbopuffer/turbopuffer-java/commit/08f8453a993c3e523a5105d5e6efe5abe5cedd46))
+* various codegen changes ([0343f1c](https://github.com/turbopuffer/turbopuffer-java/commit/0343f1ca196252aa4816b177c67af77ea8d64bc8))
+
+
+### Bug Fixes
+
+* **client:** add missing `@JvmStatic` ([#89](https://github.com/turbopuffer/turbopuffer-java/issues/89)) ([0ba4c94](https://github.com/turbopuffer/turbopuffer-java/commit/0ba4c947407da82b09dce6da5b1e51b819181a39))
+* **client:** mark some request bodies as optional ([#85](https://github.com/turbopuffer/turbopuffer-java/issues/85)) ([45f0d34](https://github.com/turbopuffer/turbopuffer-java/commit/45f0d34601e6ff5f6cc85be5514b1994640af49b))
+* **README:** add beta warning label ([6dd5931](https://github.com/turbopuffer/turbopuffer-java/commit/6dd5931558fcf33c2a6c78e703a980aca28a5bef))
+* **README:** adjust location of warning label ([d540695](https://github.com/turbopuffer/turbopuffer-java/commit/d5406952d76f0789934fb09725eeb6b08ef60e3c))
+* **README:** adjust warning label wording ([887a32a](https://github.com/turbopuffer/turbopuffer-java/commit/887a32ae349bcf31e3ba9190f11017cabe7fc2c3))
+
+
+### Chores
+
+* **ci:** update gradle actions to v4 ([#82](https://github.com/turbopuffer/turbopuffer-java/issues/82)) ([7ecd61a](https://github.com/turbopuffer/turbopuffer-java/commit/7ecd61af748ced5fd447ff69153411e5a181f0d2))
+* **client:** use deep identity methods for primitive array types ([#91](https://github.com/turbopuffer/turbopuffer-java/issues/91)) ([e3e02cd](https://github.com/turbopuffer/turbopuffer-java/commit/e3e02cd1bac03a1009a05af5f62d8e5be89ed0e6))
+* **docs:** add faq to readme ([#84](https://github.com/turbopuffer/turbopuffer-java/issues/84)) ([0040c7e](https://github.com/turbopuffer/turbopuffer-java/commit/0040c7e3f17ede8e63bf640985e1933de0a39d38))
+* **internal:** add async service tests ([#90](https://github.com/turbopuffer/turbopuffer-java/issues/90)) ([373ad64](https://github.com/turbopuffer/turbopuffer-java/commit/373ad64d2c43e7250e163d1541aed8d4a2bdbb9f))
+* **internal:** improve sync service tests ([373ad64](https://github.com/turbopuffer/turbopuffer-java/commit/373ad64d2c43e7250e163d1541aed8d4a2bdbb9f))
+* **internal:** refactor `ErrorHandlingTest` ([#94](https://github.com/turbopuffer/turbopuffer-java/issues/94)) ([19a59a3](https://github.com/turbopuffer/turbopuffer-java/commit/19a59a35a99dbf75facaa2a4663cfd4154532985))
+* **internal:** refactor `ServiceParamsTest` ([#92](https://github.com/turbopuffer/turbopuffer-java/issues/92)) ([512d29e](https://github.com/turbopuffer/turbopuffer-java/commit/512d29e8fda1898edd27f7f4934cee644b822a41))
+* **internal:** remove unnecessary non-null asserts in tests ([45f0d34](https://github.com/turbopuffer/turbopuffer-java/commit/45f0d34601e6ff5f6cc85be5514b1994640af49b))
+* **internal:** use `assertNotNull` in tests for type narrowing ([45f0d34](https://github.com/turbopuffer/turbopuffer-java/commit/45f0d34601e6ff5f6cc85be5514b1994640af49b))
+
+
+### Documentation
+
+* add immutability explanation to readme ([#86](https://github.com/turbopuffer/turbopuffer-java/issues/86)) ([8e4facb](https://github.com/turbopuffer/turbopuffer-java/commit/8e4facbce751d5410561e512a781864a31a3748a))
+* add source file links to readme ([#87](https://github.com/turbopuffer/turbopuffer-java/issues/87)) ([9628827](https://github.com/turbopuffer/turbopuffer-java/commit/96288272ae1d92e287bdf66fdec32f19004ab659))
+* readme parameter tweaks ([373ad64](https://github.com/turbopuffer/turbopuffer-java/commit/373ad64d2c43e7250e163d1541aed8d4a2bdbb9f))
+* update URLs from stainlessapi.com to stainless.com ([#93](https://github.com/turbopuffer/turbopuffer-java/issues/93)) ([8a59e82](https://github.com/turbopuffer/turbopuffer-java/commit/8a59e8269cba2310ce3751f472d3121cfcccc73f))
+
 ## 0.1.0-beta.9 (2025-02-19)
 
 Full Changelog: [v0.1.0-beta.8...v0.1.0-beta.9](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.8...v0.1.0-beta.9)

@@ -22,9 +22,13 @@ interface NamespaceServiceAsync {
     /** List namespaces. */
     @JvmOverloads
     fun list(
-        params: NamespaceListParams,
+        params: NamespaceListParams = NamespaceListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceListPageAsync>
+
+    /** List namespaces. */
+    fun list(requestOptions: RequestOptions): CompletableFuture<NamespaceListPageAsync> =
+        list(NamespaceListParams.none(), requestOptions)
 
     /** Delete namespace. */
     @JvmOverloads
