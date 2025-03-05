@@ -358,6 +358,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [UpsertColumnar].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .distanceMetric()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -503,6 +511,7 @@ private constructor(
 
                 companion object {
 
+                    /** Returns a mutable builder for constructing an instance of [Schema]. */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -635,6 +644,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [UpsertRowBased].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .distanceMetric()
+                 * .upserts()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -740,6 +758,7 @@ private constructor(
 
                 companion object {
 
+                    /** Returns a mutable builder for constructing an instance of [Schema]. */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -852,6 +871,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [CopyFromNamespace].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .copyFromNamespace()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -958,6 +985,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [DeleteByFilter].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .deleteByFilter()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -1030,6 +1065,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [NamespaceUpsertParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .namespace()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
