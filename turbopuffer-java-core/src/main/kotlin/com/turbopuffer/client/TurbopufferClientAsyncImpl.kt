@@ -21,13 +21,29 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
     // Pass the original clientOptions so that this client sets its own User-Agent.
     private val sync: TurbopufferClient by lazy { TurbopufferClientImpl(clientOptions) }
 
+    private val withRawResponse: TurbopufferClientAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
+
     private val namespaces: NamespaceServiceAsync by lazy {
         NamespaceServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     override fun sync(): TurbopufferClient = sync
 
+    override fun withRawResponse(): TurbopufferClientAsync.WithRawResponse = withRawResponse
+
     override fun namespaces(): NamespaceServiceAsync = namespaces
 
     override fun close() = clientOptions.httpClient.close()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        TurbopufferClientAsync.WithRawResponse {
+
+        private val namespaces: NamespaceServiceAsync.WithRawResponse by lazy {
+            NamespaceServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        override fun namespaces(): NamespaceServiceAsync.WithRawResponse = namespaces
+    }
 }

@@ -20,6 +20,7 @@ private constructor(
     @get:JvmName("headers") val headers: Headers,
     @get:JvmName("queryParams") val queryParams: QueryParams,
     @get:JvmName("responseValidation") val responseValidation: Boolean,
+    @get:JvmName("timeout") val timeout: Timeout,
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("apiKey") val apiKey: String,
 ) {
@@ -45,6 +46,7 @@ private constructor(
         private var headers: Headers.Builder = Headers.builder()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var responseValidation: Boolean = false
+        private var timeout: Timeout = Timeout.default()
         private var maxRetries: Int = 2
         private var apiKey: String? = null
 
@@ -57,6 +59,7 @@ private constructor(
             headers = clientOptions.headers.toBuilder()
             queryParams = clientOptions.queryParams.toBuilder()
             responseValidation = clientOptions.responseValidation
+            timeout = clientOptions.timeout
             maxRetries = clientOptions.maxRetries
             apiKey = clientOptions.apiKey
         }
@@ -72,6 +75,8 @@ private constructor(
         fun responseValidation(responseValidation: Boolean) = apply {
             this.responseValidation = responseValidation
         }
+
+        fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
 
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
@@ -195,6 +200,7 @@ private constructor(
                 headers.build(),
                 queryParams.build(),
                 responseValidation,
+                timeout,
                 maxRetries,
                 apiKey,
             )
