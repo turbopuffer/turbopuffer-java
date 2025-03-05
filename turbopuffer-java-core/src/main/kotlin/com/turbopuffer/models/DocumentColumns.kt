@@ -11,6 +11,7 @@ import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.NoAutoDetect
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
 import java.util.Objects
@@ -109,16 +110,7 @@ private constructor(
 
         /** The IDs of the documents. */
         fun addId(id: Id) = apply {
-            ids =
-                (ids ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(id)
-                }
+            ids = (ids ?: JsonField.of(mutableListOf())).also { checkKnown("ids", it).add(id) }
         }
 
         /** A UUID. */
@@ -138,14 +130,8 @@ private constructor(
         /** Vectors describing each of the documents. */
         fun addVector(vector: List<Double>) = apply {
             vectors =
-                (vectors ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(vector)
+                (vectors ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("vectors", it).add(vector)
                 }
         }
 
