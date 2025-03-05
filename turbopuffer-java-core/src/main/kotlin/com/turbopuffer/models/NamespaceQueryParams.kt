@@ -239,6 +239,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -414,6 +415,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [NamespaceQueryParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .namespace()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -685,6 +694,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Consistency]. */
             @JvmStatic fun builder() = Builder()
         }
 
