@@ -4,7 +4,9 @@
 
 package com.turbopuffer.services.async
 
+import com.google.errorprone.annotations.MustBeClosed
 import com.turbopuffer.core.RequestOptions
+import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.DocumentRowWithScore
 import com.turbopuffer.models.NamespaceDeleteAllParams
 import com.turbopuffer.models.NamespaceDeleteAllResponse
@@ -18,6 +20,11 @@ import com.turbopuffer.models.NamespaceUpsertResponse
 import java.util.concurrent.CompletableFuture
 
 interface NamespaceServiceAsync {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     /** List namespaces. */
     @JvmOverloads
@@ -57,4 +64,75 @@ interface NamespaceServiceAsync {
         params: NamespaceUpsertParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceUpsertResponse>
+
+    /**
+     * A view of [NamespaceServiceAsync] that provides access to raw HTTP responses for each method.
+     */
+    interface WithRawResponse {
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
+         * [NamespaceServiceAsync.list].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun list(
+            params: NamespaceListParams = NamespaceListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceListPageAsync>>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
+         * [NamespaceServiceAsync.list].
+         */
+        @MustBeClosed
+        fun list(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<NamespaceListPageAsync>> =
+            list(NamespaceListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /v1/namespaces/{namespace}`, but is otherwise the
+         * same as [NamespaceServiceAsync.deleteAll].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun deleteAll(
+            params: NamespaceDeleteAllParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/schema`, but is otherwise
+         * the same as [NamespaceServiceAsync.getSchema].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun getSchema(
+            params: NamespaceGetSchemaParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceGetSchemaResponse>>
+
+        /**
+         * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/query`, but is otherwise
+         * the same as [NamespaceServiceAsync.query].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun query(
+            params: NamespaceQueryParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<List<DocumentRowWithScore>>>
+
+        /**
+         * Returns a raw HTTP response for `post /v1/namespaces/{namespace}`, but is otherwise the
+         * same as [NamespaceServiceAsync.upsert].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun upsert(
+            params: NamespaceUpsertParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceUpsertResponse>>
+    }
 }
