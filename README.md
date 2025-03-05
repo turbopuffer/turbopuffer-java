@@ -167,6 +167,35 @@ CompletableFuture<NamespaceUpsertResponse> response = client.namespaces().upsert
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
 
+## Raw responses
+
+The SDK defines methods that deserialize responses into instances of Java classes. However, these methods don't provide access to the response headers, status code, or the raw response body.
+
+To access this data, prefix any HTTP method call on a client or service with `withRawResponse()`:
+
+```java
+import com.turbopuffer.core.http.Headers;
+import com.turbopuffer.core.http.HttpResponseFor;
+import com.turbopuffer.models.DocumentRowWithScore;
+import com.turbopuffer.models.NamespaceQueryParams;
+
+NamespaceQueryParams params = NamespaceQueryParams.builder()
+    .namespace("products")
+    .build();
+HttpResponseFor<List<DocumentRowWithScore>> documentRowWithScores = client.namespaces().withRawResponse().query(params);
+
+int statusCode = documentRowWithScores.statusCode();
+Headers headers = documentRowWithScores.headers();
+```
+
+You can still deserialize the response into an instance of a Java class if needed:
+
+```java
+import com.turbopuffer.models.DocumentRowWithScore;
+
+List<DocumentRowWithScore> parsedDocumentRowWithScores = documentRowWithScores.parse();
+```
+
 ## Error handling
 
 The SDK throws custom unchecked exception types:
