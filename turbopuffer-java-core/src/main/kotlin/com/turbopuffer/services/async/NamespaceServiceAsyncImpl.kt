@@ -11,8 +11,8 @@ import com.turbopuffer.core.http.HttpMethod
 import com.turbopuffer.core.http.HttpRequest
 import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.http.HttpResponseFor
+import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
-import com.turbopuffer.core.json
 import com.turbopuffer.core.prepareAsync
 import com.turbopuffer.errors.TurbopufferError
 import com.turbopuffer.models.DocumentRowWithScore

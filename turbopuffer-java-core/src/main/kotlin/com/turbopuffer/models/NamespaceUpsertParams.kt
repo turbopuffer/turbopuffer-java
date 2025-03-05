@@ -21,6 +21,7 @@ import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.Params
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
@@ -400,14 +401,8 @@ private constructor(
                 /** The IDs of the documents. */
                 fun addId(id: Id) = apply {
                     ids =
-                        (ids ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(id)
+                        (ids ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("ids", it).add(id)
                         }
                 }
 
@@ -428,14 +423,8 @@ private constructor(
                 /** Vectors describing each of the documents. */
                 fun addVector(vector: List<Double>) = apply {
                     vectors =
-                        (vectors ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(vector)
+                        (vectors ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("vectors", it).add(vector)
                         }
                 }
 
@@ -682,14 +671,8 @@ private constructor(
 
                 fun addUpsert(upsert: DocumentRow) = apply {
                     upserts =
-                        (upserts ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(upsert)
+                        (upserts ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("upserts", it).add(upsert)
                         }
                 }
 
