@@ -17,6 +17,9 @@ class TurbopufferOkHttpClientAsync private constructor() {
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [TurbopufferOkHttpClientAsync].
+         */
         @JvmStatic fun builder() = Builder()
 
         @JvmStatic fun fromEnv(): TurbopufferClientAsync = builder().fromEnv().build()

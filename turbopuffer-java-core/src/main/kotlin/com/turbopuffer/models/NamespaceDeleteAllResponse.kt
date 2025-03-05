@@ -54,6 +54,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [NamespaceDeleteAllResponse].
+         *
+         * The following fields are required:
+         * ```java
+         * .status()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
