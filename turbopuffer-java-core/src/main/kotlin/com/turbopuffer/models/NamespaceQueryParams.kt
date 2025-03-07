@@ -22,6 +22,7 @@ import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.Params
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
@@ -238,6 +239,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -353,14 +355,8 @@ private constructor(
              */
             fun addVector(vector: Double) = apply {
                 this.vector =
-                    (this.vector ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(vector)
+                    (this.vector ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("vector", it).add(vector)
                     }
             }
 
@@ -419,6 +415,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [NamespaceQueryParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .namespace()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -690,6 +694,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Consistency]. */
             @JvmStatic fun builder() = Builder()
         }
 

@@ -21,6 +21,7 @@ import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.Params
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
@@ -35,7 +36,7 @@ import java.util.Optional
 class NamespaceUpsertParams
 private constructor(
     private val namespace: String,
-    private val documents: Documents,
+    private val documents: Documents?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -43,13 +44,13 @@ private constructor(
     fun namespace(): String = namespace
 
     /** Upsert documents in columnar format. */
-    fun documents(): Documents = documents
+    fun documents(): Optional<Documents> = Optional.ofNullable(documents)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Documents = documents
+    @JvmSynthetic internal fun _body(): Optional<Documents> = Optional.ofNullable(documents)
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -357,6 +358,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [UpsertColumnar].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .distanceMetric()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -400,14 +409,8 @@ private constructor(
                 /** The IDs of the documents. */
                 fun addId(id: Id) = apply {
                     ids =
-                        (ids ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(id)
+                        (ids ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("ids", it).add(id)
                         }
                 }
 
@@ -428,14 +431,8 @@ private constructor(
                 /** Vectors describing each of the documents. */
                 fun addVector(vector: List<Double>) = apply {
                     vectors =
-                        (vectors ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(vector)
+                        (vectors ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("vectors", it).add(vector)
                         }
                 }
 
@@ -514,6 +511,7 @@ private constructor(
 
                 companion object {
 
+                    /** Returns a mutable builder for constructing an instance of [Schema]. */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -646,6 +644,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [UpsertRowBased].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .distanceMetric()
+                 * .upserts()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -682,14 +689,8 @@ private constructor(
 
                 fun addUpsert(upsert: DocumentRow) = apply {
                     upserts =
-                        (upserts ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(upsert)
+                        (upserts ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("upserts", it).add(upsert)
                         }
                 }
 
@@ -757,6 +758,7 @@ private constructor(
 
                 companion object {
 
+                    /** Returns a mutable builder for constructing an instance of [Schema]. */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -869,6 +871,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [CopyFromNamespace].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .copyFromNamespace()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -975,6 +985,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [DeleteByFilter].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .deleteByFilter()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -1047,6 +1065,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [NamespaceUpsertParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .namespace()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -1070,7 +1096,10 @@ private constructor(
         fun namespace(namespace: String) = apply { this.namespace = namespace }
 
         /** Upsert documents in columnar format. */
-        fun documents(documents: Documents) = apply { this.documents = documents }
+        fun documents(documents: Documents?) = apply { this.documents = documents }
+
+        /** Upsert documents in columnar format. */
+        fun documents(documents: Optional<Documents>) = documents(documents.orElse(null))
 
         /** Upsert documents in columnar format. */
         fun documents(upsertColumnar: Documents.UpsertColumnar) =
@@ -1189,7 +1218,7 @@ private constructor(
         fun build(): NamespaceUpsertParams =
             NamespaceUpsertParams(
                 checkRequired("namespace", namespace),
-                checkRequired("documents", documents),
+                documents,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )

@@ -50,6 +50,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [NamespaceSummary].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

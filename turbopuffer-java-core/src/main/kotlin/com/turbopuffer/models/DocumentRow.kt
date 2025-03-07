@@ -11,6 +11,7 @@ import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.NoAutoDetect
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
 import java.util.Objects
@@ -73,6 +74,7 @@ private constructor(
 
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [DocumentRow]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -124,14 +126,8 @@ private constructor(
         /** A vector describing the document. */
         fun addVector(vector: Double) = apply {
             this.vector =
-                (this.vector ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(vector)
+                (this.vector ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("vector", it).add(vector)
                 }
         }
 
@@ -190,6 +186,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Attributes]. */
             @JvmStatic fun builder() = Builder()
         }
 

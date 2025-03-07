@@ -1,9 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.turbopuffer.services.blocking
+package com.turbopuffer.services.async
 
 import com.turbopuffer.TestServerExtension
-import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.DistanceMetric
 import com.turbopuffer.models.DocumentColumns
@@ -16,20 +16,21 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class NamespaceServiceTest {
+class NamespaceServiceAsyncTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun list() {
         val client =
-            TurbopufferOkHttpClient.builder()
+            TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceServiceAsync = client.namespaces()
 
-        val page = namespaceService.list()
+        val pageFuture = namespaceServiceAsync.list()
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 
@@ -37,17 +38,18 @@ class NamespaceServiceTest {
     @Test
     fun deleteAll() {
         val client =
-            TurbopufferOkHttpClient.builder()
+            TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceServiceAsync = client.namespaces()
 
-        val response =
-            namespaceService.deleteAll(
+        val responseFuture =
+            namespaceServiceAsync.deleteAll(
                 NamespaceDeleteAllParams.builder().namespace("namespace").build()
             )
 
+        val response = responseFuture.get()
         response.validate()
     }
 
@@ -55,17 +57,18 @@ class NamespaceServiceTest {
     @Test
     fun getSchema() {
         val client =
-            TurbopufferOkHttpClient.builder()
+            TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceServiceAsync = client.namespaces()
 
-        val response =
-            namespaceService.getSchema(
+        val responseFuture =
+            namespaceServiceAsync.getSchema(
                 NamespaceGetSchemaParams.builder().namespace("namespace").build()
             )
 
+        val response = responseFuture.get()
         response.validate()
     }
 
@@ -73,14 +76,14 @@ class NamespaceServiceTest {
     @Test
     fun query() {
         val client =
-            TurbopufferOkHttpClient.builder()
+            TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceServiceAsync = client.namespaces()
 
-        val documentRowWithScores =
-            namespaceService.query(
+        val documentRowWithScoresFuture =
+            namespaceServiceAsync.query(
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
                     .consistency(
@@ -98,6 +101,7 @@ class NamespaceServiceTest {
                     .build()
             )
 
+        val documentRowWithScores = documentRowWithScoresFuture.get()
         documentRowWithScores.forEach { it.validate() }
     }
 
@@ -105,14 +109,14 @@ class NamespaceServiceTest {
     @Test
     fun upsert() {
         val client =
-            TurbopufferOkHttpClient.builder()
+            TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceServiceAsync = client.namespaces()
 
-        val response =
-            namespaceService.upsert(
+        val responseFuture =
+            namespaceServiceAsync.upsert(
                 NamespaceUpsertParams.builder()
                     .namespace("namespace")
                     .documents(
@@ -149,6 +153,7 @@ class NamespaceServiceTest {
                     .build()
             )
 
+        val response = responseFuture.get()
         response.validate()
     }
 }

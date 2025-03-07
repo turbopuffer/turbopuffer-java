@@ -28,6 +28,11 @@ interface TurbopufferClientAsync {
      */
     fun sync(): TurbopufferClient
 
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
+
     fun namespaces(): NamespaceServiceAsync
 
     /**
@@ -42,4 +47,13 @@ interface TurbopufferClientAsync {
      * method.
      */
     fun close()
+
+    /**
+     * A view of [TurbopufferClientAsync] that provides access to raw HTTP responses for each
+     * method.
+     */
+    interface WithRawResponse {
+
+        fun namespaces(): NamespaceServiceAsync.WithRawResponse
+    }
 }
