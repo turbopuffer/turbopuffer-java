@@ -16,6 +16,7 @@ import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** A single document, in a row-based format. */
 @NoAutoDetect
@@ -116,7 +117,7 @@ private constructor(
         fun vector(vector: List<Double>?) = vector(JsonField.ofNullable(vector))
 
         /** A vector describing the document. */
-        fun vector(vector: Optional<List<Double>>) = vector(vector.orElse(null))
+        fun vector(vector: Optional<List<Double>>) = vector(vector.getOrNull())
 
         /** A vector describing the document. */
         fun vector(vector: JsonField<List<Double>>) = apply {
