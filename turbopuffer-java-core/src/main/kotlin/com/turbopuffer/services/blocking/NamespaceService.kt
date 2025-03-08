@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.turbopuffer.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -26,39 +24,57 @@ interface NamespaceService {
     fun withRawResponse(): WithRawResponse
 
     /** List namespaces. */
-    @JvmOverloads
+    fun list(): NamespaceListPage = list(NamespaceListParams.none())
+
+    /** @see [list] */
     fun list(
         params: NamespaceListParams = NamespaceListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceListPage
 
-    /** List namespaces. */
+    /** @see [list] */
+    fun list(params: NamespaceListParams = NamespaceListParams.none()): NamespaceListPage =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): NamespaceListPage =
         list(NamespaceListParams.none(), requestOptions)
 
     /** Delete namespace. */
-    @JvmOverloads
+    fun deleteAll(params: NamespaceDeleteAllParams): NamespaceDeleteAllResponse =
+        deleteAll(params, RequestOptions.none())
+
+    /** @see [deleteAll] */
     fun deleteAll(
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceDeleteAllResponse
 
     /** Get namespace schema. */
-    @JvmOverloads
+    fun getSchema(params: NamespaceGetSchemaParams): NamespaceGetSchemaResponse =
+        getSchema(params, RequestOptions.none())
+
+    /** @see [getSchema] */
     fun getSchema(
         params: NamespaceGetSchemaParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceGetSchemaResponse
 
     /** Query, filter, full-text search and vector search documents. */
-    @JvmOverloads
+    fun query(params: NamespaceQueryParams): List<DocumentRowWithScore> =
+        query(params, RequestOptions.none())
+
+    /** @see [query] */
     fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): List<DocumentRowWithScore>
 
     /** Create, update, or delete documents. */
-    @JvmOverloads
+    fun upsert(params: NamespaceUpsertParams): NamespaceUpsertResponse =
+        upsert(params, RequestOptions.none())
+
+    /** @see [upsert] */
     fun upsert(
         params: NamespaceUpsertParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -71,17 +87,23 @@ interface NamespaceService {
          * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
          * [NamespaceService.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(): HttpResponseFor<NamespaceListPage> = list(NamespaceListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: NamespaceListParams = NamespaceListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
-         * [NamespaceService.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: NamespaceListParams = NamespaceListParams.none()
+        ): HttpResponseFor<NamespaceListPage> = list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<NamespaceListPage> =
             list(NamespaceListParams.none(), requestOptions)
@@ -90,7 +112,12 @@ interface NamespaceService {
          * Returns a raw HTTP response for `delete /v1/namespaces/{namespace}`, but is otherwise the
          * same as [NamespaceService.deleteAll].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun deleteAll(
+            params: NamespaceDeleteAllParams
+        ): HttpResponseFor<NamespaceDeleteAllResponse> = deleteAll(params, RequestOptions.none())
+
+        /** @see [deleteAll] */
         @MustBeClosed
         fun deleteAll(
             params: NamespaceDeleteAllParams,
@@ -101,7 +128,12 @@ interface NamespaceService {
          * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/schema`, but is otherwise
          * the same as [NamespaceService.getSchema].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun getSchema(
+            params: NamespaceGetSchemaParams
+        ): HttpResponseFor<NamespaceGetSchemaResponse> = getSchema(params, RequestOptions.none())
+
+        /** @see [getSchema] */
         @MustBeClosed
         fun getSchema(
             params: NamespaceGetSchemaParams,
@@ -112,7 +144,11 @@ interface NamespaceService {
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/query`, but is otherwise
          * the same as [NamespaceService.query].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun query(params: NamespaceQueryParams): HttpResponseFor<List<DocumentRowWithScore>> =
+            query(params, RequestOptions.none())
+
+        /** @see [query] */
         @MustBeClosed
         fun query(
             params: NamespaceQueryParams,
@@ -123,7 +159,11 @@ interface NamespaceService {
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}`, but is otherwise the
          * same as [NamespaceService.upsert].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun upsert(params: NamespaceUpsertParams): HttpResponseFor<NamespaceUpsertResponse> =
+            upsert(params, RequestOptions.none())
+
+        /** @see [upsert] */
         @MustBeClosed
         fun upsert(
             params: NamespaceUpsertParams,

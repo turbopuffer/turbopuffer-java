@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.turbopuffer.services.async
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -27,39 +25,58 @@ interface NamespaceServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** List namespaces. */
-    @JvmOverloads
+    fun list(): CompletableFuture<NamespaceListPageAsync> = list(NamespaceListParams.none())
+
+    /** @see [list] */
     fun list(
         params: NamespaceListParams = NamespaceListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceListPageAsync>
 
-    /** List namespaces. */
+    /** @see [list] */
+    fun list(
+        params: NamespaceListParams = NamespaceListParams.none()
+    ): CompletableFuture<NamespaceListPageAsync> = list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): CompletableFuture<NamespaceListPageAsync> =
         list(NamespaceListParams.none(), requestOptions)
 
     /** Delete namespace. */
-    @JvmOverloads
+    fun deleteAll(params: NamespaceDeleteAllParams): CompletableFuture<NamespaceDeleteAllResponse> =
+        deleteAll(params, RequestOptions.none())
+
+    /** @see [deleteAll] */
     fun deleteAll(
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceDeleteAllResponse>
 
     /** Get namespace schema. */
-    @JvmOverloads
+    fun getSchema(params: NamespaceGetSchemaParams): CompletableFuture<NamespaceGetSchemaResponse> =
+        getSchema(params, RequestOptions.none())
+
+    /** @see [getSchema] */
     fun getSchema(
         params: NamespaceGetSchemaParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceGetSchemaResponse>
 
     /** Query, filter, full-text search and vector search documents. */
-    @JvmOverloads
+    fun query(params: NamespaceQueryParams): CompletableFuture<List<DocumentRowWithScore>> =
+        query(params, RequestOptions.none())
+
+    /** @see [query] */
     fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<List<DocumentRowWithScore>>
 
     /** Create, update, or delete documents. */
-    @JvmOverloads
+    fun upsert(params: NamespaceUpsertParams): CompletableFuture<NamespaceUpsertResponse> =
+        upsert(params, RequestOptions.none())
+
+    /** @see [upsert] */
     fun upsert(
         params: NamespaceUpsertParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -74,17 +91,25 @@ interface NamespaceServiceAsync {
          * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
          * [NamespaceServiceAsync.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(): CompletableFuture<HttpResponseFor<NamespaceListPageAsync>> =
+            list(NamespaceListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: NamespaceListParams = NamespaceListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<NamespaceListPageAsync>>
 
-        /**
-         * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
-         * [NamespaceServiceAsync.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: NamespaceListParams = NamespaceListParams.none()
+        ): CompletableFuture<HttpResponseFor<NamespaceListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             requestOptions: RequestOptions
@@ -95,7 +120,13 @@ interface NamespaceServiceAsync {
          * Returns a raw HTTP response for `delete /v1/namespaces/{namespace}`, but is otherwise the
          * same as [NamespaceServiceAsync.deleteAll].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun deleteAll(
+            params: NamespaceDeleteAllParams
+        ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>> =
+            deleteAll(params, RequestOptions.none())
+
+        /** @see [deleteAll] */
         @MustBeClosed
         fun deleteAll(
             params: NamespaceDeleteAllParams,
@@ -106,7 +137,13 @@ interface NamespaceServiceAsync {
          * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/schema`, but is otherwise
          * the same as [NamespaceServiceAsync.getSchema].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun getSchema(
+            params: NamespaceGetSchemaParams
+        ): CompletableFuture<HttpResponseFor<NamespaceGetSchemaResponse>> =
+            getSchema(params, RequestOptions.none())
+
+        /** @see [getSchema] */
         @MustBeClosed
         fun getSchema(
             params: NamespaceGetSchemaParams,
@@ -117,7 +154,13 @@ interface NamespaceServiceAsync {
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/query`, but is otherwise
          * the same as [NamespaceServiceAsync.query].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun query(
+            params: NamespaceQueryParams
+        ): CompletableFuture<HttpResponseFor<List<DocumentRowWithScore>>> =
+            query(params, RequestOptions.none())
+
+        /** @see [query] */
         @MustBeClosed
         fun query(
             params: NamespaceQueryParams,
@@ -128,7 +171,13 @@ interface NamespaceServiceAsync {
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}`, but is otherwise the
          * same as [NamespaceServiceAsync.upsert].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun upsert(
+            params: NamespaceUpsertParams
+        ): CompletableFuture<HttpResponseFor<NamespaceUpsertResponse>> =
+            upsert(params, RequestOptions.none())
+
+        /** @see [upsert] */
         @MustBeClosed
         fun upsert(
             params: NamespaceUpsertParams,
