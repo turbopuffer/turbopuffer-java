@@ -31,6 +31,7 @@ import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Create, update, or delete documents. */
 class NamespaceUpsertParams
@@ -1099,7 +1100,7 @@ private constructor(
         fun documents(documents: Documents?) = apply { this.documents = documents }
 
         /** Upsert documents in columnar format. */
-        fun documents(documents: Optional<Documents>) = documents(documents.orElse(null))
+        fun documents(documents: Optional<Documents>) = documents(documents.getOrNull())
 
         /** Upsert documents in columnar format. */
         fun documents(upsertColumnar: Documents.UpsertColumnar) =

@@ -18,6 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
+import kotlin.jvm.optionals.getOrNull
 
 /** List namespaces. */
 class NamespaceListPage
@@ -184,7 +185,7 @@ private constructor(
                 while (index < page.namespaces().size) {
                     yield(page.namespaces()[index++])
                 }
-                page = page.getNextPage().orElse(null) ?: break
+                page = page.getNextPage().getOrNull() ?: break
                 index = 0
             }
         }

@@ -8,6 +8,7 @@ import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** List namespaces. */
 class NamespaceListParams
@@ -76,7 +77,7 @@ private constructor(
         fun cursor(cursor: String?) = apply { this.cursor = cursor }
 
         /** Retrieve the next page of results. */
-        fun cursor(cursor: Optional<String>) = cursor(cursor.orElse(null))
+        fun cursor(cursor: Optional<String>) = cursor(cursor.getOrNull())
 
         /** Limit the number of results per page. */
         fun pageSize(pageSize: Long?) = apply { this.pageSize = pageSize }
@@ -85,14 +86,13 @@ private constructor(
         fun pageSize(pageSize: Long) = pageSize(pageSize as Long?)
 
         /** Limit the number of results per page. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun pageSize(pageSize: Optional<Long>) = pageSize(pageSize.orElse(null) as Long?)
+        fun pageSize(pageSize: Optional<Long>) = pageSize(pageSize.getOrNull())
 
         /** Retrieve only the namespaces that match the prefix. */
         fun prefix(prefix: String?) = apply { this.prefix = prefix }
 
         /** Retrieve only the namespaces that match the prefix. */
-        fun prefix(prefix: Optional<String>) = prefix(prefix.orElse(null))
+        fun prefix(prefix: Optional<String>) = prefix(prefix.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
