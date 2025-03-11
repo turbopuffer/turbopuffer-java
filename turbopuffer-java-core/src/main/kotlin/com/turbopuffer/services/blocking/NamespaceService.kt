@@ -5,16 +5,16 @@ package com.turbopuffer.services.blocking
 import com.google.errorprone.annotations.MustBeClosed
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
-import com.turbopuffer.models.DocumentRowWithScore
-import com.turbopuffer.models.NamespaceDeleteAllParams
-import com.turbopuffer.models.NamespaceDeleteAllResponse
-import com.turbopuffer.models.NamespaceGetSchemaParams
-import com.turbopuffer.models.NamespaceGetSchemaResponse
-import com.turbopuffer.models.NamespaceListPage
-import com.turbopuffer.models.NamespaceListParams
-import com.turbopuffer.models.NamespaceQueryParams
-import com.turbopuffer.models.NamespaceUpsertParams
-import com.turbopuffer.models.NamespaceUpsertResponse
+import com.turbopuffer.models.namespaces.DocumentRowWithScore
+import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
+import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceListPage
+import com.turbopuffer.models.namespaces.NamespaceListParams
+import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams
+import com.turbopuffer.models.namespaces.NamespaceUpsertResponse
 
 interface NamespaceService {
 
