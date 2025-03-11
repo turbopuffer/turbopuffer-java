@@ -15,16 +15,16 @@ import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepareAsync
 import com.turbopuffer.errors.TurbopufferError
-import com.turbopuffer.models.DocumentRowWithScore
-import com.turbopuffer.models.NamespaceDeleteAllParams
-import com.turbopuffer.models.NamespaceDeleteAllResponse
-import com.turbopuffer.models.NamespaceGetSchemaParams
-import com.turbopuffer.models.NamespaceGetSchemaResponse
-import com.turbopuffer.models.NamespaceListPageAsync
-import com.turbopuffer.models.NamespaceListParams
-import com.turbopuffer.models.NamespaceQueryParams
-import com.turbopuffer.models.NamespaceUpsertParams
-import com.turbopuffer.models.NamespaceUpsertResponse
+import com.turbopuffer.models.namespaces.DocumentRowWithScore
+import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
+import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceListPageAsync
+import com.turbopuffer.models.namespaces.NamespaceListParams
+import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams
+import com.turbopuffer.models.namespaces.NamespaceUpsertResponse
 import java.util.concurrent.CompletableFuture
 
 class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
