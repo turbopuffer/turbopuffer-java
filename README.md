@@ -44,9 +44,9 @@ This library requires Java 8 or later.
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.NamespaceUpsertParams;
-import com.turbopuffer.models.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.DistanceMetric;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 
 // Configures using the `TURBOPUFFER_API_KEY` environment variable
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
@@ -127,9 +127,9 @@ The default client is synchronous. To switch to asynchronous execution, call the
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.NamespaceUpsertParams;
-import com.turbopuffer.models.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.DistanceMetric;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 import java.util.concurrent.CompletableFuture;
 
 // Configures using the `TURBOPUFFER_API_KEY` environment variable
@@ -149,9 +149,9 @@ Or create an asynchronous client from the beginning:
 ```java
 import com.turbopuffer.client.TurbopufferClientAsync;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync;
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.NamespaceUpsertParams;
-import com.turbopuffer.models.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.DistanceMetric;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 import java.util.concurrent.CompletableFuture;
 
 // Configures using the `TURBOPUFFER_API_KEY` environment variable
@@ -177,8 +177,8 @@ To access this data, prefix any HTTP method call on a client or service with `wi
 ```java
 import com.turbopuffer.core.http.Headers;
 import com.turbopuffer.core.http.HttpResponseFor;
-import com.turbopuffer.models.DocumentRowWithScore;
-import com.turbopuffer.models.NamespaceQueryParams;
+import com.turbopuffer.models.namespaces.DocumentRowWithScore;
+import com.turbopuffer.models.namespaces.NamespaceQueryParams;
 
 NamespaceQueryParams params = NamespaceQueryParams.builder()
     .namespace("products")
@@ -192,7 +192,7 @@ Headers headers = documentRowWithScores.headers();
 You can still deserialize the response into an instance of a Java class if needed:
 
 ```java
-import com.turbopuffer.models.DocumentRowWithScore;
+import com.turbopuffer.models.namespaces.DocumentRowWithScore;
 
 List<DocumentRowWithScore> parsedDocumentRowWithScores = documentRowWithScores.parse();
 ```
@@ -231,8 +231,8 @@ To iterate through all results across all pages, you can use `autoPager`, which 
 ### Synchronous
 
 ```java
-import com.turbopuffer.models.NamespaceListPage;
-import com.turbopuffer.models.NamespaceSummary;
+import com.turbopuffer.models.namespaces.NamespaceListPage;
+import com.turbopuffer.models.namespaces.NamespaceSummary;
 
 // As an Iterable:
 NamespaceListPage page = client.namespaces().list(params);
@@ -259,8 +259,8 @@ asyncClient.namespaces().list(params).autoPager()
 If none of the above helpers meet your needs, you can also manually request pages one-by-one. A page of results has a `data()` method to fetch the list of objects, as well as top-level `response` and other methods to fetch top-level data about the page. It also has methods `hasNextPage`, `getNextPage`, and `getNextPageParams` methods to help with pagination.
 
 ```java
-import com.turbopuffer.models.NamespaceListPage;
-import com.turbopuffer.models.NamespaceSummary;
+import com.turbopuffer.models.namespaces.NamespaceListPage;
+import com.turbopuffer.models.namespaces.NamespaceSummary;
 
 NamespaceListPage page = client.namespaces().list(params);
 while (page != null) {
@@ -323,9 +323,9 @@ Requests time out after 1 minute by default.
 To set a custom timeout, configure the method call using the `timeout` method:
 
 ```java
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.NamespaceUpsertParams;
-import com.turbopuffer.models.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.DistanceMetric;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 
 NamespaceUpsertResponse response = client.namespaces().upsert(
   params, RequestOptions.builder().timeout(Duration.ofSeconds(30)).build()
@@ -375,7 +375,7 @@ To set undocumented parameters, call the `putAdditionalHeader`, `putAdditionalQu
 
 ```java
 import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .putAdditionalHeader("Secret-Header", "42")
@@ -390,7 +390,7 @@ To set undocumented parameters on _nested_ headers, query params, or body classe
 
 ```java
 import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.NamespaceQueryParams;
+import com.turbopuffer.models.namespaces.NamespaceQueryParams;
 
 NamespaceQueryParams params = NamespaceQueryParams.builder()
     .consistency(NamespaceQueryParams.Consistency.builder()
@@ -405,7 +405,7 @@ To set a documented parameter or property to an undocumented or not yet supporte
 
 ```java
 import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
@@ -515,7 +515,7 @@ By default, the SDK will not throw an exception in this case. It will throw [`Tu
 If you would prefer to check that the response is completely well-typed upfront, then either call `validate()`:
 
 ```java
-import com.turbopuffer.models.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 
 NamespaceUpsertResponse response = client.namespaces().upsert(params).validate();
 ```
@@ -523,9 +523,9 @@ NamespaceUpsertResponse response = client.namespaces().upsert(params).validate()
 Or configure the method call to validate the response using the `responseValidation` method:
 
 ```java
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.NamespaceUpsertParams;
-import com.turbopuffer.models.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.DistanceMetric;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 
 NamespaceUpsertResponse response = client.namespaces().upsert(
   params, RequestOptions.builder().responseValidation(true).build()
