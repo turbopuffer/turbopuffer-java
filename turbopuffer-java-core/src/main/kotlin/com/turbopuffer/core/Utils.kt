@@ -18,7 +18,8 @@ internal fun <T> List<T>.toImmutable(): List<T> =
 internal fun <K, V> Map<K, V>.toImmutable(): Map<K, V> =
     if (isEmpty()) immutableEmptyMap() else Collections.unmodifiableMap(toMap())
 
-@JvmSynthetic internal fun <K, V> immutableEmptyMap(): Map<K, V> = Collections.emptyMap()
+@JvmSynthetic
+internal fun <K, V> immutableEmptyMap(): Map<K, V> = Collections.emptyMap()
 
 @JvmSynthetic
 internal fun <K : Comparable<K>, V> SortedMap<K, V>.toImmutable(): SortedMap<K, V> =
@@ -28,26 +29,26 @@ internal fun <K : Comparable<K>, V> SortedMap<K, V>.toImmutable(): SortedMap<K, 
 /**
  * Returns whether [this] is equal to [other].
  *
- * This differs from [Object.equals] because it also deeply equates arrays based on their contents,
- * even when there are arrays directly nested within other arrays.
+ * This differs from [Object.equals] because it also deeply equates arrays based on their contents, even when
+ * there are arrays directly nested within other arrays.
  */
 @JvmSynthetic
-internal infix fun Any?.contentEquals(other: Any?): Boolean =
-    arrayOf(this).contentDeepEquals(arrayOf(other))
+internal infix fun Any?.contentEquals(other: Any?): Boolean = arrayOf(this).contentDeepEquals(arrayOf(other))
 
 /**
  * Returns a hash of the given sequence of [values].
  *
- * This differs from [java.util.Objects.hash] because it also deeply hashes arrays based on their
- * contents, even when there are arrays directly nested within other arrays.
+ * This differs from [java.util.Objects.hash] because it also deeply hashes arrays based on their contents,
+ * even when there are arrays directly nested within other arrays.
  */
-@JvmSynthetic internal fun contentHash(vararg values: Any?): Int = values.contentDeepHashCode()
+@JvmSynthetic
+internal fun contentHash(vararg values: Any?): Int = values.contentDeepHashCode()
 
 /**
  * Returns a [String] representation of [this].
  *
- * This differs from [Object.toString] because it also deeply stringifies arrays based on their
- * contents, even when there are arrays directly nested within other arrays.
+ * This differs from [Object.toString] because it also deeply stringifies arrays based on their contents, even
+ * when there are arrays directly nested within other arrays.
  */
 @JvmSynthetic
 internal fun Any?.contentToString(): String {
