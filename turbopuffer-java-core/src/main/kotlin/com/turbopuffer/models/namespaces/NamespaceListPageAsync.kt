@@ -19,16 +19,13 @@ import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
-import kotlin.jvm.optionals.getOrNull
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 
 /** List namespaces. */
-class NamespaceListPageAsync private constructor(
+class NamespaceListPageAsync
+private constructor(
     private val namespacesService: NamespaceServiceAsync,
     private val params: NamespaceListParams,
     private val response: Response,
-
 ) {
 
     fun response(): Response = response
@@ -38,39 +35,43 @@ class NamespaceListPageAsync private constructor(
     fun nextCursor(): Optional<String> = response().nextCursor()
 
     override fun equals(other: Any?): Boolean {
-      if (this === other) {
-          return true
-      }
+        if (this === other) {
+            return true
+        }
 
-      return /* spotless:off */ other is NamespaceListPageAsync && namespacesService == other.namespacesService && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is NamespaceListPageAsync && namespacesService == other.namespacesService && params == other.params && response == other.response /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespacesService, params, response) /* spotless:on */
 
-    override fun toString() = "NamespaceListPageAsync{namespacesService=$namespacesService, params=$params, response=$response}"
+    override fun toString() =
+        "NamespaceListPageAsync{namespacesService=$namespacesService, params=$params, response=$response}"
 
     fun hasNextPage(): Boolean {
-      if (namespaces().isEmpty()) {
-        return false;
-      }
+        if (namespaces().isEmpty()) {
+            return false
+        }
 
-      return nextCursor().isPresent
+        return nextCursor().isPresent
     }
 
     fun getNextPageParams(): Optional<NamespaceListParams> {
-      if (!hasNextPage()) {
-        return Optional.empty()
-      }
+        if (!hasNextPage()) {
+            return Optional.empty()
+        }
 
-      return Optional.of(NamespaceListParams.builder().from(params).apply {nextCursor().ifPresent{ this.cursor(it) } }.build())
+        return Optional.of(
+            NamespaceListParams.builder()
+                .from(params)
+                .apply { nextCursor().ifPresent { this.cursor(it) } }
+                .build()
+        )
     }
 
     fun getNextPage(): CompletableFuture<Optional<NamespaceListPageAsync>> {
-      return getNextPageParams().map {
-        namespacesService.list(it).thenApply { Optional.of(it) }
-      }.orElseGet {
-          CompletableFuture.completedFuture(Optional.empty())
-      }
+        return getNextPageParams()
+            .map { namespacesService.list(it).thenApply { Optional.of(it) } }
+            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
     }
 
     fun autoPager(): AutoPager = AutoPager(this)
@@ -78,28 +79,32 @@ class NamespaceListPageAsync private constructor(
     companion object {
 
         @JvmStatic
-        fun of(namespacesService: NamespaceServiceAsync, params: NamespaceListParams, response: Response) =
-            NamespaceListPageAsync(
-              namespacesService,
-              params,
-              response,
-            )
+        fun of(
+            namespacesService: NamespaceServiceAsync,
+            params: NamespaceListParams,
+            response: Response,
+        ) = NamespaceListPageAsync(namespacesService, params, response)
     }
 
     @NoAutoDetect
-    class Response @JsonCreator constructor(
-        @JsonProperty("namespaces") private val namespaces: JsonField<List<NamespaceSummary>> = JsonMissing.of(),
+    class Response
+    @JsonCreator
+    constructor(
+        @JsonProperty("namespaces")
+        private val namespaces: JsonField<List<NamespaceSummary>> = JsonMissing.of(),
         @JsonProperty("next_cursor") private val nextCursor: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         fun namespaces(): List<NamespaceSummary> = namespaces.getNullable("namespaces") ?: listOf()
 
-        fun nextCursor(): Optional<String> = Optional.ofNullable(nextCursor.getNullable("next_cursor"))
+        fun nextCursor(): Optional<String> =
+            Optional.ofNullable(nextCursor.getNullable("next_cursor"))
 
         @JsonProperty("namespaces")
-        fun _namespaces(): Optional<JsonField<List<NamespaceSummary>>> = Optional.ofNullable(namespaces)
+        fun _namespaces(): Optional<JsonField<List<NamespaceSummary>>> =
+            Optional.ofNullable(namespaces)
 
         @JsonProperty("next_cursor")
         fun _nextCursor(): Optional<JsonField<String>> = Optional.ofNullable(nextCursor)
@@ -110,39 +115,37 @@ class NamespaceListPageAsync private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Response =
-            apply {
-                if (validated) {
-                  return@apply
-                }
-
-                namespaces().map { it.validate() }
-                nextCursor()
-                validated = true
+        fun validate(): Response = apply {
+            if (validated) {
+                return@apply
             }
+
+            namespaces().map { it.validate() }
+            nextCursor()
+            validated = true
+        }
 
         fun toBuilder() = Builder().from(this)
 
         override fun equals(other: Any?): Boolean {
-          if (this === other) {
-              return true
-          }
+            if (this === other) {
+                return true
+            }
 
-          return /* spotless:off */ other is Response && namespaces == other.namespaces && nextCursor == other.nextCursor && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Response && namespaces == other.namespaces && nextCursor == other.nextCursor && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespaces, nextCursor, additionalProperties) /* spotless:on */
 
-        override fun toString() = "Response{namespaces=$namespaces, nextCursor=$nextCursor, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Response{namespaces=$namespaces, nextCursor=$nextCursor, additionalProperties=$additionalProperties}"
 
         companion object {
 
             /**
-             * Returns a mutable builder for constructing an instance of
-             * [NamespaceListPageAsync].
+             * Returns a mutable builder for constructing an instance of [NamespaceListPageAsync].
              */
-            @JvmStatic
-            fun builder() = Builder()
+            @JvmStatic fun builder() = Builder()
         }
 
         class Builder {
@@ -152,70 +155,57 @@ class NamespaceListPageAsync private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(page: Response) =
-                apply {
-                    this.namespaces = page.namespaces
-                    this.nextCursor = page.nextCursor
-                    this.additionalProperties.putAll(page.additionalProperties)
-                }
+            internal fun from(page: Response) = apply {
+                this.namespaces = page.namespaces
+                this.nextCursor = page.nextCursor
+                this.additionalProperties.putAll(page.additionalProperties)
+            }
 
-            fun namespaces(namespaces: List<NamespaceSummary>) = namespaces(JsonField.of(namespaces))
+            fun namespaces(namespaces: List<NamespaceSummary>) =
+                namespaces(JsonField.of(namespaces))
 
-            fun namespaces(namespaces: JsonField<List<NamespaceSummary>>) = apply { this.namespaces = namespaces }
+            fun namespaces(namespaces: JsonField<List<NamespaceSummary>>) = apply {
+                this.namespaces = namespaces
+            }
 
             fun nextCursor(nextCursor: String) = nextCursor(JsonField.of(nextCursor))
 
             fun nextCursor(nextCursor: JsonField<String>) = apply { this.nextCursor = nextCursor }
 
-            fun putAdditionalProperty(key: String, value: JsonValue) =
-                apply {
-                    this.additionalProperties.put(key, value)
-                }
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                this.additionalProperties.put(key, value)
+            }
 
-            fun build() =
-                Response(
-                  namespaces,
-                  nextCursor,
-                  additionalProperties.toImmutable(),
-                )
+            fun build() = Response(namespaces, nextCursor, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: NamespaceListPageAsync,
+    class AutoPager(private val firstPage: NamespaceListPageAsync) {
 
-    ) {
-
-        fun forEach(action: Predicate<NamespaceSummary>, executor: Executor): CompletableFuture<Void> {
-          fun CompletableFuture<Optional<NamespaceListPageAsync>>.forEach(action: (NamespaceSummary) -> Boolean, executor: Executor): CompletableFuture<Void> =
-              thenComposeAsync(
-                { page ->
-                    page
-                    .filter {
-                        it.namespaces().all(action)
-                    }
-                    .map {
-                        it.getNextPage().forEach(action, executor)
-                    }
-                    .orElseGet {
-                        CompletableFuture.completedFuture(null)
-                    }
-                }, executor
-              )
-          return CompletableFuture.completedFuture(Optional.of(firstPage))
-          .forEach(
-            action::test, executor
-          )
+        fun forEach(
+            action: Predicate<NamespaceSummary>,
+            executor: Executor,
+        ): CompletableFuture<Void> {
+            fun CompletableFuture<Optional<NamespaceListPageAsync>>.forEach(
+                action: (NamespaceSummary) -> Boolean,
+                executor: Executor,
+            ): CompletableFuture<Void> =
+                thenComposeAsync(
+                    { page ->
+                        page
+                            .filter { it.namespaces().all(action) }
+                            .map { it.getNextPage().forEach(action, executor) }
+                            .orElseGet { CompletableFuture.completedFuture(null) }
+                    },
+                    executor,
+                )
+            return CompletableFuture.completedFuture(Optional.of(firstPage))
+                .forEach(action::test, executor)
         }
 
         fun toList(executor: Executor): CompletableFuture<List<NamespaceSummary>> {
-          val values = mutableListOf<NamespaceSummary>()
-          return forEach(
-            values::add, executor
-          )
-          .thenApply {
-              values
-          }
+            val values = mutableListOf<NamespaceSummary>()
+            return forEach(values::add, executor).thenApply { values }
         }
     }
 }
