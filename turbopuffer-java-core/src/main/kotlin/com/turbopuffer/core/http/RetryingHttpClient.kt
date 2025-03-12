@@ -1,8 +1,8 @@
 package com.turbopuffer.core.http
 
+import com.turbopuffer.errors.TurbopufferIoException
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.checkRequired
-import com.turbopuffer.errors.TurbopufferIoException
 import java.io.IOException
 import java.time.Clock
 import java.time.Duration
@@ -22,13 +22,16 @@ import kotlin.math.pow
 
 class RetryingHttpClient
 private constructor(
-    private val httpClient: HttpClient,
-    private val clock: Clock,
-    private val maxRetries: Int,
-    private val idempotencyHeader: String?,
+        private val httpClient: HttpClient,
+        private val clock: Clock,
+        private val maxRetries: Int,
+        private val idempotencyHeader: String?,
 ) : HttpClient {
 
-    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
+    override fun execute(
+            request: HttpRequest,
+            requestOptions: RequestOptions,
+    ): HttpResponse {
         if (!isRetryable(request) || maxRetries <= 0) {
             return httpClient.execute(request, requestOptions)
         }
@@ -47,20 +50,20 @@ private constructor(
             }
 
             val response =
-                try {
-                    val response = httpClient.execute(modifiedRequest, requestOptions)
-                    if (++retries > maxRetries || !shouldRetry(response)) {
-                        return response
-                    }
+                    try {
+                        val response = httpClient.execute(modifiedRequest, requestOptions)
+                        if (++retries > maxRetries || !shouldRetry(response)) {
+                            return response
+                        }
 
-                    response
-                } catch (throwable: Throwable) {
-                    if (++retries > maxRetries || !shouldRetry(throwable)) {
-                        throw throwable
-                    }
+                        response
+                    } catch (throwable: Throwable) {
+                        if (++retries > maxRetries || !shouldRetry(throwable)) {
+                            throw throwable
+                        }
 
-                    null
-                }
+                        null
+                    }
 
             val backoffMillis = getRetryBackoffMillis(retries, response)
             // All responses must be closed, so close the failed one before retrying.
@@ -70,8 +73,8 @@ private constructor(
     }
 
     override fun executeAsync(
-        request: HttpRequest,
-        requestOptions: RequestOptions,
+            request: HttpRequest,
+            requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
         if (!isRetryable(request) || maxRetries <= 0) {
             return httpClient.executeAsync(request, requestOptions)
@@ -86,43 +89,42 @@ private constructor(
         var retries = 0
 
         fun executeWithRetries(
-            request: HttpRequest,
-            requestOptions: RequestOptions,
+                request: HttpRequest,
+                requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> {
             val requestWithRetryCount =
                 if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
 
-            return httpClient
-                .executeAsync(requestWithRetryCount, requestOptions)
-                .handleAsync(
-                    fun(
-                        response: HttpResponse?,
-                        throwable: Throwable?,
-                    ): CompletableFuture<HttpResponse> {
-                        if (response != null) {
-                            if (++retries > maxRetries || !shouldRetry(response)) {
-                                return CompletableFuture.completedFuture(response)
-                            }
-                        } else {
-                            if (++retries > maxRetries || !shouldRetry(throwable!!)) {
-                                val failedFuture = CompletableFuture<HttpResponse>()
-                                failedFuture.completeExceptionally(throwable)
-                                return failedFuture
-                            }
-                        }
+            return httpClient.executeAsync(requestWithRetryCount, requestOptions)
+                    .handleAsync(
+                            fun(
+                                    response: HttpResponse?,
+                                    throwable: Throwable?
+                            ): CompletableFuture<HttpResponse> {
+                                if (response != null) {
+                                    if (++retries > maxRetries || !shouldRetry(response)) {
+                                        return CompletableFuture.completedFuture(response)
+                                    }
+                                } else {
+                                    if (++retries > maxRetries || !shouldRetry(throwable!!)) {
+                                        val failedFuture = CompletableFuture<HttpResponse>()
+                                        failedFuture.completeExceptionally(throwable)
+                                        return failedFuture
+                                    }
+                                }
 
-                        val backoffMillis = getRetryBackoffMillis(retries, response)
-                        // All responses must be closed, so close the failed one before retrying.
-                        response?.close()
-                        return sleepAsync(backoffMillis.toMillis()).thenCompose {
-                            executeWithRetries(requestWithRetryCount, requestOptions)
-                        }
+                                val backoffMillis = getRetryBackoffMillis(retries, response)
+                                // All responses must be closed, so close the failed one before retrying.
+                                response?.close()
+                                return sleepAsync(backoffMillis.toMillis()).thenCompose {
+                                    executeWithRetries(requestWithRetryCount, requestOptions)
+                                }
+                            },
+                    ) {
+                        // Run in the same thread.
+                        it.run()
                     }
-                ) {
-                    // Run in the same thread.
-                    it.run()
-                }
-                .thenCompose(Function.identity())
+                    .thenCompose(Function.identity())
         }
 
         return executeWithRetries(modifiedRequest, requestOptions)
@@ -175,46 +177,37 @@ private constructor(
     }
 
     private fun shouldRetry(throwable: Throwable): Boolean =
-        // Only retry IOException and TurbopufferIoException, other exceptions are not intended to
-        // be
+        // Only retry IOException and TurbopufferIoException, other exceptions are not intended to be
         // retried.
         throwable is IOException || throwable is TurbopufferIoException
 
     private fun getRetryBackoffMillis(retries: Int, response: HttpResponse?): Duration {
         // About the Retry-After header:
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
-        response
-            ?.headers()
-            ?.let { headers ->
-                headers
-                    .values("Retry-After-Ms")
-                    .getOrNull(0)
-                    ?.toFloatOrNull()
-                    ?.times(TimeUnit.MILLISECONDS.toNanos(1))
+        response?.headers()?.let { headers ->
+            headers.values("Retry-After-Ms").getOrNull(0)?.toFloatOrNull()?.times(TimeUnit.MILLISECONDS.toNanos(1))
                     ?: headers.values("Retry-After").getOrNull(0)?.let { retryAfter ->
                         retryAfter.toFloatOrNull()?.times(TimeUnit.SECONDS.toNanos(1))
-                            ?: try {
-                                ChronoUnit.MILLIS.between(
-                                    OffsetDateTime.now(clock),
-                                    OffsetDateTime.parse(
-                                        retryAfter,
-                                        DateTimeFormatter.RFC_1123_DATE_TIME,
-                                    ),
-                                )
-                            } catch (e: DateTimeParseException) {
-                                null
-                            }
+                                ?: try {
+                                    ChronoUnit.MILLIS.between(
+                                            OffsetDateTime.now(clock),
+                                            OffsetDateTime.parse(
+                                                    retryAfter,
+                                                    DateTimeFormatter.RFC_1123_DATE_TIME
+                                            )
+                                    )
+                                } catch (e: DateTimeParseException) {
+                                    null
+                                }
                     }
+        }?.let { retryAfterNanos ->
+            // If the API asks us to wait a certain amount of time (and it's a reasonable amount), just
+            // do what it says.
+            val retryAfter = Duration.ofNanos(retryAfterNanos.toLong())
+            if (retryAfter in Duration.ofNanos(0)..Duration.ofMinutes(1)) {
+                return retryAfter
             }
-            ?.let { retryAfterNanos ->
-                // If the API asks us to wait a certain amount of time (and it's a reasonable
-                // amount), just
-                // do what it says.
-                val retryAfter = Duration.ofNanos(retryAfterNanos.toLong())
-                if (retryAfter in Duration.ofNanos(0)..Duration.ofMinutes(1)) {
-                    return retryAfter
-                }
-            }
+        }
 
         // Apply exponential backoff, but not more than the max.
         val backoffSeconds = min(0.5 * 2.0.pow(retries - 1), 8.0)
@@ -232,17 +225,18 @@ private constructor(
         private fun sleepAsync(millis: Long): CompletableFuture<Void> {
             val future = CompletableFuture<Void>()
             TIMER.schedule(
-                object : TimerTask() {
-                    override fun run() {
-                        future.complete(null)
-                    }
-                },
-                millis,
+                    object : TimerTask() {
+                        override fun run() {
+                            future.complete(null)
+                        }
+                    },
+                    millis
             )
             return future
         }
 
-        @JvmStatic fun builder() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
     }
 
     class Builder internal constructor() {
@@ -261,11 +255,11 @@ private constructor(
         fun idempotencyHeader(header: String) = apply { this.idempotencyHeader = header }
 
         fun build(): HttpClient =
-            RetryingHttpClient(
-                checkRequired("httpClient", httpClient),
-                clock,
-                maxRetries,
-                idempotencyHeader,
-            )
+                RetryingHttpClient(
+                        checkRequired("httpClient", httpClient),
+                        clock,
+                        maxRetries,
+                        idempotencyHeader,
+                )
     }
 }
