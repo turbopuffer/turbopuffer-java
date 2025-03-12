@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.turbopuffer.core.*
+import java.util.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class SerializerTest {
     @JsonDeserialize(builder = ClassWithBooleanFieldPrefixedWithIs.Builder::class)
@@ -23,9 +23,7 @@ internal class SerializerTest {
 
         fun isActive(): Boolean? = isActive.getNullable("is_active")
 
-        @JsonProperty("is_active")
-        @ExcludeMissing
-        fun _isActive() = isActive
+        @JsonProperty("is_active") @ExcludeMissing fun _isActive() = isActive
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -44,21 +42,19 @@ internal class SerializerTest {
             }
 
             return other is ClassWithBooleanFieldPrefixedWithIs &&
-                    isActive == other.isActive &&
-                    additionalProperties == other.additionalProperties
+                isActive == other.isActive &&
+                additionalProperties == other.additionalProperties
         }
 
         override fun hashCode(): Int {
             if (hashCode == 0) {
-                hashCode = Objects.hash(
-                    isActive,
-                    additionalProperties,
-                )
+                hashCode = Objects.hash(isActive, additionalProperties)
             }
             return hashCode
         }
 
-        override fun toString() = "MyClass{isActive=$isActive, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "MyClass{isActive=$isActive, additionalProperties=$additionalProperties}"
 
         companion object {
             fun builder() = Builder()
@@ -74,9 +70,7 @@ internal class SerializerTest {
 
             @JsonProperty("is_active")
             @ExcludeMissing
-            fun isActive(isActive: JsonField<Boolean>) = apply {
-                this.isActive = isActive
-            }
+            fun isActive(isActive: JsonField<Boolean>) = apply { this.isActive = isActive }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -92,13 +86,10 @@ internal class SerializerTest {
                 this.additionalProperties.putAll(additionalProperties)
             }
 
-            fun build(): ClassWithBooleanFieldPrefixedWithIs = ClassWithBooleanFieldPrefixedWithIs(
-                isActive,
-                additionalProperties.toImmutable(),
-            )
+            fun build(): ClassWithBooleanFieldPrefixedWithIs =
+                ClassWithBooleanFieldPrefixedWithIs(isActive, additionalProperties.toImmutable())
         }
     }
-
 
     @Test
     fun serializeBooleanPrefixedWithIs() {
