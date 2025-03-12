@@ -7,23 +7,27 @@ import com.turbopuffer.core.getPackageVersion
 import com.turbopuffer.services.async.NamespaceServiceAsync
 import com.turbopuffer.services.async.NamespaceServiceAsyncImpl
 
-class TurbopufferClientAsyncImpl(
-    private val clientOptions: ClientOptions,
-
-) : TurbopufferClientAsync {
+class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
+    TurbopufferClientAsync {
 
     private val clientOptionsWithUserAgent =
-
-      if (clientOptions.headers.names().contains("User-Agent")) clientOptions
-
-      else clientOptions.toBuilder().putHeader("User-Agent", "${javaClass.simpleName}/Java ${getPackageVersion()}").build()
+        if (clientOptions.headers.names().contains("User-Agent")) clientOptions
+        else
+            clientOptions
+                .toBuilder()
+                .putHeader("User-Agent", "${javaClass.simpleName}/Java ${getPackageVersion()}")
+                .build()
 
     // Pass the original clientOptions so that this client sets its own User-Agent.
     private val sync: TurbopufferClient by lazy { TurbopufferClientImpl(clientOptions) }
 
-    private val withRawResponse: TurbopufferClientAsync.WithRawResponse by lazy { WithRawResponseImpl(clientOptions) }
+    private val withRawResponse: TurbopufferClientAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
-    private val namespaces: NamespaceServiceAsync by lazy { NamespaceServiceAsyncImpl(clientOptionsWithUserAgent) }
+    private val namespaces: NamespaceServiceAsync by lazy {
+        NamespaceServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
 
     override fun sync(): TurbopufferClient = sync
 
@@ -33,12 +37,12 @@ class TurbopufferClientAsyncImpl(
 
     override fun close() = clientOptions.httpClient.close()
 
-    class WithRawResponseImpl internal constructor(
-        private val clientOptions: ClientOptions,
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        TurbopufferClientAsync.WithRawResponse {
 
-    ) : TurbopufferClientAsync.WithRawResponse {
-
-        private val namespaces: NamespaceServiceAsync.WithRawResponse by lazy { NamespaceServiceAsyncImpl.WithRawResponseImpl(clientOptions) }
+        private val namespaces: NamespaceServiceAsync.WithRawResponse by lazy {
+            NamespaceServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
 
         override fun namespaces(): NamespaceServiceAsync.WithRawResponse = namespaces
     }
