@@ -8,12 +8,12 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** A class containing timeouts for various processing phases of a request. */
-class Timeout
-private constructor(
+class Timeout private constructor(
     private val connect: Duration?,
     private val read: Duration?,
     private val write: Duration?,
     private val request: Duration?,
+
 ) {
 
     /**
@@ -26,7 +26,8 @@ private constructor(
     fun connect(): Duration = connect ?: Duration.ofMinutes(1)
 
     /**
-     * The maximum time allowed between two data packets when waiting for the server’s response.
+     * The maximum time allowed between two data packets when waiting for the server’s
+     * response.
      *
      * A value of [Duration.ZERO] means there's no timeout.
      *
@@ -35,7 +36,8 @@ private constructor(
     fun read(): Duration = read ?: request()
 
     /**
-     * The maximum time allowed between two data packets when sending the request to the server.
+     * The maximum time allowed between two data packets when sending the request to
+     * the server.
      *
      * A value of [Duration.ZERO] means there's no timeout.
      *
@@ -46,8 +48,8 @@ private constructor(
     /**
      * The maximum time allowed for a complete HTTP call, not including retries.
      *
-     * This includes resolving DNS, connecting, writing the request body, server processing, as well
-     * as reading the response body.
+     * This includes resolving DNS, connecting, writing the request body, server
+     * processing, as well as reading the response body.
      *
      * A value of [Duration.ZERO] means there's no timeout.
      *
@@ -59,10 +61,12 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun default() = builder().build()
+        @JvmStatic
+        fun default() = builder().build()
 
         /** Returns a mutable builder for constructing an instance of [Timeout]. */
-        @JvmStatic fun builder() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
     }
 
     /** A builder for [Timeout]. */
@@ -74,12 +78,13 @@ private constructor(
         private var request: Duration? = null
 
         @JvmSynthetic
-        internal fun from(timeout: Timeout) = apply {
-            connect = timeout.connect
-            read = timeout.read
-            write = timeout.write
-            request = timeout.request
-        }
+        internal fun from(timeout: Timeout) =
+            apply {
+                connect = timeout.connect
+                read = timeout.read
+                write = timeout.write
+                request = timeout.request
+            }
 
         /**
          * The maximum time allowed to establish a connection with a host.
@@ -88,7 +93,10 @@ private constructor(
          *
          * Defaults to `Duration.ofMinutes(1)`.
          */
-        fun connect(connect: Duration?) = apply { this.connect = connect }
+        fun connect(connect: Duration?) =
+            apply {
+                this.connect = connect
+            }
 
         /**
          * The maximum time allowed to establish a connection with a host.
@@ -100,16 +108,21 @@ private constructor(
         fun connect(connect: Optional<Duration>) = connect(connect.getOrNull())
 
         /**
-         * The maximum time allowed between two data packets when waiting for the server’s response.
+         * The maximum time allowed between two data packets when waiting for the server’s
+         * response.
          *
          * A value of [Duration.ZERO] means there's no timeout.
          *
          * Defaults to `request()`.
          */
-        fun read(read: Duration?) = apply { this.read = read }
+        fun read(read: Duration?) =
+            apply {
+                this.read = read
+            }
 
         /**
-         * The maximum time allowed between two data packets when waiting for the server’s response.
+         * The maximum time allowed between two data packets when waiting for the server’s
+         * response.
          *
          * A value of [Duration.ZERO] means there's no timeout.
          *
@@ -118,16 +131,21 @@ private constructor(
         fun read(read: Optional<Duration>) = read(read.getOrNull())
 
         /**
-         * The maximum time allowed between two data packets when sending the request to the server.
+         * The maximum time allowed between two data packets when sending the request to
+         * the server.
          *
          * A value of [Duration.ZERO] means there's no timeout.
          *
          * Defaults to `request()`.
          */
-        fun write(write: Duration?) = apply { this.write = write }
+        fun write(write: Duration?) =
+            apply {
+                this.write = write
+            }
 
         /**
-         * The maximum time allowed between two data packets when sending the request to the server.
+         * The maximum time allowed between two data packets when sending the request to
+         * the server.
          *
          * A value of [Duration.ZERO] means there's no timeout.
          *
@@ -138,20 +156,23 @@ private constructor(
         /**
          * The maximum time allowed for a complete HTTP call, not including retries.
          *
-         * This includes resolving DNS, connecting, writing the request body, server processing, as
-         * well as reading the response body.
+         * This includes resolving DNS, connecting, writing the request body, server
+         * processing, as well as reading the response body.
          *
          * A value of [Duration.ZERO] means there's no timeout.
          *
          * Defaults to `Duration.ofMinutes(1)`.
          */
-        fun request(request: Duration?) = apply { this.request = request }
+        fun request(request: Duration?) =
+            apply {
+                this.request = request
+            }
 
         /**
          * The maximum time allowed for a complete HTTP call, not including retries.
          *
-         * This includes resolving DNS, connecting, writing the request body, server processing, as
-         * well as reading the response body.
+         * This includes resolving DNS, connecting, writing the request body, server
+         * processing, as well as reading the response body.
          *
          * A value of [Duration.ZERO] means there's no timeout.
          *
@@ -159,7 +180,13 @@ private constructor(
          */
         fun request(request: Optional<Duration>) = request(request.getOrNull())
 
-        fun build(): Timeout = Timeout(connect, read, write, request)
+        fun build(): Timeout =
+            Timeout(
+              connect,
+              read,
+              write,
+              request,
+            )
     }
 
     @JvmSynthetic
@@ -175,15 +202,14 @@ private constructor(
             .build()
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return /* spotless:off */ other is Timeout && connect == other.connect && read == other.read && write == other.write && request == other.request /* spotless:on */
+      return /* spotless:off */ other is Timeout && connect == other.connect && read == other.read && write == other.write && request == other.request /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(connect, read, write, request) /* spotless:on */
 
-    override fun toString() =
-        "Timeout{connect=$connect, read=$read, write=$write, request=$request}"
+    override fun toString() = "Timeout{connect=$connect, read=$read, write=$write, request=$request}"
 }
