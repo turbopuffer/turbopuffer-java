@@ -67,7 +67,10 @@ internal fun multipartFormData(
                 .build()
         }
 
-        private fun serializePart(name: String, node: JsonNode): Sequence<Pair<String, InputStream>> =
+        private fun serializePart(
+            name: String,
+            node: JsonNode,
+        ): Sequence<Pair<String, InputStream>> =
             when (node.nodeType) {
                 JsonNodeType.MISSING,
                 JsonNodeType.NULL -> emptySequence()
@@ -108,7 +111,10 @@ internal fun multipartFormData(
                         serializePart("$name[$key]", value)
                     }
                 JsonNodeType.POJO,
-                null -> throw TurbopufferInvalidDataException("Unexpected JsonNode type: ${node.nodeType}")
+                null ->
+                    throw TurbopufferInvalidDataException(
+                        "Unexpected JsonNode type: ${node.nodeType}"
+                    )
             }
 
         private fun String.toInputStream(): InputStream = ByteArrayInputStream(toByteArray())

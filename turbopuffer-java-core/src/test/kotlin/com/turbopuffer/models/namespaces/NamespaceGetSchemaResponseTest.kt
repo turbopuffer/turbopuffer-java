@@ -12,13 +12,21 @@ class NamespaceGetSchemaResponseTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun createNamespaceGetSchemaResponse() {
-      val namespaceGetSchemaResponse = NamespaceGetSchemaResponse.builder()
-          .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf(
-            "filterable" to true,
-            "full_text_search" to true,
-            "type" to "string",
-          ))))
-          .build()
-      assertThat(namespaceGetSchemaResponse).isNotNull
+        val namespaceGetSchemaResponse =
+            NamespaceGetSchemaResponse.builder()
+                .putAdditionalProperty(
+                    "foo",
+                    JsonValue.from(
+                        listOf(
+                            mapOf(
+                                "filterable" to true,
+                                "full_text_search" to true,
+                                "type" to "string",
+                            )
+                        )
+                    ),
+                )
+                .build()
+        assertThat(namespaceGetSchemaResponse).isNotNull
     }
 }

@@ -5,7 +5,7 @@ import com.turbopuffer.core.toImmutable
 class QueryParams
 private constructor(
     private val map: Map<String, List<String>>,
-    @get:JvmName("size") val size: Int
+    @get:JvmName("size") val size: Int,
 ) {
 
     fun isEmpty(): Boolean = map.isEmpty()
@@ -69,10 +69,7 @@ private constructor(
         }
 
         fun build() =
-            QueryParams(
-                map.mapValues { (_, values) -> values.toImmutable() }.toImmutable(),
-                size
-            )
+            QueryParams(map.mapValues { (_, values) -> values.toImmutable() }.toImmutable(), size)
     }
 
     override fun hashCode(): Int = map.hashCode()
