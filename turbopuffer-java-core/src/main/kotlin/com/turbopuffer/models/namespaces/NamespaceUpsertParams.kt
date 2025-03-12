@@ -34,12 +34,12 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Create, update, or delete documents. */
-class NamespaceUpsertParams
-private constructor(
+class NamespaceUpsertParams private constructor(
     private val namespace: String,
     private val documents: Documents?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
+
 ) : Params {
 
     fun namespace(): String = namespace
@@ -51,29 +51,30 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Optional<Documents> = Optional.ofNullable(documents)
+    @JvmSynthetic
+    internal fun _body(): Optional<Documents> = Optional.ofNullable(documents)
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> namespace
-            else -> ""
-        }
+      return when (index) {
+          0 -> namespace
+          else -> ""
+      }
     }
 
     /** Upsert documents in columnar format. */
     @JsonDeserialize(using = Documents.Deserializer::class)
     @JsonSerialize(using = Documents.Serializer::class)
-    class Documents
-    private constructor(
+    class Documents private constructor(
         private val upsertColumnar: UpsertColumnar? = null,
         private val upsertRowBased: UpsertRowBased? = null,
         private val copyFromNamespace: CopyFromNamespace? = null,
         private val deleteByFilter: DeleteByFilter? = null,
         private val _json: JsonValue? = null,
+
     ) {
 
         /** Upsert documents in columnar format. */
@@ -83,8 +84,7 @@ private constructor(
         fun upsertRowBased(): Optional<UpsertRowBased> = Optional.ofNullable(upsertRowBased)
 
         /** Copy documents from another namespace. */
-        fun copyFromNamespace(): Optional<CopyFromNamespace> =
-            Optional.ofNullable(copyFromNamespace)
+        fun copyFromNamespace(): Optional<CopyFromNamespace> = Optional.ofNullable(copyFromNamespace)
 
         /** Delete documents by filter. */
         fun deleteByFilter(): Optional<DeleteByFilter> = Optional.ofNullable(deleteByFilter)
@@ -104,8 +104,7 @@ private constructor(
         fun asUpsertRowBased(): UpsertRowBased = upsertRowBased.getOrThrow("upsertRowBased")
 
         /** Copy documents from another namespace. */
-        fun asCopyFromNamespace(): CopyFromNamespace =
-            copyFromNamespace.getOrThrow("copyFromNamespace")
+        fun asCopyFromNamespace(): CopyFromNamespace = copyFromNamespace.getOrThrow("copyFromNamespace")
 
         /** Delete documents by filter. */
         fun asDeleteByFilter(): DeleteByFilter = deleteByFilter.getOrThrow("deleteByFilter")
@@ -113,50 +112,49 @@ private constructor(
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T {
-            return when {
-                upsertColumnar != null -> visitor.visitUpsertColumnar(upsertColumnar)
-                upsertRowBased != null -> visitor.visitUpsertRowBased(upsertRowBased)
-                copyFromNamespace != null -> visitor.visitCopyFromNamespace(copyFromNamespace)
-                deleteByFilter != null -> visitor.visitDeleteByFilter(deleteByFilter)
-                else -> visitor.unknown(_json)
-            }
+          return when {
+              upsertColumnar != null -> visitor.visitUpsertColumnar(upsertColumnar)
+              upsertRowBased != null -> visitor.visitUpsertRowBased(upsertRowBased)
+              copyFromNamespace != null -> visitor.visitCopyFromNamespace(copyFromNamespace)
+              deleteByFilter != null -> visitor.visitDeleteByFilter(deleteByFilter)
+              else -> visitor.unknown(_json)
+          }
         }
 
         private var validated: Boolean = false
 
-        fun validate(): Documents = apply {
-            if (validated) {
-                return@apply
-            }
+        fun validate(): Documents =
+            apply {
+                if (validated) {
+                  return@apply
+                }
 
-            accept(
-                object : Visitor<Unit> {
+                accept(object : Visitor<Unit> {
                     override fun visitUpsertColumnar(upsertColumnar: UpsertColumnar) {
-                        upsertColumnar.validate()
+                      upsertColumnar.validate()
                     }
 
                     override fun visitUpsertRowBased(upsertRowBased: UpsertRowBased) {
-                        upsertRowBased.validate()
+                      upsertRowBased.validate()
                     }
 
                     override fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace) {
-                        copyFromNamespace.validate()
+                      copyFromNamespace.validate()
                     }
 
                     override fun visitDeleteByFilter(deleteByFilter: DeleteByFilter) {
-                        deleteByFilter.validate()
+                      deleteByFilter.validate()
                     }
-                }
-            )
-            validated = true
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
+                })
+                validated = true
             }
 
-            return /* spotless:off */ other is Documents && upsertColumnar == other.upsertColumnar && upsertRowBased == other.upsertRowBased && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
+        override fun equals(other: Any?): Boolean {
+          if (this === other) {
+              return true
+          }
+
+          return /* spotless:off */ other is Documents && upsertColumnar == other.upsertColumnar && upsertRowBased == other.upsertRowBased && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
         }
 
         override fun hashCode(): Int = /* spotless:off */ Objects.hash(upsertColumnar, upsertRowBased, copyFromNamespace, deleteByFilter) /* spotless:on */
@@ -175,27 +173,24 @@ private constructor(
 
             /** Upsert documents in columnar format. */
             @JvmStatic
-            fun ofUpsertColumnar(upsertColumnar: UpsertColumnar) =
-                Documents(upsertColumnar = upsertColumnar)
+            fun ofUpsertColumnar(upsertColumnar: UpsertColumnar) = Documents(upsertColumnar = upsertColumnar)
 
             /** Upsert documents in row-based format. */
             @JvmStatic
-            fun ofUpsertRowBased(upsertRowBased: UpsertRowBased) =
-                Documents(upsertRowBased = upsertRowBased)
+            fun ofUpsertRowBased(upsertRowBased: UpsertRowBased) = Documents(upsertRowBased = upsertRowBased)
 
             /** Copy documents from another namespace. */
             @JvmStatic
-            fun ofCopyFromNamespace(copyFromNamespace: CopyFromNamespace) =
-                Documents(copyFromNamespace = copyFromNamespace)
+            fun ofCopyFromNamespace(copyFromNamespace: CopyFromNamespace) = Documents(copyFromNamespace = copyFromNamespace)
 
             /** Delete documents by filter. */
             @JvmStatic
-            fun ofDeleteByFilter(deleteByFilter: DeleteByFilter) =
-                Documents(deleteByFilter = deleteByFilter)
+            fun ofDeleteByFilter(deleteByFilter: DeleteByFilter) = Documents(deleteByFilter = deleteByFilter)
         }
 
         /**
-         * An interface that defines how to map each variant of [Documents] to a value of type [T].
+         * An interface that defines how to map each variant of [Documents] to a value of
+         * type [T].
          */
         interface Visitor<out T> {
 
@@ -214,97 +209,74 @@ private constructor(
             /**
              * Maps an unknown variant of [Documents] to a value of type [T].
              *
-             * An instance of [Documents] can contain an unknown variant if it was deserialized from
-             * data that doesn't match any known variant. For example, if the SDK is on an older
-             * version than the API, then the API may respond with new variants that the SDK is
-             * unaware of.
+             * An instance of [Documents] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the
+             * SDK is unaware of.
              *
              * @throws TurbopufferInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw TurbopufferInvalidDataException("Unknown Documents: $json")
+              throw TurbopufferInvalidDataException("Unknown Documents: $json")
             }
         }
 
         internal class Deserializer : BaseDeserializer<Documents>(Documents::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Documents {
-                val json = JsonValue.fromJsonNode(node)
+              val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<UpsertColumnar>()) { it.validate() }
-                    ?.let {
-                        return Documents(upsertColumnar = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<UpsertRowBased>()) { it.validate() }
-                    ?.let {
-                        return Documents(upsertRowBased = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<CopyFromNamespace>()) { it.validate() }
-                    ?.let {
-                        return Documents(copyFromNamespace = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<DeleteByFilter>()) { it.validate() }
-                    ?.let {
-                        return Documents(deleteByFilter = it, _json = json)
-                    }
+              tryDeserialize(node, jacksonTypeRef<UpsertColumnar>()){ it.validate() }?.let {
+                  return Documents(upsertColumnar = it, _json = json)
+              }
+              tryDeserialize(node, jacksonTypeRef<UpsertRowBased>()){ it.validate() }?.let {
+                  return Documents(upsertRowBased = it, _json = json)
+              }
+              tryDeserialize(node, jacksonTypeRef<CopyFromNamespace>()){ it.validate() }?.let {
+                  return Documents(copyFromNamespace = it, _json = json)
+              }
+              tryDeserialize(node, jacksonTypeRef<DeleteByFilter>()){ it.validate() }?.let {
+                  return Documents(deleteByFilter = it, _json = json)
+              }
 
-                return Documents(_json = json)
+              return Documents(_json = json)
             }
         }
 
         internal class Serializer : BaseSerializer<Documents>(Documents::class) {
 
-            override fun serialize(
-                value: Documents,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.upsertColumnar != null -> generator.writeObject(value.upsertColumnar)
-                    value.upsertRowBased != null -> generator.writeObject(value.upsertRowBased)
-                    value.copyFromNamespace != null ->
-                        generator.writeObject(value.copyFromNamespace)
-                    value.deleteByFilter != null -> generator.writeObject(value.deleteByFilter)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Documents")
-                }
+            override fun serialize(value: Documents, generator: JsonGenerator, provider: SerializerProvider) {
+              when {
+                  value.upsertColumnar != null -> generator.writeObject(value.upsertColumnar)
+                  value.upsertRowBased != null -> generator.writeObject(value.upsertRowBased)
+                  value.copyFromNamespace != null -> generator.writeObject(value.copyFromNamespace)
+                  value.deleteByFilter != null -> generator.writeObject(value.deleteByFilter)
+                  value._json != null -> generator.writeObject(value._json)
+                  else -> throw IllegalStateException("Invalid Documents")
+              }
             }
         }
 
         /** Upsert documents in columnar format. */
         @NoAutoDetect
-        class UpsertColumnar
-        @JsonCreator
-        private constructor(
-            @JsonProperty("attributes")
-            @ExcludeMissing
-            private val attributes: JsonField<DocumentColumns.Attributes> = JsonMissing.of(),
-            @JsonProperty("ids")
-            @ExcludeMissing
-            private val ids: JsonField<List<Id>> = JsonMissing.of(),
-            @JsonProperty("vectors")
-            @ExcludeMissing
-            private val vectors: JsonField<List<List<Double>?>> = JsonMissing.of(),
-            @JsonProperty("distance_metric")
-            @ExcludeMissing
-            private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
-            @JsonProperty("schema")
-            @ExcludeMissing
-            private val schema: JsonField<Schema> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        class UpsertColumnar @JsonCreator private constructor(
+            @JsonProperty("attributes") @ExcludeMissing private val attributes: JsonField<DocumentColumns.Attributes> = JsonMissing.of(),
+            @JsonProperty("ids") @ExcludeMissing private val ids: JsonField<List<Id>> = JsonMissing.of(),
+            @JsonProperty("vectors") @ExcludeMissing private val vectors: JsonField<List<List<Double>?>> = JsonMissing.of(),
+            @JsonProperty("distance_metric") @ExcludeMissing private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
+            @JsonProperty("schema") @ExcludeMissing private val schema: JsonField<Schema> = JsonMissing.of(),
+            @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
         ) {
 
             /** The attributes attached to each of the documents. */
-            fun attributes(): Optional<DocumentColumns.Attributes> =
-                Optional.ofNullable(attributes.getNullable("attributes"))
+            fun attributes(): Optional<DocumentColumns.Attributes> = Optional.ofNullable(attributes.getNullable("attributes"))
 
             /** The IDs of the documents. */
             fun ids(): Optional<List<Id>> = Optional.ofNullable(ids.getNullable("ids"))
 
             /** Vectors describing each of the documents. */
-            fun vectors(): Optional<List<List<Double>?>> =
-                Optional.ofNullable(vectors.getNullable("vectors"))
+            fun vectors(): Optional<List<List<Double>?>> = Optional.ofNullable(vectors.getNullable("vectors"))
 
             /** A function used to calculate vector similarity. */
             fun distanceMetric(): DistanceMetric = distanceMetric.getRequired("distance_metric")
@@ -318,7 +290,9 @@ private constructor(
             fun _attributes(): JsonField<DocumentColumns.Attributes> = attributes
 
             /** The IDs of the documents. */
-            @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<Id>> = ids
+            @JsonProperty("ids")
+            @ExcludeMissing
+            fun _ids(): JsonField<List<Id>> = ids
 
             /** Vectors describing each of the documents. */
             @JsonProperty("vectors")
@@ -331,29 +305,36 @@ private constructor(
             fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
 
             /** The schema of the attributes attached to the documents. */
-            @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
+            @JsonProperty("schema")
+            @ExcludeMissing
+            fun _schema(): JsonField<Schema> = schema
 
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
             fun toDocumentColumns(): DocumentColumns =
-                DocumentColumns.builder().attributes(attributes).ids(ids).vectors(vectors).build()
+                DocumentColumns.builder()
+                    .attributes(attributes)
+                    .ids(ids)
+                    .vectors(vectors)
+                    .build()
 
             private var validated: Boolean = false
 
-            fun validate(): UpsertColumnar = apply {
-                if (validated) {
-                    return@apply
-                }
+            fun validate(): UpsertColumnar =
+                apply {
+                    if (validated) {
+                      return@apply
+                    }
 
-                attributes().ifPresent { it.validate() }
-                ids().ifPresent { it.forEach { it.validate() } }
-                vectors()
-                distanceMetric()
-                schema().ifPresent { it.validate() }
-                validated = true
-            }
+                    attributes().ifPresent { it.validate() }
+                    ids().ifPresent { it.forEach { it.validate() } }
+                    vectors()
+                    distanceMetric()
+                    schema().ifPresent { it.validate() }
+                    validated = true
+                }
 
             fun toBuilder() = Builder().from(this)
 
@@ -363,11 +344,13 @@ private constructor(
                  * Returns a mutable builder for constructing an instance of [UpsertColumnar].
                  *
                  * The following fields are required:
+                 *
                  * ```java
                  * .distanceMetric()
                  * ```
                  */
-                @JvmStatic fun builder() = Builder()
+                @JvmStatic
+                fun builder() = Builder()
             }
 
             /** A builder for [UpsertColumnar]. */
@@ -381,39 +364,41 @@ private constructor(
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(upsertColumnar: UpsertColumnar) = apply {
-                    attributes = upsertColumnar.attributes
-                    ids = upsertColumnar.ids.map { it.toMutableList() }
-                    vectors = upsertColumnar.vectors.map { it.toMutableList() }
-                    distanceMetric = upsertColumnar.distanceMetric
-                    schema = upsertColumnar.schema
-                    additionalProperties = upsertColumnar.additionalProperties.toMutableMap()
-                }
+                internal fun from(upsertColumnar: UpsertColumnar) =
+                    apply {
+                        attributes = upsertColumnar.attributes
+                        ids = upsertColumnar.ids.map { it.toMutableList() }
+                        vectors = upsertColumnar.vectors.map { it.toMutableList() }
+                        distanceMetric = upsertColumnar.distanceMetric
+                        schema = upsertColumnar.schema
+                        additionalProperties = upsertColumnar.additionalProperties.toMutableMap()
+                    }
 
                 /** The attributes attached to each of the documents. */
-                fun attributes(attributes: DocumentColumns.Attributes) =
-                    attributes(JsonField.of(attributes))
+                fun attributes(attributes: DocumentColumns.Attributes) = attributes(JsonField.of(attributes))
 
                 /** The attributes attached to each of the documents. */
-                fun attributes(attributes: JsonField<DocumentColumns.Attributes>) = apply {
-                    this.attributes = attributes
-                }
+                fun attributes(attributes: JsonField<DocumentColumns.Attributes>) =
+                    apply {
+                        this.attributes = attributes
+                    }
 
                 /** The IDs of the documents. */
                 fun ids(ids: List<Id>) = ids(JsonField.of(ids))
 
                 /** The IDs of the documents. */
-                fun ids(ids: JsonField<List<Id>>) = apply {
-                    this.ids = ids.map { it.toMutableList() }
-                }
+                fun ids(ids: JsonField<List<Id>>) =
+                    apply {
+                        this.ids = ids.map { it.toMutableList() }
+                    }
 
                 /** The IDs of the documents. */
-                fun addId(id: Id) = apply {
-                    ids =
-                        (ids ?: JsonField.of(mutableListOf())).also {
+                fun addId(id: Id) =
+                    apply {
+                        ids = (ids ?: JsonField.of(mutableListOf())).also {
                             checkKnown("ids", it).add(id)
                         }
-                }
+                    }
 
                 /** A UUID. */
                 fun addId(string: String) = addId(Id.ofString(string))
@@ -425,73 +410,81 @@ private constructor(
                 fun vectors(vectors: List<List<Double>?>) = vectors(JsonField.of(vectors))
 
                 /** Vectors describing each of the documents. */
-                fun vectors(vectors: JsonField<List<List<Double>?>>) = apply {
-                    this.vectors = vectors.map { it.toMutableList() }
-                }
+                fun vectors(vectors: JsonField<List<List<Double>?>>) =
+                    apply {
+                        this.vectors = vectors.map { it.toMutableList() }
+                    }
 
                 /** Vectors describing each of the documents. */
-                fun addVector(vector: List<Double>) = apply {
-                    vectors =
-                        (vectors ?: JsonField.of(mutableListOf())).also {
+                fun addVector(vector: List<Double>) =
+                    apply {
+                        vectors = (vectors ?: JsonField.of(mutableListOf())).also {
                             checkKnown("vectors", it).add(vector)
                         }
-                }
+                    }
 
                 /** A function used to calculate vector similarity. */
-                fun distanceMetric(distanceMetric: DistanceMetric) =
-                    distanceMetric(JsonField.of(distanceMetric))
+                fun distanceMetric(distanceMetric: DistanceMetric) = distanceMetric(JsonField.of(distanceMetric))
 
                 /** A function used to calculate vector similarity. */
-                fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
-                    this.distanceMetric = distanceMetric
-                }
+                fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) =
+                    apply {
+                        this.distanceMetric = distanceMetric
+                    }
 
                 /** The schema of the attributes attached to the documents. */
                 fun schema(schema: Schema) = schema(JsonField.of(schema))
 
                 /** The schema of the attributes attached to the documents. */
-                fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
+                fun schema(schema: JsonField<Schema>) =
+                    apply {
+                        this.schema = schema
+                    }
 
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
 
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
+                fun putAdditionalProperty(key: String, value: JsonValue) =
+                    apply {
+                        additionalProperties.put(key, value)
+                    }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
+                fun removeAdditionalProperty(key: String) =
+                    apply {
+                        additionalProperties.remove(key)
+                    }
 
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
+                fun removeAllAdditionalProperties(keys: Set<String>) =
+                    apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
 
                 fun build(): UpsertColumnar =
                     UpsertColumnar(
-                        attributes,
-                        (ids ?: JsonMissing.of()).map { it.toImmutable() },
-                        (vectors ?: JsonMissing.of()).map { it.toImmutable() },
-                        checkRequired("distanceMetric", distanceMetric),
-                        schema,
-                        additionalProperties.toImmutable(),
+                      attributes,
+                      (ids ?: JsonMissing.of()).map { it.toImmutable() },
+                      (vectors ?: JsonMissing.of()).map { it.toImmutable() },
+                      checkRequired(
+                        "distanceMetric", distanceMetric
+                      ),
+                      schema,
+                      additionalProperties.toImmutable(),
                     )
             }
 
             /** The schema of the attributes attached to the documents. */
             @NoAutoDetect
-            class Schema
-            @JsonCreator
-            private constructor(
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
+            class Schema @JsonCreator private constructor(
+                @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
             ) {
 
                 @JsonAnyGetter
@@ -500,20 +493,22 @@ private constructor(
 
                 private var validated: Boolean = false
 
-                fun validate(): Schema = apply {
-                    if (validated) {
-                        return@apply
-                    }
+                fun validate(): Schema =
+                    apply {
+                        if (validated) {
+                          return@apply
+                        }
 
-                    validated = true
-                }
+                        validated = true
+                    }
 
                 fun toBuilder() = Builder().from(this)
 
                 companion object {
 
                     /** Returns a mutable builder for constructing an instance of [Schema]. */
-                    @JvmStatic fun builder() = Builder()
+                    @JvmStatic
+                    fun builder() = Builder()
                 }
 
                 /** A builder for [Schema]. */
@@ -522,41 +517,46 @@ private constructor(
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
-                    internal fun from(schema: Schema) = apply {
-                        additionalProperties = schema.additionalProperties.toMutableMap()
-                    }
+                    internal fun from(schema: Schema) =
+                        apply {
+                            additionalProperties = schema.additionalProperties.toMutableMap()
+                        }
 
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        putAllAdditionalProperties(additionalProperties)
-                    }
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.clear()
+                            putAllAdditionalProperties(additionalProperties)
+                        }
 
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        additionalProperties.put(key, value)
-                    }
+                    fun putAdditionalProperty(key: String, value: JsonValue) =
+                        apply {
+                            additionalProperties.put(key, value)
+                        }
 
                     fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                         apply {
                             this.additionalProperties.putAll(additionalProperties)
                         }
 
-                    fun removeAdditionalProperty(key: String) = apply {
-                        additionalProperties.remove(key)
-                    }
+                    fun removeAdditionalProperty(key: String) =
+                        apply {
+                            additionalProperties.remove(key)
+                        }
 
-                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                        keys.forEach(::removeAdditionalProperty)
-                    }
+                    fun removeAllAdditionalProperties(keys: Set<String>) =
+                        apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
 
                     fun build(): Schema = Schema(additionalProperties.toImmutable())
                 }
 
                 override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
+                  if (this === other) {
+                      return true
+                  }
 
-                    return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
+                  return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
                 }
 
                 /* spotless:off */
@@ -569,11 +569,11 @@ private constructor(
             }
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return /* spotless:off */ other is UpsertColumnar && attributes == other.attributes && ids == other.ids && vectors == other.vectors && distanceMetric == other.distanceMetric && schema == other.schema && additionalProperties == other.additionalProperties /* spotless:on */
+              return /* spotless:off */ other is UpsertColumnar && attributes == other.attributes && ids == other.ids && vectors == other.vectors && distanceMetric == other.distanceMetric && schema == other.schema && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -582,26 +582,17 @@ private constructor(
 
             override fun hashCode(): Int = hashCode
 
-            override fun toString() =
-                "UpsertColumnar{attributes=$attributes, ids=$ids, vectors=$vectors, distanceMetric=$distanceMetric, schema=$schema, additionalProperties=$additionalProperties}"
+            override fun toString() = "UpsertColumnar{attributes=$attributes, ids=$ids, vectors=$vectors, distanceMetric=$distanceMetric, schema=$schema, additionalProperties=$additionalProperties}"
         }
 
         /** Upsert documents in row-based format. */
         @NoAutoDetect
-        class UpsertRowBased
-        @JsonCreator
-        private constructor(
-            @JsonProperty("distance_metric")
-            @ExcludeMissing
-            private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
-            @JsonProperty("upserts")
-            @ExcludeMissing
-            private val upserts: JsonField<List<DocumentRow>> = JsonMissing.of(),
-            @JsonProperty("schema")
-            @ExcludeMissing
-            private val schema: JsonField<Schema> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        class UpsertRowBased @JsonCreator private constructor(
+            @JsonProperty("distance_metric") @ExcludeMissing private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
+            @JsonProperty("upserts") @ExcludeMissing private val upserts: JsonField<List<DocumentRow>> = JsonMissing.of(),
+            @JsonProperty("schema") @ExcludeMissing private val schema: JsonField<Schema> = JsonMissing.of(),
+            @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
         ) {
 
             /** A function used to calculate vector similarity. */
@@ -622,7 +613,9 @@ private constructor(
             fun _upserts(): JsonField<List<DocumentRow>> = upserts
 
             /** The schema of the attributes attached to the documents. */
-            @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
+            @JsonProperty("schema")
+            @ExcludeMissing
+            fun _schema(): JsonField<Schema> = schema
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -630,16 +623,17 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): UpsertRowBased = apply {
-                if (validated) {
-                    return@apply
-                }
+            fun validate(): UpsertRowBased =
+                apply {
+                    if (validated) {
+                      return@apply
+                    }
 
-                distanceMetric()
-                upserts().forEach { it.validate() }
-                schema().ifPresent { it.validate() }
-                validated = true
-            }
+                    distanceMetric()
+                    upserts().forEach { it.validate() }
+                    schema().ifPresent { it.validate() }
+                    validated = true
+                }
 
             fun toBuilder() = Builder().from(this)
 
@@ -649,12 +643,14 @@ private constructor(
                  * Returns a mutable builder for constructing an instance of [UpsertRowBased].
                  *
                  * The following fields are required:
+                 *
                  * ```java
                  * .distanceMetric()
                  * .upserts()
                  * ```
                  */
-                @JvmStatic fun builder() = Builder()
+                @JvmStatic
+                fun builder() = Builder()
             }
 
             /** A builder for [UpsertRowBased]. */
@@ -666,79 +662,90 @@ private constructor(
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(upsertRowBased: UpsertRowBased) = apply {
-                    distanceMetric = upsertRowBased.distanceMetric
-                    upserts = upsertRowBased.upserts.map { it.toMutableList() }
-                    schema = upsertRowBased.schema
-                    additionalProperties = upsertRowBased.additionalProperties.toMutableMap()
-                }
+                internal fun from(upsertRowBased: UpsertRowBased) =
+                    apply {
+                        distanceMetric = upsertRowBased.distanceMetric
+                        upserts = upsertRowBased.upserts.map { it.toMutableList() }
+                        schema = upsertRowBased.schema
+                        additionalProperties = upsertRowBased.additionalProperties.toMutableMap()
+                    }
 
                 /** A function used to calculate vector similarity. */
-                fun distanceMetric(distanceMetric: DistanceMetric) =
-                    distanceMetric(JsonField.of(distanceMetric))
+                fun distanceMetric(distanceMetric: DistanceMetric) = distanceMetric(JsonField.of(distanceMetric))
 
                 /** A function used to calculate vector similarity. */
-                fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
-                    this.distanceMetric = distanceMetric
-                }
+                fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) =
+                    apply {
+                        this.distanceMetric = distanceMetric
+                    }
 
                 fun upserts(upserts: List<DocumentRow>) = upserts(JsonField.of(upserts))
 
-                fun upserts(upserts: JsonField<List<DocumentRow>>) = apply {
-                    this.upserts = upserts.map { it.toMutableList() }
-                }
+                fun upserts(upserts: JsonField<List<DocumentRow>>) =
+                    apply {
+                        this.upserts = upserts.map { it.toMutableList() }
+                    }
 
-                fun addUpsert(upsert: DocumentRow) = apply {
-                    upserts =
-                        (upserts ?: JsonField.of(mutableListOf())).also {
+                fun addUpsert(upsert: DocumentRow) =
+                    apply {
+                        upserts = (upserts ?: JsonField.of(mutableListOf())).also {
                             checkKnown("upserts", it).add(upsert)
                         }
-                }
+                    }
 
                 /** The schema of the attributes attached to the documents. */
                 fun schema(schema: Schema) = schema(JsonField.of(schema))
 
                 /** The schema of the attributes attached to the documents. */
-                fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
+                fun schema(schema: JsonField<Schema>) =
+                    apply {
+                        this.schema = schema
+                    }
 
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
 
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
+                fun putAdditionalProperty(key: String, value: JsonValue) =
+                    apply {
+                        additionalProperties.put(key, value)
+                    }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
+                fun removeAdditionalProperty(key: String) =
+                    apply {
+                        additionalProperties.remove(key)
+                    }
 
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
+                fun removeAllAdditionalProperties(keys: Set<String>) =
+                    apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
 
                 fun build(): UpsertRowBased =
                     UpsertRowBased(
-                        checkRequired("distanceMetric", distanceMetric),
-                        checkRequired("upserts", upserts).map { it.toImmutable() },
-                        schema,
-                        additionalProperties.toImmutable(),
+                      checkRequired(
+                        "distanceMetric", distanceMetric
+                      ),
+                      checkRequired(
+                        "upserts", upserts
+                      ).map { it.toImmutable() },
+                      schema,
+                      additionalProperties.toImmutable(),
                     )
             }
 
             /** The schema of the attributes attached to the documents. */
             @NoAutoDetect
-            class Schema
-            @JsonCreator
-            private constructor(
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
+            class Schema @JsonCreator private constructor(
+                @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
             ) {
 
                 @JsonAnyGetter
@@ -747,20 +754,22 @@ private constructor(
 
                 private var validated: Boolean = false
 
-                fun validate(): Schema = apply {
-                    if (validated) {
-                        return@apply
-                    }
+                fun validate(): Schema =
+                    apply {
+                        if (validated) {
+                          return@apply
+                        }
 
-                    validated = true
-                }
+                        validated = true
+                    }
 
                 fun toBuilder() = Builder().from(this)
 
                 companion object {
 
                     /** Returns a mutable builder for constructing an instance of [Schema]. */
-                    @JvmStatic fun builder() = Builder()
+                    @JvmStatic
+                    fun builder() = Builder()
                 }
 
                 /** A builder for [Schema]. */
@@ -769,41 +778,46 @@ private constructor(
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
-                    internal fun from(schema: Schema) = apply {
-                        additionalProperties = schema.additionalProperties.toMutableMap()
-                    }
+                    internal fun from(schema: Schema) =
+                        apply {
+                            additionalProperties = schema.additionalProperties.toMutableMap()
+                        }
 
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        putAllAdditionalProperties(additionalProperties)
-                    }
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.clear()
+                            putAllAdditionalProperties(additionalProperties)
+                        }
 
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        additionalProperties.put(key, value)
-                    }
+                    fun putAdditionalProperty(key: String, value: JsonValue) =
+                        apply {
+                            additionalProperties.put(key, value)
+                        }
 
                     fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                         apply {
                             this.additionalProperties.putAll(additionalProperties)
                         }
 
-                    fun removeAdditionalProperty(key: String) = apply {
-                        additionalProperties.remove(key)
-                    }
+                    fun removeAdditionalProperty(key: String) =
+                        apply {
+                            additionalProperties.remove(key)
+                        }
 
-                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                        keys.forEach(::removeAdditionalProperty)
-                    }
+                    fun removeAllAdditionalProperties(keys: Set<String>) =
+                        apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
 
                     fun build(): Schema = Schema(additionalProperties.toImmutable())
                 }
 
                 override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
+                  if (this === other) {
+                      return true
+                  }
 
-                    return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
+                  return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
                 }
 
                 /* spotless:off */
@@ -816,11 +830,11 @@ private constructor(
             }
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return /* spotless:off */ other is UpsertRowBased && distanceMetric == other.distanceMetric && upserts == other.upserts && schema == other.schema && additionalProperties == other.additionalProperties /* spotless:on */
+              return /* spotless:off */ other is UpsertRowBased && distanceMetric == other.distanceMetric && upserts == other.upserts && schema == other.schema && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -829,20 +843,15 @@ private constructor(
 
             override fun hashCode(): Int = hashCode
 
-            override fun toString() =
-                "UpsertRowBased{distanceMetric=$distanceMetric, upserts=$upserts, schema=$schema, additionalProperties=$additionalProperties}"
+            override fun toString() = "UpsertRowBased{distanceMetric=$distanceMetric, upserts=$upserts, schema=$schema, additionalProperties=$additionalProperties}"
         }
 
         /** Copy documents from another namespace. */
         @NoAutoDetect
-        class CopyFromNamespace
-        @JsonCreator
-        private constructor(
-            @JsonProperty("copy_from_namespace")
-            @ExcludeMissing
-            private val copyFromNamespace: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        class CopyFromNamespace @JsonCreator private constructor(
+            @JsonProperty("copy_from_namespace") @ExcludeMissing private val copyFromNamespace: JsonField<String> = JsonMissing.of(),
+            @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
         ) {
 
             /** The namespace to copy documents from. */
@@ -859,14 +868,15 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): CopyFromNamespace = apply {
-                if (validated) {
-                    return@apply
-                }
+            fun validate(): CopyFromNamespace =
+                apply {
+                    if (validated) {
+                      return@apply
+                    }
 
-                copyFromNamespace()
-                validated = true
-            }
+                    copyFromNamespace()
+                    validated = true
+                }
 
             fun toBuilder() = Builder().from(this)
 
@@ -876,11 +886,13 @@ private constructor(
                  * Returns a mutable builder for constructing an instance of [CopyFromNamespace].
                  *
                  * The following fields are required:
+                 *
                  * ```java
                  * .copyFromNamespace()
                  * ```
                  */
-                @JvmStatic fun builder() = Builder()
+                @JvmStatic
+                fun builder() = Builder()
             }
 
             /** A builder for [CopyFromNamespace]. */
@@ -890,55 +902,61 @@ private constructor(
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(copyFromNamespace: CopyFromNamespace) = apply {
-                    this.copyFromNamespace = copyFromNamespace.copyFromNamespace
-                    additionalProperties = copyFromNamespace.additionalProperties.toMutableMap()
-                }
+                internal fun from(copyFromNamespace: CopyFromNamespace) =
+                    apply {
+                        this.copyFromNamespace = copyFromNamespace.copyFromNamespace
+                        additionalProperties = copyFromNamespace.additionalProperties.toMutableMap()
+                    }
 
                 /** The namespace to copy documents from. */
-                fun copyFromNamespace(copyFromNamespace: String) =
-                    copyFromNamespace(JsonField.of(copyFromNamespace))
+                fun copyFromNamespace(copyFromNamespace: String) = copyFromNamespace(JsonField.of(copyFromNamespace))
 
                 /** The namespace to copy documents from. */
-                fun copyFromNamespace(copyFromNamespace: JsonField<String>) = apply {
-                    this.copyFromNamespace = copyFromNamespace
-                }
+                fun copyFromNamespace(copyFromNamespace: JsonField<String>) =
+                    apply {
+                        this.copyFromNamespace = copyFromNamespace
+                    }
 
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
 
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
+                fun putAdditionalProperty(key: String, value: JsonValue) =
+                    apply {
+                        additionalProperties.put(key, value)
+                    }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
+                fun removeAdditionalProperty(key: String) =
+                    apply {
+                        additionalProperties.remove(key)
+                    }
 
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
+                fun removeAllAdditionalProperties(keys: Set<String>) =
+                    apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
 
                 fun build(): CopyFromNamespace =
                     CopyFromNamespace(
-                        checkRequired("copyFromNamespace", copyFromNamespace),
-                        additionalProperties.toImmutable(),
+                      checkRequired(
+                        "copyFromNamespace", copyFromNamespace
+                      ), additionalProperties.toImmutable()
                     )
             }
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return /* spotless:off */ other is CopyFromNamespace && copyFromNamespace == other.copyFromNamespace && additionalProperties == other.additionalProperties /* spotless:on */
+              return /* spotless:off */ other is CopyFromNamespace && copyFromNamespace == other.copyFromNamespace && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -947,20 +965,15 @@ private constructor(
 
             override fun hashCode(): Int = hashCode
 
-            override fun toString() =
-                "CopyFromNamespace{copyFromNamespace=$copyFromNamespace, additionalProperties=$additionalProperties}"
+            override fun toString() = "CopyFromNamespace{copyFromNamespace=$copyFromNamespace, additionalProperties=$additionalProperties}"
         }
 
         /** Delete documents by filter. */
         @NoAutoDetect
-        class DeleteByFilter
-        @JsonCreator
-        private constructor(
-            @JsonProperty("delete_by_filter")
-            @ExcludeMissing
-            private val deleteByFilter: JsonValue = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        class DeleteByFilter @JsonCreator private constructor(
+            @JsonProperty("delete_by_filter") @ExcludeMissing private val deleteByFilter: JsonValue = JsonMissing.of(),
+            @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
         ) {
 
             /** The filter specifying which documents to delete. */
@@ -974,13 +987,14 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): DeleteByFilter = apply {
-                if (validated) {
-                    return@apply
-                }
+            fun validate(): DeleteByFilter =
+                apply {
+                    if (validated) {
+                      return@apply
+                    }
 
-                validated = true
-            }
+                    validated = true
+                }
 
             fun toBuilder() = Builder().from(this)
 
@@ -990,11 +1004,13 @@ private constructor(
                  * Returns a mutable builder for constructing an instance of [DeleteByFilter].
                  *
                  * The following fields are required:
+                 *
                  * ```java
                  * .deleteByFilter()
                  * ```
                  */
-                @JvmStatic fun builder() = Builder()
+                @JvmStatic
+                fun builder() = Builder()
             }
 
             /** A builder for [DeleteByFilter]. */
@@ -1004,51 +1020,58 @@ private constructor(
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(deleteByFilter: DeleteByFilter) = apply {
-                    this.deleteByFilter = deleteByFilter.deleteByFilter
-                    additionalProperties = deleteByFilter.additionalProperties.toMutableMap()
-                }
+                internal fun from(deleteByFilter: DeleteByFilter) =
+                    apply {
+                        this.deleteByFilter = deleteByFilter.deleteByFilter
+                        additionalProperties = deleteByFilter.additionalProperties.toMutableMap()
+                    }
 
                 /** The filter specifying which documents to delete. */
-                fun deleteByFilter(deleteByFilter: JsonValue) = apply {
-                    this.deleteByFilter = deleteByFilter
-                }
+                fun deleteByFilter(deleteByFilter: JsonValue) =
+                    apply {
+                        this.deleteByFilter = deleteByFilter
+                    }
 
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
 
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
+                fun putAdditionalProperty(key: String, value: JsonValue) =
+                    apply {
+                        additionalProperties.put(key, value)
+                    }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
 
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
+                fun removeAdditionalProperty(key: String) =
+                    apply {
+                        additionalProperties.remove(key)
+                    }
 
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
+                fun removeAllAdditionalProperties(keys: Set<String>) =
+                    apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
 
                 fun build(): DeleteByFilter =
                     DeleteByFilter(
-                        checkRequired("deleteByFilter", deleteByFilter),
-                        additionalProperties.toImmutable(),
+                      checkRequired(
+                        "deleteByFilter", deleteByFilter
+                      ), additionalProperties.toImmutable()
                     )
             }
 
             override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
+              if (this === other) {
+                  return true
+              }
 
-                return /* spotless:off */ other is DeleteByFilter && deleteByFilter == other.deleteByFilter && additionalProperties == other.additionalProperties /* spotless:on */
+              return /* spotless:off */ other is DeleteByFilter && deleteByFilter == other.deleteByFilter && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -1057,8 +1080,7 @@ private constructor(
 
             override fun hashCode(): Int = hashCode
 
-            override fun toString() =
-                "DeleteByFilter{deleteByFilter=$deleteByFilter, additionalProperties=$additionalProperties}"
+            override fun toString() = "DeleteByFilter{deleteByFilter=$deleteByFilter, additionalProperties=$additionalProperties}"
         }
     }
 
@@ -1067,14 +1089,17 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [NamespaceUpsertParams].
+         * Returns a mutable builder for constructing an instance of
+         * [NamespaceUpsertParams].
          *
          * The following fields are required:
+         *
          * ```java
          * .namespace()
          * ```
          */
-        @JvmStatic fun builder() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
     }
 
     /** A builder for [NamespaceUpsertParams]. */
@@ -1087,154 +1112,184 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(namespaceUpsertParams: NamespaceUpsertParams) = apply {
-            namespace = namespaceUpsertParams.namespace
-            documents = namespaceUpsertParams.documents
-            additionalHeaders = namespaceUpsertParams.additionalHeaders.toBuilder()
-            additionalQueryParams = namespaceUpsertParams.additionalQueryParams.toBuilder()
-        }
+        internal fun from(namespaceUpsertParams: NamespaceUpsertParams) =
+            apply {
+                namespace = namespaceUpsertParams.namespace
+                documents = namespaceUpsertParams.documents
+                additionalHeaders = namespaceUpsertParams.additionalHeaders.toBuilder()
+                additionalQueryParams = namespaceUpsertParams.additionalQueryParams.toBuilder()
+            }
 
-        fun namespace(namespace: String) = apply { this.namespace = namespace }
+        fun namespace(namespace: String) =
+            apply {
+                this.namespace = namespace
+            }
 
         /** Upsert documents in columnar format. */
-        fun documents(documents: Documents?) = apply { this.documents = documents }
+        fun documents(documents: Documents?) =
+            apply {
+                this.documents = documents
+            }
 
         /** Upsert documents in columnar format. */
         fun documents(documents: Optional<Documents>) = documents(documents.getOrNull())
 
         /** Upsert documents in columnar format. */
-        fun documents(upsertColumnar: Documents.UpsertColumnar) =
-            documents(Documents.ofUpsertColumnar(upsertColumnar))
+        fun documents(upsertColumnar: Documents.UpsertColumnar) = documents(Documents.ofUpsertColumnar(upsertColumnar))
 
         /** Upsert documents in row-based format. */
-        fun documents(upsertRowBased: Documents.UpsertRowBased) =
-            documents(Documents.ofUpsertRowBased(upsertRowBased))
+        fun documents(upsertRowBased: Documents.UpsertRowBased) = documents(Documents.ofUpsertRowBased(upsertRowBased))
 
         /** Copy documents from another namespace. */
-        fun documents(copyFromNamespace: Documents.CopyFromNamespace) =
-            documents(Documents.ofCopyFromNamespace(copyFromNamespace))
+        fun documents(copyFromNamespace: Documents.CopyFromNamespace) = documents(Documents.ofCopyFromNamespace(copyFromNamespace))
 
         /** Delete documents by filter. */
-        fun documents(deleteByFilter: Documents.DeleteByFilter) =
-            documents(Documents.ofDeleteByFilter(deleteByFilter))
+        fun documents(deleteByFilter: Documents.DeleteByFilter) = documents(Documents.ofDeleteByFilter(deleteByFilter))
 
-        fun additionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.clear()
-            putAllAdditionalHeaders(additionalHeaders)
-        }
+        fun additionalHeaders(additionalHeaders: Headers) =
+            apply {
+                this.additionalHeaders.clear()
+                putAllAdditionalHeaders(additionalHeaders)
+            }
 
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllAdditionalHeaders(additionalHeaders)
-        }
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalHeaders.clear()
+                putAllAdditionalHeaders(additionalHeaders)
+            }
 
-        fun putAdditionalHeader(name: String, value: String) = apply {
-            additionalHeaders.put(name, value)
-        }
+        fun putAdditionalHeader(name: String, value: String) =
+            apply {
+                additionalHeaders.put(name, value)
+            }
 
-        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.put(name, values)
-        }
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) =
+            apply {
+                additionalHeaders.put(name, values)
+            }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.putAll(additionalHeaders)
-        }
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) =
+            apply {
+                this.additionalHeaders.putAll(additionalHeaders)
+            }
 
-        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.putAll(additionalHeaders)
-        }
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalHeaders.putAll(additionalHeaders)
+            }
 
-        fun replaceAdditionalHeaders(name: String, value: String) = apply {
-            additionalHeaders.replace(name, value)
-        }
+        fun replaceAdditionalHeaders(name: String, value: String) =
+            apply {
+                additionalHeaders.replace(name, value)
+            }
 
-        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.replace(name, values)
-        }
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) =
+            apply {
+                additionalHeaders.replace(name, values)
+            }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.replaceAll(additionalHeaders)
-        }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) =
+            apply {
+                this.additionalHeaders.replaceAll(additionalHeaders)
+            }
 
-        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.replaceAll(additionalHeaders)
-        }
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalHeaders.replaceAll(additionalHeaders)
+            }
 
-        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+        fun removeAdditionalHeaders(name: String) =
+            apply {
+                additionalHeaders.remove(name)
+            }
 
-        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
-            additionalHeaders.removeAll(names)
-        }
+        fun removeAllAdditionalHeaders(names: Set<String>) =
+            apply {
+                additionalHeaders.removeAll(names)
+            }
 
-        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.clear()
-            putAllAdditionalQueryParams(additionalQueryParams)
-        }
+        fun additionalQueryParams(additionalQueryParams: QueryParams) =
+            apply {
+                this.additionalQueryParams.clear()
+                putAllAdditionalQueryParams(additionalQueryParams)
+            }
 
-        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllAdditionalQueryParams(additionalQueryParams)
-        }
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.clear()
+                putAllAdditionalQueryParams(additionalQueryParams)
+            }
 
-        fun putAdditionalQueryParam(key: String, value: String) = apply {
-            additionalQueryParams.put(key, value)
-        }
+        fun putAdditionalQueryParam(key: String, value: String) =
+            apply {
+                additionalQueryParams.put(key, value)
+            }
 
-        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.put(key, values)
-        }
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) =
+            apply {
+                additionalQueryParams.put(key, values)
+            }
 
-        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.putAll(additionalQueryParams)
-        }
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
 
         fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.putAll(additionalQueryParams)
             }
 
-        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
-            additionalQueryParams.replace(key, value)
-        }
+        fun replaceAdditionalQueryParams(key: String, value: String) =
+            apply {
+                additionalQueryParams.replace(key, value)
+            }
 
-        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.replace(key, values)
-        }
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) =
+            apply {
+                additionalQueryParams.replace(key, values)
+            }
 
-        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.replaceAll(additionalQueryParams)
-        }
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
 
         fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
             apply {
                 this.additionalQueryParams.replaceAll(additionalQueryParams)
             }
 
-        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+        fun removeAdditionalQueryParams(key: String) =
+            apply {
+                additionalQueryParams.remove(key)
+            }
 
-        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
-            additionalQueryParams.removeAll(keys)
-        }
+        fun removeAllAdditionalQueryParams(keys: Set<String>) =
+            apply {
+                additionalQueryParams.removeAll(keys)
+            }
 
         fun build(): NamespaceUpsertParams =
             NamespaceUpsertParams(
-                checkRequired("namespace", namespace),
-                documents,
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
+              checkRequired(
+                "namespace", namespace
+              ),
+              documents,
+              additionalHeaders.build(),
+              additionalQueryParams.build(),
             )
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return /* spotless:off */ other is NamespaceUpsertParams && namespace == other.namespace && documents == other.documents && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+      return /* spotless:off */ other is NamespaceUpsertParams && namespace == other.namespace && documents == other.documents && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, documents, additionalHeaders, additionalQueryParams) /* spotless:on */
 
-    override fun toString() =
-        "NamespaceUpsertParams{namespace=$namespace, documents=$documents, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+    override fun toString() = "NamespaceUpsertParams{namespace=$namespace, documents=$documents, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
