@@ -7,7 +7,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.enhanceJacksonException
 import com.turbopuffer.core.http.HttpResponse
 import com.turbopuffer.core.http.HttpResponse.Handler
-import com.turbopuffer.errors.TurbopufferException
 
 @JvmSynthetic
 internal inline fun <reified T> jsonHandler(jsonMapper: JsonMapper): Handler<T> =
