@@ -12,18 +12,25 @@ class DocumentColumnsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun createDocumentColumns() {
-      val documentColumns = DocumentColumns.builder()
-          .attributes(DocumentColumns.Attributes.builder()
-              .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf("foo" to "bar"))))
-              .build())
-          .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-          .addVector(listOf(0.0))
-          .build()
-      assertThat(documentColumns).isNotNull
-      assertThat(documentColumns.attributes()).contains(DocumentColumns.Attributes.builder()
-          .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf("foo" to "bar"))))
-          .build())
-      assertThat(documentColumns.ids().get()).containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-      assertThat(documentColumns.vectors().get()).containsExactly(listOf(0.0))
+        val documentColumns =
+            DocumentColumns.builder()
+                .attributes(
+                    DocumentColumns.Attributes.builder()
+                        .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf("foo" to "bar"))))
+                        .build()
+                )
+                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .addVector(listOf(0.0))
+                .build()
+        assertThat(documentColumns).isNotNull
+        assertThat(documentColumns.attributes())
+            .contains(
+                DocumentColumns.Attributes.builder()
+                    .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf("foo" to "bar"))))
+                    .build()
+            )
+        assertThat(documentColumns.ids().get())
+            .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(documentColumns.vectors().get()).containsExactly(listOf(0.0))
     }
 }
