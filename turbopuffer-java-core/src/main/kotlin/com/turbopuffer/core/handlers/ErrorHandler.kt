@@ -12,6 +12,7 @@ import com.turbopuffer.errors.NotFoundException
 import com.turbopuffer.errors.PermissionDeniedException
 import com.turbopuffer.errors.RateLimitException
 import com.turbopuffer.errors.TurbopufferError
+import com.turbopuffer.errors.TurbopufferException
 import com.turbopuffer.errors.UnauthorizedException
 import com.turbopuffer.errors.UnexpectedStatusCodeException
 import com.turbopuffer.errors.UnprocessableEntityException

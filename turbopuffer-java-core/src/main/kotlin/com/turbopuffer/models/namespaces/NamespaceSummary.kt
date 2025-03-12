@@ -18,18 +18,19 @@ import java.util.Objects
 
 /** A summary of a namespace. */
 @NoAutoDetect
-class NamespaceSummary
-@JsonCreator
-private constructor(
+class NamespaceSummary @JsonCreator private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+
 ) {
 
     /** The namespace ID. */
     fun id(): String = id.getRequired("id")
 
     /** The namespace ID. */
-    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+    @JsonProperty("id")
+    @ExcludeMissing
+    fun _id(): JsonField<String> = id
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -37,14 +38,15 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): NamespaceSummary = apply {
-        if (validated) {
-            return@apply
-        }
+    fun validate(): NamespaceSummary =
+        apply {
+            if (validated) {
+              return@apply
+            }
 
-        id()
-        validated = true
-    }
+            id()
+            validated = true
+        }
 
     fun toBuilder() = Builder().from(this)
 
@@ -54,11 +56,13 @@ private constructor(
          * Returns a mutable builder for constructing an instance of [NamespaceSummary].
          *
          * The following fields are required:
+         *
          * ```java
          * .id()
          * ```
          */
-        @JvmStatic fun builder() = Builder()
+        @JvmStatic
+        fun builder() = Builder()
     }
 
     /** A builder for [NamespaceSummary]. */
@@ -68,46 +72,61 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(namespaceSummary: NamespaceSummary) = apply {
-            id = namespaceSummary.id
-            additionalProperties = namespaceSummary.additionalProperties.toMutableMap()
-        }
+        internal fun from(namespaceSummary: NamespaceSummary) =
+            apply {
+                id = namespaceSummary.id
+                additionalProperties = namespaceSummary.additionalProperties.toMutableMap()
+            }
 
         /** The namespace ID. */
         fun id(id: String) = id(JsonField.of(id))
 
         /** The namespace ID. */
-        fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) =
+            apply {
+                this.id = id
+            }
 
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.clear()
-            putAllAdditionalProperties(additionalProperties)
-        }
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
 
-        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            additionalProperties.put(key, value)
-        }
+        fun putAdditionalProperty(key: String, value: JsonValue) =
+            apply {
+                additionalProperties.put(key, value)
+            }
 
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
-        }
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+            apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
 
-        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+        fun removeAdditionalProperty(key: String) =
+            apply {
+                additionalProperties.remove(key)
+            }
 
-        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalProperty)
-        }
+        fun removeAllAdditionalProperties(keys: Set<String>) =
+            apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
 
         fun build(): NamespaceSummary =
-            NamespaceSummary(checkRequired("id", id), additionalProperties.toImmutable())
+            NamespaceSummary(
+              checkRequired(
+                "id", id
+              ), additionalProperties.toImmutable()
+            )
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+      if (this === other) {
+          return true
+      }
 
-        return /* spotless:off */ other is NamespaceSummary && id == other.id && additionalProperties == other.additionalProperties /* spotless:on */
+      return /* spotless:off */ other is NamespaceSummary && id == other.id && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */

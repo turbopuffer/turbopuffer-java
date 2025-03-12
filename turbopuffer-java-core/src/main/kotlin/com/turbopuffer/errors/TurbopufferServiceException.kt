@@ -5,12 +5,12 @@ import com.turbopuffer.core.http.Headers
 abstract class TurbopufferServiceException
 @JvmOverloads
 constructor(
-    private val statusCode: Int,
-    private val headers: Headers,
-    private val body: String,
-    private val error: TurbopufferError,
-    message: String = "$statusCode: $error",
-    cause: Throwable? = null,
+        private val statusCode: Int,
+        private val headers: Headers,
+        private val body: String,
+        private val error: TurbopufferError,
+        message: String = "$statusCode: $error",
+        cause: Throwable? = null
 ) : TurbopufferException(message, cause) {
 
     fun statusCode(): Int = statusCode

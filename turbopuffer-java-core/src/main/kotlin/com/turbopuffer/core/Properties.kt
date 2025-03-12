@@ -9,12 +9,9 @@ fun getOsArch(): String {
 
     return when (osArch) {
         null -> "unknown"
-        "i386",
-        "x32",
-        "x86" -> "x32"
-        "amd64",
-        "x86_64" -> "x64"
-        "arm" -> "arm"
+        "i386", "x32", "x86" -> "x32"
+        "amd64", "x86_64" -> "x64"
+        "arm"-> "arm"
         "aarch64" -> "arm64"
         else -> "other:${osArch}"
     }
@@ -36,7 +33,6 @@ fun getOsName(): String {
 
 fun getOsVersion(): String = System.getProperty("os.version", "unknown")
 
-fun getPackageVersion(): String =
-    Properties::class.java.`package`.implementationVersion ?: "unknown"
+fun getPackageVersion(): String = Properties::class.java.`package`.implementationVersion ?: "unknown"
 
 fun getJavaVersion(): String = System.getProperty("java.version", "unknown")

@@ -1,7 +1,7 @@
 package com.turbopuffer.core
 
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.assertj.core.api.Assertions.assertThat
 
 internal class PhantomReachableTest {
 
@@ -11,10 +11,8 @@ internal class PhantomReachableTest {
         val closeable = AutoCloseable { closed = true }
 
         closeWhenPhantomReachable(
-            // Pass an inline object for the object to observe so that it becomes immediately
-            // unreachable.
-            Any(),
-            closeable,
+            // Pass an inline object for the object to observe so that it becomes immediately unreachable.
+            Any(), closeable
         )
 
         assertThat(closed).isFalse()
