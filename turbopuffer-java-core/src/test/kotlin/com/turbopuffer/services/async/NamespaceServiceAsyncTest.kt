@@ -92,7 +92,7 @@ class NamespaceServiceAsyncTest {
                             .build()
                     )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                    .filter(JsonValue.from(mapOf<String, Any>()))
+                    .filters(JsonValue.from(mapOf<String, Any>()))
                     .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                     .includeVectors(true)
                     .rankBy(JsonValue.from(mapOf<String, Any>()))
