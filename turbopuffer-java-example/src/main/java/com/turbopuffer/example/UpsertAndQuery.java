@@ -5,6 +5,7 @@
 package com.turbopuffer.example;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
@@ -84,7 +85,13 @@ public class UpsertAndQuery {
                 .vector(Arrays.asList(3.0, 4.0, 5.0))
                 .includeAttributes(true)
                 .includeVectors(true)
-                .topK(1)
+                .filters(JsonValue.from(List.of(
+                        "And",
+                        List.of(
+                                List.of("age", "Gt", 30),
+                                List.of("age", "Lt", 35)
+                        )
+                )))
                 .build());
         System.out.printf("Query result:\n%s\n", query);
 
