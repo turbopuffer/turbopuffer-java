@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.9)
-[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.9/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.9)
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.10)
+[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.10/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.10)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The Turbopuffer Java SDK provides convenient access to the Turbopuffer REST API 
 
 It is generated with [Stainless](https://www.stainless.com/).
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.9).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.10).
 
 ## Installation
 
@@ -20,7 +20,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.9")
+implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.10")
 ```
 
 ### Maven
@@ -29,7 +29,7 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.9")
 <dependency>
     <groupId>com.turbopuffer</groupId>
     <artifactId>turbopuffer-java</artifactId>
-    <version>0.1.0-beta.9</version>
+    <version>0.1.0-beta.10</version>
 </dependency>
 ```
 
