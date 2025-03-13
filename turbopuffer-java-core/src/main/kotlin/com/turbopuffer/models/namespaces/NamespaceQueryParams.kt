@@ -53,7 +53,7 @@ private constructor(
     /**
      * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
      */
-    fun _filters(): JsonValue = body._filters()
+    fun _filter(): JsonValue = body._filter()
 
     /** Whether to include attributes in the response. */
     fun includeAttributes(): Optional<IncludeAttributes> = body.includeAttributes()
@@ -130,7 +130,7 @@ private constructor(
         @JsonProperty("distance_metric")
         @ExcludeMissing
         private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
-        @JsonProperty("filters") @ExcludeMissing private val filters: JsonValue = JsonMissing.of(),
+        @JsonProperty("filter") @ExcludeMissing private val filter: JsonValue = JsonMissing.of(),
         @JsonProperty("include_attributes")
         @ExcludeMissing
         private val includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
@@ -158,7 +158,7 @@ private constructor(
          * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
          * clause.
          */
-        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
+        @JsonProperty("filter") @ExcludeMissing fun _filter(): JsonValue = filter
 
         /** Whether to include attributes in the response. */
         fun includeAttributes(): Optional<IncludeAttributes> =
@@ -248,7 +248,7 @@ private constructor(
 
             private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
-            private var filters: JsonValue = JsonMissing.of()
+            private var filter: JsonValue = JsonMissing.of()
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
             private var includeVectors: JsonField<Boolean> = JsonMissing.of()
             private var rankBy: JsonValue = JsonMissing.of()
@@ -260,7 +260,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 consistency = body.consistency
                 distanceMetric = body.distanceMetric
-                filters = body.filters
+                filter = body.filter
                 includeAttributes = body.includeAttributes
                 includeVectors = body.includeVectors
                 rankBy = body.rankBy
@@ -290,7 +290,7 @@ private constructor(
              * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
              * clause.
              */
-            fun filters(filters: JsonValue) = apply { this.filters = filters }
+            fun filter(filter: JsonValue) = apply { this.filter = filter }
 
             /** Whether to include attributes in the response. */
             fun includeAttributes(includeAttributes: IncludeAttributes) =
@@ -383,7 +383,7 @@ private constructor(
                 Body(
                     consistency,
                     distanceMetric,
-                    filters,
+                    filter,
                     includeAttributes,
                     includeVectors,
                     rankBy,
@@ -398,17 +398,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && consistency == other.consistency && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && includeVectors == other.includeVectors && rankBy == other.rankBy && topK == other.topK && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && consistency == other.consistency && distanceMetric == other.distanceMetric && filter == other.filter && includeAttributes == other.includeAttributes && includeVectors == other.includeVectors && rankBy == other.rankBy && topK == other.topK && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(consistency, distanceMetric, filters, includeAttributes, includeVectors, rankBy, topK, vector, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(consistency, distanceMetric, filter, includeAttributes, includeVectors, rankBy, topK, vector, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, includeVectors=$includeVectors, rankBy=$rankBy, topK=$topK, vector=$vector, additionalProperties=$additionalProperties}"
+            "Body{consistency=$consistency, distanceMetric=$distanceMetric, filter=$filter, includeAttributes=$includeAttributes, includeVectors=$includeVectors, rankBy=$rankBy, topK=$topK, vector=$vector, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -467,7 +467,7 @@ private constructor(
          * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
          * clause.
          */
-        fun filters(filters: JsonValue) = apply { body.filters(filters) }
+        fun filter(filter: JsonValue) = apply { body.filter(filter) }
 
         /** Whether to include attributes in the response. */
         fun includeAttributes(includeAttributes: IncludeAttributes) = apply {
