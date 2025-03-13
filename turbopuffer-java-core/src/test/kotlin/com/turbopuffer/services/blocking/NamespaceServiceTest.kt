@@ -5,13 +5,12 @@ package com.turbopuffer.services.blocking
 import com.turbopuffer.TestServerExtension
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.models.DistanceMetric
-import com.turbopuffer.models.DocumentColumns
-import com.turbopuffer.models.NamespaceDeleteAllParams
-import com.turbopuffer.models.NamespaceGetSchemaParams
-import com.turbopuffer.models.NamespaceListParams
-import com.turbopuffer.models.NamespaceQueryParams
-import com.turbopuffer.models.NamespaceUpsertParams
+import com.turbopuffer.models.namespaces.DistanceMetric
+import com.turbopuffer.models.namespaces.DocumentColumns
+import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
+import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -21,62 +20,66 @@ class NamespaceServiceTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun callList() {
+    fun list() {
         val client =
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val namespaceService = client.namespaces()
-        val response = namespaceService.list(NamespaceListParams.builder().build())
-        println(response)
-        response.namespaces().forEach { it.validate() }
+
+        val page = namespaceService.list()
+
+        page.response().validate()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun callDeleteAll() {
+    fun deleteAll() {
         val client =
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val namespaceService = client.namespaces()
-        val namespaceDeleteAllResponse =
+
+        val response =
             namespaceService.deleteAll(
                 NamespaceDeleteAllParams.builder().namespace("namespace").build()
             )
-        println(namespaceDeleteAllResponse)
-        namespaceDeleteAllResponse.validate()
+
+        response.validate()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun callGetSchema() {
+    fun getSchema() {
         val client =
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val namespaceService = client.namespaces()
-        val namespaceGetSchemaResponse =
+
+        val response =
             namespaceService.getSchema(
                 NamespaceGetSchemaParams.builder().namespace("namespace").build()
             )
-        println(namespaceGetSchemaResponse)
-        namespaceGetSchemaResponse.validate()
+
+        response.validate()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun callQuery() {
+    fun query() {
         val client =
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val namespaceService = client.namespaces()
-        val namespaceQueryResponse =
+
+        val documentRowWithScores =
             namespaceService.query(
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
@@ -86,7 +89,7 @@ class NamespaceServiceTest {
                             .build()
                     )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                    .filter(JsonValue.from(mapOf<String, Any>()))
+                    .filters(JsonValue.from(mapOf<String, Any>()))
                     .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
                     .includeVectors(true)
                     .rankBy(JsonValue.from(mapOf<String, Any>()))
@@ -94,19 +97,21 @@ class NamespaceServiceTest {
                     .addVector(0.0)
                     .build()
             )
-        println(namespaceQueryResponse)
+
+        documentRowWithScores.forEach { it.validate() }
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun callUpsert() {
+    fun upsert() {
         val client =
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
         val namespaceService = client.namespaces()
-        val namespaceUpsertResponse =
+
+        val response =
             namespaceService.upsert(
                 NamespaceUpsertParams.builder()
                     .namespace("namespace")
@@ -143,7 +148,7 @@ class NamespaceServiceTest {
                     )
                     .build()
             )
-        println(namespaceUpsertResponse)
-        namespaceUpsertResponse.validate()
+
+        response.validate()
     }
 }
