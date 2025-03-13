@@ -11,14 +11,14 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 import com.turbopuffer.core.JsonObject;
 import com.turbopuffer.core.JsonValue;
 import com.turbopuffer.errors.TurbopufferServiceException;
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.DocumentRow;
-import com.turbopuffer.models.NamespaceDeleteAllParams;
-import com.turbopuffer.models.NamespaceGetSchemaParams;
-import com.turbopuffer.models.NamespaceQueryParams;
-import com.turbopuffer.models.NamespaceUpsertParams;
-import com.turbopuffer.models.NamespaceUpsertParams.Documents.UpsertRowBased;
-import com.turbopuffer.models.NamespaceUpsertParams.Documents.UpsertRowBased.Schema;
+import com.turbopuffer.models.namespaces.DistanceMetric;
+import com.turbopuffer.models.namespaces.DocumentRow;
+import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams;
+import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams;
+import com.turbopuffer.models.namespaces.NamespaceQueryParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams.Documents.UpsertRowBased;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams.Documents.UpsertRowBased.Schema;
 
 public class UpsertAndQuery {
 

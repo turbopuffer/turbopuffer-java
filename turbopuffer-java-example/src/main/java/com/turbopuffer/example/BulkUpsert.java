@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Random;
 
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.DocumentRow;
-import com.turbopuffer.models.NamespaceUpsertParams;
-import com.turbopuffer.models.NamespaceUpsertParams.Documents.UpsertRowBased;
+import com.turbopuffer.models.namespaces.DistanceMetric;
+import com.turbopuffer.models.namespaces.DocumentRow;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams.Documents.UpsertRowBased;
 
 public class BulkUpsert {
 

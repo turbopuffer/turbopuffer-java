@@ -4,7 +4,7 @@
 package com.turbopuffer.example;
 
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.models.NamespaceListParams;
+import com.turbopuffer.models.namespaces.NamespaceListParams;
 
 public class ListNamespaces {
 
