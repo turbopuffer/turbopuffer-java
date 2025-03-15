@@ -44,10 +44,20 @@ private constructor(
 
     fun namespace(): String = namespace
 
-    /** The consistency level for a query. */
+    /**
+     * The consistency level for a query.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun consistency(): Optional<Consistency> = body.consistency()
 
-    /** A function used to calculate vector similarity. */
+    /**
+     * A function used to calculate vector similarity.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun distanceMetric(): Optional<DistanceMetric> = body.distanceMetric()
 
     /**
@@ -55,48 +65,83 @@ private constructor(
      */
     fun _filters(): JsonValue = body._filters()
 
-    /** Whether to include attributes in the response. */
+    /**
+     * Whether to include attributes in the response.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun includeAttributes(): Optional<IncludeAttributes> = body.includeAttributes()
 
     /**
      * Whether to return vectors for the search results. Vectors are large and slow to deserialize
      * on the client, so use this option only if you need them.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun includeVectors(): Optional<Boolean> = body.includeVectors()
 
     /** The attribute to rank the results by. Cannot be specified with `vector`. */
     fun _rankBy(): JsonValue = body._rankBy()
 
-    /** The number of results to return. */
+    /**
+     * The number of results to return.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun topK(): Optional<Long> = body.topK()
 
     /**
      * A vector to search for. It must have the same number of dimensions as the vectors in the
      * namespace. Cannot be specified with `rank_by`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun vector(): Optional<List<Double>> = body.vector()
 
-    /** The consistency level for a query. */
+    /**
+     * Returns the raw JSON value of [consistency].
+     *
+     * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _consistency(): JsonField<Consistency> = body._consistency()
 
-    /** A function used to calculate vector similarity. */
+    /**
+     * Returns the raw JSON value of [distanceMetric].
+     *
+     * Unlike [distanceMetric], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _distanceMetric(): JsonField<DistanceMetric> = body._distanceMetric()
 
-    /** Whether to include attributes in the response. */
+    /**
+     * Returns the raw JSON value of [includeAttributes].
+     *
+     * Unlike [includeAttributes], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     fun _includeAttributes(): JsonField<IncludeAttributes> = body._includeAttributes()
 
     /**
-     * Whether to return vectors for the search results. Vectors are large and slow to deserialize
-     * on the client, so use this option only if you need them.
+     * Returns the raw JSON value of [includeVectors].
+     *
+     * Unlike [includeVectors], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _includeVectors(): JsonField<Boolean> = body._includeVectors()
 
-    /** The number of results to return. */
+    /**
+     * Returns the raw JSON value of [topK].
+     *
+     * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _topK(): JsonField<Long> = body._topK()
 
     /**
-     * A vector to search for. It must have the same number of dimensions as the vectors in the
-     * namespace. Cannot be specified with `rank_by`.
+     * Returns the raw JSON value of [vector].
+     *
+     * Unlike [vector], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _vector(): JsonField<List<Double>> = body._vector()
 
@@ -146,11 +191,21 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The consistency level for a query. */
+        /**
+         * The consistency level for a query.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun consistency(): Optional<Consistency> =
             Optional.ofNullable(consistency.getNullable("consistency"))
 
-        /** A function used to calculate vector similarity. */
+        /**
+         * A function used to calculate vector similarity.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun distanceMetric(): Optional<DistanceMetric> =
             Optional.ofNullable(distanceMetric.getNullable("distance_metric"))
 
@@ -160,13 +215,21 @@ private constructor(
          */
         @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
 
-        /** Whether to include attributes in the response. */
+        /**
+         * Whether to include attributes in the response.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun includeAttributes(): Optional<IncludeAttributes> =
             Optional.ofNullable(includeAttributes.getNullable("include_attributes"))
 
         /**
          * Whether to return vectors for the search results. Vectors are large and slow to
          * deserialize on the client, so use this option only if you need them.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun includeVectors(): Optional<Boolean> =
             Optional.ofNullable(includeVectors.getNullable("include_vectors"))
@@ -174,44 +237,73 @@ private constructor(
         /** The attribute to rank the results by. Cannot be specified with `vector`. */
         @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
 
-        /** The number of results to return. */
+        /**
+         * The number of results to return.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun topK(): Optional<Long> = Optional.ofNullable(topK.getNullable("top_k"))
 
         /**
          * A vector to search for. It must have the same number of dimensions as the vectors in the
          * namespace. Cannot be specified with `rank_by`.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun vector(): Optional<List<Double>> = Optional.ofNullable(vector.getNullable("vector"))
 
-        /** The consistency level for a query. */
+        /**
+         * Returns the raw JSON value of [consistency].
+         *
+         * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("consistency")
         @ExcludeMissing
         fun _consistency(): JsonField<Consistency> = consistency
 
-        /** A function used to calculate vector similarity. */
+        /**
+         * Returns the raw JSON value of [distanceMetric].
+         *
+         * Unlike [distanceMetric], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("distance_metric")
         @ExcludeMissing
         fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
 
-        /** Whether to include attributes in the response. */
+        /**
+         * Returns the raw JSON value of [includeAttributes].
+         *
+         * Unlike [includeAttributes], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("include_attributes")
         @ExcludeMissing
         fun _includeAttributes(): JsonField<IncludeAttributes> = includeAttributes
 
         /**
-         * Whether to return vectors for the search results. Vectors are large and slow to
-         * deserialize on the client, so use this option only if you need them.
+         * Returns the raw JSON value of [includeVectors].
+         *
+         * Unlike [includeVectors], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("include_vectors")
         @ExcludeMissing
         fun _includeVectors(): JsonField<Boolean> = includeVectors
 
-        /** The number of results to return. */
+        /**
+         * Returns the raw JSON value of [topK].
+         *
+         * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
 
         /**
-         * A vector to search for. It must have the same number of dimensions as the vectors in the
-         * namespace. Cannot be specified with `rank_by`.
+         * Returns the raw JSON value of [vector].
+         *
+         * Unlike [vector], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("vector") @ExcludeMissing fun _vector(): JsonField<List<Double>> = vector
 
@@ -272,7 +364,13 @@ private constructor(
             /** The consistency level for a query. */
             fun consistency(consistency: Consistency) = consistency(JsonField.of(consistency))
 
-            /** The consistency level for a query. */
+            /**
+             * Sets [Builder.consistency] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.consistency] with a well-typed [Consistency] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun consistency(consistency: JsonField<Consistency>) = apply {
                 this.consistency = consistency
             }
@@ -281,7 +379,13 @@ private constructor(
             fun distanceMetric(distanceMetric: DistanceMetric) =
                 distanceMetric(JsonField.of(distanceMetric))
 
-            /** A function used to calculate vector similarity. */
+            /**
+             * Sets [Builder.distanceMetric] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.distanceMetric] with a well-typed [DistanceMetric]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
                 this.distanceMetric = distanceMetric
             }
@@ -296,18 +400,23 @@ private constructor(
             fun includeAttributes(includeAttributes: IncludeAttributes) =
                 includeAttributes(JsonField.of(includeAttributes))
 
-            /** Whether to include attributes in the response. */
+            /**
+             * Sets [Builder.includeAttributes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.includeAttributes] with a well-typed
+             * [IncludeAttributes] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
             fun includeAttributes(includeAttributes: JsonField<IncludeAttributes>) = apply {
                 this.includeAttributes = includeAttributes
             }
 
-            /**
-             * When `true`, include all attributes in the response. When `false`, include no
-             * attributes in the response.
-             */
+            /** Alias for calling [includeAttributes] with `IncludeAttributes.ofBool(bool)`. */
             fun includeAttributes(bool: Boolean) = includeAttributes(IncludeAttributes.ofBool(bool))
 
-            /** Include exactly the specified attributes in the response. */
+            /**
+             * Alias for calling [includeAttributes] with `IncludeAttributes.ofStrings(strings)`.
+             */
             fun includeAttributesOfStrings(strings: List<String>) =
                 includeAttributes(IncludeAttributes.ofStrings(strings))
 
@@ -319,8 +428,11 @@ private constructor(
                 includeVectors(JsonField.of(includeVectors))
 
             /**
-             * Whether to return vectors for the search results. Vectors are large and slow to
-             * deserialize on the client, so use this option only if you need them.
+             * Sets [Builder.includeVectors] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.includeVectors] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun includeVectors(includeVectors: JsonField<Boolean>) = apply {
                 this.includeVectors = includeVectors
@@ -332,7 +444,13 @@ private constructor(
             /** The number of results to return. */
             fun topK(topK: Long) = topK(JsonField.of(topK))
 
-            /** The number of results to return. */
+            /**
+             * Sets [Builder.topK] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
 
             /**
@@ -342,16 +460,20 @@ private constructor(
             fun vector(vector: List<Double>) = vector(JsonField.of(vector))
 
             /**
-             * A vector to search for. It must have the same number of dimensions as the vectors in
-             * the namespace. Cannot be specified with `rank_by`.
+             * Sets [Builder.vector] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.vector] with a well-typed `List<Double>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun vector(vector: JsonField<List<Double>>) = apply {
                 this.vector = vector.map { it.toMutableList() }
             }
 
             /**
-             * A vector to search for. It must have the same number of dimensions as the vectors in
-             * the namespace. Cannot be specified with `rank_by`.
+             * Adds a single [Double] to [Builder.vector].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addVector(vector: Double) = apply {
                 this.vector =
@@ -448,7 +570,13 @@ private constructor(
         /** The consistency level for a query. */
         fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
 
-        /** The consistency level for a query. */
+        /**
+         * Sets [Builder.consistency] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.consistency] with a well-typed [Consistency] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun consistency(consistency: JsonField<Consistency>) = apply {
             body.consistency(consistency)
         }
@@ -458,7 +586,13 @@ private constructor(
             body.distanceMetric(distanceMetric)
         }
 
-        /** A function used to calculate vector similarity. */
+        /**
+         * Sets [Builder.distanceMetric] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.distanceMetric] with a well-typed [DistanceMetric] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
             body.distanceMetric(distanceMetric)
         }
@@ -474,18 +608,21 @@ private constructor(
             body.includeAttributes(includeAttributes)
         }
 
-        /** Whether to include attributes in the response. */
+        /**
+         * Sets [Builder.includeAttributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.includeAttributes] with a well-typed [IncludeAttributes]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun includeAttributes(includeAttributes: JsonField<IncludeAttributes>) = apply {
             body.includeAttributes(includeAttributes)
         }
 
-        /**
-         * When `true`, include all attributes in the response. When `false`, include no attributes
-         * in the response.
-         */
+        /** Alias for calling [includeAttributes] with `IncludeAttributes.ofBool(bool)`. */
         fun includeAttributes(bool: Boolean) = apply { body.includeAttributes(bool) }
 
-        /** Include exactly the specified attributes in the response. */
+        /** Alias for calling [includeAttributes] with `IncludeAttributes.ofStrings(strings)`. */
         fun includeAttributesOfStrings(strings: List<String>) = apply {
             body.includeAttributesOfStrings(strings)
         }
@@ -497,8 +634,11 @@ private constructor(
         fun includeVectors(includeVectors: Boolean) = apply { body.includeVectors(includeVectors) }
 
         /**
-         * Whether to return vectors for the search results. Vectors are large and slow to
-         * deserialize on the client, so use this option only if you need them.
+         * Sets [Builder.includeVectors] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.includeVectors] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun includeVectors(includeVectors: JsonField<Boolean>) = apply {
             body.includeVectors(includeVectors)
@@ -510,7 +650,12 @@ private constructor(
         /** The number of results to return. */
         fun topK(topK: Long) = apply { body.topK(topK) }
 
-        /** The number of results to return. */
+        /**
+         * Sets [Builder.topK] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
 
         /**
@@ -520,14 +665,18 @@ private constructor(
         fun vector(vector: List<Double>) = apply { body.vector(vector) }
 
         /**
-         * A vector to search for. It must have the same number of dimensions as the vectors in the
-         * namespace. Cannot be specified with `rank_by`.
+         * Sets [Builder.vector] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vector] with a well-typed `List<Double>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun vector(vector: JsonField<List<Double>>) = apply { body.vector(vector) }
 
         /**
-         * A vector to search for. It must have the same number of dimensions as the vectors in the
-         * namespace. Cannot be specified with `rank_by`.
+         * Adds a single [Double] to [Builder.vector].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addVector(vector: Double) = apply { body.addVector(vector) }
 
@@ -669,10 +818,19 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The query's consistency level. */
+        /**
+         * The query's consistency level.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun level(): Optional<Level> = Optional.ofNullable(level.getNullable("level"))
 
-        /** The query's consistency level. */
+        /**
+         * Returns the raw JSON value of [level].
+         *
+         * Unlike [level], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("level") @ExcludeMissing fun _level(): JsonField<Level> = level
 
         @JsonAnyGetter
@@ -713,7 +871,13 @@ private constructor(
             /** The query's consistency level. */
             fun level(level: Level) = level(JsonField.of(level))
 
-            /** The query's consistency level. */
+            /**
+             * Sets [Builder.level] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.level] with a well-typed [Level] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun level(level: JsonField<Level>) = apply { this.level = level }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
