@@ -14,6 +14,7 @@ import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
+import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -32,26 +33,53 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The attributes attached to each of the documents. */
+    /**
+     * The attributes attached to each of the documents.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun attributes(): Optional<Attributes> =
         Optional.ofNullable(attributes.getNullable("attributes"))
 
-    /** The IDs of the documents. */
+    /**
+     * The IDs of the documents.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun ids(): Optional<List<Id>> = Optional.ofNullable(ids.getNullable("ids"))
 
-    /** Vectors describing each of the documents. */
+    /**
+     * Vectors describing each of the documents.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun vectors(): Optional<List<List<Double>?>> =
         Optional.ofNullable(vectors.getNullable("vectors"))
 
-    /** The attributes attached to each of the documents. */
+    /**
+     * Returns the raw JSON value of [attributes].
+     *
+     * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("attributes")
     @ExcludeMissing
     fun _attributes(): JsonField<Attributes> = attributes
 
-    /** The IDs of the documents. */
+    /**
+     * Returns the raw JSON value of [ids].
+     *
+     * Unlike [ids], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<Id>> = ids
 
-    /** Vectors describing each of the documents. */
+    /**
+     * Returns the raw JSON value of [vectors].
+     *
+     * Unlike [vectors], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("vectors")
     @ExcludeMissing
     fun _vectors(): JsonField<List<List<Double>?>> = vectors
@@ -100,35 +128,60 @@ private constructor(
         /** The attributes attached to each of the documents. */
         fun attributes(attributes: Attributes) = attributes(JsonField.of(attributes))
 
-        /** The attributes attached to each of the documents. */
+        /**
+         * Sets [Builder.attributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.attributes] with a well-typed [Attributes] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun attributes(attributes: JsonField<Attributes>) = apply { this.attributes = attributes }
 
         /** The IDs of the documents. */
         fun ids(ids: List<Id>) = ids(JsonField.of(ids))
 
-        /** The IDs of the documents. */
+        /**
+         * Sets [Builder.ids] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.ids] with a well-typed `List<Id>` value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun ids(ids: JsonField<List<Id>>) = apply { this.ids = ids.map { it.toMutableList() } }
 
-        /** The IDs of the documents. */
+        /**
+         * Adds a single [Id] to [ids].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addId(id: Id) = apply {
             ids = (ids ?: JsonField.of(mutableListOf())).also { checkKnown("ids", it).add(id) }
         }
 
-        /** A UUID. */
+        /** Alias for calling [addId] with `Id.ofString(string)`. */
         fun addId(string: String) = addId(Id.ofString(string))
 
-        /** An integer ID. */
+        /** Alias for calling [addId] with `Id.ofInteger(integer)`. */
         fun addId(integer: Long) = addId(Id.ofInteger(integer))
 
         /** Vectors describing each of the documents. */
         fun vectors(vectors: List<List<Double>?>) = vectors(JsonField.of(vectors))
 
-        /** Vectors describing each of the documents. */
+        /**
+         * Sets [Builder.vectors] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vectors] with a well-typed `List<List<Double>?>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun vectors(vectors: JsonField<List<List<Double>?>>) = apply {
             this.vectors = vectors.map { it.toMutableList() }
         }
 
-        /** Vectors describing each of the documents. */
+        /**
+         * Adds a single [List<Double>] to [vectors].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addVector(vector: List<Double>) = apply {
             vectors =
                 (vectors ?: JsonField.of(mutableListOf())).also {
