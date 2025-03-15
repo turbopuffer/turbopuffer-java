@@ -14,6 +14,7 @@ import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
+import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -34,36 +35,67 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** An identifier for a document. */
+    /**
+     * An identifier for a document.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun id(): Optional<Id> = Optional.ofNullable(id.getNullable("id"))
 
-    /** The attributes attached to the document. */
+    /**
+     * The attributes attached to the document.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun attributes(): Optional<DocumentRow.Attributes> =
         Optional.ofNullable(attributes.getNullable("attributes"))
 
-    /** A vector describing the document. */
+    /**
+     * A vector describing the document.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun vector(): Optional<List<Double>> = Optional.ofNullable(vector.getNullable("vector"))
 
     /**
      * For vector search, the distance between the query vector and the document vector. For BM25
      * full-text search, the score of the document. Not present for other types of queries.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun dist(): Optional<Double> = Optional.ofNullable(dist.getNullable("dist"))
 
-    /** An identifier for a document. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<Id> = id
 
-    /** The attributes attached to the document. */
+    /**
+     * Returns the raw JSON value of [attributes].
+     *
+     * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("attributes")
     @ExcludeMissing
     fun _attributes(): JsonField<DocumentRow.Attributes> = attributes
 
-    /** A vector describing the document. */
+    /**
+     * Returns the raw JSON value of [vector].
+     *
+     * Unlike [vector], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("vector") @ExcludeMissing fun _vector(): JsonField<List<Double>> = vector
 
     /**
-     * For vector search, the distance between the query vector and the document vector. For BM25
-     * full-text search, the score of the document. Not present for other types of queries.
+     * Returns the raw JSON value of [dist].
+     *
+     * Unlike [dist], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("dist") @ExcludeMissing fun _dist(): JsonField<Double> = dist
 
@@ -117,19 +149,30 @@ private constructor(
         /** An identifier for a document. */
         fun id(id: Id) = id(JsonField.of(id))
 
-        /** An identifier for a document. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [Id] value instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<Id>) = apply { this.id = id }
 
-        /** A UUID. */
+        /** Alias for calling [id] with `Id.ofString(string)`. */
         fun id(string: String) = id(Id.ofString(string))
 
-        /** An integer ID. */
+        /** Alias for calling [id] with `Id.ofInteger(integer)`. */
         fun id(integer: Long) = id(Id.ofInteger(integer))
 
         /** The attributes attached to the document. */
         fun attributes(attributes: DocumentRow.Attributes) = attributes(JsonField.of(attributes))
 
-        /** The attributes attached to the document. */
+        /**
+         * Sets [Builder.attributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.attributes] with a well-typed [DocumentRow.Attributes]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun attributes(attributes: JsonField<DocumentRow.Attributes>) = apply {
             this.attributes = attributes
         }
@@ -137,15 +180,25 @@ private constructor(
         /** A vector describing the document. */
         fun vector(vector: List<Double>?) = vector(JsonField.ofNullable(vector))
 
-        /** A vector describing the document. */
+        /** Alias for calling [Builder.vector] with `vector.orElse(null)`. */
         fun vector(vector: Optional<List<Double>>) = vector(vector.getOrNull())
 
-        /** A vector describing the document. */
+        /**
+         * Sets [Builder.vector] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vector] with a well-typed `List<Double>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun vector(vector: JsonField<List<Double>>) = apply {
             this.vector = vector.map { it.toMutableList() }
         }
 
-        /** A vector describing the document. */
+        /**
+         * Adds a single [Double] to [Builder.vector].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addVector(vector: Double) = apply {
             this.vector =
                 (this.vector ?: JsonField.of(mutableListOf())).also {
@@ -160,8 +213,10 @@ private constructor(
         fun dist(dist: Double) = dist(JsonField.of(dist))
 
         /**
-         * For vector search, the distance between the query vector and the document vector. For
-         * BM25 full-text search, the score of the document. Not present for other types of queries.
+         * Sets [Builder.dist] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.dist] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun dist(dist: JsonField<Double>) = apply { this.dist = dist }
 

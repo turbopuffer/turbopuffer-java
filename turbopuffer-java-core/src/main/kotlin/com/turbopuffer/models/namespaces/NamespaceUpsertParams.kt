@@ -295,42 +295,90 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The attributes attached to each of the documents. */
+            /**
+             * The attributes attached to each of the documents.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
+             *   (e.g. if the server responded with an unexpected value).
+             */
             fun attributes(): Optional<DocumentColumns.Attributes> =
                 Optional.ofNullable(attributes.getNullable("attributes"))
 
-            /** The IDs of the documents. */
+            /**
+             * The IDs of the documents.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
+             *   (e.g. if the server responded with an unexpected value).
+             */
             fun ids(): Optional<List<Id>> = Optional.ofNullable(ids.getNullable("ids"))
 
-            /** Vectors describing each of the documents. */
+            /**
+             * Vectors describing each of the documents.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
+             *   (e.g. if the server responded with an unexpected value).
+             */
             fun vectors(): Optional<List<List<Double>?>> =
                 Optional.ofNullable(vectors.getNullable("vectors"))
 
-            /** A function used to calculate vector similarity. */
+            /**
+             * A function used to calculate vector similarity.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun distanceMetric(): DistanceMetric = distanceMetric.getRequired("distance_metric")
 
-            /** The schema of the attributes attached to the documents. */
+            /**
+             * The schema of the attributes attached to the documents.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
+             *   (e.g. if the server responded with an unexpected value).
+             */
             fun schema(): Optional<Schema> = Optional.ofNullable(schema.getNullable("schema"))
 
-            /** The attributes attached to each of the documents. */
+            /**
+             * Returns the raw JSON value of [attributes].
+             *
+             * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("attributes")
             @ExcludeMissing
             fun _attributes(): JsonField<DocumentColumns.Attributes> = attributes
 
-            /** The IDs of the documents. */
+            /**
+             * Returns the raw JSON value of [ids].
+             *
+             * Unlike [ids], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<Id>> = ids
 
-            /** Vectors describing each of the documents. */
+            /**
+             * Returns the raw JSON value of [vectors].
+             *
+             * Unlike [vectors], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("vectors")
             @ExcludeMissing
             fun _vectors(): JsonField<List<List<Double>?>> = vectors
 
-            /** A function used to calculate vector similarity. */
+            /**
+             * Returns the raw JSON value of [distanceMetric].
+             *
+             * Unlike [distanceMetric], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
             @JsonProperty("distance_metric")
             @ExcludeMissing
             fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
 
-            /** The schema of the attributes attached to the documents. */
+            /**
+             * Returns the raw JSON value of [schema].
+             *
+             * Unlike [schema], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
 
             @JsonAnyGetter
@@ -394,7 +442,13 @@ private constructor(
                 fun attributes(attributes: DocumentColumns.Attributes) =
                     attributes(JsonField.of(attributes))
 
-                /** The attributes attached to each of the documents. */
+                /**
+                 * Sets [Builder.attributes] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.attributes] with a well-typed
+                 * [DocumentColumns.Attributes] value instead. This method is primarily for setting
+                 * the field to an undocumented or not yet supported value.
+                 */
                 fun attributes(attributes: JsonField<DocumentColumns.Attributes>) = apply {
                     this.attributes = attributes
                 }
@@ -402,12 +456,22 @@ private constructor(
                 /** The IDs of the documents. */
                 fun ids(ids: List<Id>) = ids(JsonField.of(ids))
 
-                /** The IDs of the documents. */
+                /**
+                 * Sets [Builder.ids] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.ids] with a well-typed `List<Id>` value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun ids(ids: JsonField<List<Id>>) = apply {
                     this.ids = ids.map { it.toMutableList() }
                 }
 
-                /** The IDs of the documents. */
+                /**
+                 * Adds a single [Id] to [ids].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
                 fun addId(id: Id) = apply {
                     ids =
                         (ids ?: JsonField.of(mutableListOf())).also {
@@ -415,21 +479,31 @@ private constructor(
                         }
                 }
 
-                /** A UUID. */
+                /** Alias for calling [addId] with `Id.ofString(string)`. */
                 fun addId(string: String) = addId(Id.ofString(string))
 
-                /** An integer ID. */
+                /** Alias for calling [addId] with `Id.ofInteger(integer)`. */
                 fun addId(integer: Long) = addId(Id.ofInteger(integer))
 
                 /** Vectors describing each of the documents. */
                 fun vectors(vectors: List<List<Double>?>) = vectors(JsonField.of(vectors))
 
-                /** Vectors describing each of the documents. */
+                /**
+                 * Sets [Builder.vectors] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.vectors] with a well-typed `List<List<Double>?>`
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
                 fun vectors(vectors: JsonField<List<List<Double>?>>) = apply {
                     this.vectors = vectors.map { it.toMutableList() }
                 }
 
-                /** Vectors describing each of the documents. */
+                /**
+                 * Adds a single [List<Double>] to [vectors].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
                 fun addVector(vector: List<Double>) = apply {
                     vectors =
                         (vectors ?: JsonField.of(mutableListOf())).also {
@@ -441,7 +515,13 @@ private constructor(
                 fun distanceMetric(distanceMetric: DistanceMetric) =
                     distanceMetric(JsonField.of(distanceMetric))
 
-                /** A function used to calculate vector similarity. */
+                /**
+                 * Sets [Builder.distanceMetric] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.distanceMetric] with a well-typed
+                 * [DistanceMetric] value instead. This method is primarily for setting the field to
+                 * an undocumented or not yet supported value.
+                 */
                 fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
                     this.distanceMetric = distanceMetric
                 }
@@ -449,7 +529,13 @@ private constructor(
                 /** The schema of the attributes attached to the documents. */
                 fun schema(schema: Schema) = schema(JsonField.of(schema))
 
-                /** The schema of the attributes attached to the documents. */
+                /**
+                 * Sets [Builder.schema] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.schema] with a well-typed [Schema] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -604,24 +690,54 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** A function used to calculate vector similarity. */
+            /**
+             * A function used to calculate vector similarity.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun distanceMetric(): DistanceMetric = distanceMetric.getRequired("distance_metric")
 
+            /**
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun upserts(): List<DocumentRow> = upserts.getRequired("upserts")
 
-            /** The schema of the attributes attached to the documents. */
+            /**
+             * The schema of the attributes attached to the documents.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
+             *   (e.g. if the server responded with an unexpected value).
+             */
             fun schema(): Optional<Schema> = Optional.ofNullable(schema.getNullable("schema"))
 
-            /** A function used to calculate vector similarity. */
+            /**
+             * Returns the raw JSON value of [distanceMetric].
+             *
+             * Unlike [distanceMetric], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
             @JsonProperty("distance_metric")
             @ExcludeMissing
             fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
 
+            /**
+             * Returns the raw JSON value of [upserts].
+             *
+             * Unlike [upserts], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("upserts")
             @ExcludeMissing
             fun _upserts(): JsonField<List<DocumentRow>> = upserts
 
-            /** The schema of the attributes attached to the documents. */
+            /**
+             * Returns the raw JSON value of [schema].
+             *
+             * Unlike [schema], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
 
             @JsonAnyGetter
@@ -677,17 +793,35 @@ private constructor(
                 fun distanceMetric(distanceMetric: DistanceMetric) =
                     distanceMetric(JsonField.of(distanceMetric))
 
-                /** A function used to calculate vector similarity. */
+                /**
+                 * Sets [Builder.distanceMetric] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.distanceMetric] with a well-typed
+                 * [DistanceMetric] value instead. This method is primarily for setting the field to
+                 * an undocumented or not yet supported value.
+                 */
                 fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
                     this.distanceMetric = distanceMetric
                 }
 
                 fun upserts(upserts: List<DocumentRow>) = upserts(JsonField.of(upserts))
 
+                /**
+                 * Sets [Builder.upserts] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.upserts] with a well-typed `List<DocumentRow>`
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
                 fun upserts(upserts: JsonField<List<DocumentRow>>) = apply {
                     this.upserts = upserts.map { it.toMutableList() }
                 }
 
+                /**
+                 * Adds a single [DocumentRow] to [upserts].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
                 fun addUpsert(upsert: DocumentRow) = apply {
                     upserts =
                         (upserts ?: JsonField.of(mutableListOf())).also {
@@ -698,7 +832,13 @@ private constructor(
                 /** The schema of the attributes attached to the documents. */
                 fun schema(schema: Schema) = schema(JsonField.of(schema))
 
-                /** The schema of the attributes attached to the documents. */
+                /**
+                 * Sets [Builder.schema] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.schema] with a well-typed [Schema] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -845,10 +985,21 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The namespace to copy documents from. */
+            /**
+             * The namespace to copy documents from.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun copyFromNamespace(): String = copyFromNamespace.getRequired("copy_from_namespace")
 
-            /** The namespace to copy documents from. */
+            /**
+             * Returns the raw JSON value of [copyFromNamespace].
+             *
+             * Unlike [copyFromNamespace], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
             @JsonProperty("copy_from_namespace")
             @ExcludeMissing
             fun _copyFromNamespace(): JsonField<String> = copyFromNamespace
@@ -899,7 +1050,13 @@ private constructor(
                 fun copyFromNamespace(copyFromNamespace: String) =
                     copyFromNamespace(JsonField.of(copyFromNamespace))
 
-                /** The namespace to copy documents from. */
+                /**
+                 * Sets [Builder.copyFromNamespace] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.copyFromNamespace] with a well-typed [String]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
                 fun copyFromNamespace(copyFromNamespace: JsonField<String>) = apply {
                     this.copyFromNamespace = copyFromNamespace
                 }
@@ -1099,22 +1256,24 @@ private constructor(
         /** Upsert documents in columnar format. */
         fun documents(documents: Documents?) = apply { this.documents = documents }
 
-        /** Upsert documents in columnar format. */
+        /** Alias for calling [Builder.documents] with `documents.orElse(null)`. */
         fun documents(documents: Optional<Documents>) = documents(documents.getOrNull())
 
-        /** Upsert documents in columnar format. */
+        /** Alias for calling [documents] with `Documents.ofUpsertColumnar(upsertColumnar)`. */
         fun documents(upsertColumnar: Documents.UpsertColumnar) =
             documents(Documents.ofUpsertColumnar(upsertColumnar))
 
-        /** Upsert documents in row-based format. */
+        /** Alias for calling [documents] with `Documents.ofUpsertRowBased(upsertRowBased)`. */
         fun documents(upsertRowBased: Documents.UpsertRowBased) =
             documents(Documents.ofUpsertRowBased(upsertRowBased))
 
-        /** Copy documents from another namespace. */
+        /**
+         * Alias for calling [documents] with `Documents.ofCopyFromNamespace(copyFromNamespace)`.
+         */
         fun documents(copyFromNamespace: Documents.CopyFromNamespace) =
             documents(Documents.ofCopyFromNamespace(copyFromNamespace))
 
-        /** Delete documents by filter. */
+        /** Alias for calling [documents] with `Documents.ofDeleteByFilter(deleteByFilter)`. */
         fun documents(deleteByFilter: Documents.DeleteByFilter) =
             documents(Documents.ofDeleteByFilter(deleteByFilter))
 

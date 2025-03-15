@@ -43,33 +43,54 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Whether or not the attributes can be used in filters/WHERE clauses. */
+    /**
+     * Whether or not the attributes can be used in filters/WHERE clauses.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun filterable(): Optional<Boolean> = Optional.ofNullable(filterable.getNullable("filterable"))
 
     /**
      * Whether this attribute can be used as part of a BM25 full-text search. Requires the `string`
      * or `[]string` type, and by default, BM25-enabled attributes are not filterable. You can
      * override this by setting `filterable: true`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun fullTextSearch(): Optional<FullTextSearch> =
         Optional.ofNullable(fullTextSearch.getNullable("full_text_search"))
 
-    /** The data type of the attribute. */
+    /**
+     * The data type of the attribute.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
-    /** Whether or not the attributes can be used in filters/WHERE clauses. */
+    /**
+     * Returns the raw JSON value of [filterable].
+     *
+     * Unlike [filterable], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("filterable") @ExcludeMissing fun _filterable(): JsonField<Boolean> = filterable
 
     /**
-     * Whether this attribute can be used as part of a BM25 full-text search. Requires the `string`
-     * or `[]string` type, and by default, BM25-enabled attributes are not filterable. You can
-     * override this by setting `filterable: true`.
+     * Returns the raw JSON value of [fullTextSearch].
+     *
+     * Unlike [fullTextSearch], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("full_text_search")
     @ExcludeMissing
     fun _fullTextSearch(): JsonField<FullTextSearch> = fullTextSearch
 
-    /** The data type of the attribute. */
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
@@ -116,7 +137,13 @@ private constructor(
         /** Whether or not the attributes can be used in filters/WHERE clauses. */
         fun filterable(filterable: Boolean) = filterable(JsonField.of(filterable))
 
-        /** Whether or not the attributes can be used in filters/WHERE clauses. */
+        /**
+         * Sets [Builder.filterable] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filterable] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun filterable(filterable: JsonField<Boolean>) = apply { this.filterable = filterable }
 
         /**
@@ -128,29 +155,32 @@ private constructor(
             fullTextSearch(JsonField.of(fullTextSearch))
 
         /**
-         * Whether this attribute can be used as part of a BM25 full-text search. Requires the
-         * `string` or `[]string` type, and by default, BM25-enabled attributes are not filterable.
-         * You can override this by setting `filterable: true`.
+         * Sets [Builder.fullTextSearch] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fullTextSearch] with a well-typed [FullTextSearch] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun fullTextSearch(fullTextSearch: JsonField<FullTextSearch>) = apply {
             this.fullTextSearch = fullTextSearch
         }
 
-        /**
-         * Whether this attribute can be used as part of a BM25 full-text search. Requires the
-         * `string` or `[]string` type, and by default, BM25-enabled attributes are not filterable.
-         * You can override this by setting `filterable: true`.
-         */
+        /** Alias for calling [fullTextSearch] with `FullTextSearch.ofBool(bool)`. */
         fun fullTextSearch(bool: Boolean) = fullTextSearch(FullTextSearch.ofBool(bool))
 
-        /** Detailed configuration options for BM25 full-text search. */
+        /** Alias for calling [fullTextSearch] with `FullTextSearch.ofConfig(config)`. */
         fun fullTextSearch(config: FullTextSearchConfig) =
             fullTextSearch(FullTextSearch.ofConfig(config))
 
         /** The data type of the attribute. */
         fun type(type: Type) = type(JsonField.of(type))
 
-        /** The data type of the attribute. */
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

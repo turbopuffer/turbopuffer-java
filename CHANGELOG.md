@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.0-beta.11 (2025-03-15)
+
+Full Changelog: [v0.1.0-beta.10...v0.1.0-beta.11](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.10...v0.1.0-beta.11)
+
+### Features
+
+* **api:** api update ([#119](https://github.com/turbopuffer/turbopuffer-java/issues/119)) ([c2f47d3](https://github.com/turbopuffer/turbopuffer-java/commit/c2f47d3437c3c256c890a77129dfcf5ab197894c))
+* **api:** api update ([#120](https://github.com/turbopuffer/turbopuffer-java/issues/120)) ([87000c5](https://github.com/turbopuffer/turbopuffer-java/commit/87000c5bd30c55393d98e331870fa621d7e29c19))
+* **examples:** demonstrate basic filtering ([093516b](https://github.com/turbopuffer/turbopuffer-java/commit/093516b4d5c887d208862405aeb017e762a7f39b))
+
+
+### Bug Fixes
+
+* **examples:** update for new path structure ([40ab948](https://github.com/turbopuffer/turbopuffer-java/commit/40ab9486f7e0a14a291b7429784ab8eada096b73))
+
+
+### Chores
+
+* **internal:** remove extra empty newlines ([#121](https://github.com/turbopuffer/turbopuffer-java/issues/121)) ([5ddb809](https://github.com/turbopuffer/turbopuffer-java/commit/5ddb80900537da70e88c21fa34acfbe23be3c3a8))
+
+
+### Documentation
+
+* deduplicate and refine comments ([#122](https://github.com/turbopuffer/turbopuffer-java/issues/122)) ([7fc0b2e](https://github.com/turbopuffer/turbopuffer-java/commit/7fc0b2eeaaa04b705489b6e0704a5423096ecfb6))
+
 ## 0.1.0-beta.10 (2025-03-13)
 
 Full Changelog: [v0.1.0-beta.9...v0.1.0-beta.10](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.9...v0.1.0-beta.10)

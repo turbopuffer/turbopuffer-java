@@ -76,22 +76,26 @@ private constructor(
         /** Retrieve the next page of results. */
         fun cursor(cursor: String?) = apply { this.cursor = cursor }
 
-        /** Retrieve the next page of results. */
+        /** Alias for calling [Builder.cursor] with `cursor.orElse(null)`. */
         fun cursor(cursor: Optional<String>) = cursor(cursor.getOrNull())
 
         /** Limit the number of results per page. */
         fun pageSize(pageSize: Long?) = apply { this.pageSize = pageSize }
 
-        /** Limit the number of results per page. */
+        /**
+         * Alias for [Builder.pageSize].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun pageSize(pageSize: Long) = pageSize(pageSize as Long?)
 
-        /** Limit the number of results per page. */
+        /** Alias for calling [Builder.pageSize] with `pageSize.orElse(null)`. */
         fun pageSize(pageSize: Optional<Long>) = pageSize(pageSize.getOrNull())
 
         /** Retrieve only the namespaces that match the prefix. */
         fun prefix(prefix: String?) = apply { this.prefix = prefix }
 
-        /** Retrieve only the namespaces that match the prefix. */
+        /** Alias for calling [Builder.prefix] with `prefix.orElse(null)`. */
         fun prefix(prefix: Optional<String>) = prefix(prefix.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {

@@ -38,40 +38,71 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
+    /**
+     * Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive).
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun caseSensitive(): Optional<Boolean> =
         Optional.ofNullable(caseSensitive.getNullable("case_sensitive"))
 
-    /** The language of the text. Defaults to `english`. */
+    /**
+     * The language of the text. Defaults to `english`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun language(): Optional<Language> = Optional.ofNullable(language.getNullable("language"))
 
     /**
      * Removes common words from the text based on language. Defaults to `true` (i.e. remove common
      * words).
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun removeStopwords(): Optional<Boolean> =
         Optional.ofNullable(removeStopwords.getNullable("remove_stopwords"))
 
-    /** Language-specific stemming for the text. Defaults to `false` (i.e., do not stem). */
+    /**
+     * Language-specific stemming for the text. Defaults to `false` (i.e., do not stem).
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun stemming(): Optional<Boolean> = Optional.ofNullable(stemming.getNullable("stemming"))
 
-    /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
+    /**
+     * Returns the raw JSON value of [caseSensitive].
+     *
+     * Unlike [caseSensitive], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("case_sensitive")
     @ExcludeMissing
     fun _caseSensitive(): JsonField<Boolean> = caseSensitive
 
-    /** The language of the text. Defaults to `english`. */
+    /**
+     * Returns the raw JSON value of [language].
+     *
+     * Unlike [language], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("language") @ExcludeMissing fun _language(): JsonField<Language> = language
 
     /**
-     * Removes common words from the text based on language. Defaults to `true` (i.e. remove common
-     * words).
+     * Returns the raw JSON value of [removeStopwords].
+     *
+     * Unlike [removeStopwords], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("remove_stopwords")
     @ExcludeMissing
     fun _removeStopwords(): JsonField<Boolean> = removeStopwords
 
-    /** Language-specific stemming for the text. Defaults to `false` (i.e., do not stem). */
+    /**
+     * Returns the raw JSON value of [stemming].
+     *
+     * Unlike [stemming], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("stemming") @ExcludeMissing fun _stemming(): JsonField<Boolean> = stemming
 
     @JsonAnyGetter
@@ -121,7 +152,13 @@ private constructor(
         /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
         fun caseSensitive(caseSensitive: Boolean) = caseSensitive(JsonField.of(caseSensitive))
 
-        /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
+        /**
+         * Sets [Builder.caseSensitive] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.caseSensitive] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun caseSensitive(caseSensitive: JsonField<Boolean>) = apply {
             this.caseSensitive = caseSensitive
         }
@@ -129,7 +166,13 @@ private constructor(
         /** The language of the text. Defaults to `english`. */
         fun language(language: Language) = language(JsonField.of(language))
 
-        /** The language of the text. Defaults to `english`. */
+        /**
+         * Sets [Builder.language] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.language] with a well-typed [Language] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun language(language: JsonField<Language>) = apply { this.language = language }
 
         /**
@@ -140,8 +183,11 @@ private constructor(
             removeStopwords(JsonField.of(removeStopwords))
 
         /**
-         * Removes common words from the text based on language. Defaults to `true` (i.e. remove
-         * common words).
+         * Sets [Builder.removeStopwords] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.removeStopwords] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun removeStopwords(removeStopwords: JsonField<Boolean>) = apply {
             this.removeStopwords = removeStopwords
@@ -150,7 +196,13 @@ private constructor(
         /** Language-specific stemming for the text. Defaults to `false` (i.e., do not stem). */
         fun stemming(stemming: Boolean) = stemming(JsonField.of(stemming))
 
-        /** Language-specific stemming for the text. Defaults to `false` (i.e., do not stem). */
+        /**
+         * Sets [Builder.stemming] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.stemming] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun stemming(stemming: JsonField<Boolean>) = apply { this.stemming = stemming }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
