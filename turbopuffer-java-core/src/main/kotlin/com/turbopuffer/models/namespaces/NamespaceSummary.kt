@@ -14,6 +14,7 @@ import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
+import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 
 /** A summary of a namespace. */
@@ -25,10 +26,19 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The namespace ID. */
+    /**
+     * The namespace ID.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The namespace ID. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     @JsonAnyGetter
@@ -76,7 +86,12 @@ private constructor(
         /** The namespace ID. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The namespace ID. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
