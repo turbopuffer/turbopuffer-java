@@ -501,6 +501,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Body =
                 Body(
                     consistency,
@@ -797,6 +802,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [NamespaceQueryParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .namespace()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): NamespaceQueryParams =
             NamespaceQueryParams(
                 checkRequired("namespace", namespace),
@@ -899,6 +916,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Consistency].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Consistency = Consistency(level, additionalProperties.toImmutable())
         }
 

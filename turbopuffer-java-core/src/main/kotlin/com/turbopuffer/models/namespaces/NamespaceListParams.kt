@@ -196,6 +196,11 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [NamespaceListParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): NamespaceListParams =
             NamespaceListParams(
                 cursor,
