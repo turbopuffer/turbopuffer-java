@@ -3,6 +3,7 @@
 package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.JsonValue
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
@@ -28,6 +29,16 @@ internal class NamespaceQueryParamsTest {
             .topK(0L)
             .addVector(0.0)
             .build()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun pathParams() {
+        val params = NamespaceQueryParams.builder().namespace("namespace").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("namespace")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -66,7 +77,7 @@ internal class NamespaceQueryParamsTest {
         assertThat(body.includeVectors()).contains(true)
         assertThat(body._rankBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.topK()).contains(0L)
-        assertThat(body.vector()).contains(listOf(0.0))
+        assertThat(body.vector().getOrNull()).containsExactly(0.0)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -77,16 +88,5 @@ internal class NamespaceQueryParamsTest {
         val body = params._body()
 
         assertNotNull(body)
-    }
-
-    @Disabled("skipped: tests are disabled for the time being")
-    @Test
-    fun getPathParam() {
-        val params = NamespaceQueryParams.builder().namespace("namespace").build()
-        assertThat(params).isNotNull
-        // path param "namespace"
-        assertThat(params.getPathParam(0)).isEqualTo("namespace")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }
