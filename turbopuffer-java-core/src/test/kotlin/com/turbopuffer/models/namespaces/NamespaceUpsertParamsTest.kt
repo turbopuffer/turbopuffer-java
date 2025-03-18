@@ -51,6 +51,16 @@ internal class NamespaceUpsertParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
+    fun pathParams() {
+        val params = NamespaceUpsertParams.builder().namespace("namespace").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("namespace")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
     fun body() {
         val params =
             NamespaceUpsertParams.builder()
@@ -132,16 +142,5 @@ internal class NamespaceUpsertParamsTest {
         val params = NamespaceUpsertParams.builder().namespace("namespace").build()
 
         val body = params._body().getOrNull()
-    }
-
-    @Disabled("skipped: tests are disabled for the time being")
-    @Test
-    fun getPathParam() {
-        val params = NamespaceUpsertParams.builder().namespace("namespace").build()
-        assertThat(params).isNotNull
-        // path param "namespace"
-        assertThat(params.getPathParam(0)).isEqualTo("namespace")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }
