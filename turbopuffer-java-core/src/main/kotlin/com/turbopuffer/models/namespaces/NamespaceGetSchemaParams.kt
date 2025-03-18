@@ -164,6 +164,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [NamespaceGetSchemaParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .namespace()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): NamespaceGetSchemaParams =
             NamespaceGetSchemaParams(
                 checkRequired("namespace", namespace),
