@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 @WireMockTest
-class ErrorHandlingTest {
+internal class ErrorHandlingTest {
 
     companion object {
 
@@ -83,7 +83,7 @@ class ErrorHandlingTest {
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .filters(JsonValue.from(mapOf<String, Any>()))
-                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeAttributes(true)
                         .includeVectors(true)
                         .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
@@ -118,7 +118,7 @@ class ErrorHandlingTest {
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .filters(JsonValue.from(mapOf<String, Any>()))
-                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeAttributes(true)
                         .includeVectors(true)
                         .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
@@ -153,7 +153,7 @@ class ErrorHandlingTest {
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .filters(JsonValue.from(mapOf<String, Any>()))
-                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeAttributes(true)
                         .includeVectors(true)
                         .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
@@ -188,7 +188,7 @@ class ErrorHandlingTest {
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .filters(JsonValue.from(mapOf<String, Any>()))
-                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeAttributes(true)
                         .includeVectors(true)
                         .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
@@ -223,7 +223,7 @@ class ErrorHandlingTest {
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .filters(JsonValue.from(mapOf<String, Any>()))
-                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeAttributes(true)
                         .includeVectors(true)
                         .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
@@ -258,7 +258,7 @@ class ErrorHandlingTest {
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .filters(JsonValue.from(mapOf<String, Any>()))
-                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeAttributes(true)
                         .includeVectors(true)
                         .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
@@ -293,7 +293,7 @@ class ErrorHandlingTest {
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .filters(JsonValue.from(mapOf<String, Any>()))
-                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeAttributes(true)
                         .includeVectors(true)
                         .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
@@ -328,7 +328,7 @@ class ErrorHandlingTest {
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .filters(JsonValue.from(mapOf<String, Any>()))
-                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeAttributes(true)
                         .includeVectors(true)
                         .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
@@ -363,7 +363,7 @@ class ErrorHandlingTest {
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .filters(JsonValue.from(mapOf<String, Any>()))
-                        .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                        .includeAttributes(true)
                         .includeVectors(true)
                         .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)

@@ -8,7 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-class NamespaceQueryParamsTest {
+internal class NamespaceQueryParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
@@ -22,7 +22,7 @@ class NamespaceQueryParamsTest {
             )
             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
             .filters(JsonValue.from(mapOf<String, Any>()))
-            .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+            .includeAttributes(true)
             .includeVectors(true)
             .rankBy(JsonValue.from(mapOf<String, Any>()))
             .topK(0L)
@@ -43,7 +43,7 @@ class NamespaceQueryParamsTest {
                 )
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filters(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                .includeAttributes(true)
                 .includeVectors(true)
                 .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)
