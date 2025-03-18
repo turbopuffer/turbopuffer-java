@@ -3,6 +3,7 @@
 package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.JsonValue
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -30,6 +31,6 @@ internal class DocumentRowTest {
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-        assertThat(documentRow.vector().get()).containsExactly(0.0)
+        assertThat(documentRow.vector().getOrNull()).containsExactly(0.0)
     }
 }

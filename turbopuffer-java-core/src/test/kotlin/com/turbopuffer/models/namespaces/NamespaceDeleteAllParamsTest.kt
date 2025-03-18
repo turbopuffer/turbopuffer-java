@@ -16,12 +16,11 @@ internal class NamespaceDeleteAllParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun getPathParam() {
+    fun pathParams() {
         val params = NamespaceDeleteAllParams.builder().namespace("namespace").build()
-        assertThat(params).isNotNull
-        // path param "namespace"
-        assertThat(params.getPathParam(0)).isEqualTo("namespace")
+
+        assertThat(params._pathParam(0)).isEqualTo("namespace")
         // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        assertThat(params._pathParam(1)).isEqualTo("")
     }
 }
