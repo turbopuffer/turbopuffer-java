@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-class NamespaceSummaryTest {
+internal class NamespaceSummaryTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test

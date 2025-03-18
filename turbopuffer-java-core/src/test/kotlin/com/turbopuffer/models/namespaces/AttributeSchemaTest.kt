@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-class AttributeSchemaTest {
+internal class AttributeSchemaTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
@@ -14,7 +14,7 @@ class AttributeSchemaTest {
         val attributeSchema =
             AttributeSchema.builder()
                 .filterable(true)
-                .fullTextSearch(AttributeSchema.FullTextSearch.ofBool(true))
+                .fullTextSearch(true)
                 .type(AttributeSchema.Type.STRING)
                 .build()
         assertThat(attributeSchema).isNotNull
