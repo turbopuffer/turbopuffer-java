@@ -10,7 +10,7 @@ internal class FullTextSearchConfigTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun createFullTextSearchConfig() {
+    fun create() {
         val fullTextSearchConfig =
             FullTextSearchConfig.builder()
                 .caseSensitive(true)
@@ -18,7 +18,7 @@ internal class FullTextSearchConfigTest {
                 .removeStopwords(true)
                 .stemming(true)
                 .build()
-        assertThat(fullTextSearchConfig).isNotNull
+
         assertThat(fullTextSearchConfig.caseSensitive()).contains(true)
         assertThat(fullTextSearchConfig.language()).contains(FullTextSearchConfig.Language.ARABIC)
         assertThat(fullTextSearchConfig.removeStopwords()).contains(true)
