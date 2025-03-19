@@ -53,7 +53,7 @@ internal class ServiceParamsTest {
                 )
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filters(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+                .includeAttributes(true)
                 .includeVectors(true)
                 .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)

@@ -148,6 +148,11 @@ class TurbopufferOkHttpClientAsync private constructor() {
 
         fun fromEnv() = apply { clientOptions.fromEnv() }
 
+        /**
+         * Returns an immutable instance of [TurbopufferClientAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): TurbopufferClientAsync =
             TurbopufferClientAsyncImpl(
                 clientOptions

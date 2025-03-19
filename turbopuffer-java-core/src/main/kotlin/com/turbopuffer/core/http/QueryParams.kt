@@ -1,3 +1,5 @@
+// File generated from our OpenAPI spec by Stainless.
+
 package com.turbopuffer.core.http
 
 import com.turbopuffer.core.toImmutable
