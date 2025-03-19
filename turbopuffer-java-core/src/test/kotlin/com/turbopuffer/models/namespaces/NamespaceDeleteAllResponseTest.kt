@@ -10,12 +10,12 @@ internal class NamespaceDeleteAllResponseTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun createNamespaceDeleteAllResponse() {
+    fun create() {
         val namespaceDeleteAllResponse =
             NamespaceDeleteAllResponse.builder()
                 .status(NamespaceDeleteAllResponse.Status.OK)
                 .build()
-        assertThat(namespaceDeleteAllResponse).isNotNull
+
         assertThat(namespaceDeleteAllResponse.status())
             .isEqualTo(NamespaceDeleteAllResponse.Status.OK)
     }

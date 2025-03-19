@@ -8,13 +8,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-internal class DocumentRowTest {
+internal class DocumentRowWithScoreTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
-        val documentRow =
-            DocumentRow.builder()
+        val documentRowWithScore =
+            DocumentRowWithScore.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .attributes(
                     DocumentRow.Attributes.builder()
@@ -22,15 +22,18 @@ internal class DocumentRowTest {
                         .build()
                 )
                 .addVector(0.0)
+                .dist(0.0)
                 .build()
 
-        assertThat(documentRow.id()).contains(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        assertThat(documentRow.attributes())
+        assertThat(documentRowWithScore.id())
+            .contains(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(documentRowWithScore.attributes())
             .contains(
                 DocumentRow.Attributes.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-        assertThat(documentRow.vector().getOrNull()).containsExactly(0.0)
+        assertThat(documentRowWithScore.vector().getOrNull()).containsExactly(0.0)
+        assertThat(documentRowWithScore.dist()).contains(0.0)
     }
 }

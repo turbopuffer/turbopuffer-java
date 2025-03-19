@@ -10,9 +10,9 @@ internal class NamespaceSummaryTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun createNamespaceSummary() {
+    fun create() {
         val namespaceSummary = NamespaceSummary.builder().id("id").build()
-        assertThat(namespaceSummary).isNotNull
+
         assertThat(namespaceSummary.id()).isEqualTo("id")
     }
 }
