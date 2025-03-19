@@ -1,17 +1,21 @@
-# Turbopuffer Java API Library
+# turbopuffer Java API Library
 
 <!-- x-release-please-start-version -->
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.10)
-[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.10/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.10)
 
 <!-- x-release-please-end -->
 
-The Turbopuffer Java SDK provides convenient access to the Turbopuffer REST API from applications written in Java.
+> [!IMPORTANT]
+> **The turbopuffer Java client is in beta.**
+>
+> Please let us know about any bugs or performance issues.
+
+The turbopuffer Java SDK provides convenient access to the Turbopuffer REST API from applications written in Java.
 
 It is generated with [Stainless](https://www.stainless.com/).
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.10).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/latest/index.html).
 
 ## Installation
 
@@ -108,7 +112,7 @@ See this table for the available options:
 
 ## Requests and responses
 
-To send a request to the Turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
+To send a request to the turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
 
 For example, `client.namespaces().upsert(...)` should be called with an instance of `NamespaceUpsertParams`, and it will return an instance of `NamespaceUpsertResponse`.
 
