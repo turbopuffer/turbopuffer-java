@@ -3,6 +3,7 @@
 package com.turbopuffer.services.async
 
 import com.turbopuffer.core.ClientOptions
+import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.handlers.errorHandler
 import com.turbopuffer.core.handlers.jsonHandler
@@ -14,7 +15,6 @@ import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepareAsync
-import com.turbopuffer.errors.TurbopufferError
 import com.turbopuffer.models.namespaces.DocumentRowWithScore
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
@@ -74,7 +74,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         NamespaceServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<TurbopufferError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
 
         private val listHandler: Handler<NamespaceListPageAsync.Response> =
             jsonHandler<NamespaceListPageAsync.Response>(clientOptions.jsonMapper)
