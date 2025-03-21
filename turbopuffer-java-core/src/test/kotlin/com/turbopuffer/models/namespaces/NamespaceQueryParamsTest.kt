@@ -4,7 +4,6 @@ package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.JsonValue
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -63,7 +62,6 @@ internal class NamespaceQueryParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.consistency())
             .contains(
                 NamespaceQueryParams.Consistency.builder()
@@ -86,7 +84,5 @@ internal class NamespaceQueryParamsTest {
         val params = NamespaceQueryParams.builder().namespace("namespace").build()
 
         val body = params._body()
-
-        assertNotNull(body)
     }
 }
