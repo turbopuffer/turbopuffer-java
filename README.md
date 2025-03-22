@@ -7,7 +7,7 @@
 
 <!-- x-release-please-end -->
 
-The Turbopuffer Java SDK provides convenient access to the Turbopuffer REST API from applications written in Java.
+The Turbopuffer Java SDK provides convenient access to the [Turbopuffer REST API](https://turbopuffer.com/docs) from applications written in Java.
 
 It is generated with [Stainless](https://www.stainless.com/).
 
@@ -31,9 +31,9 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.10")
 
 ```xml
 <dependency>
-    <groupId>com.turbopuffer</groupId>
-    <artifactId>turbopuffer-java</artifactId>
-    <version>0.1.0-beta.10</version>
+  <groupId>com.turbopuffer</groupId>
+  <artifactId>turbopuffer-java</artifactId>
+  <version>0.1.0-beta.10</version>
 </dependency>
 ```
 
