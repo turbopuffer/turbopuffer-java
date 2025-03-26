@@ -10,28 +10,32 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.checkKnown
-import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** A list of documents in columnar format. */
-@NoAutoDetect
 class DocumentColumns
-@JsonCreator
 private constructor(
-    @JsonProperty("attributes")
-    @ExcludeMissing
-    private val attributes: JsonField<Attributes> = JsonMissing.of(),
-    @JsonProperty("ids") @ExcludeMissing private val ids: JsonField<List<Id>> = JsonMissing.of(),
-    @JsonProperty("vectors")
-    @ExcludeMissing
-    private val vectors: JsonField<List<List<Double>?>> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val attributes: JsonField<Attributes>,
+    private val ids: JsonField<List<Id>>,
+    private val vectors: JsonField<List<List<Double>?>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("attributes")
+        @ExcludeMissing
+        attributes: JsonField<Attributes> = JsonMissing.of(),
+        @JsonProperty("ids") @ExcludeMissing ids: JsonField<List<Id>> = JsonMissing.of(),
+        @JsonProperty("vectors")
+        @ExcludeMissing
+        vectors: JsonField<List<List<Double>?>> = JsonMissing.of(),
+    ) : this(attributes, ids, vectors, mutableMapOf())
 
     /**
      * The attributes attached to each of the documents.
@@ -84,22 +88,15 @@ private constructor(
     @ExcludeMissing
     fun _vectors(): JsonField<List<List<Double>?>> = vectors
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): DocumentColumns = apply {
-        if (validated) {
-            return@apply
-        }
-
-        attributes().ifPresent { it.validate() }
-        ids().ifPresent { it.forEach { it.validate() } }
-        vectors()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -218,32 +215,38 @@ private constructor(
                 attributes,
                 (ids ?: JsonMissing.of()).map { it.toImmutable() },
                 (vectors ?: JsonMissing.of()).map { it.toImmutable() },
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): DocumentColumns = apply {
+        if (validated) {
+            return@apply
+        }
+
+        attributes().ifPresent { it.validate() }
+        ids().ifPresent { it.forEach { it.validate() } }
+        vectors()
+        validated = true
+    }
+
     /** The attributes attached to each of the documents. */
-    @NoAutoDetect
     class Attributes
-    @JsonCreator
-    private constructor(
+    private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+        @JsonCreator private constructor() : this(mutableMapOf())
+
         @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-    ) {
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Attributes = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -287,7 +290,17 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Attributes = Attributes(additionalProperties.toImmutable())
+            fun build(): Attributes = Attributes(additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Attributes = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

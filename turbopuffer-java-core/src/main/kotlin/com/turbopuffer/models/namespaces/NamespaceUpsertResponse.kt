@@ -11,23 +11,22 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.checkRequired
-import com.turbopuffer.core.immutableEmptyMap
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** The response to a successful upsert request. */
-@NoAutoDetect
 class NamespaceUpsertResponse
-@JsonCreator
 private constructor(
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val status: JsonField<Status>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of()
+    ) : this(status, mutableMapOf())
 
     /**
      * The status of the request.
@@ -44,20 +43,15 @@ private constructor(
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): NamespaceUpsertResponse = apply {
-        if (validated) {
-            return@apply
-        }
-
-        status()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -131,8 +125,19 @@ private constructor(
         fun build(): NamespaceUpsertResponse =
             NamespaceUpsertResponse(
                 checkRequired("status", status),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): NamespaceUpsertResponse = apply {
+        if (validated) {
+            return@apply
+        }
+
+        status()
+        validated = true
     }
 
     /** The status of the request. */

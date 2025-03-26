@@ -10,30 +10,36 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.checkKnown
-import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** A single document, in a row-based format. */
-@NoAutoDetect
 class DocumentRowWithScore
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<Id> = JsonMissing.of(),
-    @JsonProperty("attributes")
-    @ExcludeMissing
-    private val attributes: JsonField<DocumentRow.Attributes> = JsonMissing.of(),
-    @JsonProperty("vector")
-    @ExcludeMissing
-    private val vector: JsonField<List<Double>> = JsonMissing.of(),
-    @JsonProperty("dist") @ExcludeMissing private val dist: JsonField<Double> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<Id>,
+    private val attributes: JsonField<DocumentRow.Attributes>,
+    private val vector: JsonField<List<Double>>,
+    private val dist: JsonField<Double>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<Id> = JsonMissing.of(),
+        @JsonProperty("attributes")
+        @ExcludeMissing
+        attributes: JsonField<DocumentRow.Attributes> = JsonMissing.of(),
+        @JsonProperty("vector") @ExcludeMissing vector: JsonField<List<Double>> = JsonMissing.of(),
+        @JsonProperty("dist") @ExcludeMissing dist: JsonField<Double> = JsonMissing.of(),
+    ) : this(id, attributes, vector, dist, mutableMapOf())
+
+    fun toDocumentRow(): DocumentRow =
+        DocumentRow.builder().id(id).attributes(attributes).vector(vector).build()
 
     /**
      * An identifier for a document.
@@ -99,26 +105,15 @@ private constructor(
      */
     @JsonProperty("dist") @ExcludeMissing fun _dist(): JsonField<Double> = dist
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun toDocumentRow(): DocumentRow =
-        DocumentRow.builder().id(id).attributes(attributes).vector(vector).build()
-
-    private var validated: Boolean = false
-
-    fun validate(): DocumentRowWithScore = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id().ifPresent { it.validate() }
-        attributes().ifPresent { it.validate() }
-        vector()
-        dist()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -250,8 +245,22 @@ private constructor(
                 attributes,
                 (vector ?: JsonMissing.of()).map { it.toImmutable() },
                 dist,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): DocumentRowWithScore = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id().ifPresent { it.validate() }
+        attributes().ifPresent { it.validate() }
+        vector()
+        dist()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

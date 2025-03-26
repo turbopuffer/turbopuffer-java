@@ -10,10 +10,8 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
-import com.turbopuffer.core.immutableEmptyMap
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.services.blocking.NamespaceService
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import java.util.stream.Stream
@@ -84,16 +82,18 @@ private constructor(
         ) = NamespaceListPage(namespacesService, params, response)
     }
 
-    @NoAutoDetect
-    class Response
-    @JsonCreator
-    constructor(
-        @JsonProperty("namespaces")
-        private val namespaces: JsonField<List<NamespaceSummary>> = JsonMissing.of(),
-        @JsonProperty("next_cursor") private val nextCursor: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    class Response(
+        private val namespaces: JsonField<List<NamespaceSummary>>,
+        private val nextCursor: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("namespaces")
+            namespaces: JsonField<List<NamespaceSummary>> = JsonMissing.of(),
+            @JsonProperty("next_cursor") nextCursor: JsonField<String> = JsonMissing.of(),
+        ) : this(namespaces, nextCursor, mutableMapOf())
 
         fun namespaces(): List<NamespaceSummary> = namespaces.getNullable("namespaces") ?: listOf()
 
@@ -107,9 +107,15 @@ private constructor(
         @JsonProperty("next_cursor")
         fun _nextCursor(): Optional<JsonField<String>> = Optional.ofNullable(nextCursor)
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         private var validated: Boolean = false
 
@@ -178,7 +184,7 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Response =
-                Response(namespaces, nextCursor, additionalProperties.toImmutable())
+                Response(namespaces, nextCursor, additionalProperties.toMutableMap())
         }
     }
 
