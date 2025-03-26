@@ -10,21 +10,22 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.checkRequired
-import com.turbopuffer.core.immutableEmptyMap
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** A summary of a namespace. */
-@NoAutoDetect
 class NamespaceSummary
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of()
+    ) : this(id, mutableMapOf())
 
     /**
      * The namespace ID.
@@ -41,20 +42,15 @@ private constructor(
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): NamespaceSummary = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -126,7 +122,18 @@ private constructor(
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): NamespaceSummary =
-            NamespaceSummary(checkRequired("id", id), additionalProperties.toImmutable())
+            NamespaceSummary(checkRequired("id", id), additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): NamespaceSummary = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

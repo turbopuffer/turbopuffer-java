@@ -7,32 +7,24 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
-import com.turbopuffer.core.immutableEmptyMap
-import com.turbopuffer.core.toImmutable
+import java.util.Collections
 import java.util.Objects
 
 /** The response to a successful namespace schema request. */
-@NoAutoDetect
 class NamespaceGetSchemaResponse
-@JsonCreator
-private constructor(
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-) {
+private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+    @JsonCreator private constructor() : this(mutableMapOf())
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): NamespaceGetSchemaResponse = apply {
-        if (validated) {
-            return@apply
-        }
-
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -79,7 +71,17 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): NamespaceGetSchemaResponse =
-            NamespaceGetSchemaResponse(additionalProperties.toImmutable())
+            NamespaceGetSchemaResponse(additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): NamespaceGetSchemaResponse = apply {
+        if (validated) {
+            return@apply
+        }
+
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

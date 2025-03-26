@@ -19,16 +19,15 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.Params
 import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
-import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -50,6 +49,182 @@ private constructor(
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [NamespaceUpsertParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .namespace()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [NamespaceUpsertParams]. */
+    class Builder internal constructor() {
+
+        private var namespace: String? = null
+        private var documents: Documents? = null
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+
+        @JvmSynthetic
+        internal fun from(namespaceUpsertParams: NamespaceUpsertParams) = apply {
+            namespace = namespaceUpsertParams.namespace
+            documents = namespaceUpsertParams.documents
+            additionalHeaders = namespaceUpsertParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceUpsertParams.additionalQueryParams.toBuilder()
+        }
+
+        fun namespace(namespace: String) = apply { this.namespace = namespace }
+
+        /** Upsert documents in columnar format. */
+        fun documents(documents: Documents?) = apply { this.documents = documents }
+
+        /** Alias for calling [Builder.documents] with `documents.orElse(null)`. */
+        fun documents(documents: Optional<Documents>) = documents(documents.getOrNull())
+
+        /** Alias for calling [documents] with `Documents.ofUpsertColumnar(upsertColumnar)`. */
+        fun documents(upsertColumnar: Documents.UpsertColumnar) =
+            documents(Documents.ofUpsertColumnar(upsertColumnar))
+
+        /** Alias for calling [documents] with `Documents.ofUpsertRowBased(upsertRowBased)`. */
+        fun documents(upsertRowBased: Documents.UpsertRowBased) =
+            documents(Documents.ofUpsertRowBased(upsertRowBased))
+
+        /**
+         * Alias for calling [documents] with `Documents.ofCopyFromNamespace(copyFromNamespace)`.
+         */
+        fun documents(copyFromNamespace: Documents.CopyFromNamespace) =
+            documents(Documents.ofCopyFromNamespace(copyFromNamespace))
+
+        /** Alias for calling [documents] with `Documents.ofDeleteByFilter(deleteByFilter)`. */
+        fun documents(deleteByFilter: Documents.DeleteByFilter) =
+            documents(Documents.ofDeleteByFilter(deleteByFilter))
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [NamespaceUpsertParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .namespace()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): NamespaceUpsertParams =
+            NamespaceUpsertParams(
+                checkRequired("namespace", namespace),
+                documents,
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
 
     @JvmSynthetic internal fun _body(): Optional<Documents> = Optional.ofNullable(documents)
 
@@ -271,28 +446,33 @@ private constructor(
         }
 
         /** Upsert documents in columnar format. */
-        @NoAutoDetect
         class UpsertColumnar
-        @JsonCreator
         private constructor(
-            @JsonProperty("attributes")
-            @ExcludeMissing
-            private val attributes: JsonField<DocumentColumns.Attributes> = JsonMissing.of(),
-            @JsonProperty("ids")
-            @ExcludeMissing
-            private val ids: JsonField<List<Id>> = JsonMissing.of(),
-            @JsonProperty("vectors")
-            @ExcludeMissing
-            private val vectors: JsonField<List<List<Double>?>> = JsonMissing.of(),
-            @JsonProperty("distance_metric")
-            @ExcludeMissing
-            private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
-            @JsonProperty("schema")
-            @ExcludeMissing
-            private val schema: JsonField<Schema> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val attributes: JsonField<DocumentColumns.Attributes>,
+            private val ids: JsonField<List<Id>>,
+            private val vectors: JsonField<List<List<Double>?>>,
+            private val distanceMetric: JsonField<DistanceMetric>,
+            private val schema: JsonField<Schema>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("attributes")
+                @ExcludeMissing
+                attributes: JsonField<DocumentColumns.Attributes> = JsonMissing.of(),
+                @JsonProperty("ids") @ExcludeMissing ids: JsonField<List<Id>> = JsonMissing.of(),
+                @JsonProperty("vectors")
+                @ExcludeMissing
+                vectors: JsonField<List<List<Double>?>> = JsonMissing.of(),
+                @JsonProperty("distance_metric")
+                @ExcludeMissing
+                distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
+                @JsonProperty("schema") @ExcludeMissing schema: JsonField<Schema> = JsonMissing.of(),
+            ) : this(attributes, ids, vectors, distanceMetric, schema, mutableMapOf())
+
+            fun toDocumentColumns(): DocumentColumns =
+                DocumentColumns.builder().attributes(attributes).ids(ids).vectors(vectors).build()
 
             /**
              * The attributes attached to each of the documents.
@@ -380,27 +560,15 @@ private constructor(
              */
             @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            fun toDocumentColumns(): DocumentColumns =
-                DocumentColumns.builder().attributes(attributes).ids(ids).vectors(vectors).build()
-
-            private var validated: Boolean = false
-
-            fun validate(): UpsertColumnar = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                attributes().ifPresent { it.validate() }
-                ids().ifPresent { it.forEach { it.validate() } }
-                vectors()
-                distanceMetric()
-                schema().ifPresent { it.validate() }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -578,32 +746,40 @@ private constructor(
                         (vectors ?: JsonMissing.of()).map { it.toImmutable() },
                         checkRequired("distanceMetric", distanceMetric),
                         schema,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
+            private var validated: Boolean = false
+
+            fun validate(): UpsertColumnar = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                attributes().ifPresent { it.validate() }
+                ids().ifPresent { it.forEach { it.validate() } }
+                vectors()
+                distanceMetric()
+                schema().ifPresent { it.validate() }
+                validated = true
+            }
+
             /** The schema of the attributes attached to the documents. */
-            @NoAutoDetect
             class Schema
-            @JsonCreator
-            private constructor(
+            private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+                @JsonCreator private constructor() : this(mutableMapOf())
+
                 @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-            ) {
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
 
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): Schema = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -650,7 +826,17 @@ private constructor(
                      *
                      * Further updates to this [Builder] will not mutate the returned instance.
                      */
-                    fun build(): Schema = Schema(additionalProperties.toImmutable())
+                    fun build(): Schema = Schema(additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Schema = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -689,22 +875,24 @@ private constructor(
         }
 
         /** Upsert documents in row-based format. */
-        @NoAutoDetect
         class UpsertRowBased
-        @JsonCreator
         private constructor(
-            @JsonProperty("distance_metric")
-            @ExcludeMissing
-            private val distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
-            @JsonProperty("upserts")
-            @ExcludeMissing
-            private val upserts: JsonField<List<DocumentRow>> = JsonMissing.of(),
-            @JsonProperty("schema")
-            @ExcludeMissing
-            private val schema: JsonField<Schema> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val distanceMetric: JsonField<DistanceMetric>,
+            private val upserts: JsonField<List<DocumentRow>>,
+            private val schema: JsonField<Schema>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("distance_metric")
+                @ExcludeMissing
+                distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
+                @JsonProperty("upserts")
+                @ExcludeMissing
+                upserts: JsonField<List<DocumentRow>> = JsonMissing.of(),
+                @JsonProperty("schema") @ExcludeMissing schema: JsonField<Schema> = JsonMissing.of(),
+            ) : this(distanceMetric, upserts, schema, mutableMapOf())
 
             /**
              * A function used to calculate vector similarity.
@@ -756,22 +944,15 @@ private constructor(
              */
             @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): UpsertRowBased = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                distanceMetric()
-                upserts().forEach { it.validate() }
-                schema().ifPresent { it.validate() }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -897,32 +1078,38 @@ private constructor(
                         checkRequired("distanceMetric", distanceMetric),
                         checkRequired("upserts", upserts).map { it.toImmutable() },
                         schema,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
+            private var validated: Boolean = false
+
+            fun validate(): UpsertRowBased = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                distanceMetric()
+                upserts().forEach { it.validate() }
+                schema().ifPresent { it.validate() }
+                validated = true
+            }
+
             /** The schema of the attributes attached to the documents. */
-            @NoAutoDetect
             class Schema
-            @JsonCreator
-            private constructor(
+            private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+                @JsonCreator private constructor() : this(mutableMapOf())
+
                 @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-            ) {
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
 
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): Schema = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -969,7 +1156,17 @@ private constructor(
                      *
                      * Further updates to this [Builder] will not mutate the returned instance.
                      */
-                    fun build(): Schema = Schema(additionalProperties.toImmutable())
+                    fun build(): Schema = Schema(additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Schema = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -1008,16 +1205,18 @@ private constructor(
         }
 
         /** Copy documents from another namespace. */
-        @NoAutoDetect
         class CopyFromNamespace
-        @JsonCreator
         private constructor(
-            @JsonProperty("copy_from_namespace")
-            @ExcludeMissing
-            private val copyFromNamespace: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val copyFromNamespace: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("copy_from_namespace")
+                @ExcludeMissing
+                copyFromNamespace: JsonField<String> = JsonMissing.of()
+            ) : this(copyFromNamespace, mutableMapOf())
 
             /**
              * The namespace to copy documents from.
@@ -1038,20 +1237,15 @@ private constructor(
             @ExcludeMissing
             fun _copyFromNamespace(): JsonField<String> = copyFromNamespace
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): CopyFromNamespace = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                copyFromNamespace()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1132,8 +1326,19 @@ private constructor(
                 fun build(): CopyFromNamespace =
                     CopyFromNamespace(
                         checkRequired("copyFromNamespace", copyFromNamespace),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): CopyFromNamespace = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                copyFromNamespace()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1155,35 +1360,33 @@ private constructor(
         }
 
         /** Delete documents by filter. */
-        @NoAutoDetect
         class DeleteByFilter
-        @JsonCreator
         private constructor(
-            @JsonProperty("delete_by_filter")
-            @ExcludeMissing
-            private val deleteByFilter: JsonValue = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val deleteByFilter: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("delete_by_filter")
+                @ExcludeMissing
+                deleteByFilter: JsonValue = JsonMissing.of()
+            ) : this(deleteByFilter, mutableMapOf())
 
             /** The filter specifying which documents to delete. */
             @JsonProperty("delete_by_filter")
             @ExcludeMissing
             fun _deleteByFilter(): JsonValue = deleteByFilter
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): DeleteByFilter = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1254,8 +1457,18 @@ private constructor(
                 fun build(): DeleteByFilter =
                     DeleteByFilter(
                         checkRequired("deleteByFilter", deleteByFilter),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): DeleteByFilter = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1275,183 +1488,6 @@ private constructor(
             override fun toString() =
                 "DeleteByFilter{deleteByFilter=$deleteByFilter, additionalProperties=$additionalProperties}"
         }
-    }
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        /**
-         * Returns a mutable builder for constructing an instance of [NamespaceUpsertParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .namespace()
-         * ```
-         */
-        @JvmStatic fun builder() = Builder()
-    }
-
-    /** A builder for [NamespaceUpsertParams]. */
-    @NoAutoDetect
-    class Builder internal constructor() {
-
-        private var namespace: String? = null
-        private var documents: Documents? = null
-        private var additionalHeaders: Headers.Builder = Headers.builder()
-        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-
-        @JvmSynthetic
-        internal fun from(namespaceUpsertParams: NamespaceUpsertParams) = apply {
-            namespace = namespaceUpsertParams.namespace
-            documents = namespaceUpsertParams.documents
-            additionalHeaders = namespaceUpsertParams.additionalHeaders.toBuilder()
-            additionalQueryParams = namespaceUpsertParams.additionalQueryParams.toBuilder()
-        }
-
-        fun namespace(namespace: String) = apply { this.namespace = namespace }
-
-        /** Upsert documents in columnar format. */
-        fun documents(documents: Documents?) = apply { this.documents = documents }
-
-        /** Alias for calling [Builder.documents] with `documents.orElse(null)`. */
-        fun documents(documents: Optional<Documents>) = documents(documents.getOrNull())
-
-        /** Alias for calling [documents] with `Documents.ofUpsertColumnar(upsertColumnar)`. */
-        fun documents(upsertColumnar: Documents.UpsertColumnar) =
-            documents(Documents.ofUpsertColumnar(upsertColumnar))
-
-        /** Alias for calling [documents] with `Documents.ofUpsertRowBased(upsertRowBased)`. */
-        fun documents(upsertRowBased: Documents.UpsertRowBased) =
-            documents(Documents.ofUpsertRowBased(upsertRowBased))
-
-        /**
-         * Alias for calling [documents] with `Documents.ofCopyFromNamespace(copyFromNamespace)`.
-         */
-        fun documents(copyFromNamespace: Documents.CopyFromNamespace) =
-            documents(Documents.ofCopyFromNamespace(copyFromNamespace))
-
-        /** Alias for calling [documents] with `Documents.ofDeleteByFilter(deleteByFilter)`. */
-        fun documents(deleteByFilter: Documents.DeleteByFilter) =
-            documents(Documents.ofDeleteByFilter(deleteByFilter))
-
-        fun additionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.clear()
-            putAllAdditionalHeaders(additionalHeaders)
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllAdditionalHeaders(additionalHeaders)
-        }
-
-        fun putAdditionalHeader(name: String, value: String) = apply {
-            additionalHeaders.put(name, value)
-        }
-
-        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.put(name, values)
-        }
-
-        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.putAll(additionalHeaders)
-        }
-
-        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.putAll(additionalHeaders)
-        }
-
-        fun replaceAdditionalHeaders(name: String, value: String) = apply {
-            additionalHeaders.replace(name, value)
-        }
-
-        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.replace(name, values)
-        }
-
-        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.replaceAll(additionalHeaders)
-        }
-
-        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.replaceAll(additionalHeaders)
-        }
-
-        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
-
-        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
-            additionalHeaders.removeAll(names)
-        }
-
-        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.clear()
-            putAllAdditionalQueryParams(additionalQueryParams)
-        }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllAdditionalQueryParams(additionalQueryParams)
-        }
-
-        fun putAdditionalQueryParam(key: String, value: String) = apply {
-            additionalQueryParams.put(key, value)
-        }
-
-        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.put(key, values)
-        }
-
-        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.putAll(additionalQueryParams)
-        }
-
-        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalQueryParams.putAll(additionalQueryParams)
-            }
-
-        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
-            additionalQueryParams.replace(key, value)
-        }
-
-        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.replace(key, values)
-        }
-
-        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.replaceAll(additionalQueryParams)
-        }
-
-        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalQueryParams.replaceAll(additionalQueryParams)
-            }
-
-        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
-
-        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
-            additionalQueryParams.removeAll(keys)
-        }
-
-        /**
-         * Returns an immutable instance of [NamespaceUpsertParams].
-         *
-         * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .namespace()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
-         */
-        fun build(): NamespaceUpsertParams =
-            NamespaceUpsertParams(
-                checkRequired("namespace", namespace),
-                documents,
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
     }
 
     override fun equals(other: Any?): Boolean {

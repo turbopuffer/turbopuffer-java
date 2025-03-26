@@ -20,28 +20,31 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.getOrThrow
-import com.turbopuffer.core.immutableEmptyMap
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** The schema for an attribute attached to a document. */
-@NoAutoDetect
 class AttributeSchema
-@JsonCreator
 private constructor(
-    @JsonProperty("filterable")
-    @ExcludeMissing
-    private val filterable: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("full_text_search")
-    @ExcludeMissing
-    private val fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val filterable: JsonField<Boolean>,
+    private val fullTextSearch: JsonField<FullTextSearch>,
+    private val type: JsonField<Type>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("filterable")
+        @ExcludeMissing
+        filterable: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("full_text_search")
+        @ExcludeMissing
+        fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+    ) : this(filterable, fullTextSearch, type, mutableMapOf())
 
     /**
      * Whether or not the attributes can be used in filters/WHERE clauses.
@@ -93,22 +96,15 @@ private constructor(
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): AttributeSchema = apply {
-        if (validated) {
-            return@apply
-        }
-
-        filterable()
-        fullTextSearch().ifPresent { it.validate() }
-        type()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -208,7 +204,20 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): AttributeSchema =
-            AttributeSchema(filterable, fullTextSearch, type, additionalProperties.toImmutable())
+            AttributeSchema(filterable, fullTextSearch, type, additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): AttributeSchema = apply {
+        if (validated) {
+            return@apply
+        }
+
+        filterable()
+        fullTextSearch().ifPresent { it.validate() }
+        type()
+        validated = true
     }
 
     /**

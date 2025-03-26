@@ -11,32 +11,32 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
-import com.turbopuffer.core.immutableEmptyMap
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** Detailed configuration options for BM25 full-text search. */
-@NoAutoDetect
 class FullTextSearchConfig
-@JsonCreator
 private constructor(
-    @JsonProperty("case_sensitive")
-    @ExcludeMissing
-    private val caseSensitive: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("language")
-    @ExcludeMissing
-    private val language: JsonField<Language> = JsonMissing.of(),
-    @JsonProperty("remove_stopwords")
-    @ExcludeMissing
-    private val removeStopwords: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("stemming")
-    @ExcludeMissing
-    private val stemming: JsonField<Boolean> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val caseSensitive: JsonField<Boolean>,
+    private val language: JsonField<Language>,
+    private val removeStopwords: JsonField<Boolean>,
+    private val stemming: JsonField<Boolean>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("case_sensitive")
+        @ExcludeMissing
+        caseSensitive: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("language") @ExcludeMissing language: JsonField<Language> = JsonMissing.of(),
+        @JsonProperty("remove_stopwords")
+        @ExcludeMissing
+        removeStopwords: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("stemming") @ExcludeMissing stemming: JsonField<Boolean> = JsonMissing.of(),
+    ) : this(caseSensitive, language, removeStopwords, stemming, mutableMapOf())
 
     /**
      * Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive).
@@ -105,23 +105,15 @@ private constructor(
      */
     @JsonProperty("stemming") @ExcludeMissing fun _stemming(): JsonField<Boolean> = stemming
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FullTextSearchConfig = apply {
-        if (validated) {
-            return@apply
-        }
-
-        caseSensitive()
-        language()
-        removeStopwords()
-        stemming()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -235,8 +227,22 @@ private constructor(
                 language,
                 removeStopwords,
                 stemming,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): FullTextSearchConfig = apply {
+        if (validated) {
+            return@apply
+        }
+
+        caseSensitive()
+        language()
+        removeStopwords()
+        stemming()
+        validated = true
     }
 
     /** The language of the text. Defaults to `english`. */
