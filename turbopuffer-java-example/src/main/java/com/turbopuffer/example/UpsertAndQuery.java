@@ -16,8 +16,8 @@ import com.turbopuffer.models.namespaces.DistanceMetric;
 import com.turbopuffer.models.namespaces.DocumentRow;
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams;
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams;
-import com.turbopuffer.models.namespaces.NamespaceQueryParams;
 import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams.Documents.DeleteByFilter;
 import com.turbopuffer.models.namespaces.NamespaceUpsertParams.Documents.UpsertRowBased;
 import com.turbopuffer.models.namespaces.NamespaceUpsertParams.Documents.UpsertRowBased.Schema;
 
@@ -65,6 +65,14 @@ public class UpsertAndQuery {
                                         .putAdditionalProperty("age", JsonValue.from(28))
                                         .build())
                                 .build())
+                        .addUpsert(DocumentRow.builder()
+                                .id("cd2dcb19-9917-493a-b7e1-caa006d0ac32")
+                                .vector(Arrays.asList(7.0, 8.0, 9.0))
+                                .attributes(DocumentRow.Attributes.builder()
+                                        .putAdditionalProperty("name", JsonValue.from("Han"))
+                                        .putAdditionalProperty("age", JsonValue.from(29))
+                                        .build())
+                                .build())
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         // TODO: provide a schema builder with typed values.
                         .schema(Schema.builder()
@@ -79,21 +87,17 @@ public class UpsertAndQuery {
                 .build());
         System.out.printf("Upsert status: %s\n", upsert.status());
 
-        // Do a vector query.
-        var query = client.namespaces().query(NamespaceQueryParams.builder()
+        // Do a deletion of two documents.
+        var deletion = client.namespaces().upsert(NamespaceUpsertParams.builder()
                 .namespace(namespace)
-                .vector(Arrays.asList(3.0, 4.0, 5.0))
-                .includeAttributes(true)
-                .includeVectors(true)
-                .filters(JsonValue.from(List.of(
-                        "And",
-                        List.of(
-                                List.of("age", "Gt", 30),
-                                List.of("age", "Lt", 35)
-                        )
-                )))
+                .documents(DeleteByFilter.builder()
+                        .deleteByFilter(JsonValue.from(List.of("id", "In", List.of(
+                                "b3ff34ea-87bb-469c-a854-9cb7e3713fc3",
+                                "cd2dcb19-9917-493a-b7e1-caa006d0ac32"
+                        ))))
+                        .build())
                 .build());
-        System.out.printf("Query result:\n%s\n", query);
+        System.out.printf("Deletion result:\n%s\n", deletion);
 
         // Print the schema.
         var schema = client.namespaces().getSchema(NamespaceGetSchemaParams.builder()
