@@ -3,28 +3,23 @@
 package com.turbopuffer.models.namespaces
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonValue
-import java.util.Collections
+import com.turbopuffer.core.toImmutable
 import java.util.Objects
 
 /** The response to a successful namespace schema request. */
 class NamespaceGetSchemaResponse
-private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
-
-    @JsonCreator private constructor() : this(mutableMapOf())
-
-    @JsonAnySetter
-    private fun putAdditionalProperty(key: String, value: JsonValue) {
-        additionalProperties.put(key, value)
-    }
+@JsonCreator
+private constructor(
+    @com.fasterxml.jackson.annotation.JsonValue
+    private val additionalProperties: Map<String, JsonValue>
+) {
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
-        Collections.unmodifiableMap(additionalProperties)
+    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
     fun toBuilder() = Builder().from(this)
 
@@ -71,7 +66,7 @@ private constructor(private val additionalProperties: MutableMap<String, JsonVal
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): NamespaceGetSchemaResponse =
-            NamespaceGetSchemaResponse(additionalProperties.toMutableMap())
+            NamespaceGetSchemaResponse(additionalProperties.toImmutable())
     }
 
     private var validated: Boolean = false
