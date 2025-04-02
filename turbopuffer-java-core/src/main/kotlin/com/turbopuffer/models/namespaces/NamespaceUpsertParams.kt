@@ -20,6 +20,7 @@ import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
+import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
@@ -286,15 +287,14 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 upsertColumnar != null -> visitor.visitUpsertColumnar(upsertColumnar)
                 upsertRowBased != null -> visitor.visitUpsertRowBased(upsertRowBased)
                 copyFromNamespace != null -> visitor.visitCopyFromNamespace(copyFromNamespace)
                 deleteByFilter != null -> visitor.visitDeleteByFilter(deleteByFilter)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -324,6 +324,40 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitUpsertColumnar(upsertColumnar: UpsertColumnar) =
+                        upsertColumnar.validity()
+
+                    override fun visitUpsertRowBased(upsertRowBased: UpsertRowBased) =
+                        upsertRowBased.validity()
+
+                    override fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace) =
+                        copyFromNamespace.validity()
+
+                    override fun visitDeleteByFilter(deleteByFilter: DeleteByFilter) =
+                        deleteByFilter.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -405,24 +439,34 @@ private constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): Documents {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<UpsertColumnar>()) { it.validate() }
-                    ?.let {
-                        return Documents(upsertColumnar = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<UpsertRowBased>()) { it.validate() }
-                    ?.let {
-                        return Documents(upsertRowBased = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<CopyFromNamespace>()) { it.validate() }
-                    ?.let {
-                        return Documents(copyFromNamespace = it, _json = json)
-                    }
-                tryDeserialize(node, jacksonTypeRef<DeleteByFilter>()) { it.validate() }
-                    ?.let {
-                        return Documents(deleteByFilter = it, _json = json)
-                    }
-
-                return Documents(_json = json)
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<UpsertColumnar>())?.let {
+                                Documents(upsertColumnar = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<UpsertRowBased>())?.let {
+                                Documents(upsertRowBased = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<CopyFromNamespace>())?.let {
+                                Documents(copyFromNamespace = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<DeleteByFilter>())?.let {
+                                Documents(deleteByFilter = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Documents(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
             }
         }
 
@@ -760,10 +804,32 @@ private constructor(
                 attributes().ifPresent { it.validate() }
                 ids().ifPresent { it.forEach { it.validate() } }
                 vectors()
-                distanceMetric()
+                distanceMetric().validate()
                 schema().ifPresent { it.validate() }
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (attributes.asKnown().getOrNull()?.validity() ?: 0) +
+                    (ids.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                    (vectors.asKnown().getOrNull()?.sumOf { (it?.size ?: 0).toInt() } ?: 0) +
+                    (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
+                    (schema.asKnown().getOrNull()?.validity() ?: 0)
 
             /** The schema of the attributes attached to the documents. */
             class Schema
@@ -834,6 +900,26 @@ private constructor(
 
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: TurbopufferInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    additionalProperties.count { (_, value) ->
+                        !value.isNull() && !value.isMissing()
+                    }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -1085,11 +1171,31 @@ private constructor(
                     return@apply
                 }
 
-                distanceMetric()
+                distanceMetric().validate()
                 upserts().forEach { it.validate() }
                 schema().ifPresent { it.validate() }
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
+                    (upserts.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                    (schema.asKnown().getOrNull()?.validity() ?: 0)
 
             /** The schema of the attributes attached to the documents. */
             class Schema
@@ -1160,6 +1266,26 @@ private constructor(
 
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: TurbopufferInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    additionalProperties.count { (_, value) ->
+                        !value.isNull() && !value.isMissing()
+                    }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -1333,6 +1459,23 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int = (if (copyFromNamespace.asKnown().isPresent) 1 else 0)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -1462,6 +1605,22 @@ private constructor(
 
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = 0
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
