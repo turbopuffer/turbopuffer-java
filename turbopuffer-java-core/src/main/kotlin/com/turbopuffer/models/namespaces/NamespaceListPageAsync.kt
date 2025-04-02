@@ -10,6 +10,7 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.errors.TurbopufferInvalidDataException
 import com.turbopuffer.services.async.NamespaceServiceAsync
 import java.util.Collections
 import java.util.Objects
@@ -130,6 +131,14 @@ private constructor(
             nextCursor()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
 
         fun toBuilder() = Builder().from(this)
 

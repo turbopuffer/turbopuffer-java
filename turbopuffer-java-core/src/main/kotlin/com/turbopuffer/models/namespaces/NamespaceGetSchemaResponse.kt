@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.toImmutable
+import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 
 /** The response to a successful namespace schema request. */
@@ -78,6 +79,23 @@ private constructor(
 
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: TurbopufferInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

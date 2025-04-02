@@ -2,7 +2,9 @@
 
 package com.turbopuffer.models.namespaces
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.core.jsonMapper
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
@@ -33,5 +35,29 @@ internal class DocumentColumnsTest {
         assertThat(documentColumns.ids().getOrNull())
             .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
         assertThat(documentColumns.vectors().getOrNull()).containsExactly(listOf(0.0))
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val documentColumns =
+            DocumentColumns.builder()
+                .attributes(
+                    DocumentColumns.Attributes.builder()
+                        .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf("foo" to "bar"))))
+                        .build()
+                )
+                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .addVector(listOf(0.0))
+                .build()
+
+        val roundtrippedDocumentColumns =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(documentColumns),
+                jacksonTypeRef<DocumentColumns>(),
+            )
+
+        assertThat(roundtrippedDocumentColumns).isEqualTo(documentColumns)
     }
 }
