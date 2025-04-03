@@ -185,6 +185,20 @@ private constructor(
 
         fun namespace(namespace: String) = apply { this.namespace = namespace }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [consistency]
+         * - [distanceMetric]
+         * - [filters]
+         * - [includeAttributes]
+         * - [includeVectors]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         /** The consistency level for a query. */
         fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
 
@@ -436,7 +450,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {
