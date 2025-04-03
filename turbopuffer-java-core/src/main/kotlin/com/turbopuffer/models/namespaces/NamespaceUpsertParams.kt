@@ -227,7 +227,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Optional<Documents> = Optional.ofNullable(documents)
+    fun _body(): Optional<Documents> = Optional.ofNullable(documents)
 
     fun _pathParam(index: Int): String =
         when (index) {
