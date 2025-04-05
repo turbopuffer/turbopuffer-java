@@ -456,6 +456,19 @@ JsonValue complexValue = JsonValue.from(Map.of(
 ));
 ```
 
+Normally a `Builder` class's `build` method will throw [`IllegalStateException`](https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html) if any required parameter or property is unset.
+
+To forcibly omit a required parameter or property, pass [`JsonMissing`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/Values.kt):
+
+```java
+import com.turbopuffer.core.JsonMissing;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+
+NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+    .namespace(JsonMissing.of())
+    .build();
+```
+
 ### Response properties
 
 To access undocumented response properties, call the `_additionalProperties()` method:
