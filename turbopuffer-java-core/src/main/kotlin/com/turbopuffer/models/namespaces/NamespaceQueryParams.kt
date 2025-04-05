@@ -514,8 +514,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun consistency(): Optional<Consistency> =
-            Optional.ofNullable(consistency.getNullable("consistency"))
+        fun consistency(): Optional<Consistency> = consistency.getOptional("consistency")
 
         /**
          * A function used to calculate vector similarity.
@@ -524,7 +523,7 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun distanceMetric(): Optional<DistanceMetric> =
-            Optional.ofNullable(distanceMetric.getNullable("distance_metric"))
+            distanceMetric.getOptional("distance_metric")
 
         /**
          * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
@@ -539,7 +538,7 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun includeAttributes(): Optional<IncludeAttributes> =
-            Optional.ofNullable(includeAttributes.getNullable("include_attributes"))
+            includeAttributes.getOptional("include_attributes")
 
         /**
          * Whether to return vectors for the search results. Vectors are large and slow to
@@ -548,8 +547,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun includeVectors(): Optional<Boolean> =
-            Optional.ofNullable(includeVectors.getNullable("include_vectors"))
+        fun includeVectors(): Optional<Boolean> = includeVectors.getOptional("include_vectors")
 
         /** The attribute to rank the results by. Cannot be specified with `vector`. */
         @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
@@ -560,7 +558,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun topK(): Optional<Long> = Optional.ofNullable(topK.getNullable("top_k"))
+        fun topK(): Optional<Long> = topK.getOptional("top_k")
 
         /**
          * A vector to search for. It must have the same number of dimensions as the vectors in the
@@ -569,7 +567,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun vector(): Optional<List<Double>> = Optional.ofNullable(vector.getNullable("vector"))
+        fun vector(): Optional<List<Double>> = vector.getOptional("vector")
 
         /**
          * Returns the raw JSON value of [consistency].
@@ -902,7 +900,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun level(): Optional<Level> = Optional.ofNullable(level.getNullable("level"))
+        fun level(): Optional<Level> = level.getOptional("level")
 
         /**
          * Returns the raw JSON value of [level].

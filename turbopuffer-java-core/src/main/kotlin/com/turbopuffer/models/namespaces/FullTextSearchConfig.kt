@@ -45,8 +45,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun caseSensitive(): Optional<Boolean> =
-        Optional.ofNullable(caseSensitive.getNullable("case_sensitive"))
+    fun caseSensitive(): Optional<Boolean> = caseSensitive.getOptional("case_sensitive")
 
     /**
      * The language of the text. Defaults to `english`.
@@ -54,7 +53,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun language(): Optional<Language> = Optional.ofNullable(language.getNullable("language"))
+    fun language(): Optional<Language> = language.getOptional("language")
 
     /**
      * Removes common words from the text based on language. Defaults to `true` (i.e. remove common
@@ -63,8 +62,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun removeStopwords(): Optional<Boolean> =
-        Optional.ofNullable(removeStopwords.getNullable("remove_stopwords"))
+    fun removeStopwords(): Optional<Boolean> = removeStopwords.getOptional("remove_stopwords")
 
     /**
      * Language-specific stemming for the text. Defaults to `false` (i.e., do not stem).
@@ -72,7 +70,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun stemming(): Optional<Boolean> = Optional.ofNullable(stemming.getNullable("stemming"))
+    fun stemming(): Optional<Boolean> = stemming.getOptional("stemming")
 
     /**
      * Returns the raw JSON value of [caseSensitive].

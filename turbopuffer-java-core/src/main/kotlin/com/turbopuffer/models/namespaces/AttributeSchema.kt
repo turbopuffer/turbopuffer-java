@@ -54,7 +54,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun filterable(): Optional<Boolean> = Optional.ofNullable(filterable.getNullable("filterable"))
+    fun filterable(): Optional<Boolean> = filterable.getOptional("filterable")
 
     /**
      * Whether this attribute can be used as part of a BM25 full-text search. Requires the `string`
@@ -64,8 +64,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun fullTextSearch(): Optional<FullTextSearch> =
-        Optional.ofNullable(fullTextSearch.getNullable("full_text_search"))
+    fun fullTextSearch(): Optional<FullTextSearch> = fullTextSearch.getOptional("full_text_search")
 
     /**
      * The data type of the attribute.
@@ -73,7 +72,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
+    fun type(): Optional<Type> = type.getOptional("type")
 
     /**
      * Returns the raw JSON value of [filterable].
