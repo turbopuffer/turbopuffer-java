@@ -47,7 +47,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun id(): Optional<Id> = Optional.ofNullable(id.getNullable("id"))
+    fun id(): Optional<Id> = id.getOptional("id")
 
     /**
      * The attributes attached to the document.
@@ -55,8 +55,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun attributes(): Optional<DocumentRow.Attributes> =
-        Optional.ofNullable(attributes.getNullable("attributes"))
+    fun attributes(): Optional<DocumentRow.Attributes> = attributes.getOptional("attributes")
 
     /**
      * A vector describing the document.
@@ -64,7 +63,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun vector(): Optional<List<Double>> = Optional.ofNullable(vector.getNullable("vector"))
+    fun vector(): Optional<List<Double>> = vector.getOptional("vector")
 
     /**
      * For vector search, the distance between the query vector and the document vector. For BM25
@@ -73,7 +72,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun dist(): Optional<Double> = Optional.ofNullable(dist.getNullable("dist"))
+    fun dist(): Optional<Double> = dist.getOptional("dist")
 
     /**
      * Returns the raw JSON value of [id].

@@ -44,8 +44,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun attributes(): Optional<Attributes> =
-        Optional.ofNullable(attributes.getNullable("attributes"))
+    fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
 
     /**
      * The IDs of the documents.
@@ -53,7 +52,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun ids(): Optional<List<Id>> = Optional.ofNullable(ids.getNullable("ids"))
+    fun ids(): Optional<List<Id>> = ids.getOptional("ids")
 
     /**
      * Vectors describing each of the documents.
@@ -61,8 +60,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun vectors(): Optional<List<List<Double>?>> =
-        Optional.ofNullable(vectors.getNullable("vectors"))
+    fun vectors(): Optional<List<List<Double>?>> = vectors.getOptional("vectors")
 
     /**
      * Returns the raw JSON value of [attributes].

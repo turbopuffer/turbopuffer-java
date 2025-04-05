@@ -96,10 +96,10 @@ private constructor(
             @JsonProperty("next_cursor") nextCursor: JsonField<String> = JsonMissing.of(),
         ) : this(namespaces, nextCursor, mutableMapOf())
 
-        fun namespaces(): List<NamespaceSummary> = namespaces.getNullable("namespaces") ?: listOf()
+        fun namespaces(): List<NamespaceSummary> =
+            namespaces.getOptional("namespaces").getOrNull() ?: listOf()
 
-        fun nextCursor(): Optional<String> =
-            Optional.ofNullable(nextCursor.getNullable("next_cursor"))
+        fun nextCursor(): Optional<String> = nextCursor.getOptional("next_cursor")
 
         @JsonProperty("namespaces")
         fun _namespaces(): Optional<JsonField<List<NamespaceSummary>>> =
