@@ -52,7 +52,7 @@ import com.turbopuffer.models.namespaces.DistanceMetric;
 import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
 import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 
-// Configures using the `TURBOPUFFER_API_KEY` environment variable
+// Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
@@ -72,7 +72,7 @@ Configure the client using environment variables:
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
-// Configures using the `TURBOPUFFER_API_KEY` environment variable
+// Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 ```
 
@@ -94,7 +94,7 @@ import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
-    // Configures using the `TURBOPUFFER_API_KEY` environment variable
+    // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build();
@@ -102,9 +102,10 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
 
 See this table for the available options:
 
-| Setter   | Environment variable  | Required | Default value |
-| -------- | --------------------- | -------- | ------------- |
-| `apiKey` | `TURBOPUFFER_API_KEY` | true     | -             |
+| Setter    | Environment variable   | Required | Default value                   |
+| --------- | ---------------------- | -------- | ------------------------------- |
+| `apiKey`  | `TURBOPUFFER_API_KEY`  | true     | -                               |
+| `baseUrl` | `TURBOPUFFER_BASE_URL` | true     | `"https://api.turbopuffer.com"` |
 
 > [!TIP]
 > Don't create more than one client in the same application. Each client has a connection pool and
@@ -136,7 +137,7 @@ import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
 import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `TURBOPUFFER_API_KEY` environment variable
+// Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
@@ -158,7 +159,7 @@ import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
 import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `TURBOPUFFER_API_KEY` environment variable
+// Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
