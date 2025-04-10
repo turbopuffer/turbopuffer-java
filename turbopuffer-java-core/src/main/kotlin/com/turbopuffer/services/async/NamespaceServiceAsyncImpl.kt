@@ -104,11 +104,11 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                                 }
                             }
                             .let {
-                                NamespaceListPageAsync.of(
-                                    NamespaceServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                NamespaceListPageAsync.builder()
+                                    .service(NamespaceServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

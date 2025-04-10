@@ -2,6 +2,7 @@
 
 package com.turbopuffer.models.namespaces
 
+import com.turbopuffer.core.checkRequired
 import com.turbopuffer.services.blocking.NamespaceService
 import java.util.Objects
 import java.util.Optional
@@ -9,16 +10,13 @@ import java.util.stream.Stream
 import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
-/** List namespaces. */
+/** @see [NamespaceService.list] */
 class NamespaceListPage
 private constructor(
-    private val namespacesService: NamespaceService,
+    private val service: NamespaceService,
     private val params: NamespaceListParams,
     private val response: NamespaceListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): NamespaceListPageResponse = response
 
     /**
      * Delegates to [NamespaceListPageResponse], but gracefully handles missing data.
@@ -35,19 +33,6 @@ private constructor(
      */
     fun nextCursor(): Optional<String> = response._nextCursor().getOptional("next_cursor")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is NamespaceListPage && namespacesService == other.namespacesService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespacesService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "NamespaceListPage{namespacesService=$namespacesService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = namespaces().isNotEmpty() && nextCursor().isPresent
 
     fun getNextPageParams(): Optional<NamespaceListParams> {
@@ -60,20 +45,75 @@ private constructor(
         )
     }
 
-    fun getNextPage(): Optional<NamespaceListPage> {
-        return getNextPageParams().map { namespacesService.list(it) }
-    }
+    fun getNextPage(): Optional<NamespaceListPage> = getNextPageParams().map { service.list(it) }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): NamespaceListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): NamespaceListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(
-            namespacesService: NamespaceService,
-            params: NamespaceListParams,
-            response: NamespaceListPageResponse,
-        ) = NamespaceListPage(namespacesService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [NamespaceListPage].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [NamespaceListPage]. */
+    class Builder internal constructor() {
+
+        private var service: NamespaceService? = null
+        private var params: NamespaceListParams? = null
+        private var response: NamespaceListPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(namespaceListPage: NamespaceListPage) = apply {
+            service = namespaceListPage.service
+            params = namespaceListPage.params
+            response = namespaceListPage.response
+        }
+
+        fun service(service: NamespaceService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: NamespaceListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: NamespaceListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [NamespaceListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): NamespaceListPage =
+            NamespaceListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: NamespaceListPage) : Iterable<NamespaceSummary> {
@@ -94,4 +134,17 @@ private constructor(
             return StreamSupport.stream(spliterator(), false)
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is NamespaceListPage && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "NamespaceListPage{service=$service, params=$params, response=$response}"
 }

@@ -100,7 +100,13 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                             it.validate()
                         }
                     }
-                    .let { NamespaceListPage.of(NamespaceServiceImpl(clientOptions), params, it) }
+                    .let {
+                        NamespaceListPage.builder()
+                            .service(NamespaceServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 
