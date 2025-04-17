@@ -18,29 +18,25 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** A list of documents in columnar format. The keys are the column names. */
+/** A list of documents in columnar format. */
 class DocumentColumns
 private constructor(
-    private val id: JsonField<List<Id>>,
-    private val additionalProperties: JsonField<List<AdditionalProperty>>,
+    private val attributes: JsonField<Attributes>,
+    private val ids: JsonField<List<Id>>,
+    private val vectors: JsonField<List<List<Double>?>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("id") @ExcludeMissing id: JsonField<List<Id>> = JsonMissing.of(),
-        @JsonProperty("additionalProperties")
+        @JsonProperty("attributes")
         @ExcludeMissing
-        additionalProperties: JsonField<List<AdditionalProperty>> = JsonMissing.of(),
-    ) : this(id, additionalProperties, mutableMapOf())
-
-    /**
-     * The IDs of the documents.
-     *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun id(): Optional<List<Id>> = id.getOptional("id")
+        attributes: JsonField<Attributes> = JsonMissing.of(),
+        @JsonProperty("ids") @ExcludeMissing ids: JsonField<List<Id>> = JsonMissing.of(),
+        @JsonProperty("vectors")
+        @ExcludeMissing
+        vectors: JsonField<List<List<Double>?>> = JsonMissing.of(),
+    ) : this(attributes, ids, vectors, mutableMapOf())
 
     /**
      * The attributes attached to each of the documents.
@@ -48,25 +44,48 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun additionalProperties(): Optional<List<AdditionalProperty>> =
-        additionalProperties.getOptional("additionalProperties")
+    fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
 
     /**
-     * Returns the raw JSON value of [id].
+     * The IDs of the documents.
      *
-     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<List<Id>> = id
+    fun ids(): Optional<List<Id>> = ids.getOptional("ids")
 
     /**
-     * Returns the raw JSON value of [additionalProperties].
+     * Vectors describing each of the documents.
      *
-     * Unlike [additionalProperties], this method doesn't throw if the JSON field has an unexpected
-     * type.
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    @JsonProperty("additionalProperties")
+    fun vectors(): Optional<List<List<Double>?>> = vectors.getOptional("vectors")
+
+    /**
+     * Returns the raw JSON value of [attributes].
+     *
+     * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("attributes")
     @ExcludeMissing
-    fun _additionalProperties(): JsonField<List<AdditionalProperty>> = additionalProperties
+    fun _attributes(): JsonField<Attributes> = attributes
+
+    /**
+     * Returns the raw JSON value of [ids].
+     *
+     * Unlike [ids], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("ids") @ExcludeMissing fun _ids(): JsonField<List<Id>> = ids
+
+    /**
+     * Returns the raw JSON value of [vectors].
+     *
+     * Unlike [vectors], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("vectors")
+    @ExcludeMissing
+    fun _vectors(): JsonField<List<List<Double>?>> = vectors
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -89,36 +108,49 @@ private constructor(
     /** A builder for [DocumentColumns]. */
     class Builder internal constructor() {
 
-        private var id: JsonField<MutableList<Id>>? = null
-        private var additionalProperties: JsonField<MutableList<AdditionalProperty>>? = null
+        private var attributes: JsonField<Attributes> = JsonMissing.of()
+        private var ids: JsonField<MutableList<Id>>? = null
+        private var vectors: JsonField<MutableList<List<Double>?>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(documentColumns: DocumentColumns) = apply {
-            id = documentColumns.id.map { it.toMutableList() }
-            additionalProperties = documentColumns.additionalProperties.map { it.toMutableList() }
+            attributes = documentColumns.attributes
+            ids = documentColumns.ids.map { it.toMutableList() }
+            vectors = documentColumns.vectors.map { it.toMutableList() }
             additionalProperties = documentColumns.additionalProperties.toMutableMap()
         }
 
-        /** The IDs of the documents. */
-        fun id(id: List<Id>) = id(JsonField.of(id))
+        /** The attributes attached to each of the documents. */
+        fun attributes(attributes: Attributes) = attributes(JsonField.of(attributes))
 
         /**
-         * Sets [Builder.id] to an arbitrary JSON value.
+         * Sets [Builder.attributes] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.id] with a well-typed `List<Id>` value instead. This
+         * You should usually call [Builder.attributes] with a well-typed [Attributes] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun attributes(attributes: JsonField<Attributes>) = apply { this.attributes = attributes }
+
+        /** The IDs of the documents. */
+        fun ids(ids: List<Id>) = ids(JsonField.of(ids))
+
+        /**
+         * Sets [Builder.ids] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.ids] with a well-typed `List<Id>` value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun id(id: JsonField<List<Id>>) = apply { this.id = id.map { it.toMutableList() } }
+        fun ids(ids: JsonField<List<Id>>) = apply { this.ids = ids.map { it.toMutableList() } }
 
         /**
-         * Adds a single [Id] to [Builder.id].
+         * Adds a single [Id] to [ids].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addId(id: Id) = apply {
-            this.id =
-                (this.id ?: JsonField.of(mutableListOf())).also { checkKnown("id", it).add(id) }
+            ids = (ids ?: JsonField.of(mutableListOf())).also { checkKnown("ids", it).add(id) }
         }
 
         /** Alias for calling [addId] with `Id.ofString(string)`. */
@@ -127,31 +159,29 @@ private constructor(
         /** Alias for calling [addId] with `Id.ofInteger(integer)`. */
         fun addId(integer: Long) = addId(Id.ofInteger(integer))
 
-        /** The attributes attached to each of the documents. */
-        fun additionalProperties(additionalProperties: List<AdditionalProperty>) =
-            additionalProperties(JsonField.of(additionalProperties))
+        /** Vectors describing each of the documents. */
+        fun vectors(vectors: List<List<Double>?>) = vectors(JsonField.of(vectors))
 
         /**
-         * Sets [Builder.additionalProperties] to an arbitrary JSON value.
+         * Sets [Builder.vectors] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.additionalProperties] with a well-typed
-         * `List<AdditionalProperty>` value instead. This method is primarily for setting the field
-         * to an undocumented or not yet supported value.
+         * You should usually call [Builder.vectors] with a well-typed `List<List<Double>?>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun additionalProperties(additionalProperties: JsonField<List<AdditionalProperty>>) =
-            apply {
-                this.additionalProperties = additionalProperties.map { it.toMutableList() }
-            }
+        fun vectors(vectors: JsonField<List<List<Double>?>>) = apply {
+            this.vectors = vectors.map { it.toMutableList() }
+        }
 
         /**
-         * Adds a single [AdditionalProperty] to [additionalProperties].
+         * Adds a single [List<Double>] to [vectors].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addAdditionalProperty(additionalProperty: AdditionalProperty) = apply {
-            additionalProperties =
-                (additionalProperties ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("additionalProperties", it).add(additionalProperty)
+        fun addVector(vector: List<Double>) = apply {
+            vectors =
+                (vectors ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("vectors", it).add(vector)
                 }
         }
 
@@ -181,8 +211,9 @@ private constructor(
          */
         fun build(): DocumentColumns =
             DocumentColumns(
-                (id ?: JsonMissing.of()).map { it.toImmutable() },
-                (additionalProperties ?: JsonMissing.of()).map { it.toImmutable() },
+                attributes,
+                (ids ?: JsonMissing.of()).map { it.toImmutable() },
+                (vectors ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
             )
     }
@@ -194,8 +225,9 @@ private constructor(
             return@apply
         }
 
-        id().ifPresent { it.forEach { it.validate() } }
-        additionalProperties().ifPresent { it.forEach { it.validate() } }
+        attributes().ifPresent { it.validate() }
+        ids().ifPresent { it.forEach { it.validate() } }
+        vectors()
         validated = true
     }
 
@@ -214,10 +246,12 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (id.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            (additionalProperties.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+        (attributes.asKnown().getOrNull()?.validity() ?: 0) +
+            (ids.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (vectors.asKnown().getOrNull()?.sumOf { (it?.size ?: 0).toInt() } ?: 0)
 
-    class AdditionalProperty
+    /** The attributes attached to each of the documents. */
+    class Attributes
     @JsonCreator
     private constructor(
         @com.fasterxml.jackson.annotation.JsonValue
@@ -232,18 +266,18 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [AdditionalProperty]. */
+            /** Returns a mutable builder for constructing an instance of [Attributes]. */
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [AdditionalProperty]. */
+        /** A builder for [Attributes]. */
         class Builder internal constructor() {
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(additionalProperty: AdditionalProperty) = apply {
-                additionalProperties = additionalProperty.additionalProperties.toMutableMap()
+            internal fun from(attributes: Attributes) = apply {
+                additionalProperties = attributes.additionalProperties.toMutableMap()
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -266,16 +300,16 @@ private constructor(
             }
 
             /**
-             * Returns an immutable instance of [AdditionalProperty].
+             * Returns an immutable instance of [Attributes].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): AdditionalProperty = AdditionalProperty(additionalProperties.toImmutable())
+            fun build(): Attributes = Attributes(additionalProperties.toImmutable())
         }
 
         private var validated: Boolean = false
 
-        fun validate(): AdditionalProperty = apply {
+        fun validate(): Attributes = apply {
             if (validated) {
                 return@apply
             }
@@ -306,7 +340,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is AdditionalProperty && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Attributes && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -315,7 +349,7 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "AdditionalProperty{additionalProperties=$additionalProperties}"
+        override fun toString() = "Attributes{additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -323,15 +357,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is DocumentColumns && id == other.id && additionalProperties == other.additionalProperties && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is DocumentColumns && attributes == other.attributes && ids == other.ids && vectors == other.vectors && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, additionalProperties, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(attributes, ids, vectors, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "DocumentColumns{id=$id, additionalProperties=$additionalProperties, additionalProperties=$additionalProperties}"
+        "DocumentColumns{attributes=$attributes, ids=$ids, vectors=$vectors, additionalProperties=$additionalProperties}"
 }
