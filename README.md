@@ -381,6 +381,42 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
     .build();
 ```
 
+### Custom HTTP client
+
+The SDK consists of three artifacts:
+
+- `turbopuffer-java-core`
+  - Contains core SDK logic
+  - Does not depend on [OkHttp](https://square.github.io/okhttp)
+  - Exposes [`TurbopufferClient`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClient.kt), [`TurbopufferClientAsync`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientAsync.kt), [`TurbopufferClientImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientImpl.kt), and [`TurbopufferClientAsyncImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientAsyncImpl.kt), all of which can work with any HTTP client
+- `turbopuffer-java-client-okhttp`
+  - Depends on [OkHttp](https://square.github.io/okhttp)
+  - Exposes [`TurbopufferOkHttpClient`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClient.kt) and [`TurbopufferOkHttpClientAsync`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClientAsync.kt), which provide a way to construct [`TurbopufferClientImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientImpl.kt) and [`TurbopufferClientAsyncImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientAsyncImpl.kt), respectively, using OkHttp
+- `turbopuffer-java`
+  - Depends on and exposes the APIs of both `turbopuffer-java-core` and `turbopuffer-java-client-okhttp`
+  - Does not have its own logic
+
+This structure allows replacing the SDK's default HTTP client without pulling in unnecessary dependencies.
+
+#### Customized [`OkHttpClient`](https://square.github.io/okhttp/3.x/okhttp/okhttp3/OkHttpClient.html)
+
+> [!TIP]
+> Try the available [network options](#network-options) before replacing the default client.
+
+To use a customized `OkHttpClient`:
+
+1. Replace your [`turbopuffer-java` dependency](#installation) with `turbopuffer-java-core`
+2. Copy `turbopuffer-java-client-okhttp`'s [`OkHttpClient`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/OkHttpClient.kt) class into your code and customize it
+3. Construct [`TurbopufferClientImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientImpl.kt) or [`TurbopufferClientAsyncImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientAsyncImpl.kt), similarly to [`TurbopufferOkHttpClient`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClient.kt) or [`TurbopufferOkHttpClientAsync`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClientAsync.kt), using your customized client
+
+### Completely custom HTTP client
+
+To use a completely custom HTTP client:
+
+1. Replace your [`turbopuffer-java` dependency](#installation) with `turbopuffer-java-core`
+2. Write a class that implements the [`HttpClient`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/http/HttpClient.kt) interface
+3. Construct [`TurbopufferClientImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientImpl.kt) or [`TurbopufferClientAsyncImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientAsyncImpl.kt), similarly to [`TurbopufferOkHttpClient`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClient.kt) or [`TurbopufferOkHttpClientAsync`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClientAsync.kt), using your new client class
+
 ## Undocumented API functionality
 
 The SDK is typed for convenient usage of the documented API. However, it also supports working with undocumented or not yet supported parts of the API.
