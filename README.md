@@ -57,7 +57,7 @@ TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
+    .documents(NamespaceUpsertParams.Documents.Write.builder()
         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
         .build())
     .build();
@@ -142,7 +142,7 @@ TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
+    .documents(NamespaceUpsertParams.Documents.Write.builder()
         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
         .build())
     .build();
@@ -164,7 +164,7 @@ TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
+    .documents(NamespaceUpsertParams.Documents.Write.builder()
         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
         .build())
     .build();
@@ -456,12 +456,14 @@ These properties can be accessed on the nested built object later using the `_ad
 To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/Values.kt) object to its setter:
 
 ```java
-import com.turbopuffer.core.JsonValue;
+import com.turbopuffer.models.namespaces.DistanceMetric;
 import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .documents(JsonValue.from(42))
+    .documents(NamespaceUpsertParams.Documents.Write.builder()
+        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+        .build())
     .build();
 ```
 
