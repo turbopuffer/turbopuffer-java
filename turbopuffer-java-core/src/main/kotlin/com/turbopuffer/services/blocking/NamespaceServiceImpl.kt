@@ -16,16 +16,14 @@ import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
 import com.turbopuffer.models.namespaces.DocumentRowWithScore
-import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
-import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceListPage
 import com.turbopuffer.models.namespaces.NamespaceListPageResponse
 import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
-import com.turbopuffer.models.namespaces.NamespaceWriteParams
-import com.turbopuffer.models.namespaces.NamespaceWriteResponse
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams
+import com.turbopuffer.models.namespaces.NamespaceUpsertResponse
 
 class NamespaceServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     NamespaceService {
@@ -43,13 +41,6 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         // get /v1/namespaces
         withRawResponse().list(params, requestOptions).parse()
 
-    override fun deleteAll(
-        params: NamespaceDeleteAllParams,
-        requestOptions: RequestOptions,
-    ): NamespaceDeleteAllResponse =
-        // delete /v1/namespaces/{namespace}
-        withRawResponse().deleteAll(params, requestOptions).parse()
-
     override fun getSchema(
         params: NamespaceGetSchemaParams,
         requestOptions: RequestOptions,
@@ -64,12 +55,12 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         // post /v1/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).parse()
 
-    override fun write(
-        params: NamespaceWriteParams,
+    override fun upsert(
+        params: NamespaceUpsertParams,
         requestOptions: RequestOptions,
-    ): NamespaceWriteResponse =
-        // post /v2/namespaces/{namespace}
-        withRawResponse().write(params, requestOptions).parse()
+    ): NamespaceUpsertResponse =
+        // post /v1/namespaces/{namespace}
+        withRawResponse().upsert(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         NamespaceService.WithRawResponse {
@@ -106,34 +97,6 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                             .params(params)
                             .response(it)
                             .build()
-                    }
-            }
-        }
-
-        private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
-            jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
-
-        override fun deleteAll(
-            params: NamespaceDeleteAllParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<NamespaceDeleteAllResponse> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.DELETE)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0))
-                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { deleteAllHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
                     }
             }
         }
@@ -193,18 +156,18 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             }
         }
 
-        private val writeHandler: Handler<NamespaceWriteResponse> =
-            jsonHandler<NamespaceWriteResponse>(clientOptions.jsonMapper)
+        private val upsertHandler: Handler<NamespaceUpsertResponse> =
+            jsonHandler<NamespaceUpsertResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
-        override fun write(
-            params: NamespaceWriteParams,
+        override fun upsert(
+            params: NamespaceUpsertParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<NamespaceWriteResponse> {
+        ): HttpResponseFor<NamespaceUpsertResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v2", "namespaces", params._pathParam(0))
+                    .addPathSegments("v1", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params)
@@ -212,7 +175,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
                 response
-                    .use { writeHandler.handle(it) }
+                    .use { upsertHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
