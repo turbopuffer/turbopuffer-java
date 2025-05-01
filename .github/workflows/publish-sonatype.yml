@@ -1,6 +1,6 @@
 # This workflow is triggered when a GitHub release is created.
 # It can also be run manually to re-publish to Sonatype in case it failed for some reason.
-# You can run this workflow by navigating to https://www.github.com/turbopuffer/stainless-tmp/actions/workflows/publish-sonatype.yml
+# You can run this workflow by navigating to https://www.github.com/turbopuffer/turbopuffer-java/actions/workflows/publish-sonatype.yml
 name: Publish Sonatype
 on:
   workflow_dispatch:

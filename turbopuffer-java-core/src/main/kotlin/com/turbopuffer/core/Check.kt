@@ -74,7 +74,7 @@ This can happen if you are either:
 
 Double-check that you are depending on compatible Jackson versions.
 
-See https://www.github.com/turbopuffer/stainless-tmp#jackson for more information.
+See https://www.github.com/turbopuffer/turbopuffer-java#jackson for more information.
         """
             .trimIndent()
     }
