@@ -24,8 +24,8 @@ import com.turbopuffer.models.namespaces.NamespaceListPage
 import com.turbopuffer.models.namespaces.NamespaceListPageResponse
 import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertResponse
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 
 class NamespaceServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     NamespaceService {
@@ -47,7 +47,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions,
     ): NamespaceDeleteAllResponse =
-        // delete /v2/namespaces/{namespace}
+        // delete /v1/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).parse()
 
     override fun getSchema(
@@ -64,12 +64,12 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         // post /v1/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).parse()
 
-    override fun upsert(
-        params: NamespaceUpsertParams,
+    override fun write(
+        params: NamespaceWriteParams,
         requestOptions: RequestOptions,
-    ): NamespaceUpsertResponse =
-        // post /v1/namespaces/{namespace}
-        withRawResponse().upsert(params, requestOptions).parse()
+    ): NamespaceWriteResponse =
+        // post /v2/namespaces/{namespace}
+        withRawResponse().write(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         NamespaceService.WithRawResponse {
@@ -121,7 +121,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("v2", "namespaces", params._pathParam(0))
+                    .addPathSegments("v1", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params)
@@ -193,18 +193,18 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             }
         }
 
-        private val upsertHandler: Handler<NamespaceUpsertResponse> =
-            jsonHandler<NamespaceUpsertResponse>(clientOptions.jsonMapper)
+        private val writeHandler: Handler<NamespaceWriteResponse> =
+            jsonHandler<NamespaceWriteResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
-        override fun upsert(
-            params: NamespaceUpsertParams,
+        override fun write(
+            params: NamespaceWriteParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<NamespaceUpsertResponse> {
+        ): HttpResponseFor<NamespaceWriteResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0))
+                    .addPathSegments("v2", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params)
@@ -212,7 +212,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
                 response
-                    .use { upsertHandler.handle(it) }
+                    .use { writeHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

@@ -11,7 +11,7 @@ import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -108,7 +108,7 @@ internal class NamespaceServiceAsyncTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun upsert() {
+    fun write() {
         val client =
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
@@ -117,11 +117,11 @@ internal class NamespaceServiceAsyncTest {
         val namespaceServiceAsync = client.namespaces()
 
         val responseFuture =
-            namespaceServiceAsync.upsert(
-                NamespaceUpsertParams.builder()
+            namespaceServiceAsync.write(
+                NamespaceWriteParams.builder()
                     .namespace("namespace")
-                    .documents(
-                        NamespaceUpsertParams.Documents.Write.builder()
+                    .operation(
+                        NamespaceWriteParams.Operation.WriteDocuments.builder()
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .patchColumns(
                                 DocumentColumns.builder()
@@ -135,7 +135,7 @@ internal class NamespaceServiceAsyncTest {
                                     .build()
                             )
                             .schema(
-                                NamespaceUpsertParams.Documents.Write.Schema.builder()
+                                NamespaceWriteParams.Operation.WriteDocuments.Schema.builder()
                                     .putAdditionalProperty(
                                         "foo",
                                         JsonValue.from(

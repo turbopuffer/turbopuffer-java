@@ -1,18 +1,19 @@
 // Upserts several large batches of documents and prints the total time taken.
 //
-// Run this example with: gradle run -Pcom.turbopuffer.example=BulkUpsert
+// Run this example with: ./gradlew run -Pcom.turbopuffer.example=BulkWrite
 package com.turbopuffer.example;
 
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.core.JsonValue;
 import com.turbopuffer.models.namespaces.DistanceMetric;
 import com.turbopuffer.models.namespaces.DocumentRow;
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams.Documents.UpsertRowBased;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams.Operation.WriteDocuments;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class BulkUpsert {
+public class BulkWrite {
 
     private static final int NUM_BATCHES = 10;
     private static final int VECTOR_DIM = 1024;
@@ -45,15 +46,15 @@ public class BulkUpsert {
 
                 documents.add(DocumentRow.builder()
                         .id(String.valueOf(id))
-                        .vector(vector)
+                        .putAdditionalProperty("vector", JsonValue.from(vector))
                         .build());
             }
 
             var upsert = client.namespaces()
-                    .upsert(NamespaceUpsertParams.builder()
+                    .write(NamespaceWriteParams.builder()
                             .namespace(namespace)
-                            .documents(UpsertRowBased.builder()
-                                    .upserts(documents)
+                            .operation(WriteDocuments.builder()
+                                    .upsertRows(documents)
                                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                                     .build())
                             .build());

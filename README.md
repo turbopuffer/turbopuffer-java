@@ -1,11 +1,16 @@
-# Turbopuffer Java API Library
+# turbopuffer Java API Library
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.11)
-[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.11/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.11)
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.12)
+[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.12/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.12)
 
 <!-- x-release-please-end -->
+
+> [!IMPORTANT]
+> **The turbopuffer Java client is in beta.**
+>
+> Please let us know about any bugs or performance issues.
 
 The Turbopuffer Java SDK provides convenient access to the [Turbopuffer REST API](https://turbopuffer.com/docs) from applications written in Java.
 
@@ -13,7 +18,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.11).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.12).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +29,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.11")
+implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.12")
 ```
 
 ### Maven
@@ -33,7 +38,7 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.11")
 <dependency>
   <groupId>com.turbopuffer</groupId>
   <artifactId>turbopuffer-java</artifactId>
-  <version>0.1.0-beta.11</version>
+  <version>0.1.0-beta.12</version>
 </dependency>
 ```
 
@@ -48,20 +53,16 @@ This library requires Java 8 or later.
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.models.namespaces.DistanceMetric;
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
-import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
-NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+NamespaceWriteParams params = NamespaceWriteParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.Write.builder()
-        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-        .build())
     .build();
-NamespaceUpsertResponse response = client.namespaces().upsert(params);
+NamespaceWriteResponse response = client.namespaces().write(params);
 ```
 
 ## Client configuration
@@ -113,9 +114,9 @@ See this table for the available options:
 
 ## Requests and responses
 
-To send a request to the Turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
+To send a request to the turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
 
-For example, `client.namespaces().upsert(...)` should be called with an instance of `NamespaceUpsertParams`, and it will return an instance of `NamespaceUpsertResponse`.
+For example, `client.namespaces().write(...)` should be called with an instance of `NamespaceWriteParams`, and it will return an instance of `NamespaceWriteResponse`.
 
 ## Immutability
 
@@ -132,21 +133,17 @@ The default client is synchronous. To switch to asynchronous execution, call the
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.models.namespaces.DistanceMetric;
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
-import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 import java.util.concurrent.CompletableFuture;
 
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
-NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+NamespaceWriteParams params = NamespaceWriteParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.Write.builder()
-        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-        .build())
     .build();
-CompletableFuture<NamespaceUpsertResponse> response = client.async().namespaces().upsert(params);
+CompletableFuture<NamespaceWriteResponse> response = client.async().namespaces().write(params);
 ```
 
 Or create an asynchronous client from the beginning:
@@ -154,21 +151,17 @@ Or create an asynchronous client from the beginning:
 ```java
 import com.turbopuffer.client.TurbopufferClientAsync;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync;
-import com.turbopuffer.models.namespaces.DistanceMetric;
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
-import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 import java.util.concurrent.CompletableFuture;
 
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
-NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+NamespaceWriteParams params = NamespaceWriteParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.Write.builder()
-        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-        .build())
     .build();
-CompletableFuture<NamespaceUpsertResponse> response = client.namespaces().upsert(params);
+CompletableFuture<NamespaceWriteResponse> response = client.namespaces().write(params);
 ```
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
@@ -339,11 +332,10 @@ Requests time out after 1 minute by default.
 To set a custom timeout, configure the method call using the `timeout` method:
 
 ```java
-import com.turbopuffer.models.namespaces.DistanceMetric;
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
-import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceUpsertResponse response = client.namespaces().upsert(
+NamespaceWriteResponse response = client.namespaces().write(
   params, RequestOptions.builder().timeout(Duration.ofSeconds(30)).build()
 );
 ```
@@ -427,9 +419,9 @@ To set undocumented parameters, call the `putAdditionalHeader`, `putAdditionalQu
 
 ```java
 import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
-NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+NamespaceWriteParams params = NamespaceWriteParams.builder()
     .putAdditionalHeader("Secret-Header", "42")
     .putAdditionalQueryParam("secret_query_param", "42")
     .putAdditionalBodyProperty("secretProperty", JsonValue.from("42"))
@@ -456,12 +448,10 @@ These properties can be accessed on the nested built object later using the `_ad
 To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/Values.kt) object to its setter:
 
 ```java
-import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
-NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+NamespaceWriteParams params = NamespaceWriteParams.builder()
     .namespace("products")
-    .documents(JsonValue.from(42))
     .build();
 ```
 
@@ -510,9 +500,9 @@ To forcibly omit a required parameter or property, pass [`JsonMissing`](turbopuf
 
 ```java
 import com.turbopuffer.core.JsonMissing;
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
-NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+NamespaceWriteParams params = NamespaceWriteParams.builder()
     .namespace(JsonMissing.of())
     .build();
 ```
@@ -525,7 +515,7 @@ To access undocumented response properties, call the `_additionalProperties()` m
 import com.turbopuffer.core.JsonValue;
 import java.util.Map;
 
-Map<String, JsonValue> additionalProperties = client.namespaces().upsert(params)._additionalProperties();
+Map<String, JsonValue> additionalProperties = client.namespaces().write(params)._additionalProperties();
 JsonValue secretPropertyValue = additionalProperties.get("secretProperty");
 
 String result = secretPropertyValue.accept(new JsonValue.Visitor<>() {
@@ -555,7 +545,7 @@ To access a property's raw JSON value, which may be undocumented, call its `_` p
 import com.turbopuffer.core.JsonField;
 import java.util.Optional;
 
-JsonField<Object> field = client.namespaces().upsert(params)._field();
+JsonField<Object> field = client.namespaces().write(params)._field();
 
 if (field.isMissing()) {
   // The property is absent from the JSON response
@@ -580,19 +570,18 @@ By default, the SDK will not throw an exception in this case. It will throw [`Tu
 If you would prefer to check that the response is completely well-typed upfront, then either call `validate()`:
 
 ```java
-import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceUpsertResponse response = client.namespaces().upsert(params).validate();
+NamespaceWriteResponse response = client.namespaces().write(params).validate();
 ```
 
 Or configure the method call to validate the response using the `responseValidation` method:
 
 ```java
-import com.turbopuffer.models.namespaces.DistanceMetric;
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
-import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceUpsertResponse response = client.namespaces().upsert(
+NamespaceWriteResponse response = client.namespaces().write(
   params, RequestOptions.builder().responseValidation(true).build()
 );
 ```

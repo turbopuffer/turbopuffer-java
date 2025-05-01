@@ -24,8 +24,8 @@ import com.turbopuffer.models.namespaces.NamespaceListPageAsync
 import com.turbopuffer.models.namespaces.NamespaceListPageResponse
 import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertResponse
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
 
 class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -48,7 +48,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceDeleteAllResponse> =
-        // delete /v2/namespaces/{namespace}
+        // delete /v1/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).thenApply { it.parse() }
 
     override fun getSchema(
@@ -65,12 +65,12 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         // post /v1/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).thenApply { it.parse() }
 
-    override fun upsert(
-        params: NamespaceUpsertParams,
+    override fun write(
+        params: NamespaceWriteParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<NamespaceUpsertResponse> =
-        // post /v1/namespaces/{namespace}
-        withRawResponse().upsert(params, requestOptions).thenApply { it.parse() }
+    ): CompletableFuture<NamespaceWriteResponse> =
+        // post /v2/namespaces/{namespace}
+        withRawResponse().write(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         NamespaceServiceAsync.WithRawResponse {
@@ -125,7 +125,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("v2", "namespaces", params._pathParam(0))
+                    .addPathSegments("v1", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -206,18 +206,18 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                 }
         }
 
-        private val upsertHandler: Handler<NamespaceUpsertResponse> =
-            jsonHandler<NamespaceUpsertResponse>(clientOptions.jsonMapper)
+        private val writeHandler: Handler<NamespaceWriteResponse> =
+            jsonHandler<NamespaceWriteResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
-        override fun upsert(
-            params: NamespaceUpsertParams,
+        override fun write(
+            params: NamespaceWriteParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<NamespaceUpsertResponse>> {
+        ): CompletableFuture<HttpResponseFor<NamespaceWriteResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0))
+                    .addPathSegments("v2", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -227,7 +227,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                 .thenApply { response ->
                     response.parseable {
                         response
-                            .use { upsertHandler.handle(it) }
+                            .use { writeHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
