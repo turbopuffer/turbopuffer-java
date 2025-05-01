@@ -12,6 +12,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.BaseDeserializer
 import com.turbopuffer.core.BaseSerializer
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
@@ -45,13 +46,12 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             string != null -> visitor.visitString(string)
             integer != null -> visitor.visitInteger(integer)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -69,6 +69,31 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: TurbopufferInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitString(string: String) = 1
+
+                override fun visitInteger(integer: Long) = 1
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -125,14 +150,27 @@ private constructor(
         override fun ObjectCodec.deserialize(node: JsonNode): Id {
             val json = JsonValue.fromJsonNode(node)
 
-            tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                return Id(string = it, _json = json)
+            val bestMatches =
+                sequenceOf(
+                        tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                            Id(string = it, _json = json)
+                        },
+                        tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                            Id(integer = it, _json = json)
+                        },
+                    )
+                    .filterNotNull()
+                    .allMaxBy { it.validity() }
+                    .toList()
+            return when (bestMatches.size) {
+                // This can happen if what we're deserializing is completely incompatible with all
+                // the possible variants (e.g. deserializing from object).
+                0 -> Id(_json = json)
+                1 -> bestMatches.single()
+                // If there's more than one match with the highest validity, then use the first
+                // completely valid match, or simply the first match if none are completely valid.
+                else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
             }
-            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                return Id(integer = it, _json = json)
-            }
-
-            return Id(_json = json)
         }
     }
 

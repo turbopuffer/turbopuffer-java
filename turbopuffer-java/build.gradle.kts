@@ -10,8 +10,6 @@ dependencies {
 // Redefine `dokkaJavadoc` to:
 // - Depend on the root project's task for merging the docs of all the projects
 // - Forward that task's output to this task's output
-//
-// Taken from OpenAI's Java client: https://github.com/openai/openai-java/blob/28e23c9ed1110ad6216e3d83c8be5cfae0de09ae/openai-java/build.gradle.kts
 tasks.named("dokkaJavadoc").configure {
     actions.clear()
 

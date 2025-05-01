@@ -8,37 +8,41 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-internal class DocumentRowTest {
+internal class DocumentRowWithScoreTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
-        val documentRow =
-            DocumentRow.builder()
+        val documentRowWithScore =
+            DocumentRowWithScore.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .vectorOfNumber(listOf(0.0))
+                .dist(0.0)
                 .build()
 
-        assertThat(documentRow.id()).contains(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        assertThat(documentRow.vector()).contains(DocumentRow.Vector.ofNumber(listOf(0.0)))
+        assertThat(documentRowWithScore.id())
+            .contains(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(documentRowWithScore.vector()).contains(DocumentRow.Vector.ofNumber(listOf(0.0)))
+        assertThat(documentRowWithScore.dist()).contains(0.0)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val documentRow =
-            DocumentRow.builder()
+        val documentRowWithScore =
+            DocumentRowWithScore.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .vectorOfNumber(listOf(0.0))
+                .dist(0.0)
                 .build()
 
-        val roundtrippedDocumentRow =
+        val roundtrippedDocumentRowWithScore =
             jsonMapper.readValue(
-                jsonMapper.writeValueAsString(documentRow),
-                jacksonTypeRef<DocumentRow>(),
+                jsonMapper.writeValueAsString(documentRowWithScore),
+                jacksonTypeRef<DocumentRowWithScore>(),
             )
 
-        assertThat(roundtrippedDocumentRow).isEqualTo(documentRow)
+        assertThat(roundtrippedDocumentRowWithScore).isEqualTo(documentRowWithScore)
     }
 }

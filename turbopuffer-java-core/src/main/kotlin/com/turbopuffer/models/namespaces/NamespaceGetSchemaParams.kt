@@ -2,7 +2,6 @@
 
 package com.turbopuffer.models.namespaces
 
-import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.Params
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.http.Headers
@@ -23,17 +22,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> namespace
-            else -> ""
-        }
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -50,7 +38,6 @@ private constructor(
     }
 
     /** A builder for [NamespaceGetSchemaParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var namespace: String? = null
@@ -164,6 +151,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [NamespaceGetSchemaParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .namespace()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): NamespaceGetSchemaParams =
             NamespaceGetSchemaParams(
                 checkRequired("namespace", namespace),
@@ -171,6 +170,16 @@ private constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> namespace
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

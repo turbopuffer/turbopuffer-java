@@ -11,86 +11,108 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
-import com.turbopuffer.core.immutableEmptyMap
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Detailed configuration options for BM25 full-text search. */
-@NoAutoDetect
 class FullTextSearchConfig
-@JsonCreator
 private constructor(
-    @JsonProperty("case_sensitive")
-    @ExcludeMissing
-    private val caseSensitive: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("language")
-    @ExcludeMissing
-    private val language: JsonField<Language> = JsonMissing.of(),
-    @JsonProperty("remove_stopwords")
-    @ExcludeMissing
-    private val removeStopwords: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("stemming")
-    @ExcludeMissing
-    private val stemming: JsonField<Boolean> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val caseSensitive: JsonField<Boolean>,
+    private val language: JsonField<Language>,
+    private val removeStopwords: JsonField<Boolean>,
+    private val stemming: JsonField<Boolean>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
-    /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
-    fun caseSensitive(): Optional<Boolean> =
-        Optional.ofNullable(caseSensitive.getNullable("case_sensitive"))
+    @JsonCreator
+    private constructor(
+        @JsonProperty("case_sensitive")
+        @ExcludeMissing
+        caseSensitive: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("language") @ExcludeMissing language: JsonField<Language> = JsonMissing.of(),
+        @JsonProperty("remove_stopwords")
+        @ExcludeMissing
+        removeStopwords: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("stemming") @ExcludeMissing stemming: JsonField<Boolean> = JsonMissing.of(),
+    ) : this(caseSensitive, language, removeStopwords, stemming, mutableMapOf())
 
-    /** The language of the text. Defaults to `english`. */
-    fun language(): Optional<Language> = Optional.ofNullable(language.getNullable("language"))
+    /**
+     * Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive).
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun caseSensitive(): Optional<Boolean> = caseSensitive.getOptional("case_sensitive")
+
+    /**
+     * The language of the text. Defaults to `english`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun language(): Optional<Language> = language.getOptional("language")
 
     /**
      * Removes common words from the text based on language. Defaults to `true` (i.e. remove common
      * words).
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun removeStopwords(): Optional<Boolean> =
-        Optional.ofNullable(removeStopwords.getNullable("remove_stopwords"))
+    fun removeStopwords(): Optional<Boolean> = removeStopwords.getOptional("remove_stopwords")
 
-    /** Language-specific stemming for the text. Defaults to `false` (i.e., do not stem). */
-    fun stemming(): Optional<Boolean> = Optional.ofNullable(stemming.getNullable("stemming"))
+    /**
+     * Language-specific stemming for the text. Defaults to `false` (i.e., do not stem).
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun stemming(): Optional<Boolean> = stemming.getOptional("stemming")
 
-    /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
+    /**
+     * Returns the raw JSON value of [caseSensitive].
+     *
+     * Unlike [caseSensitive], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("case_sensitive")
     @ExcludeMissing
     fun _caseSensitive(): JsonField<Boolean> = caseSensitive
 
-    /** The language of the text. Defaults to `english`. */
+    /**
+     * Returns the raw JSON value of [language].
+     *
+     * Unlike [language], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("language") @ExcludeMissing fun _language(): JsonField<Language> = language
 
     /**
-     * Removes common words from the text based on language. Defaults to `true` (i.e. remove common
-     * words).
+     * Returns the raw JSON value of [removeStopwords].
+     *
+     * Unlike [removeStopwords], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("remove_stopwords")
     @ExcludeMissing
     fun _removeStopwords(): JsonField<Boolean> = removeStopwords
 
-    /** Language-specific stemming for the text. Defaults to `false` (i.e., do not stem). */
+    /**
+     * Returns the raw JSON value of [stemming].
+     *
+     * Unlike [stemming], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("stemming") @ExcludeMissing fun _stemming(): JsonField<Boolean> = stemming
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FullTextSearchConfig = apply {
-        if (validated) {
-            return@apply
-        }
-
-        caseSensitive()
-        language()
-        removeStopwords()
-        stemming()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -121,7 +143,13 @@ private constructor(
         /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
         fun caseSensitive(caseSensitive: Boolean) = caseSensitive(JsonField.of(caseSensitive))
 
-        /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
+        /**
+         * Sets [Builder.caseSensitive] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.caseSensitive] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun caseSensitive(caseSensitive: JsonField<Boolean>) = apply {
             this.caseSensitive = caseSensitive
         }
@@ -129,7 +157,13 @@ private constructor(
         /** The language of the text. Defaults to `english`. */
         fun language(language: Language) = language(JsonField.of(language))
 
-        /** The language of the text. Defaults to `english`. */
+        /**
+         * Sets [Builder.language] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.language] with a well-typed [Language] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun language(language: JsonField<Language>) = apply { this.language = language }
 
         /**
@@ -140,8 +174,11 @@ private constructor(
             removeStopwords(JsonField.of(removeStopwords))
 
         /**
-         * Removes common words from the text based on language. Defaults to `true` (i.e. remove
-         * common words).
+         * Sets [Builder.removeStopwords] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.removeStopwords] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun removeStopwords(removeStopwords: JsonField<Boolean>) = apply {
             this.removeStopwords = removeStopwords
@@ -150,7 +187,13 @@ private constructor(
         /** Language-specific stemming for the text. Defaults to `false` (i.e., do not stem). */
         fun stemming(stemming: Boolean) = stemming(JsonField.of(stemming))
 
-        /** Language-specific stemming for the text. Defaults to `false` (i.e., do not stem). */
+        /**
+         * Sets [Builder.stemming] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.stemming] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun stemming(stemming: JsonField<Boolean>) = apply { this.stemming = stemming }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -172,15 +215,54 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FullTextSearchConfig].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): FullTextSearchConfig =
             FullTextSearchConfig(
                 caseSensitive,
                 language,
                 removeStopwords,
                 stemming,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
+
+    private var validated: Boolean = false
+
+    fun validate(): FullTextSearchConfig = apply {
+        if (validated) {
+            return@apply
+        }
+
+        caseSensitive()
+        language().ifPresent { it.validate() }
+        removeStopwords()
+        stemming()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: TurbopufferInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (caseSensitive.asKnown().isPresent) 1 else 0) +
+            (language.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (removeStopwords.asKnown().isPresent) 1 else 0) +
+            (if (stemming.asKnown().isPresent) 1 else 0)
 
     /** The language of the text. Defaults to `english`. */
     class Language @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -365,6 +447,33 @@ private constructor(
             _value().asString().orElseThrow {
                 TurbopufferInvalidDataException("Value is not a String")
             }
+
+        private var validated: Boolean = false
+
+        fun validate(): Language = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
