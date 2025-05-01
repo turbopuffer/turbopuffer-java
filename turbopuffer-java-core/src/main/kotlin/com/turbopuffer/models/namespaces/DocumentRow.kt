@@ -6,21 +6,12 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.turbopuffer.core.BaseDeserializer
-import com.turbopuffer.core.BaseSerializer
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.allMaxBy
-import com.turbopuffer.core.getOrThrow
+import com.turbopuffer.core.checkKnown
+import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -31,15 +22,19 @@ import kotlin.jvm.optionals.getOrNull
 class DocumentRow
 private constructor(
     private val id: JsonField<Id>,
-    private val vector: JsonField<Vector>,
+    private val attributes: JsonField<Attributes>,
+    private val vector: JsonField<List<Double>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<Id> = JsonMissing.of(),
-        @JsonProperty("vector") @ExcludeMissing vector: JsonField<Vector> = JsonMissing.of(),
-    ) : this(id, vector, mutableMapOf())
+        @JsonProperty("attributes")
+        @ExcludeMissing
+        attributes: JsonField<Attributes> = JsonMissing.of(),
+        @JsonProperty("vector") @ExcludeMissing vector: JsonField<List<Double>> = JsonMissing.of(),
+    ) : this(id, attributes, vector, mutableMapOf())
 
     /**
      * An identifier for a document.
@@ -50,12 +45,20 @@ private constructor(
     fun id(): Optional<Id> = id.getOptional("id")
 
     /**
+     * The attributes attached to the document.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
+
+    /**
      * A vector describing the document.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun vector(): Optional<Vector> = vector.getOptional("vector")
+    fun vector(): Optional<List<Double>> = vector.getOptional("vector")
 
     /**
      * Returns the raw JSON value of [id].
@@ -65,11 +68,20 @@ private constructor(
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<Id> = id
 
     /**
+     * Returns the raw JSON value of [attributes].
+     *
+     * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("attributes")
+    @ExcludeMissing
+    fun _attributes(): JsonField<Attributes> = attributes
+
+    /**
      * Returns the raw JSON value of [vector].
      *
      * Unlike [vector], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("vector") @ExcludeMissing fun _vector(): JsonField<Vector> = vector
+    @JsonProperty("vector") @ExcludeMissing fun _vector(): JsonField<List<Double>> = vector
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -93,13 +105,15 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<Id> = JsonMissing.of()
-        private var vector: JsonField<Vector> = JsonMissing.of()
+        private var attributes: JsonField<Attributes> = JsonMissing.of()
+        private var vector: JsonField<MutableList<Double>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(documentRow: DocumentRow) = apply {
             id = documentRow.id
-            vector = documentRow.vector
+            attributes = documentRow.attributes
+            vector = documentRow.vector.map { it.toMutableList() }
             additionalProperties = documentRow.additionalProperties.toMutableMap()
         }
 
@@ -120,25 +134,46 @@ private constructor(
         /** Alias for calling [id] with `Id.ofInteger(integer)`. */
         fun id(integer: Long) = id(Id.ofInteger(integer))
 
+        /** The attributes attached to the document. */
+        fun attributes(attributes: Attributes) = attributes(JsonField.of(attributes))
+
+        /**
+         * Sets [Builder.attributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.attributes] with a well-typed [Attributes] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun attributes(attributes: JsonField<Attributes>) = apply { this.attributes = attributes }
+
         /** A vector describing the document. */
-        fun vector(vector: Vector?) = vector(JsonField.ofNullable(vector))
+        fun vector(vector: List<Double>?) = vector(JsonField.ofNullable(vector))
 
         /** Alias for calling [Builder.vector] with `vector.orElse(null)`. */
-        fun vector(vector: Optional<Vector>) = vector(vector.getOrNull())
+        fun vector(vector: Optional<List<Double>>) = vector(vector.getOrNull())
 
         /**
          * Sets [Builder.vector] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.vector] with a well-typed [Vector] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * You should usually call [Builder.vector] with a well-typed `List<Double>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun vector(vector: JsonField<Vector>) = apply { this.vector = vector }
+        fun vector(vector: JsonField<List<Double>>) = apply {
+            this.vector = vector.map { it.toMutableList() }
+        }
 
-        /** Alias for calling [vector] with `Vector.ofNumber(number)`. */
-        fun vectorOfNumber(number: List<Double>) = vector(Vector.ofNumber(number))
-
-        /** Alias for calling [vector] with `Vector.ofString(string)`. */
-        fun vector(string: String) = vector(Vector.ofString(string))
+        /**
+         * Adds a single [Double] to [Builder.vector].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addVector(vector: Double) = apply {
+            this.vector =
+                (this.vector ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("vector", it).add(vector)
+                }
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -164,7 +199,13 @@ private constructor(
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): DocumentRow = DocumentRow(id, vector, additionalProperties.toMutableMap())
+        fun build(): DocumentRow =
+            DocumentRow(
+                id,
+                attributes,
+                (vector ?: JsonMissing.of()).map { it.toImmutable() },
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -175,7 +216,8 @@ private constructor(
         }
 
         id().ifPresent { it.validate() }
-        vector().ifPresent { it.validate() }
+        attributes().ifPresent { it.validate() }
+        vector()
         validated = true
     }
 
@@ -195,53 +237,73 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (id.asKnown().getOrNull()?.validity() ?: 0) +
-            (vector.asKnown().getOrNull()?.validity() ?: 0)
+            (attributes.asKnown().getOrNull()?.validity() ?: 0) +
+            (vector.asKnown().getOrNull()?.size ?: 0)
 
-    /** A vector describing the document. */
-    @JsonDeserialize(using = Vector.Deserializer::class)
-    @JsonSerialize(using = Vector.Serializer::class)
-    class Vector
+    /** The attributes attached to the document. */
+    class Attributes
+    @JsonCreator
     private constructor(
-        private val number: List<Double>? = null,
-        private val string: String? = null,
-        private val _json: JsonValue? = null,
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
     ) {
 
-        fun number(): Optional<List<Double>> = Optional.ofNullable(number)
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
-        fun string(): Optional<String> = Optional.ofNullable(string)
+        fun toBuilder() = Builder().from(this)
 
-        fun isNumber(): Boolean = number != null
+        companion object {
 
-        fun isString(): Boolean = string != null
+            /** Returns a mutable builder for constructing an instance of [Attributes]. */
+            @JvmStatic fun builder() = Builder()
+        }
 
-        fun asNumber(): List<Double> = number.getOrThrow("number")
+        /** A builder for [Attributes]. */
+        class Builder internal constructor() {
 
-        fun asString(): String = string.getOrThrow("string")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-        fun <T> accept(visitor: Visitor<T>): T =
-            when {
-                number != null -> visitor.visitNumber(number)
-                string != null -> visitor.visitString(string)
-                else -> visitor.unknown(_json)
+            @JvmSynthetic
+            internal fun from(attributes: Attributes) = apply {
+                additionalProperties = attributes.additionalProperties.toMutableMap()
             }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Attributes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Attributes = Attributes(additionalProperties.toImmutable())
+        }
 
         private var validated: Boolean = false
 
-        fun validate(): Vector = apply {
+        fun validate(): Attributes = apply {
             if (validated) {
                 return@apply
             }
 
-            accept(
-                object : Visitor<Unit> {
-                    override fun visitNumber(number: List<Double>) {}
-
-                    override fun visitString(string: String) {}
-                }
-            )
             validated = true
         }
 
@@ -261,108 +323,23 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            accept(
-                object : Visitor<Int> {
-                    override fun visitNumber(number: List<Double>) = number.size
-
-                    override fun visitString(string: String) = 1
-
-                    override fun unknown(json: JsonValue?) = 0
-                }
-            )
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return /* spotless:off */ other is Vector && number == other.number && string == other.string /* spotless:on */
+            return /* spotless:off */ other is Attributes && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(number, string) /* spotless:on */
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        /* spotless:on */
 
-        override fun toString(): String =
-            when {
-                number != null -> "Vector{number=$number}"
-                string != null -> "Vector{string=$string}"
-                _json != null -> "Vector{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid Vector")
-            }
+        override fun hashCode(): Int = hashCode
 
-        companion object {
-
-            @JvmStatic fun ofNumber(number: List<Double>) = Vector(number = number)
-
-            @JvmStatic fun ofString(string: String) = Vector(string = string)
-        }
-
-        /** An interface that defines how to map each variant of [Vector] to a value of type [T]. */
-        interface Visitor<out T> {
-
-            fun visitNumber(number: List<Double>): T
-
-            fun visitString(string: String): T
-
-            /**
-             * Maps an unknown variant of [Vector] to a value of type [T].
-             *
-             * An instance of [Vector] can contain an unknown variant if it was deserialized from
-             * data that doesn't match any known variant. For example, if the SDK is on an older
-             * version than the API, then the API may respond with new variants that the SDK is
-             * unaware of.
-             *
-             * @throws TurbopufferInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw TurbopufferInvalidDataException("Unknown Vector: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<Vector>(Vector::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Vector {
-                val json = JsonValue.fromJsonNode(node)
-
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<List<Double>>())?.let {
-                                Vector(number = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                                Vector(string = it, _json = json)
-                            },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from object).
-                    0 -> Vector(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                }
-            }
-        }
-
-        internal class Serializer : BaseSerializer<Vector>(Vector::class) {
-
-            override fun serialize(
-                value: Vector,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.number != null -> generator.writeObject(value.number)
-                    value.string != null -> generator.writeObject(value.string)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Vector")
-                }
-            }
-        }
+        override fun toString() = "Attributes{additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -370,15 +347,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is DocumentRow && id == other.id && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is DocumentRow && id == other.id && attributes == other.attributes && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, vector, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, attributes, vector, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "DocumentRow{id=$id, vector=$vector, additionalProperties=$additionalProperties}"
+        "DocumentRow{id=$id, attributes=$attributes, vector=$vector, additionalProperties=$additionalProperties}"
 }
