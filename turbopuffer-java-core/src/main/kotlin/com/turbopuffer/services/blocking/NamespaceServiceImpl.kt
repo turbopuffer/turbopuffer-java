@@ -47,7 +47,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions,
     ): NamespaceDeleteAllResponse =
-        // delete /v2/namespaces/{namespace}
+        // delete /v1/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).parse()
 
     override fun getSchema(
@@ -121,7 +121,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("v2", "namespaces", params._pathParam(0))
+                    .addPathSegments("v1", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params)
