@@ -13,8 +13,8 @@ import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceListPage
 import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertResponse
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 
 interface NamespaceService {
 
@@ -71,14 +71,14 @@ interface NamespaceService {
     ): List<DocumentRowWithScore>
 
     /** Create, update, or delete documents. */
-    fun upsert(params: NamespaceUpsertParams): NamespaceUpsertResponse =
-        upsert(params, RequestOptions.none())
+    fun write(params: NamespaceWriteParams): NamespaceWriteResponse =
+        write(params, RequestOptions.none())
 
-    /** @see [upsert] */
-    fun upsert(
-        params: NamespaceUpsertParams,
+    /** @see [write] */
+    fun write(
+        params: NamespaceWriteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): NamespaceUpsertResponse
+    ): NamespaceWriteResponse
 
     /** A view of [NamespaceService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -157,17 +157,17 @@ interface NamespaceService {
 
         /**
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}`, but is otherwise the
-         * same as [NamespaceService.upsert].
+         * same as [NamespaceService.write].
          */
         @MustBeClosed
-        fun upsert(params: NamespaceUpsertParams): HttpResponseFor<NamespaceUpsertResponse> =
-            upsert(params, RequestOptions.none())
+        fun write(params: NamespaceWriteParams): HttpResponseFor<NamespaceWriteResponse> =
+            write(params, RequestOptions.none())
 
-        /** @see [upsert] */
+        /** @see [write] */
         @MustBeClosed
-        fun upsert(
-            params: NamespaceUpsertParams,
+        fun write(
+            params: NamespaceWriteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<NamespaceUpsertResponse>
+        ): HttpResponseFor<NamespaceWriteResponse>
     }
 }
