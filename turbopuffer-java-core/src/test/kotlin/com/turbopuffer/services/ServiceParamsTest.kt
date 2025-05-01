@@ -84,8 +84,8 @@ internal class ServiceParamsTest {
         namespaceService.write(
             NamespaceWriteParams.builder()
                 .namespace("namespace")
-                .writeOperation(
-                    NamespaceWriteParams.WriteOperation.WriteDocuments.builder()
+                .operation(
+                    NamespaceWriteParams.Operation.WriteDocuments.builder()
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .patchColumns(
                             DocumentColumns.builder()
@@ -99,7 +99,7 @@ internal class ServiceParamsTest {
                                 .build()
                         )
                         .schema(
-                            NamespaceWriteParams.WriteOperation.WriteDocuments.Schema.builder()
+                            NamespaceWriteParams.Operation.WriteDocuments.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
