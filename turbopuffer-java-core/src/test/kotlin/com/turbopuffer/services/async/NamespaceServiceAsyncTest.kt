@@ -126,17 +126,11 @@ internal class NamespaceServiceAsyncTest {
                             .patchColumns(
                                 DocumentColumns.builder()
                                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                    .addAdditionalProperty(
-                                        DocumentColumns.AdditionalProperty.builder()
-                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                            .build()
-                                    )
                                     .build()
                             )
                             .addPatchRow(
                                 DocumentRow.builder()
                                     .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                    .additionalProperties(JsonValue.from(mapOf<String, Any>()))
                                     .vectorOfNumber(listOf(0.0))
                                     .build()
                             )
@@ -159,17 +153,11 @@ internal class NamespaceServiceAsyncTest {
                             .upsertColumns(
                                 DocumentColumns.builder()
                                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                    .addAdditionalProperty(
-                                        DocumentColumns.AdditionalProperty.builder()
-                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                            .build()
-                                    )
                                     .build()
                             )
                             .addUpsertRow(
                                 DocumentRow.builder()
                                     .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                    .additionalProperties(JsonValue.from(mapOf<String, Any>()))
                                     .vectorOfNumber(listOf(0.0))
                                     .build()
                             )

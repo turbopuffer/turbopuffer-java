@@ -31,7 +31,6 @@ import kotlin.jvm.optionals.getOrNull
 class DocumentRow
 private constructor(
     private val id: JsonField<Id>,
-    private val additionalProperties: JsonValue,
     private val vector: JsonField<Vector>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -39,11 +38,8 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<Id> = JsonMissing.of(),
-        @JsonProperty("additionalProperties")
-        @ExcludeMissing
-        additionalProperties: JsonValue = JsonMissing.of(),
         @JsonProperty("vector") @ExcludeMissing vector: JsonField<Vector> = JsonMissing.of(),
-    ) : this(id, additionalProperties, vector, mutableMapOf())
+    ) : this(id, vector, mutableMapOf())
 
     /**
      * An identifier for a document.
@@ -52,11 +48,6 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun id(): Optional<Id> = id.getOptional("id")
-
-    /** The attributes attached to the document. */
-    @JsonProperty("additionalProperties")
-    @ExcludeMissing
-    fun _additionalProperties(): JsonValue = additionalProperties
 
     /**
      * A vector describing the document.
@@ -102,14 +93,12 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<Id> = JsonMissing.of()
-        private var additionalProperties: JsonValue = JsonMissing.of()
         private var vector: JsonField<Vector> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(documentRow: DocumentRow) = apply {
             id = documentRow.id
-            additionalProperties = documentRow.additionalProperties
             vector = documentRow.vector
             additionalProperties = documentRow.additionalProperties.toMutableMap()
         }
@@ -130,11 +119,6 @@ private constructor(
 
         /** Alias for calling [id] with `Id.ofInteger(integer)`. */
         fun id(integer: Long) = id(Id.ofInteger(integer))
-
-        /** The attributes attached to the document. */
-        fun additionalProperties(additionalProperties: JsonValue) = apply {
-            this.additionalProperties = additionalProperties
-        }
 
         /** A vector describing the document. */
         fun vector(vector: Vector?) = vector(JsonField.ofNullable(vector))
@@ -180,8 +164,7 @@ private constructor(
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): DocumentRow =
-            DocumentRow(id, additionalProperties, vector, additionalProperties.toMutableMap())
+        fun build(): DocumentRow = DocumentRow(id, vector, additionalProperties.toMutableMap())
     }
 
     private var validated: Boolean = false
@@ -387,15 +370,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is DocumentRow && id == other.id && additionalProperties == other.additionalProperties && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is DocumentRow && id == other.id && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, additionalProperties, vector, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, vector, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "DocumentRow{id=$id, additionalProperties=$additionalProperties, vector=$vector, additionalProperties=$additionalProperties}"
+        "DocumentRow{id=$id, vector=$vector, additionalProperties=$additionalProperties}"
 }
