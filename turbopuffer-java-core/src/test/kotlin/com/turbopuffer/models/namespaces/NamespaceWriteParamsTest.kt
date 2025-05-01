@@ -16,7 +16,7 @@ internal class NamespaceWriteParamsTest {
         NamespaceWriteParams.builder()
             .namespace("namespace")
             .write(
-                NamespaceWriteParams.Write.InnerWrite.builder()
+                NamespaceWriteParams.Write.WriteDocuments.builder()
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .patchColumns(
                         DocumentColumns.builder()
@@ -30,7 +30,7 @@ internal class NamespaceWriteParamsTest {
                             .build()
                     )
                     .schema(
-                        NamespaceWriteParams.Write.InnerWrite.Schema.builder()
+                        NamespaceWriteParams.Write.WriteDocuments.Schema.builder()
                             .putAdditionalProperty(
                                 "foo",
                                 JsonValue.from(
@@ -78,7 +78,7 @@ internal class NamespaceWriteParamsTest {
             NamespaceWriteParams.builder()
                 .namespace("namespace")
                 .write(
-                    NamespaceWriteParams.Write.InnerWrite.builder()
+                    NamespaceWriteParams.Write.WriteDocuments.builder()
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .patchColumns(
                             DocumentColumns.builder()
@@ -92,7 +92,7 @@ internal class NamespaceWriteParamsTest {
                                 .build()
                         )
                         .schema(
-                            NamespaceWriteParams.Write.InnerWrite.Schema.builder()
+                            NamespaceWriteParams.Write.WriteDocuments.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
@@ -126,8 +126,8 @@ internal class NamespaceWriteParamsTest {
 
         assertThat(body)
             .isEqualTo(
-                NamespaceWriteParams.Write.ofWrite(
-                    NamespaceWriteParams.Write.InnerWrite.builder()
+                NamespaceWriteParams.Write.ofDocuments(
+                    NamespaceWriteParams.Write.WriteDocuments.builder()
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .patchColumns(
                             DocumentColumns.builder()
@@ -141,7 +141,7 @@ internal class NamespaceWriteParamsTest {
                                 .build()
                         )
                         .schema(
-                            NamespaceWriteParams.Write.InnerWrite.Schema.builder()
+                            NamespaceWriteParams.Write.WriteDocuments.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
