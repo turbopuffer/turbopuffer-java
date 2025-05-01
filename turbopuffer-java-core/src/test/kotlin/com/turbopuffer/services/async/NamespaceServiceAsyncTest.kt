@@ -7,9 +7,11 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.DocumentColumns
+import com.turbopuffer.models.namespaces.DocumentRow
+import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -31,6 +33,25 @@ internal class NamespaceServiceAsyncTest {
 
         val page = pageFuture.get()
         page.response().validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun deleteAll() {
+        val client =
+            TurbopufferOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val namespaceServiceAsync = client.namespaces()
+
+        val responseFuture =
+            namespaceServiceAsync.deleteAll(
+                NamespaceDeleteAllParams.builder().namespace("namespace").build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -87,7 +108,7 @@ internal class NamespaceServiceAsyncTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun upsert() {
+    fun write() {
         val client =
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
@@ -96,24 +117,25 @@ internal class NamespaceServiceAsyncTest {
         val namespaceServiceAsync = client.namespaces()
 
         val responseFuture =
-            namespaceServiceAsync.upsert(
-                NamespaceUpsertParams.builder()
+            namespaceServiceAsync.write(
+                NamespaceWriteParams.builder()
                     .namespace("namespace")
-                    .documents(
-                        NamespaceUpsertParams.Documents.UpsertColumnar.builder()
-                            .attributes(
-                                DocumentColumns.Attributes.builder()
-                                    .putAdditionalProperty(
-                                        "foo",
-                                        JsonValue.from(listOf(mapOf("foo" to "bar"))),
-                                    )
+                    .writeOperation(
+                        NamespaceWriteParams.WriteOperation.WriteDocuments.builder()
+                            .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                            .patchColumns(
+                                DocumentColumns.builder()
+                                    .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                                     .build()
                             )
-                            .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .addVector(listOf(0.0))
-                            .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                            .addPatchRow(
+                                DocumentRow.builder()
+                                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                    .vectorOfNumber(listOf(0.0))
+                                    .build()
+                            )
                             .schema(
-                                NamespaceUpsertParams.Documents.UpsertColumnar.Schema.builder()
+                                NamespaceWriteParams.WriteOperation.WriteDocuments.Schema.builder()
                                     .putAdditionalProperty(
                                         "foo",
                                         JsonValue.from(
@@ -126,6 +148,17 @@ internal class NamespaceServiceAsyncTest {
                                             )
                                         ),
                                     )
+                                    .build()
+                            )
+                            .upsertColumns(
+                                DocumentColumns.builder()
+                                    .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                    .build()
+                            )
+                            .addUpsertRow(
+                                DocumentRow.builder()
+                                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                    .vectorOfNumber(listOf(0.0))
                                     .build()
                             )
                             .build()

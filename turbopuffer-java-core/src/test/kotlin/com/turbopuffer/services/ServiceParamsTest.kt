@@ -17,8 +17,9 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.DocumentColumns
+import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -76,28 +77,29 @@ internal class ServiceParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun upsert() {
+    fun write() {
         val namespaceService = client.namespaces()
         stubFor(post(anyUrl()).willReturn(ok("{}")))
 
-        namespaceService.upsert(
-            NamespaceUpsertParams.builder()
+        namespaceService.write(
+            NamespaceWriteParams.builder()
                 .namespace("namespace")
-                .documents(
-                    NamespaceUpsertParams.Documents.UpsertColumnar.builder()
-                        .attributes(
-                            DocumentColumns.Attributes.builder()
-                                .putAdditionalProperty(
-                                    "foo",
-                                    JsonValue.from(listOf(mapOf("foo" to "bar"))),
-                                )
+                .writeOperation(
+                    NamespaceWriteParams.WriteOperation.WriteDocuments.builder()
+                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .patchColumns(
+                            DocumentColumns.builder()
+                                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                                 .build()
                         )
-                        .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .addVector(listOf(0.0))
-                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .addPatchRow(
+                            DocumentRow.builder()
+                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                .vectorOfNumber(listOf(0.0))
+                                .build()
+                        )
                         .schema(
-                            NamespaceUpsertParams.Documents.UpsertColumnar.Schema.builder()
+                            NamespaceWriteParams.WriteOperation.WriteDocuments.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
@@ -110,6 +112,17 @@ internal class ServiceParamsTest {
                                         )
                                     ),
                                 )
+                                .build()
+                        )
+                        .upsertColumns(
+                            DocumentColumns.builder()
+                                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                .build()
+                        )
+                        .addUpsertRow(
+                            DocumentRow.builder()
+                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                .vectorOfNumber(listOf(0.0))
                                 .build()
                         )
                         .build()
