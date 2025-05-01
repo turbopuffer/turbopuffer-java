@@ -68,7 +68,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         params: NamespaceWriteParams,
         requestOptions: RequestOptions,
     ): NamespaceWriteResponse =
-        // post /v1/namespaces/{namespace}
+        // post /v2/namespaces/{namespace}
         withRawResponse().write(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -204,7 +204,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0))
+                    .addPathSegments("v2", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params)

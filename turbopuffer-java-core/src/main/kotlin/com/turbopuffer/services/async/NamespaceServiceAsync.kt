@@ -168,7 +168,7 @@ interface NamespaceServiceAsync {
         ): CompletableFuture<HttpResponseFor<List<DocumentRowWithScore>>>
 
         /**
-         * Returns a raw HTTP response for `post /v1/namespaces/{namespace}`, but is otherwise the
+         * Returns a raw HTTP response for `post /v2/namespaces/{namespace}`, but is otherwise the
          * same as [NamespaceServiceAsync.write].
          */
         @MustBeClosed

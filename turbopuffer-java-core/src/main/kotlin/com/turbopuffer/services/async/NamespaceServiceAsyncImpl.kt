@@ -69,7 +69,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         params: NamespaceWriteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceWriteResponse> =
-        // post /v1/namespaces/{namespace}
+        // post /v2/namespaces/{namespace}
         withRawResponse().write(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -217,7 +217,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0))
+                    .addPathSegments("v2", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepareAsync(clientOptions, params)

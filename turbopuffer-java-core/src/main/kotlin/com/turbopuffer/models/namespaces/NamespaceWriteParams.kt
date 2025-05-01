@@ -37,7 +37,7 @@ import kotlin.jvm.optionals.getOrNull
 class NamespaceWriteParams
 private constructor(
     private val namespace: String,
-    private val write: Write?,
+    private val body: Body?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -45,7 +45,7 @@ private constructor(
     fun namespace(): String = namespace
 
     /** Write documents. */
-    fun write(): Optional<Write> = Optional.ofNullable(write)
+    fun body(): Optional<Body> = Optional.ofNullable(body)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -70,14 +70,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var namespace: String? = null
-        private var write: Write? = null
+        private var body: Body? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(namespaceWriteParams: NamespaceWriteParams) = apply {
             namespace = namespaceWriteParams.namespace
-            write = namespaceWriteParams.write
+            body = namespaceWriteParams.body
             additionalHeaders = namespaceWriteParams.additionalHeaders.toBuilder()
             additionalQueryParams = namespaceWriteParams.additionalQueryParams.toBuilder()
         }
@@ -85,21 +85,20 @@ private constructor(
         fun namespace(namespace: String) = apply { this.namespace = namespace }
 
         /** Write documents. */
-        fun write(write: Write?) = apply { this.write = write }
+        fun body(body: Body?) = apply { this.body = body }
 
-        /** Alias for calling [Builder.write] with `write.orElse(null)`. */
-        fun write(write: Optional<Write>) = write(write.getOrNull())
+        /** Alias for calling [Builder.body] with `body.orElse(null)`. */
+        fun body(body: Optional<Body>) = body(body.getOrNull())
 
-        /** Alias for calling [write] with `Write.ofDocuments(documents)`. */
-        fun write(documents: Write.WriteDocuments) = write(Write.ofDocuments(documents))
+        /** Alias for calling [body] with `Body.ofWriteDocuments(writeDocuments)`. */
+        fun body(writeDocuments: Body.WriteDocuments) = body(Body.ofWriteDocuments(writeDocuments))
 
-        /** Alias for calling [write] with `Write.ofCopyFromNamespace(copyFromNamespace)`. */
-        fun write(copyFromNamespace: Write.CopyFromNamespace) =
-            write(Write.ofCopyFromNamespace(copyFromNamespace))
+        /** Alias for calling [body] with `Body.ofCopyFromNamespace(copyFromNamespace)`. */
+        fun body(copyFromNamespace: Body.CopyFromNamespace) =
+            body(Body.ofCopyFromNamespace(copyFromNamespace))
 
-        /** Alias for calling [write] with `Write.ofDeleteByFilter(deleteByFilter)`. */
-        fun write(deleteByFilter: Write.DeleteByFilter) =
-            write(Write.ofDeleteByFilter(deleteByFilter))
+        /** Alias for calling [body] with `Body.ofDeleteByFilter(deleteByFilter)`. */
+        fun body(deleteByFilter: Body.DeleteByFilter) = body(Body.ofDeleteByFilter(deleteByFilter))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -214,13 +213,13 @@ private constructor(
         fun build(): NamespaceWriteParams =
             NamespaceWriteParams(
                 checkRequired("namespace", namespace),
-                write,
+                body,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
     }
 
-    fun _body(): Optional<Write> = Optional.ofNullable(write)
+    fun _body(): Optional<Body> = Optional.ofNullable(body)
 
     fun _pathParam(index: Int): String =
         when (index) {
@@ -233,18 +232,18 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     /** Write documents. */
-    @JsonDeserialize(using = Write.Deserializer::class)
-    @JsonSerialize(using = Write.Serializer::class)
-    class Write
+    @JsonDeserialize(using = Body.Deserializer::class)
+    @JsonSerialize(using = Body.Serializer::class)
+    class Body
     private constructor(
-        private val documents: WriteDocuments? = null,
+        private val writeDocuments: WriteDocuments? = null,
         private val copyFromNamespace: CopyFromNamespace? = null,
         private val deleteByFilter: DeleteByFilter? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** Write documents. */
-        fun documents(): Optional<WriteDocuments> = Optional.ofNullable(documents)
+        fun writeDocuments(): Optional<WriteDocuments> = Optional.ofNullable(writeDocuments)
 
         /** Copy documents from another namespace. */
         fun copyFromNamespace(): Optional<CopyFromNamespace> =
@@ -253,14 +252,14 @@ private constructor(
         /** Delete documents by filter. */
         fun deleteByFilter(): Optional<DeleteByFilter> = Optional.ofNullable(deleteByFilter)
 
-        fun isDocuments(): Boolean = documents != null
+        fun isWriteDocuments(): Boolean = writeDocuments != null
 
         fun isCopyFromNamespace(): Boolean = copyFromNamespace != null
 
         fun isDeleteByFilter(): Boolean = deleteByFilter != null
 
         /** Write documents. */
-        fun asDocuments(): WriteDocuments = documents.getOrThrow("documents")
+        fun asWriteDocuments(): WriteDocuments = writeDocuments.getOrThrow("writeDocuments")
 
         /** Copy documents from another namespace. */
         fun asCopyFromNamespace(): CopyFromNamespace =
@@ -273,7 +272,7 @@ private constructor(
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                documents != null -> visitor.visitDocuments(documents)
+                writeDocuments != null -> visitor.visitWriteDocuments(writeDocuments)
                 copyFromNamespace != null -> visitor.visitCopyFromNamespace(copyFromNamespace)
                 deleteByFilter != null -> visitor.visitDeleteByFilter(deleteByFilter)
                 else -> visitor.unknown(_json)
@@ -281,15 +280,15 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Write = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitDocuments(documents: WriteDocuments) {
-                        documents.validate()
+                    override fun visitWriteDocuments(writeDocuments: WriteDocuments) {
+                        writeDocuments.validate()
                     }
 
                     override fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace) {
@@ -322,7 +321,8 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitDocuments(documents: WriteDocuments) = documents.validity()
+                    override fun visitWriteDocuments(writeDocuments: WriteDocuments) =
+                        writeDocuments.validity()
 
                     override fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace) =
                         copyFromNamespace.validity()
@@ -339,41 +339,43 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Write && documents == other.documents && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
+            return /* spotless:off */ other is Body && writeDocuments == other.writeDocuments && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(documents, copyFromNamespace, deleteByFilter) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(writeDocuments, copyFromNamespace, deleteByFilter) /* spotless:on */
 
         override fun toString(): String =
             when {
-                documents != null -> "Write{documents=$documents}"
-                copyFromNamespace != null -> "Write{copyFromNamespace=$copyFromNamespace}"
-                deleteByFilter != null -> "Write{deleteByFilter=$deleteByFilter}"
-                _json != null -> "Write{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid Write")
+                writeDocuments != null -> "Body{writeDocuments=$writeDocuments}"
+                copyFromNamespace != null -> "Body{copyFromNamespace=$copyFromNamespace}"
+                deleteByFilter != null -> "Body{deleteByFilter=$deleteByFilter}"
+                _json != null -> "Body{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Body")
             }
 
         companion object {
 
             /** Write documents. */
-            @JvmStatic fun ofDocuments(documents: WriteDocuments) = Write(documents = documents)
+            @JvmStatic
+            fun ofWriteDocuments(writeDocuments: WriteDocuments) =
+                Body(writeDocuments = writeDocuments)
 
             /** Copy documents from another namespace. */
             @JvmStatic
             fun ofCopyFromNamespace(copyFromNamespace: CopyFromNamespace) =
-                Write(copyFromNamespace = copyFromNamespace)
+                Body(copyFromNamespace = copyFromNamespace)
 
             /** Delete documents by filter. */
             @JvmStatic
             fun ofDeleteByFilter(deleteByFilter: DeleteByFilter) =
-                Write(deleteByFilter = deleteByFilter)
+                Body(deleteByFilter = deleteByFilter)
         }
 
-        /** An interface that defines how to map each variant of [Write] to a value of type [T]. */
+        /** An interface that defines how to map each variant of [Body] to a value of type [T]. */
         interface Visitor<out T> {
 
             /** Write documents. */
-            fun visitDocuments(documents: WriteDocuments): T
+            fun visitWriteDocuments(writeDocuments: WriteDocuments): T
 
             /** Copy documents from another namespace. */
             fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace): T
@@ -382,35 +384,34 @@ private constructor(
             fun visitDeleteByFilter(deleteByFilter: DeleteByFilter): T
 
             /**
-             * Maps an unknown variant of [Write] to a value of type [T].
+             * Maps an unknown variant of [Body] to a value of type [T].
              *
-             * An instance of [Write] can contain an unknown variant if it was deserialized from
-             * data that doesn't match any known variant. For example, if the SDK is on an older
-             * version than the API, then the API may respond with new variants that the SDK is
-             * unaware of.
+             * An instance of [Body] can contain an unknown variant if it was deserialized from data
+             * that doesn't match any known variant. For example, if the SDK is on an older version
+             * than the API, then the API may respond with new variants that the SDK is unaware of.
              *
              * @throws TurbopufferInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw TurbopufferInvalidDataException("Unknown Write: $json")
+                throw TurbopufferInvalidDataException("Unknown Body: $json")
             }
         }
 
-        internal class Deserializer : BaseDeserializer<Write>(Write::class) {
+        internal class Deserializer : BaseDeserializer<Body>(Body::class) {
 
-            override fun ObjectCodec.deserialize(node: JsonNode): Write {
+            override fun ObjectCodec.deserialize(node: JsonNode): Body {
                 val json = JsonValue.fromJsonNode(node)
 
                 val bestMatches =
                     sequenceOf(
                             tryDeserialize(node, jacksonTypeRef<WriteDocuments>())?.let {
-                                Write(documents = it, _json = json)
+                                Body(writeDocuments = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<CopyFromNamespace>())?.let {
-                                Write(copyFromNamespace = it, _json = json)
+                                Body(copyFromNamespace = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<DeleteByFilter>())?.let {
-                                Write(deleteByFilter = it, _json = json)
+                                Body(deleteByFilter = it, _json = json)
                             },
                         )
                         .filterNotNull()
@@ -419,7 +420,7 @@ private constructor(
                 return when (bestMatches.size) {
                     // This can happen if what we're deserializing is completely incompatible with
                     // all the possible variants (e.g. deserializing from boolean).
-                    0 -> Write(_json = json)
+                    0 -> Body(_json = json)
                     1 -> bestMatches.single()
                     // If there's more than one match with the highest validity, then use the first
                     // completely valid match, or simply the first match if none are completely
@@ -429,20 +430,20 @@ private constructor(
             }
         }
 
-        internal class Serializer : BaseSerializer<Write>(Write::class) {
+        internal class Serializer : BaseSerializer<Body>(Body::class) {
 
             override fun serialize(
-                value: Write,
+                value: Body,
                 generator: JsonGenerator,
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.documents != null -> generator.writeObject(value.documents)
+                    value.writeDocuments != null -> generator.writeObject(value.writeDocuments)
                     value.copyFromNamespace != null ->
                         generator.writeObject(value.copyFromNamespace)
                     value.deleteByFilter != null -> generator.writeObject(value.deleteByFilter)
                     value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Write")
+                    else -> throw IllegalStateException("Invalid Body")
                 }
             }
         }
@@ -1267,11 +1268,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceWriteParams && namespace == other.namespace && write == other.write && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceWriteParams && namespace == other.namespace && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, write, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceWriteParams{namespace=$namespace, write=$write, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceWriteParams{namespace=$namespace, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
