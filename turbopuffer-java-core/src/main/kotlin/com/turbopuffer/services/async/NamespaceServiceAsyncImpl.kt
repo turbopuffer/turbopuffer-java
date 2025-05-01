@@ -48,7 +48,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceDeleteAllResponse> =
-        // delete /v2/namespaces/{namespace}
+        // delete /v1/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).thenApply { it.parse() }
 
     override fun getSchema(
@@ -125,7 +125,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("v2", "namespaces", params._pathParam(0))
+                    .addPathSegments("v1", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepareAsync(clientOptions, params)
