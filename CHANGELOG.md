@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.1.0-beta.11 (2025-05-01)
+
+Full Changelog: [v0.1.0-beta.10...v0.1.0-beta.11](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.10...v0.1.0-beta.11)
+
+### Features
+
+* **api:** api update ([#119](https://github.com/turbopuffer/turbopuffer-java/issues/119)) ([c2f47d3](https://github.com/turbopuffer/turbopuffer-java/commit/c2f47d3437c3c256c890a77129dfcf5ab197894c))
+* **api:** api update ([#120](https://github.com/turbopuffer/turbopuffer-java/issues/120)) ([87000c5](https://github.com/turbopuffer/turbopuffer-java/commit/87000c5bd30c55393d98e331870fa621d7e29c19))
+* **examples:** demonstrate basic filtering ([093516b](https://github.com/turbopuffer/turbopuffer-java/commit/093516b4d5c887d208862405aeb017e762a7f39b))
+
+
+### Bug Fixes
+
+* **examples:** update for new path structure ([40ab948](https://github.com/turbopuffer/turbopuffer-java/commit/40ab9486f7e0a14a291b7429784ab8eada096b73))
+
+
+### Chores
+
+* **internal:** add some tests for union classes ([#128](https://github.com/turbopuffer/turbopuffer-java/issues/128)) ([7693a4f](https://github.com/turbopuffer/turbopuffer-java/commit/7693a4f13821817440742ae2c5bf3432c97a6ecf))
+* **internal:** codegen related update ([#123](https://github.com/turbopuffer/turbopuffer-java/issues/123)) ([89be895](https://github.com/turbopuffer/turbopuffer-java/commit/89be895aa1b30369135022290fac23e505d470dd))
+* **internal:** delete duplicate tests ([cfbc54a](https://github.com/turbopuffer/turbopuffer-java/commit/cfbc54a184569b3762d4bda8d2e942b90a387bf8))
+* **internal:** generate more tests ([7e960b9](https://github.com/turbopuffer/turbopuffer-java/commit/7e960b9d89aaa8cdad952741d07f2d5d6a742a0a))
+* **internal:** refactor query param serialization impl and tests ([#125](https://github.com/turbopuffer/turbopuffer-java/issues/125)) ([8dc91f9](https://github.com/turbopuffer/turbopuffer-java/commit/8dc91f97799a2316af42056883b3e61702e510ba))
+* **internal:** refactor some test assertions ([cfbc54a](https://github.com/turbopuffer/turbopuffer-java/commit/cfbc54a184569b3762d4bda8d2e942b90a387bf8))
+* **internal:** reformat some tests ([#127](https://github.com/turbopuffer/turbopuffer-java/issues/127)) ([7e960b9](https://github.com/turbopuffer/turbopuffer-java/commit/7e960b9d89aaa8cdad952741d07f2d5d6a742a0a))
+* **internal:** remove extra empty newlines ([#121](https://github.com/turbopuffer/turbopuffer-java/issues/121)) ([5ddb809](https://github.com/turbopuffer/turbopuffer-java/commit/5ddb80900537da70e88c21fa34acfbe23be3c3a8))
+* **internal:** rename `getPathParam` ([#126](https://github.com/turbopuffer/turbopuffer-java/issues/126)) ([cfbc54a](https://github.com/turbopuffer/turbopuffer-java/commit/cfbc54a184569b3762d4bda8d2e942b90a387bf8))
+* **internal:** reorder some params methodsc ([cfbc54a](https://github.com/turbopuffer/turbopuffer-java/commit/cfbc54a184569b3762d4bda8d2e942b90a387bf8))
+* remove custom code ([1c73e92](https://github.com/turbopuffer/turbopuffer-java/commit/1c73e92592fe4475842400f00bd7ba35ab1ffa98))
+* remove custom code ([dd02624](https://github.com/turbopuffer/turbopuffer-java/commit/dd026248266a675161f7ffd64525d85afbb9b531))
+* remove custom code ([dadc99a](https://github.com/turbopuffer/turbopuffer-java/commit/dadc99ac2e4a923e74b1f8a790e0686302eed4ab))
+* remove custom code ([961e51f](https://github.com/turbopuffer/turbopuffer-java/commit/961e51f12bd6ee6a4ca603920ba67bb2441e905b))
+
+
+### Documentation
+
+* add `build` method comments ([#124](https://github.com/turbopuffer/turbopuffer-java/issues/124)) ([ea4b834](https://github.com/turbopuffer/turbopuffer-java/commit/ea4b8346687075035c4dbd611e78f203a0dfded7))
+* deduplicate and refine comments ([#122](https://github.com/turbopuffer/turbopuffer-java/issues/122)) ([7fc0b2e](https://github.com/turbopuffer/turbopuffer-java/commit/7fc0b2eeaaa04b705489b6e0704a5423096ecfb6))
+
 ## 0.1.0-beta.10 (2025-03-13)
 
 Full Changelog: [v0.1.0-beta.9...v0.1.0-beta.10](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.9...v0.1.0-beta.10)
