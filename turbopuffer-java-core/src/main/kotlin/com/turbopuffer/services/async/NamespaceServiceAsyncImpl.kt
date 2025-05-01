@@ -3,6 +3,7 @@
 package com.turbopuffer.services.async
 
 import com.turbopuffer.core.ClientOptions
+import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.handlers.errorHandler
 import com.turbopuffer.core.handlers.jsonHandler
@@ -14,13 +15,13 @@ import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepareAsync
-import com.turbopuffer.errors.TurbopufferError
 import com.turbopuffer.models.namespaces.DocumentRowWithScore
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceListPageAsync
+import com.turbopuffer.models.namespaces.NamespaceListPageResponse
 import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceUpsertParams
@@ -47,7 +48,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceDeleteAllResponse> =
-        // delete /v1/namespaces/{namespace}
+        // delete /v2/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).thenApply { it.parse() }
 
     override fun getSchema(
@@ -74,10 +75,10 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         NamespaceServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<TurbopufferError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<NamespaceListPageAsync.Response> =
-            jsonHandler<NamespaceListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<NamespaceListPageResponse> =
+            jsonHandler<NamespaceListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
@@ -103,11 +104,11 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                                 }
                             }
                             .let {
-                                NamespaceListPageAsync.of(
-                                    NamespaceServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                NamespaceListPageAsync.builder()
+                                    .service(NamespaceServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }
@@ -124,7 +125,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("v1", "namespaces", params.getPathParam(0))
+                    .addPathSegments("v2", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -155,7 +156,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("v1", "namespaces", params.getPathParam(0), "schema")
+                    .addPathSegments("v1", "namespaces", params._pathParam(0), "schema")
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
@@ -185,7 +186,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "namespaces", params.getPathParam(0), "query")
+                    .addPathSegments("v1", "namespaces", params._pathParam(0), "query")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -216,7 +217,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "namespaces", params.getPathParam(0))
+                    .addPathSegments("v1", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepareAsync(clientOptions, params)

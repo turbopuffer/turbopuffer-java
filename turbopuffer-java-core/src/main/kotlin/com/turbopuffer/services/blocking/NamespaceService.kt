@@ -109,7 +109,7 @@ interface NamespaceService {
             list(NamespaceListParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `delete /v1/namespaces/{namespace}`, but is otherwise the
+         * Returns a raw HTTP response for `delete /v2/namespaces/{namespace}`, but is otherwise the
          * same as [NamespaceService.deleteAll].
          */
         @MustBeClosed

@@ -3,7 +3,6 @@
 package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.Params
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.http.Headers
@@ -23,26 +22,11 @@ private constructor(
 
     fun namespace(): String = namespace
 
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    @JvmSynthetic
-    internal fun _body(): Optional<Map<String, JsonValue>> =
-        Optional.ofNullable(additionalBodyProperties.ifEmpty { null })
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    fun getPathParam(index: Int): String {
-        return when (index) {
-            0 -> namespace
-            else -> ""
-        }
-    }
 
     fun toBuilder() = Builder().from(this)
 
@@ -60,7 +44,6 @@ private constructor(
     }
 
     /** A builder for [NamespaceDeleteAllParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var namespace: String? = null
@@ -199,6 +182,18 @@ private constructor(
             keys.forEach(::removeAdditionalBodyProperty)
         }
 
+        /**
+         * Returns an immutable instance of [NamespaceDeleteAllParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .namespace()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): NamespaceDeleteAllParams =
             NamespaceDeleteAllParams(
                 checkRequired("namespace", namespace),
@@ -207,6 +202,19 @@ private constructor(
                 additionalBodyProperties.toImmutable(),
             )
     }
+
+    fun _body(): Optional<Map<String, JsonValue>> =
+        Optional.ofNullable(additionalBodyProperties.ifEmpty { null })
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> namespace
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

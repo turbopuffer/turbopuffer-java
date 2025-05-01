@@ -9,9 +9,7 @@ import com.turbopuffer.models.namespaces.NamespaceListParams;
 public class ListNamespaces {
 
     public static void main(String[] args) {
-        var client = TurbopufferOkHttpClient.builder()
-                .fromEnv()
-                .build();
+        var client = TurbopufferOkHttpClient.builder().fromEnv().build();
 
         var namespaces = client.namespaces().list(NamespaceListParams.builder().build());
         for (var namespace : namespaces.autoPager()) {
