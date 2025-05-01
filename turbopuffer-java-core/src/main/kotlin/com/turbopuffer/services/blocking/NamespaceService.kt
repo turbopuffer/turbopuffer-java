@@ -13,6 +13,8 @@ import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceListPage
 import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 
 interface NamespaceService {
 
@@ -67,6 +69,16 @@ interface NamespaceService {
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): List<DocumentRowWithScore>
+
+    /** Create, update, or delete documents. */
+    fun write(params: NamespaceWriteParams): NamespaceWriteResponse =
+        write(params, RequestOptions.none())
+
+    /** @see [write] */
+    fun write(
+        params: NamespaceWriteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceWriteResponse
 
     /** A view of [NamespaceService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -142,5 +154,20 @@ interface NamespaceService {
             params: NamespaceQueryParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<List<DocumentRowWithScore>>
+
+        /**
+         * Returns a raw HTTP response for `post /v2/namespaces/{namespace}`, but is otherwise the
+         * same as [NamespaceService.write].
+         */
+        @MustBeClosed
+        fun write(params: NamespaceWriteParams): HttpResponseFor<NamespaceWriteResponse> =
+            write(params, RequestOptions.none())
+
+        /** @see [write] */
+        @MustBeClosed
+        fun write(
+            params: NamespaceWriteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceWriteResponse>
     }
 }

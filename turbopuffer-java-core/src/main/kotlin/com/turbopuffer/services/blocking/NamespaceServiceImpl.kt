@@ -24,6 +24,8 @@ import com.turbopuffer.models.namespaces.NamespaceListPage
 import com.turbopuffer.models.namespaces.NamespaceListPageResponse
 import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 
 class NamespaceServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     NamespaceService {
@@ -61,6 +63,13 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     ): List<DocumentRowWithScore> =
         // post /v1/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).parse()
+
+    override fun write(
+        params: NamespaceWriteParams,
+        requestOptions: RequestOptions,
+    ): NamespaceWriteResponse =
+        // post /v2/namespaces/{namespace}
+        withRawResponse().write(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         NamespaceService.WithRawResponse {
@@ -179,6 +188,34 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.forEach { it.validate() }
+                        }
+                    }
+            }
+        }
+
+        private val writeHandler: Handler<NamespaceWriteResponse> =
+            jsonHandler<NamespaceWriteResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun write(
+            params: NamespaceWriteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceWriteResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("v2", "namespaces", params._pathParam(0))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { writeHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
                         }
                     }
             }

@@ -24,6 +24,8 @@ import com.turbopuffer.models.namespaces.NamespaceListPageAsync
 import com.turbopuffer.models.namespaces.NamespaceListPageResponse
 import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
 
 class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -62,6 +64,13 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     ): CompletableFuture<List<DocumentRowWithScore>> =
         // post /v1/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).thenApply { it.parse() }
+
+    override fun write(
+        params: NamespaceWriteParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceWriteResponse> =
+        // post /v2/namespaces/{namespace}
+        withRawResponse().write(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         NamespaceServiceAsync.WithRawResponse {
@@ -191,6 +200,37 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.forEach { it.validate() }
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val writeHandler: Handler<NamespaceWriteResponse> =
+            jsonHandler<NamespaceWriteResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun write(
+            params: NamespaceWriteParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceWriteResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("v2", "namespaces", params._pathParam(0))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { writeHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
                                 }
                             }
                     }
