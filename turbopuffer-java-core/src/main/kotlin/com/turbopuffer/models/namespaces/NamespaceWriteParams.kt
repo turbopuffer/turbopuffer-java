@@ -34,10 +34,10 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Create, update, or delete documents. */
-class NamespaceUpsertParams
+class NamespaceWriteParams
 private constructor(
     private val namespace: String,
-    private val documents: Documents?,
+    private val write: Write?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -45,7 +45,7 @@ private constructor(
     fun namespace(): String = namespace
 
     /** Write documents. */
-    fun documents(): Optional<Documents> = Optional.ofNullable(documents)
+    fun write(): Optional<Write> = Optional.ofNullable(write)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -56,7 +56,7 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [NamespaceUpsertParams].
+         * Returns a mutable builder for constructing an instance of [NamespaceWriteParams].
          *
          * The following fields are required:
          * ```java
@@ -66,42 +66,40 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceUpsertParams]. */
+    /** A builder for [NamespaceWriteParams]. */
     class Builder internal constructor() {
 
         private var namespace: String? = null
-        private var documents: Documents? = null
+        private var write: Write? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(namespaceUpsertParams: NamespaceUpsertParams) = apply {
-            namespace = namespaceUpsertParams.namespace
-            documents = namespaceUpsertParams.documents
-            additionalHeaders = namespaceUpsertParams.additionalHeaders.toBuilder()
-            additionalQueryParams = namespaceUpsertParams.additionalQueryParams.toBuilder()
+        internal fun from(namespaceWriteParams: NamespaceWriteParams) = apply {
+            namespace = namespaceWriteParams.namespace
+            write = namespaceWriteParams.write
+            additionalHeaders = namespaceWriteParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceWriteParams.additionalQueryParams.toBuilder()
         }
 
         fun namespace(namespace: String) = apply { this.namespace = namespace }
 
         /** Write documents. */
-        fun documents(documents: Documents?) = apply { this.documents = documents }
+        fun write(write: Write?) = apply { this.write = write }
 
-        /** Alias for calling [Builder.documents] with `documents.orElse(null)`. */
-        fun documents(documents: Optional<Documents>) = documents(documents.getOrNull())
+        /** Alias for calling [Builder.write] with `write.orElse(null)`. */
+        fun write(write: Optional<Write>) = write(write.getOrNull())
 
-        /** Alias for calling [documents] with `Documents.ofWrite(write)`. */
-        fun documents(write: Documents.Write) = documents(Documents.ofWrite(write))
+        /** Alias for calling [write] with `Write.ofDocuments(documents)`. */
+        fun write(documents: Write.WriteDocuments) = write(Write.ofDocuments(documents))
 
-        /**
-         * Alias for calling [documents] with `Documents.ofCopyFromNamespace(copyFromNamespace)`.
-         */
-        fun documents(copyFromNamespace: Documents.CopyFromNamespace) =
-            documents(Documents.ofCopyFromNamespace(copyFromNamespace))
+        /** Alias for calling [write] with `Write.ofCopyFromNamespace(copyFromNamespace)`. */
+        fun write(copyFromNamespace: Write.CopyFromNamespace) =
+            write(Write.ofCopyFromNamespace(copyFromNamespace))
 
-        /** Alias for calling [documents] with `Documents.ofDeleteByFilter(deleteByFilter)`. */
-        fun documents(deleteByFilter: Documents.DeleteByFilter) =
-            documents(Documents.ofDeleteByFilter(deleteByFilter))
+        /** Alias for calling [write] with `Write.ofDeleteByFilter(deleteByFilter)`. */
+        fun write(deleteByFilter: Write.DeleteByFilter) =
+            write(Write.ofDeleteByFilter(deleteByFilter))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -202,7 +200,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [NamespaceUpsertParams].
+         * Returns an immutable instance of [NamespaceWriteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -213,16 +211,16 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): NamespaceUpsertParams =
-            NamespaceUpsertParams(
+        fun build(): NamespaceWriteParams =
+            NamespaceWriteParams(
                 checkRequired("namespace", namespace),
-                documents,
+                write,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
     }
 
-    fun _body(): Optional<Documents> = Optional.ofNullable(documents)
+    fun _body(): Optional<Write> = Optional.ofNullable(write)
 
     fun _pathParam(index: Int): String =
         when (index) {
@@ -235,18 +233,18 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     /** Write documents. */
-    @JsonDeserialize(using = Documents.Deserializer::class)
-    @JsonSerialize(using = Documents.Serializer::class)
-    class Documents
+    @JsonDeserialize(using = Write.Deserializer::class)
+    @JsonSerialize(using = Write.Serializer::class)
+    class Write
     private constructor(
-        private val write: Write? = null,
+        private val documents: WriteDocuments? = null,
         private val copyFromNamespace: CopyFromNamespace? = null,
         private val deleteByFilter: DeleteByFilter? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** Write documents. */
-        fun write(): Optional<Write> = Optional.ofNullable(write)
+        fun documents(): Optional<WriteDocuments> = Optional.ofNullable(documents)
 
         /** Copy documents from another namespace. */
         fun copyFromNamespace(): Optional<CopyFromNamespace> =
@@ -255,14 +253,14 @@ private constructor(
         /** Delete documents by filter. */
         fun deleteByFilter(): Optional<DeleteByFilter> = Optional.ofNullable(deleteByFilter)
 
-        fun isWrite(): Boolean = write != null
+        fun isDocuments(): Boolean = documents != null
 
         fun isCopyFromNamespace(): Boolean = copyFromNamespace != null
 
         fun isDeleteByFilter(): Boolean = deleteByFilter != null
 
         /** Write documents. */
-        fun asWrite(): Write = write.getOrThrow("write")
+        fun asDocuments(): WriteDocuments = documents.getOrThrow("documents")
 
         /** Copy documents from another namespace. */
         fun asCopyFromNamespace(): CopyFromNamespace =
@@ -275,7 +273,7 @@ private constructor(
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                write != null -> visitor.visitWrite(write)
+                documents != null -> visitor.visitDocuments(documents)
                 copyFromNamespace != null -> visitor.visitCopyFromNamespace(copyFromNamespace)
                 deleteByFilter != null -> visitor.visitDeleteByFilter(deleteByFilter)
                 else -> visitor.unknown(_json)
@@ -283,15 +281,15 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Documents = apply {
+        fun validate(): Write = apply {
             if (validated) {
                 return@apply
             }
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitWrite(write: Write) {
-                        write.validate()
+                    override fun visitDocuments(documents: WriteDocuments) {
+                        documents.validate()
                     }
 
                     override fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace) {
@@ -324,7 +322,7 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitWrite(write: Write) = write.validity()
+                    override fun visitDocuments(documents: WriteDocuments) = documents.validity()
 
                     override fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace) =
                         copyFromNamespace.validity()
@@ -341,43 +339,41 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Documents && write == other.write && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
+            return /* spotless:off */ other is Write && documents == other.documents && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(write, copyFromNamespace, deleteByFilter) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(documents, copyFromNamespace, deleteByFilter) /* spotless:on */
 
         override fun toString(): String =
             when {
-                write != null -> "Documents{write=$write}"
-                copyFromNamespace != null -> "Documents{copyFromNamespace=$copyFromNamespace}"
-                deleteByFilter != null -> "Documents{deleteByFilter=$deleteByFilter}"
-                _json != null -> "Documents{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid Documents")
+                documents != null -> "Write{documents=$documents}"
+                copyFromNamespace != null -> "Write{copyFromNamespace=$copyFromNamespace}"
+                deleteByFilter != null -> "Write{deleteByFilter=$deleteByFilter}"
+                _json != null -> "Write{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Write")
             }
 
         companion object {
 
             /** Write documents. */
-            @JvmStatic fun ofWrite(write: Write) = Documents(write = write)
+            @JvmStatic fun ofDocuments(documents: WriteDocuments) = Write(documents = documents)
 
             /** Copy documents from another namespace. */
             @JvmStatic
             fun ofCopyFromNamespace(copyFromNamespace: CopyFromNamespace) =
-                Documents(copyFromNamespace = copyFromNamespace)
+                Write(copyFromNamespace = copyFromNamespace)
 
             /** Delete documents by filter. */
             @JvmStatic
             fun ofDeleteByFilter(deleteByFilter: DeleteByFilter) =
-                Documents(deleteByFilter = deleteByFilter)
+                Write(deleteByFilter = deleteByFilter)
         }
 
-        /**
-         * An interface that defines how to map each variant of [Documents] to a value of type [T].
-         */
+        /** An interface that defines how to map each variant of [Write] to a value of type [T]. */
         interface Visitor<out T> {
 
             /** Write documents. */
-            fun visitWrite(write: Write): T
+            fun visitDocuments(documents: WriteDocuments): T
 
             /** Copy documents from another namespace. */
             fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace): T
@@ -386,9 +382,9 @@ private constructor(
             fun visitDeleteByFilter(deleteByFilter: DeleteByFilter): T
 
             /**
-             * Maps an unknown variant of [Documents] to a value of type [T].
+             * Maps an unknown variant of [Write] to a value of type [T].
              *
-             * An instance of [Documents] can contain an unknown variant if it was deserialized from
+             * An instance of [Write] can contain an unknown variant if it was deserialized from
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
@@ -396,25 +392,25 @@ private constructor(
              * @throws TurbopufferInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw TurbopufferInvalidDataException("Unknown Documents: $json")
+                throw TurbopufferInvalidDataException("Unknown Write: $json")
             }
         }
 
-        internal class Deserializer : BaseDeserializer<Documents>(Documents::class) {
+        internal class Deserializer : BaseDeserializer<Write>(Write::class) {
 
-            override fun ObjectCodec.deserialize(node: JsonNode): Documents {
+            override fun ObjectCodec.deserialize(node: JsonNode): Write {
                 val json = JsonValue.fromJsonNode(node)
 
                 val bestMatches =
                     sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<Write>())?.let {
-                                Documents(write = it, _json = json)
+                            tryDeserialize(node, jacksonTypeRef<WriteDocuments>())?.let {
+                                Write(documents = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<CopyFromNamespace>())?.let {
-                                Documents(copyFromNamespace = it, _json = json)
+                                Write(copyFromNamespace = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<DeleteByFilter>())?.let {
-                                Documents(deleteByFilter = it, _json = json)
+                                Write(deleteByFilter = it, _json = json)
                             },
                         )
                         .filterNotNull()
@@ -423,7 +419,7 @@ private constructor(
                 return when (bestMatches.size) {
                     // This can happen if what we're deserializing is completely incompatible with
                     // all the possible variants (e.g. deserializing from boolean).
-                    0 -> Documents(_json = json)
+                    0 -> Write(_json = json)
                     1 -> bestMatches.single()
                     // If there's more than one match with the highest validity, then use the first
                     // completely valid match, or simply the first match if none are completely
@@ -433,26 +429,26 @@ private constructor(
             }
         }
 
-        internal class Serializer : BaseSerializer<Documents>(Documents::class) {
+        internal class Serializer : BaseSerializer<Write>(Write::class) {
 
             override fun serialize(
-                value: Documents,
+                value: Write,
                 generator: JsonGenerator,
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.write != null -> generator.writeObject(value.write)
+                    value.documents != null -> generator.writeObject(value.documents)
                     value.copyFromNamespace != null ->
                         generator.writeObject(value.copyFromNamespace)
                     value.deleteByFilter != null -> generator.writeObject(value.deleteByFilter)
                     value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Documents")
+                    else -> throw IllegalStateException("Invalid Write")
                 }
             }
         }
 
         /** Write documents. */
-        class Write
+        class WriteDocuments
         private constructor(
             private val distanceMetric: JsonField<DistanceMetric>,
             private val patchColumns: JsonField<DocumentColumns>,
@@ -611,11 +607,11 @@ private constructor(
 
             companion object {
 
-                /** Returns a mutable builder for constructing an instance of [Write]. */
+                /** Returns a mutable builder for constructing an instance of [WriteDocuments]. */
                 @JvmStatic fun builder() = Builder()
             }
 
-            /** A builder for [Write]. */
+            /** A builder for [WriteDocuments]. */
             class Builder internal constructor() {
 
                 private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
@@ -627,14 +623,14 @@ private constructor(
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(write: Write) = apply {
-                    distanceMetric = write.distanceMetric
-                    patchColumns = write.patchColumns
-                    patchRows = write.patchRows.map { it.toMutableList() }
-                    schema = write.schema
-                    upsertColumns = write.upsertColumns
-                    upsertRows = write.upsertRows.map { it.toMutableList() }
-                    additionalProperties = write.additionalProperties.toMutableMap()
+                internal fun from(writeDocuments: WriteDocuments) = apply {
+                    distanceMetric = writeDocuments.distanceMetric
+                    patchColumns = writeDocuments.patchColumns
+                    patchRows = writeDocuments.patchRows.map { it.toMutableList() }
+                    schema = writeDocuments.schema
+                    upsertColumns = writeDocuments.upsertColumns
+                    upsertRows = writeDocuments.upsertRows.map { it.toMutableList() }
+                    additionalProperties = writeDocuments.additionalProperties.toMutableMap()
                 }
 
                 /** A function used to calculate vector similarity. */
@@ -767,12 +763,12 @@ private constructor(
                 }
 
                 /**
-                 * Returns an immutable instance of [Write].
+                 * Returns an immutable instance of [WriteDocuments].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
-                fun build(): Write =
-                    Write(
+                fun build(): WriteDocuments =
+                    WriteDocuments(
                         distanceMetric,
                         patchColumns,
                         (patchRows ?: JsonMissing.of()).map { it.toImmutable() },
@@ -785,7 +781,7 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): Write = apply {
+            fun validate(): WriteDocuments = apply {
                 if (validated) {
                     return@apply
                 }
@@ -934,7 +930,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Write && distanceMetric == other.distanceMetric && patchColumns == other.patchColumns && patchRows == other.patchRows && schema == other.schema && upsertColumns == other.upsertColumns && upsertRows == other.upsertRows && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is WriteDocuments && distanceMetric == other.distanceMetric && patchColumns == other.patchColumns && patchRows == other.patchRows && schema == other.schema && upsertColumns == other.upsertColumns && upsertRows == other.upsertRows && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -944,7 +940,7 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Write{distanceMetric=$distanceMetric, patchColumns=$patchColumns, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+                "WriteDocuments{distanceMetric=$distanceMetric, patchColumns=$patchColumns, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
         }
 
         /** Copy documents from another namespace. */
@@ -1271,11 +1267,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceUpsertParams && namespace == other.namespace && documents == other.documents && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceWriteParams && namespace == other.namespace && write == other.write && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, documents, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, write, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceUpsertParams{namespace=$namespace, documents=$documents, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceWriteParams{namespace=$namespace, write=$write, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

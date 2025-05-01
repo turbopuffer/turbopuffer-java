@@ -8,15 +8,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-internal class NamespaceUpsertParamsTest {
+internal class NamespaceWriteParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
-        NamespaceUpsertParams.builder()
+        NamespaceWriteParams.builder()
             .namespace("namespace")
-            .documents(
-                NamespaceUpsertParams.Documents.Write.builder()
+            .write(
+                NamespaceWriteParams.Write.WriteDocuments.builder()
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .patchColumns(
                         DocumentColumns.builder()
@@ -30,7 +30,7 @@ internal class NamespaceUpsertParamsTest {
                             .build()
                     )
                     .schema(
-                        NamespaceUpsertParams.Documents.Write.Schema.builder()
+                        NamespaceWriteParams.Write.WriteDocuments.Schema.builder()
                             .putAdditionalProperty(
                                 "foo",
                                 JsonValue.from(
@@ -64,7 +64,7 @@ internal class NamespaceUpsertParamsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun pathParams() {
-        val params = NamespaceUpsertParams.builder().namespace("namespace").build()
+        val params = NamespaceWriteParams.builder().namespace("namespace").build()
 
         assertThat(params._pathParam(0)).isEqualTo("namespace")
         // out-of-bound path param
@@ -75,10 +75,10 @@ internal class NamespaceUpsertParamsTest {
     @Test
     fun body() {
         val params =
-            NamespaceUpsertParams.builder()
+            NamespaceWriteParams.builder()
                 .namespace("namespace")
-                .documents(
-                    NamespaceUpsertParams.Documents.Write.builder()
+                .write(
+                    NamespaceWriteParams.Write.WriteDocuments.builder()
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .patchColumns(
                             DocumentColumns.builder()
@@ -92,7 +92,7 @@ internal class NamespaceUpsertParamsTest {
                                 .build()
                         )
                         .schema(
-                            NamespaceUpsertParams.Documents.Write.Schema.builder()
+                            NamespaceWriteParams.Write.WriteDocuments.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
@@ -126,8 +126,8 @@ internal class NamespaceUpsertParamsTest {
 
         assertThat(body)
             .isEqualTo(
-                NamespaceUpsertParams.Documents.ofWrite(
-                    NamespaceUpsertParams.Documents.Write.builder()
+                NamespaceWriteParams.Write.ofDocuments(
+                    NamespaceWriteParams.Write.WriteDocuments.builder()
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .patchColumns(
                             DocumentColumns.builder()
@@ -141,7 +141,7 @@ internal class NamespaceUpsertParamsTest {
                                 .build()
                         )
                         .schema(
-                            NamespaceUpsertParams.Documents.Write.Schema.builder()
+                            NamespaceWriteParams.Write.WriteDocuments.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
@@ -175,7 +175,7 @@ internal class NamespaceUpsertParamsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = NamespaceUpsertParams.builder().namespace("namespace").build()
+        val params = NamespaceWriteParams.builder().namespace("namespace").build()
 
         val body = params._body().getOrNull()
     }

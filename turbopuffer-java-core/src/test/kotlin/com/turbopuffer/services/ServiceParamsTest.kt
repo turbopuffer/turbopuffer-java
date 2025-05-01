@@ -19,7 +19,7 @@ import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.DocumentColumns
 import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -77,15 +77,15 @@ internal class ServiceParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun upsert() {
+    fun write() {
         val namespaceService = client.namespaces()
         stubFor(post(anyUrl()).willReturn(ok("{}")))
 
-        namespaceService.upsert(
-            NamespaceUpsertParams.builder()
+        namespaceService.write(
+            NamespaceWriteParams.builder()
                 .namespace("namespace")
-                .documents(
-                    NamespaceUpsertParams.Documents.Write.builder()
+                .write(
+                    NamespaceWriteParams.Write.WriteDocuments.builder()
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .patchColumns(
                             DocumentColumns.builder()
@@ -99,7 +99,7 @@ internal class ServiceParamsTest {
                                 .build()
                         )
                         .schema(
-                            NamespaceUpsertParams.Documents.Write.Schema.builder()
+                            NamespaceWriteParams.Write.WriteDocuments.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
