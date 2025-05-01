@@ -1,4 +1,4 @@
-# Turbopuffer Java API Library
+# turbopuffer Java API Library
 
 <!-- x-release-please-start-version -->
 
@@ -6,6 +6,11 @@
 [![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.12/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.12)
 
 <!-- x-release-please-end -->
+
+> [!IMPORTANT]
+> **The turbopuffer Java client is in beta.**
+>
+> Please let us know about any bugs or performance issues.
 
 The Turbopuffer Java SDK provides convenient access to the [Turbopuffer REST API](https://turbopuffer.com/docs) from applications written in Java.
 
@@ -109,7 +114,7 @@ See this table for the available options:
 
 ## Requests and responses
 
-To send a request to the Turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
+To send a request to the turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
 
 For example, `client.namespaces().write(...)` should be called with an instance of `NamespaceWriteParams`, and it will return an instance of `NamespaceWriteResponse`.
 
