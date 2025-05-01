@@ -121,7 +121,7 @@ internal class NamespaceServiceAsyncTest {
                 NamespaceWriteParams.builder()
                     .namespace("namespace")
                     .write(
-                        NamespaceWriteParams.Write.WriteDocuments.builder()
+                        NamespaceWriteParams.Write.InnerWrite.builder()
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .patchColumns(
                                 DocumentColumns.builder()
@@ -135,7 +135,7 @@ internal class NamespaceServiceAsyncTest {
                                     .build()
                             )
                             .schema(
-                                NamespaceWriteParams.Write.WriteDocuments.Schema.builder()
+                                NamespaceWriteParams.Write.InnerWrite.Schema.builder()
                                     .putAdditionalProperty(
                                         "foo",
                                         JsonValue.from(
