@@ -47,9 +47,9 @@ configure<MavenPublishBaseExtension> {
         }
 
         scm {
-            connection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java.git")
-            developerConnection.set("scm:git:git://github.com/turbopuffer/turbopuffer-java.git")
-            url.set("https://github.com/turbopuffer/turbopuffer-java")
+            connection.set("scm:git:git://github.com/turbopuffer/stainless-tmp.git")
+            developerConnection.set("scm:git:git://github.com/turbopuffer/stainless-tmp.git")
+            url.set("https://github.com/turbopuffer/stainless-tmp")
         }
     }
 }
