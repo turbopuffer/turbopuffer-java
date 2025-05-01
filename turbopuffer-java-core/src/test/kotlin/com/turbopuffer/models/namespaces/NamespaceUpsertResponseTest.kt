@@ -2,6 +2,8 @@
 
 package com.turbopuffer.models.namespaces
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.turbopuffer.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -15,5 +17,21 @@ internal class NamespaceUpsertResponseTest {
             NamespaceUpsertResponse.builder().status(NamespaceUpsertResponse.Status.OK).build()
 
         assertThat(namespaceUpsertResponse.status()).isEqualTo(NamespaceUpsertResponse.Status.OK)
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val namespaceUpsertResponse =
+            NamespaceUpsertResponse.builder().status(NamespaceUpsertResponse.Status.OK).build()
+
+        val roundtrippedNamespaceUpsertResponse =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(namespaceUpsertResponse),
+                jacksonTypeRef<NamespaceUpsertResponse>(),
+            )
+
+        assertThat(roundtrippedNamespaceUpsertResponse).isEqualTo(namespaceUpsertResponse)
     }
 }

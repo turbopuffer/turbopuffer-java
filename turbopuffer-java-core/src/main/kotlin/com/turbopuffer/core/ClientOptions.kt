@@ -14,6 +14,7 @@ class ClientOptions
 private constructor(
     private val originalHttpClient: HttpClient,
     @get:JvmName("httpClient") val httpClient: HttpClient,
+    @get:JvmName("checkJacksonVersionCompatibility") val checkJacksonVersionCompatibility: Boolean,
     @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
     @get:JvmName("clock") val clock: Clock,
     @get:JvmName("baseUrl") val baseUrl: String,
@@ -24,6 +25,12 @@ private constructor(
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("apiKey") val apiKey: String,
 ) {
+
+    init {
+        if (checkJacksonVersionCompatibility) {
+            checkJacksonVersionCompatibility()
+        }
+    }
 
     fun toBuilder() = Builder().from(this)
 
@@ -49,6 +56,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
+        private var checkJacksonVersionCompatibility: Boolean = true
         private var jsonMapper: JsonMapper = jsonMapper()
         private var clock: Clock = Clock.systemUTC()
         private var baseUrl: String = PRODUCTION_URL
@@ -62,6 +70,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
             httpClient = clientOptions.originalHttpClient
+            checkJacksonVersionCompatibility = clientOptions.checkJacksonVersionCompatibility
             jsonMapper = clientOptions.jsonMapper
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
@@ -74,6 +83,10 @@ private constructor(
         }
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
+
+        fun checkJacksonVersionCompatibility(checkJacksonVersionCompatibility: Boolean) = apply {
+            this.checkJacksonVersionCompatibility = checkJacksonVersionCompatibility
+        }
 
         fun jsonMapper(jsonMapper: JsonMapper) = apply { this.jsonMapper = jsonMapper }
 
@@ -171,7 +184,12 @@ private constructor(
 
         fun removeAllQueryParams(keys: Set<String>) = apply { queryParams.removeAll(keys) }
 
-        fun fromEnv() = apply { System.getenv("TURBOPUFFER_API_KEY")?.let { apiKey(it) } }
+        fun baseUrl(): String = baseUrl
+
+        fun fromEnv() = apply {
+            System.getenv("TURBOPUFFER_BASE_URL")?.let { baseUrl(it) }
+            System.getenv("TURBOPUFFER_API_KEY")?.let { apiKey(it) }
+        }
 
         /**
          * Returns an immutable instance of [ClientOptions].
@@ -216,6 +234,7 @@ private constructor(
                         .maxRetries(maxRetries)
                         .build()
                 ),
+                checkJacksonVersionCompatibility,
                 jsonMapper,
                 clock,
                 baseUrl,

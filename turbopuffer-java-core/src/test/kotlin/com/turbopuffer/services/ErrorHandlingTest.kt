@@ -18,7 +18,6 @@ import com.turbopuffer.errors.InternalServerException
 import com.turbopuffer.errors.NotFoundException
 import com.turbopuffer.errors.PermissionDeniedException
 import com.turbopuffer.errors.RateLimitException
-import com.turbopuffer.errors.TurbopufferError
 import com.turbopuffer.errors.TurbopufferException
 import com.turbopuffer.errors.UnauthorizedException
 import com.turbopuffer.errors.UnexpectedStatusCodeException
@@ -31,18 +30,17 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.parallel.ResourceLock
 
 @WireMockTest
+@ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class ErrorHandlingTest {
 
     companion object {
 
-        private val ERROR: TurbopufferError =
-            TurbopufferError.builder()
-                .putAdditionalProperty("errorProperty", JsonValue.from("42"))
-                .build()
+        private val ERROR_JSON: JsonValue = JsonValue.from(mapOf("errorProperty" to "42"))
 
-        private val ERROR_JSON: ByteArray = jsonMapper().writeValueAsBytes(ERROR)
+        private val ERROR_JSON_BYTES: ByteArray = jsonMapper().writeValueAsBytes(ERROR_JSON)
 
         private const val HEADER_NAME: String = "Error-Header"
 
@@ -68,7 +66,9 @@ internal class ErrorHandlingTest {
         val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(status(400).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
+                .willReturn(
+                    status(400).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
         )
 
         val e =
@@ -93,8 +93,8 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(400)
-        assertThat(e.error()).isEqualTo(ERROR)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -103,7 +103,9 @@ internal class ErrorHandlingTest {
         val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(status(401).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
+                .willReturn(
+                    status(401).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
         )
 
         val e =
@@ -128,8 +130,8 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(401)
-        assertThat(e.error()).isEqualTo(ERROR)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -138,7 +140,9 @@ internal class ErrorHandlingTest {
         val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(status(403).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
+                .willReturn(
+                    status(403).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
         )
 
         val e =
@@ -163,8 +167,8 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(403)
-        assertThat(e.error()).isEqualTo(ERROR)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -173,7 +177,9 @@ internal class ErrorHandlingTest {
         val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(status(404).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
+                .willReturn(
+                    status(404).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
         )
 
         val e =
@@ -198,8 +204,8 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(404)
-        assertThat(e.error()).isEqualTo(ERROR)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -208,7 +214,9 @@ internal class ErrorHandlingTest {
         val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(status(422).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
+                .willReturn(
+                    status(422).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
         )
 
         val e =
@@ -233,8 +241,8 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(422)
-        assertThat(e.error()).isEqualTo(ERROR)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -243,7 +251,9 @@ internal class ErrorHandlingTest {
         val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(status(429).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
+                .willReturn(
+                    status(429).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
         )
 
         val e =
@@ -268,8 +278,8 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(429)
-        assertThat(e.error()).isEqualTo(ERROR)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -278,7 +288,9 @@ internal class ErrorHandlingTest {
         val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(status(500).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
+                .willReturn(
+                    status(500).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
         )
 
         val e =
@@ -303,8 +315,8 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(500)
-        assertThat(e.error()).isEqualTo(ERROR)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -313,7 +325,9 @@ internal class ErrorHandlingTest {
         val namespaceService = client.namespaces()
         stubFor(
             post(anyUrl())
-                .willReturn(status(999).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON))
+                .willReturn(
+                    status(999).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
         )
 
         val e =
@@ -338,8 +352,8 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(999)
-        assertThat(e.error()).isEqualTo(ERROR)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
     @Disabled("skipped: tests are disabled for the time being")

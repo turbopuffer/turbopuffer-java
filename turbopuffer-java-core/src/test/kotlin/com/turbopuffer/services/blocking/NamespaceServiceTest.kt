@@ -7,6 +7,7 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.DocumentColumns
+import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
@@ -116,20 +117,27 @@ internal class NamespaceServiceTest {
                 NamespaceUpsertParams.builder()
                     .namespace("namespace")
                     .documents(
-                        NamespaceUpsertParams.Documents.UpsertColumnar.builder()
-                            .attributes(
-                                DocumentColumns.Attributes.builder()
-                                    .putAdditionalProperty(
-                                        "foo",
-                                        JsonValue.from(listOf(mapOf("foo" to "bar"))),
+                        NamespaceUpsertParams.Documents.Write.builder()
+                            .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                            .patchColumns(
+                                DocumentColumns.builder()
+                                    .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                    .addAdditionalProperty(
+                                        DocumentColumns.AdditionalProperty.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
                                     )
                                     .build()
                             )
-                            .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .addVector(listOf(0.0))
-                            .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                            .addPatchRow(
+                                DocumentRow.builder()
+                                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                    .additionalProperties(JsonValue.from(mapOf<String, Any>()))
+                                    .vectorOfNumber(listOf(0.0))
+                                    .build()
+                            )
                             .schema(
-                                NamespaceUpsertParams.Documents.UpsertColumnar.Schema.builder()
+                                NamespaceUpsertParams.Documents.Write.Schema.builder()
                                     .putAdditionalProperty(
                                         "foo",
                                         JsonValue.from(
@@ -142,6 +150,23 @@ internal class NamespaceServiceTest {
                                             )
                                         ),
                                     )
+                                    .build()
+                            )
+                            .upsertColumns(
+                                DocumentColumns.builder()
+                                    .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                    .addAdditionalProperty(
+                                        DocumentColumns.AdditionalProperty.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .addUpsertRow(
+                                DocumentRow.builder()
+                                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                    .additionalProperties(JsonValue.from(mapOf<String, Any>()))
+                                    .vectorOfNumber(listOf(0.0))
                                     .build()
                             )
                             .build()

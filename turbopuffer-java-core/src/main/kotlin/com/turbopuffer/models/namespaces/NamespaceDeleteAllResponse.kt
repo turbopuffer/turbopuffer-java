@@ -11,23 +11,23 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.checkRequired
-import com.turbopuffer.core.immutableEmptyMap
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
+import kotlin.jvm.optionals.getOrNull
 
 /** The response to a successful namespace deletion request. */
-@NoAutoDetect
 class NamespaceDeleteAllResponse
-@JsonCreator
 private constructor(
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val status: JsonField<Status>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of()
+    ) : this(status, mutableMapOf())
 
     /**
      * The status of the request.
@@ -44,20 +44,15 @@ private constructor(
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): NamespaceDeleteAllResponse = apply {
-        if (validated) {
-            return@apply
-        }
-
-        status()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -131,9 +126,35 @@ private constructor(
         fun build(): NamespaceDeleteAllResponse =
             NamespaceDeleteAllResponse(
                 checkRequired("status", status),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
+
+    private var validated: Boolean = false
+
+    fun validate(): NamespaceDeleteAllResponse = apply {
+        if (validated) {
+            return@apply
+        }
+
+        status().validate()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: TurbopufferInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic internal fun validity(): Int = (status.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The status of the request. */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -150,7 +171,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val OK = of("ok")
+            @JvmField val OK = of("OK")
 
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
@@ -216,6 +237,33 @@ private constructor(
             _value().asString().orElseThrow {
                 TurbopufferInvalidDataException("Value is not a String")
             }
+
+        private var validated: Boolean = false
+
+        fun validate(): Status = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

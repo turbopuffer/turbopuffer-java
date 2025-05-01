@@ -3,6 +3,7 @@
 package com.turbopuffer.services.blocking
 
 import com.turbopuffer.core.ClientOptions
+import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.handlers.errorHandler
 import com.turbopuffer.core.handlers.jsonHandler
@@ -14,13 +15,13 @@ import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
-import com.turbopuffer.errors.TurbopufferError
 import com.turbopuffer.models.namespaces.DocumentRowWithScore
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceListPage
+import com.turbopuffer.models.namespaces.NamespaceListPageResponse
 import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceUpsertParams
@@ -46,7 +47,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions,
     ): NamespaceDeleteAllResponse =
-        // delete /v1/namespaces/{namespace}
+        // delete /v2/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).parse()
 
     override fun getSchema(
@@ -73,10 +74,10 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         NamespaceService.WithRawResponse {
 
-        private val errorHandler: Handler<TurbopufferError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<NamespaceListPage.Response> =
-            jsonHandler<NamespaceListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<NamespaceListPageResponse> =
+            jsonHandler<NamespaceListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
@@ -99,7 +100,13 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                             it.validate()
                         }
                     }
-                    .let { NamespaceListPage.of(NamespaceServiceImpl(clientOptions), params, it) }
+                    .let {
+                        NamespaceListPage.builder()
+                            .service(NamespaceServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 
@@ -114,7 +121,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0))
+                    .addPathSegments("v2", "namespaces", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params)

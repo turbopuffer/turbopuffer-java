@@ -2,8 +2,9 @@
 
 package com.turbopuffer.models.namespaces
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.JsonValue
-import kotlin.jvm.optionals.getOrNull
+import com.turbopuffer.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -16,21 +17,33 @@ internal class DocumentRowTest {
         val documentRow =
             DocumentRow.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .attributes(
-                    DocumentRow.Attributes.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .addVector(0.0)
+                .additionalProperties(JsonValue.from(mapOf<String, Any>()))
+                .vectorOfNumber(listOf(0.0))
                 .build()
 
         assertThat(documentRow.id()).contains(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        assertThat(documentRow.attributes())
-            .contains(
-                DocumentRow.Attributes.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                    .build()
+        assertThat(documentRow._additionalProperties())
+            .isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(documentRow.vector()).contains(DocumentRow.Vector.ofNumber(listOf(0.0)))
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val documentRow =
+            DocumentRow.builder()
+                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .additionalProperties(JsonValue.from(mapOf<String, Any>()))
+                .vectorOfNumber(listOf(0.0))
+                .build()
+
+        val roundtrippedDocumentRow =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(documentRow),
+                jacksonTypeRef<DocumentRow>(),
             )
-        assertThat(documentRow.vector().getOrNull()).containsExactly(0.0)
+
+        assertThat(roundtrippedDocumentRow).isEqualTo(documentRow)
     }
 }

@@ -1,21 +1,21 @@
-# turbopuffer Java API Library
+# Turbopuffer Java API Library
 
 <!-- x-release-please-start-version -->
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.10)
+[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.10/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.10)
 
 <!-- x-release-please-end -->
 
-> [!IMPORTANT]
-> **The turbopuffer Java client is in beta.**
->
-> Please let us know about any bugs or performance issues.
-
-The turbopuffer Java SDK provides convenient access to the Turbopuffer REST API from applications written in Java.
+The Turbopuffer Java SDK provides convenient access to the [Turbopuffer REST API](https://turbopuffer.com/docs) from applications written in Java.
 
 It is generated with [Stainless](https://www.stainless.com/).
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/latest/index.html).
+<!-- x-release-please-start-version -->
+
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.10).
+
+<!-- x-release-please-end -->
 
 ## Installation
 
@@ -31,9 +31,9 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.10")
 
 ```xml
 <dependency>
-    <groupId>com.turbopuffer</groupId>
-    <artifactId>turbopuffer-java</artifactId>
-    <version>0.1.0-beta.10</version>
+  <groupId>com.turbopuffer</groupId>
+  <artifactId>turbopuffer-java</artifactId>
+  <version>0.1.0-beta.10</version>
 </dependency>
 ```
 
@@ -52,12 +52,12 @@ import com.turbopuffer.models.namespaces.DistanceMetric;
 import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
 import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 
-// Configures using the `TURBOPUFFER_API_KEY` environment variable
+// Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
+    .documents(NamespaceUpsertParams.Documents.Write.builder()
         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
         .build())
     .build();
@@ -72,7 +72,7 @@ Configure the client using environment variables:
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
-// Configures using the `TURBOPUFFER_API_KEY` environment variable
+// Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 ```
 
@@ -94,7 +94,7 @@ import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
-    // Configures using the `TURBOPUFFER_API_KEY` environment variable
+    // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build();
@@ -102,9 +102,10 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
 
 See this table for the available options:
 
-| Setter   | Environment variable  | Required | Default value |
-| -------- | --------------------- | -------- | ------------- |
-| `apiKey` | `TURBOPUFFER_API_KEY` | true     | -             |
+| Setter    | Environment variable   | Required | Default value                   |
+| --------- | ---------------------- | -------- | ------------------------------- |
+| `apiKey`  | `TURBOPUFFER_API_KEY`  | true     | -                               |
+| `baseUrl` | `TURBOPUFFER_BASE_URL` | true     | `"https://api.turbopuffer.com"` |
 
 > [!TIP]
 > Don't create more than one client in the same application. Each client has a connection pool and
@@ -112,7 +113,7 @@ See this table for the available options:
 
 ## Requests and responses
 
-To send a request to the turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
+To send a request to the Turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
 
 For example, `client.namespaces().upsert(...)` should be called with an instance of `NamespaceUpsertParams`, and it will return an instance of `NamespaceUpsertResponse`.
 
@@ -136,12 +137,12 @@ import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
 import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `TURBOPUFFER_API_KEY` environment variable
+// Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
+    .documents(NamespaceUpsertParams.Documents.Write.builder()
         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
         .build())
     .build();
@@ -158,12 +159,12 @@ import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
 import com.turbopuffer.models.namespaces.NamespaceUpsertResponse;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `TURBOPUFFER_API_KEY` environment variable
+// Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
 NamespaceUpsertParams params = NamespaceUpsertParams.builder()
     .namespace("products")
-    .documents(NamespaceUpsertParams.Documents.UpsertColumnar.builder()
+    .documents(NamespaceUpsertParams.Documents.Write.builder()
         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
         .build())
     .build();
@@ -207,16 +208,16 @@ The SDK throws custom unchecked exception types:
 
 - [`TurbopufferServiceException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/TurbopufferServiceException.kt): Base class for HTTP errors. See this table for which exception subclass is thrown for each HTTP status code:
 
-  | Status | Exception                       |
-  | ------ | ------------------------------- |
-  | 400    | `BadRequestException`           |
-  | 401    | `AuthenticationException`       |
-  | 403    | `PermissionDeniedException`     |
-  | 404    | `NotFoundException`             |
-  | 422    | `UnprocessableEntityException`  |
-  | 429    | `RateLimitException`            |
-  | 5xx    | `InternalServerException`       |
-  | others | `UnexpectedStatusCodeException` |
+  | Status | Exception                                                                                                                        |
+  | ------ | -------------------------------------------------------------------------------------------------------------------------------- |
+  | 400    | [`BadRequestException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/BadRequestException.kt)                     |
+  | 401    | [`UnauthorizedException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/UnauthorizedException.kt)                 |
+  | 403    | [`PermissionDeniedException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/PermissionDeniedException.kt)         |
+  | 404    | [`NotFoundException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/NotFoundException.kt)                         |
+  | 422    | [`UnprocessableEntityException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/UnprocessableEntityException.kt)   |
+  | 429    | [`RateLimitException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/RateLimitException.kt)                       |
+  | 5xx    | [`InternalServerException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/InternalServerException.kt)             |
+  | others | [`UnexpectedStatusCodeException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/UnexpectedStatusCodeException.kt) |
 
 - [`TurbopufferIoException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/TurbopufferIoException.kt): I/O networking errors.
 
@@ -291,6 +292,17 @@ Or to `debug` for more verbose logging:
 ```sh
 $ export TURBOPUFFER_LOG=debug
 ```
+
+## Jackson
+
+The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON serialization/deserialization. It is compatible with version 2.13.4 or higher, but depends on version 2.18.2 by default.
+
+The SDK throws an exception if it detects an incompatible Jackson version at runtime (e.g. if the default version was overridden in your Maven or Gradle config).
+
+If the SDK threw an exception, but you're _certain_ the version is compatible, then disable the version check using the `checkJacksonVersionCompatibility` on [`TurbopufferOkHttpClient`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClient.kt) or [`TurbopufferOkHttpClientAsync`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClientAsync.kt).
+
+> [!CAUTION]
+> We make no guarantee that the SDK works correctly when the Jackson version check is disabled.
 
 ## Network options
 
@@ -368,6 +380,42 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
     ))
     .build();
 ```
+
+### Custom HTTP client
+
+The SDK consists of three artifacts:
+
+- `turbopuffer-java-core`
+  - Contains core SDK logic
+  - Does not depend on [OkHttp](https://square.github.io/okhttp)
+  - Exposes [`TurbopufferClient`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClient.kt), [`TurbopufferClientAsync`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientAsync.kt), [`TurbopufferClientImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientImpl.kt), and [`TurbopufferClientAsyncImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientAsyncImpl.kt), all of which can work with any HTTP client
+- `turbopuffer-java-client-okhttp`
+  - Depends on [OkHttp](https://square.github.io/okhttp)
+  - Exposes [`TurbopufferOkHttpClient`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClient.kt) and [`TurbopufferOkHttpClientAsync`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClientAsync.kt), which provide a way to construct [`TurbopufferClientImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientImpl.kt) and [`TurbopufferClientAsyncImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientAsyncImpl.kt), respectively, using OkHttp
+- `turbopuffer-java`
+  - Depends on and exposes the APIs of both `turbopuffer-java-core` and `turbopuffer-java-client-okhttp`
+  - Does not have its own logic
+
+This structure allows replacing the SDK's default HTTP client without pulling in unnecessary dependencies.
+
+#### Customized [`OkHttpClient`](https://square.github.io/okhttp/3.x/okhttp/okhttp3/OkHttpClient.html)
+
+> [!TIP]
+> Try the available [network options](#network-options) before replacing the default client.
+
+To use a customized `OkHttpClient`:
+
+1. Replace your [`turbopuffer-java` dependency](#installation) with `turbopuffer-java-core`
+2. Copy `turbopuffer-java-client-okhttp`'s [`OkHttpClient`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/OkHttpClient.kt) class into your code and customize it
+3. Construct [`TurbopufferClientImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientImpl.kt) or [`TurbopufferClientAsyncImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientAsyncImpl.kt), similarly to [`TurbopufferOkHttpClient`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClient.kt) or [`TurbopufferOkHttpClientAsync`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClientAsync.kt), using your customized client
+
+### Completely custom HTTP client
+
+To use a completely custom HTTP client:
+
+1. Replace your [`turbopuffer-java` dependency](#installation) with `turbopuffer-java-core`
+2. Write a class that implements the [`HttpClient`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/http/HttpClient.kt) interface
+3. Construct [`TurbopufferClientImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientImpl.kt) or [`TurbopufferClientAsyncImpl`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/client/TurbopufferClientAsyncImpl.kt), similarly to [`TurbopufferOkHttpClient`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClient.kt) or [`TurbopufferOkHttpClientAsync`](turbopuffer-java-client-okhttp/src/main/kotlin/com/turbopuffer/client/okhttp/TurbopufferOkHttpClientAsync.kt), using your new client class
 
 ## Undocumented API functionality
 
@@ -454,6 +502,19 @@ JsonValue complexValue = JsonValue.from(Map.of(
     3, 4
   )
 ));
+```
+
+Normally a `Builder` class's `build` method will throw [`IllegalStateException`](https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html) if any required parameter or property is unset.
+
+To forcibly omit a required parameter or property, pass [`JsonMissing`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/Values.kt):
+
+```java
+import com.turbopuffer.core.JsonMissing;
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams;
+
+NamespaceUpsertParams params = NamespaceUpsertParams.builder()
+    .namespace(JsonMissing.of())
+    .build();
 ```
 
 ### Response properties

@@ -10,30 +10,40 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
-import com.turbopuffer.core.checkKnown
-import com.turbopuffer.core.immutableEmptyMap
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** A single document, in a row-based format. */
-@NoAutoDetect
 class DocumentRowWithScore
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<Id> = JsonMissing.of(),
-    @JsonProperty("attributes")
-    @ExcludeMissing
-    private val attributes: JsonField<DocumentRow.Attributes> = JsonMissing.of(),
-    @JsonProperty("vector")
-    @ExcludeMissing
-    private val vector: JsonField<List<Double>> = JsonMissing.of(),
-    @JsonProperty("dist") @ExcludeMissing private val dist: JsonField<Double> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<Id>,
+    private val additionalProperties: JsonValue,
+    private val vector: JsonField<DocumentRow.Vector>,
+    private val dist: JsonField<Double>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<Id> = JsonMissing.of(),
+        @JsonProperty("additionalProperties")
+        @ExcludeMissing
+        additionalProperties: JsonValue = JsonMissing.of(),
+        @JsonProperty("vector")
+        @ExcludeMissing
+        vector: JsonField<DocumentRow.Vector> = JsonMissing.of(),
+        @JsonProperty("dist") @ExcludeMissing dist: JsonField<Double> = JsonMissing.of(),
+    ) : this(id, additionalProperties, vector, dist, mutableMapOf())
+
+    fun toDocumentRow(): DocumentRow =
+        DocumentRow.builder()
+            .id(id)
+            .additionalProperties(additionalProperties)
+            .vector(vector)
+            .build()
 
     /**
      * An identifier for a document.
@@ -41,16 +51,12 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun id(): Optional<Id> = Optional.ofNullable(id.getNullable("id"))
+    fun id(): Optional<Id> = id.getOptional("id")
 
-    /**
-     * The attributes attached to the document.
-     *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun attributes(): Optional<DocumentRow.Attributes> =
-        Optional.ofNullable(attributes.getNullable("attributes"))
+    /** The attributes attached to the document. */
+    @JsonProperty("additionalProperties")
+    @ExcludeMissing
+    fun _additionalProperties(): JsonValue = additionalProperties
 
     /**
      * A vector describing the document.
@@ -58,7 +64,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun vector(): Optional<List<Double>> = Optional.ofNullable(vector.getNullable("vector"))
+    fun vector(): Optional<DocumentRow.Vector> = vector.getOptional("vector")
 
     /**
      * For vector search, the distance between the query vector and the document vector. For BM25
@@ -67,7 +73,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun dist(): Optional<Double> = Optional.ofNullable(dist.getNullable("dist"))
+    fun dist(): Optional<Double> = dist.getOptional("dist")
 
     /**
      * Returns the raw JSON value of [id].
@@ -77,20 +83,11 @@ private constructor(
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<Id> = id
 
     /**
-     * Returns the raw JSON value of [attributes].
-     *
-     * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("attributes")
-    @ExcludeMissing
-    fun _attributes(): JsonField<DocumentRow.Attributes> = attributes
-
-    /**
      * Returns the raw JSON value of [vector].
      *
      * Unlike [vector], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("vector") @ExcludeMissing fun _vector(): JsonField<List<Double>> = vector
+    @JsonProperty("vector") @ExcludeMissing fun _vector(): JsonField<DocumentRow.Vector> = vector
 
     /**
      * Returns the raw JSON value of [dist].
@@ -99,26 +96,15 @@ private constructor(
      */
     @JsonProperty("dist") @ExcludeMissing fun _dist(): JsonField<Double> = dist
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun toDocumentRow(): DocumentRow =
-        DocumentRow.builder().id(id).attributes(attributes).vector(vector).build()
-
-    private var validated: Boolean = false
-
-    fun validate(): DocumentRowWithScore = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id().ifPresent { it.validate() }
-        attributes().ifPresent { it.validate() }
-        vector()
-        dist()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -132,16 +118,16 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<Id> = JsonMissing.of()
-        private var attributes: JsonField<DocumentRow.Attributes> = JsonMissing.of()
-        private var vector: JsonField<MutableList<Double>>? = null
+        private var additionalProperties: JsonValue = JsonMissing.of()
+        private var vector: JsonField<DocumentRow.Vector> = JsonMissing.of()
         private var dist: JsonField<Double> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(documentRowWithScore: DocumentRowWithScore) = apply {
             id = documentRowWithScore.id
-            attributes = documentRowWithScore.attributes
-            vector = documentRowWithScore.vector.map { it.toMutableList() }
+            additionalProperties = documentRowWithScore.additionalProperties
+            vector = documentRowWithScore.vector
             dist = documentRowWithScore.dist
             additionalProperties = documentRowWithScore.additionalProperties.toMutableMap()
         }
@@ -164,47 +150,30 @@ private constructor(
         fun id(integer: Long) = id(Id.ofInteger(integer))
 
         /** The attributes attached to the document. */
-        fun attributes(attributes: DocumentRow.Attributes) = attributes(JsonField.of(attributes))
-
-        /**
-         * Sets [Builder.attributes] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.attributes] with a well-typed [DocumentRow.Attributes]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
-         */
-        fun attributes(attributes: JsonField<DocumentRow.Attributes>) = apply {
-            this.attributes = attributes
+        fun additionalProperties(additionalProperties: JsonValue) = apply {
+            this.additionalProperties = additionalProperties
         }
 
         /** A vector describing the document. */
-        fun vector(vector: List<Double>?) = vector(JsonField.ofNullable(vector))
+        fun vector(vector: DocumentRow.Vector?) = vector(JsonField.ofNullable(vector))
 
         /** Alias for calling [Builder.vector] with `vector.orElse(null)`. */
-        fun vector(vector: Optional<List<Double>>) = vector(vector.getOrNull())
+        fun vector(vector: Optional<DocumentRow.Vector>) = vector(vector.getOrNull())
 
         /**
          * Sets [Builder.vector] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.vector] with a well-typed `List<Double>` value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.vector] with a well-typed [DocumentRow.Vector] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun vector(vector: JsonField<List<Double>>) = apply {
-            this.vector = vector.map { it.toMutableList() }
-        }
+        fun vector(vector: JsonField<DocumentRow.Vector>) = apply { this.vector = vector }
 
-        /**
-         * Adds a single [Double] to [Builder.vector].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addVector(vector: Double) = apply {
-            this.vector =
-                (this.vector ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("vector", it).add(vector)
-                }
-        }
+        /** Alias for calling [vector] with `DocumentRow.Vector.ofNumber(number)`. */
+        fun vectorOfNumber(number: List<Double>) = vector(DocumentRow.Vector.ofNumber(number))
+
+        /** Alias for calling [vector] with `DocumentRow.Vector.ofString(string)`. */
+        fun vector(string: String) = vector(DocumentRow.Vector.ofString(string))
 
         /**
          * For vector search, the distance between the query vector and the document vector. For
@@ -247,27 +216,59 @@ private constructor(
         fun build(): DocumentRowWithScore =
             DocumentRowWithScore(
                 id,
-                attributes,
-                (vector ?: JsonMissing.of()).map { it.toImmutable() },
+                additionalProperties,
+                vector,
                 dist,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
+
+    private var validated: Boolean = false
+
+    fun validate(): DocumentRowWithScore = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id().ifPresent { it.validate() }
+        vector().ifPresent { it.validate() }
+        dist()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: TurbopufferInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (id.asKnown().getOrNull()?.validity() ?: 0) +
+            (vector.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (dist.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is DocumentRowWithScore && id == other.id && attributes == other.attributes && vector == other.vector && dist == other.dist && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is DocumentRowWithScore && id == other.id && additionalProperties == other.additionalProperties && vector == other.vector && dist == other.dist && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, attributes, vector, dist, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, additionalProperties, vector, dist, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "DocumentRowWithScore{id=$id, attributes=$attributes, vector=$vector, dist=$dist, additionalProperties=$additionalProperties}"
+        "DocumentRowWithScore{id=$id, additionalProperties=$additionalProperties, vector=$vector, dist=$dist, additionalProperties=$additionalProperties}"
 }

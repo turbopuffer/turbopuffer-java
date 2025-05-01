@@ -20,28 +20,33 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
+import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.getOrThrow
-import com.turbopuffer.core.immutableEmptyMap
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** The schema for an attribute attached to a document. */
-@NoAutoDetect
 class AttributeSchema
-@JsonCreator
 private constructor(
-    @JsonProperty("filterable")
-    @ExcludeMissing
-    private val filterable: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("full_text_search")
-    @ExcludeMissing
-    private val fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val filterable: JsonField<Boolean>,
+    private val fullTextSearch: JsonField<FullTextSearch>,
+    private val type: JsonField<Type>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("filterable")
+        @ExcludeMissing
+        filterable: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("full_text_search")
+        @ExcludeMissing
+        fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+    ) : this(filterable, fullTextSearch, type, mutableMapOf())
 
     /**
      * Whether or not the attributes can be used in filters/WHERE clauses.
@@ -49,7 +54,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun filterable(): Optional<Boolean> = Optional.ofNullable(filterable.getNullable("filterable"))
+    fun filterable(): Optional<Boolean> = filterable.getOptional("filterable")
 
     /**
      * Whether this attribute can be used as part of a BM25 full-text search. Requires the `string`
@@ -59,8 +64,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun fullTextSearch(): Optional<FullTextSearch> =
-        Optional.ofNullable(fullTextSearch.getNullable("full_text_search"))
+    fun fullTextSearch(): Optional<FullTextSearch> = fullTextSearch.getOptional("full_text_search")
 
     /**
      * The data type of the attribute.
@@ -68,7 +72,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
+    fun type(): Optional<Type> = type.getOptional("type")
 
     /**
      * Returns the raw JSON value of [filterable].
@@ -93,22 +97,15 @@ private constructor(
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): AttributeSchema = apply {
-        if (validated) {
-            return@apply
-        }
-
-        filterable()
-        fullTextSearch().ifPresent { it.validate() }
-        type()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -208,8 +205,40 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): AttributeSchema =
-            AttributeSchema(filterable, fullTextSearch, type, additionalProperties.toImmutable())
+            AttributeSchema(filterable, fullTextSearch, type, additionalProperties.toMutableMap())
     }
+
+    private var validated: Boolean = false
+
+    fun validate(): AttributeSchema = apply {
+        if (validated) {
+            return@apply
+        }
+
+        filterable()
+        fullTextSearch().ifPresent { it.validate() }
+        type().ifPresent { it.validate() }
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: TurbopufferInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (filterable.asKnown().isPresent) 1 else 0) +
+            (fullTextSearch.asKnown().getOrNull()?.validity() ?: 0) +
+            (type.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
      * Whether this attribute can be used as part of a BM25 full-text search. Requires the `string`
@@ -241,13 +270,12 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 bool != null -> visitor.visitBool(bool)
                 config != null -> visitor.visitConfig(config)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -267,6 +295,32 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitBool(bool: Boolean) = 1
+
+                    override fun visitConfig(config: FullTextSearchConfig) = config.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -325,15 +379,28 @@ private constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): FullTextSearch {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<Boolean>())?.let {
-                    return FullTextSearch(bool = it, _json = json)
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<FullTextSearchConfig>())?.let {
+                                FullTextSearch(config = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<Boolean>())?.let {
+                                FullTextSearch(bool = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from string).
+                    0 -> FullTextSearch(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                 }
-                tryDeserialize(node, jacksonTypeRef<FullTextSearchConfig>()) { it.validate() }
-                    ?.let {
-                        return FullTextSearch(config = it, _json = json)
-                    }
-
-                return FullTextSearch(_json = json)
             }
         }
 
@@ -492,6 +559,33 @@ private constructor(
             _value().asString().orElseThrow {
                 TurbopufferInvalidDataException("Value is not a String")
             }
+
+        private var validated: Boolean = false
+
+        fun validate(): Type = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

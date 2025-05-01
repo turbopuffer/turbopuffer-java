@@ -2,7 +2,6 @@
 
 package com.turbopuffer.models.namespaces
 
-import com.turbopuffer.core.NoAutoDetect
 import com.turbopuffer.core.Params
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
@@ -33,18 +32,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                cursor?.let { put("cursor", it) }
-                pageSize?.let { put("page_size", it.toString()) }
-                prefix?.let { put("prefix", it) }
-                putAll(additionalQueryParams)
-            }
-            .build()
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -56,7 +43,6 @@ private constructor(
     }
 
     /** A builder for [NamespaceListParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var cursor: String? = null
@@ -211,6 +197,18 @@ private constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                cursor?.let { put("cursor", it) }
+                pageSize?.let { put("page_size", it.toString()) }
+                prefix?.let { put("prefix", it) }
+                putAll(additionalQueryParams)
+            }
+            .build()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

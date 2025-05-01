@@ -3,36 +3,24 @@
 package com.turbopuffer.models.namespaces
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.NoAutoDetect
-import com.turbopuffer.core.immutableEmptyMap
 import com.turbopuffer.core.toImmutable
+import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 
 /** The response to a successful namespace schema request. */
-@NoAutoDetect
 class NamespaceGetSchemaResponse
 @JsonCreator
 private constructor(
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
+    @com.fasterxml.jackson.annotation.JsonValue
+    private val additionalProperties: Map<String, JsonValue>
 ) {
 
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): NamespaceGetSchemaResponse = apply {
-        if (validated) {
-            return@apply
-        }
-
-        validated = true
-    }
 
     fun toBuilder() = Builder().from(this)
 
@@ -81,6 +69,33 @@ private constructor(
         fun build(): NamespaceGetSchemaResponse =
             NamespaceGetSchemaResponse(additionalProperties.toImmutable())
     }
+
+    private var validated: Boolean = false
+
+    fun validate(): NamespaceGetSchemaResponse = apply {
+        if (validated) {
+            return@apply
+        }
+
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: TurbopufferInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
