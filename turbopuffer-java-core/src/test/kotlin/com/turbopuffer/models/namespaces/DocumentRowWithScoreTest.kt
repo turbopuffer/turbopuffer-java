@@ -3,7 +3,6 @@
 package com.turbopuffer.models.namespaces
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
@@ -17,15 +16,12 @@ internal class DocumentRowWithScoreTest {
         val documentRowWithScore =
             DocumentRowWithScore.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .additionalProperties(JsonValue.from(mapOf<String, Any>()))
                 .vectorOfNumber(listOf(0.0))
                 .dist(0.0)
                 .build()
 
         assertThat(documentRowWithScore.id())
             .contains(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        assertThat(documentRowWithScore._additionalProperties())
-            .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(documentRowWithScore.vector()).contains(DocumentRow.Vector.ofNumber(listOf(0.0)))
         assertThat(documentRowWithScore.dist()).contains(0.0)
     }
@@ -37,7 +33,6 @@ internal class DocumentRowWithScoreTest {
         val documentRowWithScore =
             DocumentRowWithScore.builder()
                 .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .additionalProperties(JsonValue.from(mapOf<String, Any>()))
                 .vectorOfNumber(listOf(0.0))
                 .dist(0.0)
                 .build()
