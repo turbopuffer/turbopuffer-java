@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.0-beta.12 (2025-05-01)
+
+Full Changelog: [v0.1.0-beta.11...v0.1.0-beta.12](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.11...v0.1.0-beta.12)
+
+### Features
+
+* **api:** api update ([6c24648](https://github.com/turbopuffer/turbopuffer-java/commit/6c2464836f2c478e1fbd7770baff4eda7108c319))
+* **api:** api update ([f733153](https://github.com/turbopuffer/turbopuffer-java/commit/f7331539d48ea50de8be9d9b815049d9e8a18b6e))
+* **api:** api update ([5505285](https://github.com/turbopuffer/turbopuffer-java/commit/55052859706a483c23683d09d0a575eb6c366a97))
+* **api:** api update ([4015e5b](https://github.com/turbopuffer/turbopuffer-java/commit/4015e5b316116ca42600e7c4908bc630130a3fb1))
+
+
+### Chores
+
+* remove custom code ([ebaa463](https://github.com/turbopuffer/turbopuffer-java/commit/ebaa463c36816dfd35706dd4efcb4f46321be0eb))
+* remove custom code ([6b43f87](https://github.com/turbopuffer/turbopuffer-java/commit/6b43f87c9348b10940fd8166f0f56e602ba8ed6e))
+
 ## 0.1.0-beta.11 (2025-05-01)
 
 Full Changelog: [v0.1.0-beta.10...v0.1.0-beta.11](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.10...v0.1.0-beta.11)
