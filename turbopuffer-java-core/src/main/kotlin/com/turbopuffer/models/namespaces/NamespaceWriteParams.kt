@@ -37,7 +37,7 @@ import kotlin.jvm.optionals.getOrNull
 class NamespaceWriteParams
 private constructor(
     private val namespace: String,
-    private val writeOperation: WriteOperation?,
+    private val operation: Operation?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -45,7 +45,7 @@ private constructor(
     fun namespace(): String = namespace
 
     /** Write documents. */
-    fun writeOperation(): Optional<WriteOperation> = Optional.ofNullable(writeOperation)
+    fun operation(): Optional<Operation> = Optional.ofNullable(operation)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -70,14 +70,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var namespace: String? = null
-        private var writeOperation: WriteOperation? = null
+        private var operation: Operation? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(namespaceWriteParams: NamespaceWriteParams) = apply {
             namespace = namespaceWriteParams.namespace
-            writeOperation = namespaceWriteParams.writeOperation
+            operation = namespaceWriteParams.operation
             additionalHeaders = namespaceWriteParams.additionalHeaders.toBuilder()
             additionalQueryParams = namespaceWriteParams.additionalQueryParams.toBuilder()
         }
@@ -85,31 +85,24 @@ private constructor(
         fun namespace(namespace: String) = apply { this.namespace = namespace }
 
         /** Write documents. */
-        fun writeOperation(writeOperation: WriteOperation?) = apply {
-            this.writeOperation = writeOperation
-        }
+        fun operation(operation: Operation?) = apply { this.operation = operation }
 
-        /** Alias for calling [Builder.writeOperation] with `writeOperation.orElse(null)`. */
-        fun writeOperation(writeOperation: Optional<WriteOperation>) =
-            writeOperation(writeOperation.getOrNull())
+        /** Alias for calling [Builder.operation] with `operation.orElse(null)`. */
+        fun operation(operation: Optional<Operation>) = operation(operation.getOrNull())
 
-        /** Alias for calling [writeOperation] with `WriteOperation.ofDocuments(documents)`. */
-        fun writeOperation(documents: WriteOperation.WriteDocuments) =
-            writeOperation(WriteOperation.ofDocuments(documents))
+        /** Alias for calling [operation] with `Operation.ofWriteDocuments(writeDocuments)`. */
+        fun operation(writeDocuments: Operation.WriteDocuments) =
+            operation(Operation.ofWriteDocuments(writeDocuments))
 
         /**
-         * Alias for calling [writeOperation] with
-         * `WriteOperation.ofCopyFromNamespace(copyFromNamespace)`.
+         * Alias for calling [operation] with `Operation.ofCopyFromNamespace(copyFromNamespace)`.
          */
-        fun writeOperation(copyFromNamespace: WriteOperation.CopyFromNamespace) =
-            writeOperation(WriteOperation.ofCopyFromNamespace(copyFromNamespace))
+        fun operation(copyFromNamespace: Operation.CopyFromNamespace) =
+            operation(Operation.ofCopyFromNamespace(copyFromNamespace))
 
-        /**
-         * Alias for calling [writeOperation] with
-         * `WriteOperation.ofDeleteByFilter(deleteByFilter)`.
-         */
-        fun writeOperation(deleteByFilter: WriteOperation.DeleteByFilter) =
-            writeOperation(WriteOperation.ofDeleteByFilter(deleteByFilter))
+        /** Alias for calling [operation] with `Operation.ofDeleteByFilter(deleteByFilter)`. */
+        fun operation(deleteByFilter: Operation.DeleteByFilter) =
+            operation(Operation.ofDeleteByFilter(deleteByFilter))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -224,13 +217,13 @@ private constructor(
         fun build(): NamespaceWriteParams =
             NamespaceWriteParams(
                 checkRequired("namespace", namespace),
-                writeOperation,
+                operation,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
     }
 
-    fun _body(): Optional<WriteOperation> = Optional.ofNullable(writeOperation)
+    fun _body(): Optional<Operation> = Optional.ofNullable(operation)
 
     fun _pathParam(index: Int): String =
         when (index) {
@@ -243,18 +236,18 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     /** Write documents. */
-    @JsonDeserialize(using = WriteOperation.Deserializer::class)
-    @JsonSerialize(using = WriteOperation.Serializer::class)
-    class WriteOperation
+    @JsonDeserialize(using = Operation.Deserializer::class)
+    @JsonSerialize(using = Operation.Serializer::class)
+    class Operation
     private constructor(
-        private val documents: WriteDocuments? = null,
+        private val writeDocuments: WriteDocuments? = null,
         private val copyFromNamespace: CopyFromNamespace? = null,
         private val deleteByFilter: DeleteByFilter? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** Write documents. */
-        fun documents(): Optional<WriteDocuments> = Optional.ofNullable(documents)
+        fun writeDocuments(): Optional<WriteDocuments> = Optional.ofNullable(writeDocuments)
 
         /** Copy documents from another namespace. */
         fun copyFromNamespace(): Optional<CopyFromNamespace> =
@@ -263,14 +256,14 @@ private constructor(
         /** Delete documents by filter. */
         fun deleteByFilter(): Optional<DeleteByFilter> = Optional.ofNullable(deleteByFilter)
 
-        fun isDocuments(): Boolean = documents != null
+        fun isWriteDocuments(): Boolean = writeDocuments != null
 
         fun isCopyFromNamespace(): Boolean = copyFromNamespace != null
 
         fun isDeleteByFilter(): Boolean = deleteByFilter != null
 
         /** Write documents. */
-        fun asDocuments(): WriteDocuments = documents.getOrThrow("documents")
+        fun asWriteDocuments(): WriteDocuments = writeDocuments.getOrThrow("writeDocuments")
 
         /** Copy documents from another namespace. */
         fun asCopyFromNamespace(): CopyFromNamespace =
@@ -283,7 +276,7 @@ private constructor(
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                documents != null -> visitor.visitDocuments(documents)
+                writeDocuments != null -> visitor.visitWriteDocuments(writeDocuments)
                 copyFromNamespace != null -> visitor.visitCopyFromNamespace(copyFromNamespace)
                 deleteByFilter != null -> visitor.visitDeleteByFilter(deleteByFilter)
                 else -> visitor.unknown(_json)
@@ -291,15 +284,15 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): WriteOperation = apply {
+        fun validate(): Operation = apply {
             if (validated) {
                 return@apply
             }
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitDocuments(documents: WriteDocuments) {
-                        documents.validate()
+                    override fun visitWriteDocuments(writeDocuments: WriteDocuments) {
+                        writeDocuments.validate()
                     }
 
                     override fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace) {
@@ -332,7 +325,8 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitDocuments(documents: WriteDocuments) = documents.validity()
+                    override fun visitWriteDocuments(writeDocuments: WriteDocuments) =
+                        writeDocuments.validity()
 
                     override fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace) =
                         copyFromNamespace.validity()
@@ -349,45 +343,45 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is WriteOperation && documents == other.documents && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
+            return /* spotless:off */ other is Operation && writeDocuments == other.writeDocuments && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(documents, copyFromNamespace, deleteByFilter) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(writeDocuments, copyFromNamespace, deleteByFilter) /* spotless:on */
 
         override fun toString(): String =
             when {
-                documents != null -> "WriteOperation{documents=$documents}"
-                copyFromNamespace != null -> "WriteOperation{copyFromNamespace=$copyFromNamespace}"
-                deleteByFilter != null -> "WriteOperation{deleteByFilter=$deleteByFilter}"
-                _json != null -> "WriteOperation{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid WriteOperation")
+                writeDocuments != null -> "Operation{writeDocuments=$writeDocuments}"
+                copyFromNamespace != null -> "Operation{copyFromNamespace=$copyFromNamespace}"
+                deleteByFilter != null -> "Operation{deleteByFilter=$deleteByFilter}"
+                _json != null -> "Operation{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Operation")
             }
 
         companion object {
 
             /** Write documents. */
             @JvmStatic
-            fun ofDocuments(documents: WriteDocuments) = WriteOperation(documents = documents)
+            fun ofWriteDocuments(writeDocuments: WriteDocuments) =
+                Operation(writeDocuments = writeDocuments)
 
             /** Copy documents from another namespace. */
             @JvmStatic
             fun ofCopyFromNamespace(copyFromNamespace: CopyFromNamespace) =
-                WriteOperation(copyFromNamespace = copyFromNamespace)
+                Operation(copyFromNamespace = copyFromNamespace)
 
             /** Delete documents by filter. */
             @JvmStatic
             fun ofDeleteByFilter(deleteByFilter: DeleteByFilter) =
-                WriteOperation(deleteByFilter = deleteByFilter)
+                Operation(deleteByFilter = deleteByFilter)
         }
 
         /**
-         * An interface that defines how to map each variant of [WriteOperation] to a value of type
-         * [T].
+         * An interface that defines how to map each variant of [Operation] to a value of type [T].
          */
         interface Visitor<out T> {
 
             /** Write documents. */
-            fun visitDocuments(documents: WriteDocuments): T
+            fun visitWriteDocuments(writeDocuments: WriteDocuments): T
 
             /** Copy documents from another namespace. */
             fun visitCopyFromNamespace(copyFromNamespace: CopyFromNamespace): T
@@ -396,35 +390,35 @@ private constructor(
             fun visitDeleteByFilter(deleteByFilter: DeleteByFilter): T
 
             /**
-             * Maps an unknown variant of [WriteOperation] to a value of type [T].
+             * Maps an unknown variant of [Operation] to a value of type [T].
              *
-             * An instance of [WriteOperation] can contain an unknown variant if it was deserialized
-             * from data that doesn't match any known variant. For example, if the SDK is on an
-             * older version than the API, then the API may respond with new variants that the SDK
-             * is unaware of.
+             * An instance of [Operation] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
              *
              * @throws TurbopufferInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw TurbopufferInvalidDataException("Unknown WriteOperation: $json")
+                throw TurbopufferInvalidDataException("Unknown Operation: $json")
             }
         }
 
-        internal class Deserializer : BaseDeserializer<WriteOperation>(WriteOperation::class) {
+        internal class Deserializer : BaseDeserializer<Operation>(Operation::class) {
 
-            override fun ObjectCodec.deserialize(node: JsonNode): WriteOperation {
+            override fun ObjectCodec.deserialize(node: JsonNode): Operation {
                 val json = JsonValue.fromJsonNode(node)
 
                 val bestMatches =
                     sequenceOf(
                             tryDeserialize(node, jacksonTypeRef<WriteDocuments>())?.let {
-                                WriteOperation(documents = it, _json = json)
+                                Operation(writeDocuments = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<CopyFromNamespace>())?.let {
-                                WriteOperation(copyFromNamespace = it, _json = json)
+                                Operation(copyFromNamespace = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<DeleteByFilter>())?.let {
-                                WriteOperation(deleteByFilter = it, _json = json)
+                                Operation(deleteByFilter = it, _json = json)
                             },
                         )
                         .filterNotNull()
@@ -433,7 +427,7 @@ private constructor(
                 return when (bestMatches.size) {
                     // This can happen if what we're deserializing is completely incompatible with
                     // all the possible variants (e.g. deserializing from boolean).
-                    0 -> WriteOperation(_json = json)
+                    0 -> Operation(_json = json)
                     1 -> bestMatches.single()
                     // If there's more than one match with the highest validity, then use the first
                     // completely valid match, or simply the first match if none are completely
@@ -443,20 +437,20 @@ private constructor(
             }
         }
 
-        internal class Serializer : BaseSerializer<WriteOperation>(WriteOperation::class) {
+        internal class Serializer : BaseSerializer<Operation>(Operation::class) {
 
             override fun serialize(
-                value: WriteOperation,
+                value: Operation,
                 generator: JsonGenerator,
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.documents != null -> generator.writeObject(value.documents)
+                    value.writeDocuments != null -> generator.writeObject(value.writeDocuments)
                     value.copyFromNamespace != null ->
                         generator.writeObject(value.copyFromNamespace)
                     value.deleteByFilter != null -> generator.writeObject(value.deleteByFilter)
                     value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid WriteOperation")
+                    else -> throw IllegalStateException("Invalid Operation")
                 }
             }
         }
@@ -1281,11 +1275,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceWriteParams && namespace == other.namespace && writeOperation == other.writeOperation && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceWriteParams && namespace == other.namespace && operation == other.operation && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, writeOperation, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, operation, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceWriteParams{namespace=$namespace, writeOperation=$writeOperation, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceWriteParams{namespace=$namespace, operation=$operation, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
