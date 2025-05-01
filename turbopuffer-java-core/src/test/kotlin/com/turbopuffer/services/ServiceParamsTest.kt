@@ -17,9 +17,8 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.DocumentColumns
-import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
-import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.NamespaceUpsertParams
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -77,29 +76,28 @@ internal class ServiceParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun write() {
+    fun upsert() {
         val namespaceService = client.namespaces()
         stubFor(post(anyUrl()).willReturn(ok("{}")))
 
-        namespaceService.write(
-            NamespaceWriteParams.builder()
+        namespaceService.upsert(
+            NamespaceUpsertParams.builder()
                 .namespace("namespace")
-                .operation(
-                    NamespaceWriteParams.Operation.WriteDocuments.builder()
+                .documents(
+                    NamespaceUpsertParams.Documents.UpsertColumnar.builder()
+                        .attributes(
+                            DocumentColumns.Attributes.builder()
+                                .putAdditionalProperty(
+                                    "foo",
+                                    JsonValue.from(listOf(mapOf("foo" to "bar"))),
+                                )
+                                .build()
+                        )
+                        .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .addVector(listOf(0.0))
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .patchColumns(
-                            DocumentColumns.builder()
-                                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .build()
-                        )
-                        .addPatchRow(
-                            DocumentRow.builder()
-                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .vectorOfNumber(listOf(0.0))
-                                .build()
-                        )
                         .schema(
-                            NamespaceWriteParams.Operation.WriteDocuments.Schema.builder()
+                            NamespaceUpsertParams.Documents.UpsertColumnar.Schema.builder()
                                 .putAdditionalProperty(
                                     "foo",
                                     JsonValue.from(
@@ -112,17 +110,6 @@ internal class ServiceParamsTest {
                                         )
                                     ),
                                 )
-                                .build()
-                        )
-                        .upsertColumns(
-                            DocumentColumns.builder()
-                                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .build()
-                        )
-                        .addUpsertRow(
-                            DocumentRow.builder()
-                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .vectorOfNumber(listOf(0.0))
                                 .build()
                         )
                         .build()
