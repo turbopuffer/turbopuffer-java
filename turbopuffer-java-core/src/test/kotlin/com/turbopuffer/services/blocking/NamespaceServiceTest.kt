@@ -122,11 +122,6 @@ internal class NamespaceServiceTest {
                             .patchColumns(
                                 DocumentColumns.builder()
                                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                    .addAdditionalProperty(
-                                        DocumentColumns.AdditionalProperty.builder()
-                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                            .build()
-                                    )
                                     .build()
                             )
                             .addPatchRow(
@@ -155,11 +150,6 @@ internal class NamespaceServiceTest {
                             .upsertColumns(
                                 DocumentColumns.builder()
                                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                    .addAdditionalProperty(
-                                        DocumentColumns.AdditionalProperty.builder()
-                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                            .build()
-                                    )
                                     .build()
                             )
                             .addUpsertRow(
