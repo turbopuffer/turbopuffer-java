@@ -17,8 +17,8 @@ import java.util.Collections
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
-/** The response to a successful upsert request. */
-class NamespaceUpsertResponse
+/** The response to a successful namespace deletion request. */
+class NamespaceDeleteAllResponse
 private constructor(
     private val status: JsonField<Status>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -59,7 +59,7 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [NamespaceUpsertResponse].
+         * Returns a mutable builder for constructing an instance of [NamespaceDeleteAllResponse].
          *
          * The following fields are required:
          * ```java
@@ -69,16 +69,16 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceUpsertResponse]. */
+    /** A builder for [NamespaceDeleteAllResponse]. */
     class Builder internal constructor() {
 
         private var status: JsonField<Status>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(namespaceUpsertResponse: NamespaceUpsertResponse) = apply {
-            status = namespaceUpsertResponse.status
-            additionalProperties = namespaceUpsertResponse.additionalProperties.toMutableMap()
+        internal fun from(namespaceDeleteAllResponse: NamespaceDeleteAllResponse) = apply {
+            status = namespaceDeleteAllResponse.status
+            additionalProperties = namespaceDeleteAllResponse.additionalProperties.toMutableMap()
         }
 
         /** The status of the request. */
@@ -112,7 +112,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [NamespaceUpsertResponse].
+         * Returns an immutable instance of [NamespaceDeleteAllResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -123,8 +123,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): NamespaceUpsertResponse =
-            NamespaceUpsertResponse(
+        fun build(): NamespaceDeleteAllResponse =
+            NamespaceDeleteAllResponse(
                 checkRequired("status", status),
                 additionalProperties.toMutableMap(),
             )
@@ -132,7 +132,7 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): NamespaceUpsertResponse = apply {
+    fun validate(): NamespaceDeleteAllResponse = apply {
         if (validated) {
             return@apply
         }
@@ -283,7 +283,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceUpsertResponse && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is NamespaceDeleteAllResponse && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -293,5 +293,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceUpsertResponse{status=$status, additionalProperties=$additionalProperties}"
+        "NamespaceDeleteAllResponse{status=$status, additionalProperties=$additionalProperties}"
 }
