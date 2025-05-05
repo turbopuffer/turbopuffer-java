@@ -6,13 +6,15 @@ import com.google.errorprone.annotations.MustBeClosed
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.namespaces.DocumentRowWithScore
+import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
+import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceListPageAsync
 import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertParams
-import com.turbopuffer.models.namespaces.NamespaceUpsertResponse
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
 
 interface NamespaceServiceAsync {
@@ -40,6 +42,16 @@ interface NamespaceServiceAsync {
     fun list(requestOptions: RequestOptions): CompletableFuture<NamespaceListPageAsync> =
         list(NamespaceListParams.none(), requestOptions)
 
+    /** Delete namespace. */
+    fun deleteAll(params: NamespaceDeleteAllParams): CompletableFuture<NamespaceDeleteAllResponse> =
+        deleteAll(params, RequestOptions.none())
+
+    /** @see [deleteAll] */
+    fun deleteAll(
+        params: NamespaceDeleteAllParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceDeleteAllResponse>
+
     /** Get namespace schema. */
     fun getSchema(params: NamespaceGetSchemaParams): CompletableFuture<NamespaceGetSchemaResponse> =
         getSchema(params, RequestOptions.none())
@@ -61,14 +73,14 @@ interface NamespaceServiceAsync {
     ): CompletableFuture<List<DocumentRowWithScore>>
 
     /** Create, update, or delete documents. */
-    fun upsert(params: NamespaceUpsertParams): CompletableFuture<NamespaceUpsertResponse> =
-        upsert(params, RequestOptions.none())
+    fun write(params: NamespaceWriteParams): CompletableFuture<NamespaceWriteResponse> =
+        write(params, RequestOptions.none())
 
-    /** @see [upsert] */
-    fun upsert(
-        params: NamespaceUpsertParams,
+    /** @see [write] */
+    fun write(
+        params: NamespaceWriteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<NamespaceUpsertResponse>
+    ): CompletableFuture<NamespaceWriteResponse>
 
     /**
      * A view of [NamespaceServiceAsync] that provides access to raw HTTP responses for each method.
@@ -105,6 +117,23 @@ interface NamespaceServiceAsync {
             list(NamespaceListParams.none(), requestOptions)
 
         /**
+         * Returns a raw HTTP response for `delete /v2/namespaces/{namespace}`, but is otherwise the
+         * same as [NamespaceServiceAsync.deleteAll].
+         */
+        @MustBeClosed
+        fun deleteAll(
+            params: NamespaceDeleteAllParams
+        ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>> =
+            deleteAll(params, RequestOptions.none())
+
+        /** @see [deleteAll] */
+        @MustBeClosed
+        fun deleteAll(
+            params: NamespaceDeleteAllParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>>
+
+        /**
          * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/schema`, but is otherwise
          * the same as [NamespaceServiceAsync.getSchema].
          */
@@ -139,20 +168,20 @@ interface NamespaceServiceAsync {
         ): CompletableFuture<HttpResponseFor<List<DocumentRowWithScore>>>
 
         /**
-         * Returns a raw HTTP response for `post /v1/namespaces/{namespace}`, but is otherwise the
-         * same as [NamespaceServiceAsync.upsert].
+         * Returns a raw HTTP response for `post /v2/namespaces/{namespace}`, but is otherwise the
+         * same as [NamespaceServiceAsync.write].
          */
         @MustBeClosed
-        fun upsert(
-            params: NamespaceUpsertParams
-        ): CompletableFuture<HttpResponseFor<NamespaceUpsertResponse>> =
-            upsert(params, RequestOptions.none())
+        fun write(
+            params: NamespaceWriteParams
+        ): CompletableFuture<HttpResponseFor<NamespaceWriteResponse>> =
+            write(params, RequestOptions.none())
 
-        /** @see [upsert] */
+        /** @see [write] */
         @MustBeClosed
-        fun upsert(
-            params: NamespaceUpsertParams,
+        fun write(
+            params: NamespaceWriteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<NamespaceUpsertResponse>>
+        ): CompletableFuture<HttpResponseFor<NamespaceWriteResponse>>
     }
 }
