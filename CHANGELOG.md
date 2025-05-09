@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.1.0-beta.13 (2025-05-09)
+
+Full Changelog: [v0.1.0-beta.12...v0.1.0-beta.13](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.12...v0.1.0-beta.13)
+
+### ⚠ BREAKING CHANGES
+
+* **client:** change precision of some numeric types
+* **client:** extract auto pagination to shared classes
+* **client:** **Migration:** - If you were referencing the `AutoPager` class on a specific `*Page` or `*PageAsync` type, then you should instead reference the shared `AutoPager` and `AutoPagerAsync` types, under the `core` package
+    - `AutoPagerAsync` now has different usage. You can call `.subscribe(...)` on the returned object instead to get called back each page item. You can also call `onCompleteFuture()` to get a future that completes when all items have been processed. Finally, you can call `.close()` on the returned object to stop auto-paginating early
+    - If you were referencing `getNextPage` or `getNextPageParams`:
+       - Swap to `nextPage()` and `nextPageParams()`
+       - Note that these both now return non-optional types (use `hasNextPage()` before calling these, since they will throw if it's impossible to get another page)
+
+### Features
+
+* **api:** api update ([881b1d6](https://github.com/turbopuffer/turbopuffer-java/commit/881b1d6854d27e4895ffa0449ffd391258e17e87))
+* **api:** api update ([53ce0cc](https://github.com/turbopuffer/turbopuffer-java/commit/53ce0ccf8bbca45aabe54bc0c688c9e9f83493cb))
+* **api:** api update ([36b3f6f](https://github.com/turbopuffer/turbopuffer-java/commit/36b3f6ffb59ad6f2d42d9102c97878cba10b7c9c))
+* **api:** api update ([f3e3474](https://github.com/turbopuffer/turbopuffer-java/commit/f3e3474f54740195e2b0bb5799a7ae8ee5fba797))
+* **client:** allow providing some params positionally ([fc449a3](https://github.com/turbopuffer/turbopuffer-java/commit/fc449a374ed75f62e80d860687daaf0b5927d89f))
+* **client:** extract auto pagination to shared classes ([f30fa2c](https://github.com/turbopuffer/turbopuffer-java/commit/f30fa2cbb79107aab4f82d5f963fbe5eee2f57be))
+
+
+### Chores
+
+* **internal:** remove flaky `-Xbackend-threads=0` option ([d76b4b3](https://github.com/turbopuffer/turbopuffer-java/commit/d76b4b3ff2b663d9037638cee5467727a5425d04))
+* **internal:** update java toolchain ([5d2814b](https://github.com/turbopuffer/turbopuffer-java/commit/5d2814b048e62ef8801749e979f6774ebc962228))
+
+
+### Refactors
+
+* **client:** change precision of some numeric types ([909e381](https://github.com/turbopuffer/turbopuffer-java/commit/909e381f4b5c603345877f1b690fbb2efcc8106d))
+
 ## 0.1.0-beta.12 (2025-05-01)
 
 Full Changelog: [v0.1.0-beta.11...v0.1.0-beta.12](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.11...v0.1.0-beta.12)
