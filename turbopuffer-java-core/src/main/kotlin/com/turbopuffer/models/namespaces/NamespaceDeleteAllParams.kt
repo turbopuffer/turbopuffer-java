@@ -4,23 +4,23 @@ package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
-import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Delete namespace. */
 class NamespaceDeleteAllParams
 private constructor(
-    private val namespace: String,
+    private val namespace: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun namespace(): String = namespace
+    fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +32,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [NamespaceDeleteAllParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .namespace()
-         * ```
-         */
+        @JvmStatic fun none(): NamespaceDeleteAllParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [NamespaceDeleteAllParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -60,7 +55,10 @@ private constructor(
                 namespaceDeleteAllParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun namespace(namespace: String) = apply { this.namespace = namespace }
+        fun namespace(namespace: String?) = apply { this.namespace = namespace }
+
+        /** Alias for calling [Builder.namespace] with `namespace.orElse(null)`. */
+        fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -186,17 +184,10 @@ private constructor(
          * Returns an immutable instance of [NamespaceDeleteAllParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .namespace()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): NamespaceDeleteAllParams =
             NamespaceDeleteAllParams(
-                checkRequired("namespace", namespace),
+                namespace,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -208,7 +199,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> namespace
+            0 -> namespace ?: ""
             else -> ""
         }
 
