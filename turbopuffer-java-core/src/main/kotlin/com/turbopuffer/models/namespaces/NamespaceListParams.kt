@@ -13,7 +13,7 @@ import kotlin.jvm.optionals.getOrNull
 class NamespaceListParams
 private constructor(
     private val cursor: String?,
-    private val pageSize: Long?,
+    private val pageSize: Int?,
     private val prefix: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -23,7 +23,7 @@ private constructor(
     fun cursor(): Optional<String> = Optional.ofNullable(cursor)
 
     /** Limit the number of results per page. */
-    fun pageSize(): Optional<Long> = Optional.ofNullable(pageSize)
+    fun pageSize(): Optional<Int> = Optional.ofNullable(pageSize)
 
     /** Retrieve only the namespaces that match the prefix. */
     fun prefix(): Optional<String> = Optional.ofNullable(prefix)
@@ -46,7 +46,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var cursor: String? = null
-        private var pageSize: Long? = null
+        private var pageSize: Int? = null
         private var prefix: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
@@ -67,17 +67,17 @@ private constructor(
         fun cursor(cursor: Optional<String>) = cursor(cursor.getOrNull())
 
         /** Limit the number of results per page. */
-        fun pageSize(pageSize: Long?) = apply { this.pageSize = pageSize }
+        fun pageSize(pageSize: Int?) = apply { this.pageSize = pageSize }
 
         /**
          * Alias for [Builder.pageSize].
          *
          * This unboxed primitive overload exists for backwards compatibility.
          */
-        fun pageSize(pageSize: Long) = pageSize(pageSize as Long?)
+        fun pageSize(pageSize: Int) = pageSize(pageSize as Int?)
 
         /** Alias for calling [Builder.pageSize] with `pageSize.orElse(null)`. */
-        fun pageSize(pageSize: Optional<Long>) = pageSize(pageSize.getOrNull())
+        fun pageSize(pageSize: Optional<Int>) = pageSize(pageSize.getOrNull())
 
         /** Retrieve only the namespaces that match the prefix. */
         fun prefix(prefix: String?) = apply { this.prefix = prefix }
