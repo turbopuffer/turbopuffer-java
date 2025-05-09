@@ -12,14 +12,14 @@ internal class NamespaceListParamsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
-        NamespaceListParams.builder().cursor("cursor").pageSize(1L).prefix("prefix").build()
+        NamespaceListParams.builder().cursor("cursor").pageSize(1).prefix("prefix").build()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun queryParams() {
         val params =
-            NamespaceListParams.builder().cursor("cursor").pageSize(1L).prefix("prefix").build()
+            NamespaceListParams.builder().cursor("cursor").pageSize(1).prefix("prefix").build()
 
         val queryParams = params._queryParams()
 
