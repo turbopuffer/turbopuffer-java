@@ -8,8 +8,6 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.DocumentColumns
 import com.turbopuffer.models.namespaces.DocumentRow
-import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
-import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import org.junit.jupiter.api.Disabled
@@ -44,10 +42,7 @@ internal class NamespaceServiceTest {
                 .build()
         val namespaceService = client.namespaces()
 
-        val response =
-            namespaceService.deleteAll(
-                NamespaceDeleteAllParams.builder().namespace("namespace").build()
-            )
+        val response = namespaceService.deleteAll("namespace")
 
         response.validate()
     }
@@ -62,10 +57,7 @@ internal class NamespaceServiceTest {
                 .build()
         val namespaceService = client.namespaces()
 
-        val response =
-            namespaceService.getSchema(
-                NamespaceGetSchemaParams.builder().namespace("namespace").build()
-            )
+        val response = namespaceService.getSchema("namespace")
 
         response.validate()
     }
