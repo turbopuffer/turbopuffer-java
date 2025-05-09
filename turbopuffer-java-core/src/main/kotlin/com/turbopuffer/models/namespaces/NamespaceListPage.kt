@@ -2,12 +2,12 @@
 
 package com.turbopuffer.models.namespaces
 
+import com.turbopuffer.core.AutoPager
+import com.turbopuffer.core.Page
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.services.blocking.NamespaceService
 import java.util.Objects
 import java.util.Optional
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [NamespaceService.list] */
@@ -16,7 +16,7 @@ private constructor(
     private val service: NamespaceService,
     private val params: NamespaceListParams,
     private val response: NamespaceListPageResponse,
-) {
+) : Page<NamespaceSummary> {
 
     /**
      * Delegates to [NamespaceListPageResponse], but gracefully handles missing data.
@@ -33,21 +33,20 @@ private constructor(
      */
     fun nextCursor(): Optional<String> = response._nextCursor().getOptional("next_cursor")
 
-    fun hasNextPage(): Boolean = namespaces().isNotEmpty() && nextCursor().isPresent
+    override fun items(): List<NamespaceSummary> = namespaces()
 
-    fun getNextPageParams(): Optional<NamespaceListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty() && nextCursor().isPresent
 
-        return Optional.of(
-            params.toBuilder().apply { nextCursor().ifPresent { cursor(it) } }.build()
-        )
+    fun nextPageParams(): NamespaceListParams {
+        val nextCursor =
+            nextCursor().getOrNull()
+                ?: throw IllegalStateException("Cannot construct next page params")
+        return params.toBuilder().cursor(nextCursor).build()
     }
 
-    fun getNextPage(): Optional<NamespaceListPage> = getNextPageParams().map { service.list(it) }
+    override fun nextPage(): NamespaceListPage = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPager<NamespaceSummary> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): NamespaceListParams = params
@@ -114,25 +113,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: NamespaceListPage) : Iterable<NamespaceSummary> {
-
-        override fun iterator(): Iterator<NamespaceSummary> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.namespaces().size) {
-                    yield(page.namespaces()[index++])
-                }
-                page = page.getNextPage().getOrNull() ?: break
-                index = 0
-            }
-        }
-
-        fun stream(): Stream<NamespaceSummary> {
-            return StreamSupport.stream(spliterator(), false)
-        }
     }
 
     override fun equals(other: Any?): Boolean {
