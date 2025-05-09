@@ -59,10 +59,7 @@ import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
-NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
-    .build();
-NamespaceWriteResponse response = client.namespaces().write(params);
+NamespaceWriteResponse response = client.namespaces().write("products");
 ```
 
 ## Client configuration
@@ -140,10 +137,7 @@ import java.util.concurrent.CompletableFuture;
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
-NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
-    .build();
-CompletableFuture<NamespaceWriteResponse> response = client.async().namespaces().write(params);
+CompletableFuture<NamespaceWriteResponse> response = client.async().namespaces().write("products");
 ```
 
 Or create an asynchronous client from the beginning:
@@ -158,10 +152,7 @@ import java.util.concurrent.CompletableFuture;
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
-NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
-    .build();
-CompletableFuture<NamespaceWriteResponse> response = client.namespaces().write(params);
+CompletableFuture<NamespaceWriteResponse> response = client.namespaces().write("products");
 ```
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
@@ -178,10 +169,7 @@ import com.turbopuffer.core.http.HttpResponseFor;
 import com.turbopuffer.models.namespaces.DocumentRowWithScore;
 import com.turbopuffer.models.namespaces.NamespaceQueryParams;
 
-NamespaceQueryParams params = NamespaceQueryParams.builder()
-    .namespace("products")
-    .build();
-HttpResponseFor<List<DocumentRowWithScore>> documentRowWithScores = client.namespaces().withRawResponse().query(params);
+HttpResponseFor<List<DocumentRowWithScore>> documentRowWithScores = client.namespaces().withRawResponse().query("products");
 
 int statusCode = documentRowWithScores.statusCode();
 Headers headers = documentRowWithScores.headers();
@@ -336,7 +324,7 @@ import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
 NamespaceWriteResponse response = client.namespaces().write(
-  params, RequestOptions.builder().timeout(Duration.ofSeconds(30)).build()
+  "products", RequestOptions.builder().timeout(Duration.ofSeconds(30)).build()
 );
 ```
 
@@ -450,9 +438,7 @@ To set a documented parameter or property to an undocumented or not yet supporte
 ```java
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
-NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
-    .build();
+NamespaceWriteParams params = NamespaceWriteParams.builder().build();
 ```
 
 The most straightforward way to create a [`JsonValue`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/Values.kt) is using its `from(...)` method:
@@ -582,7 +568,7 @@ import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
 NamespaceWriteResponse response = client.namespaces().write(
-  params, RequestOptions.builder().responseValidation(true).build()
+  "products", RequestOptions.builder().responseValidation(true).build()
 );
 ```
 

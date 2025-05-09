@@ -36,13 +36,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Create, update, or delete documents. */
 class NamespaceWriteParams
 private constructor(
-    private val namespace: String,
+    private val namespace: String?,
     private val operation: Operation?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun namespace(): String = namespace
+    fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
     /** Write documents. */
     fun operation(): Optional<Operation> = Optional.ofNullable(operation)
@@ -55,14 +55,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [NamespaceWriteParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .namespace()
-         * ```
-         */
+        @JvmStatic fun none(): NamespaceWriteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [NamespaceWriteParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -82,7 +77,10 @@ private constructor(
             additionalQueryParams = namespaceWriteParams.additionalQueryParams.toBuilder()
         }
 
-        fun namespace(namespace: String) = apply { this.namespace = namespace }
+        fun namespace(namespace: String?) = apply { this.namespace = namespace }
+
+        /** Alias for calling [Builder.namespace] with `namespace.orElse(null)`. */
+        fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
 
         /** Write documents. */
         fun operation(operation: Operation?) = apply { this.operation = operation }
@@ -206,17 +204,10 @@ private constructor(
          * Returns an immutable instance of [NamespaceWriteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .namespace()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): NamespaceWriteParams =
             NamespaceWriteParams(
-                checkRequired("namespace", namespace),
+                namespace,
                 operation,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -227,7 +218,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> namespace
+            0 -> namespace ?: ""
             else -> ""
         }
 

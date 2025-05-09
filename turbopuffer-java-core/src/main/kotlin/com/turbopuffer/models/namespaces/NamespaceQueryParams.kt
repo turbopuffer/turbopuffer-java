@@ -23,7 +23,6 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
 import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.checkKnown
-import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
@@ -37,13 +36,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Query, filter, full-text search and vector search documents. */
 class NamespaceQueryParams
 private constructor(
-    private val namespace: String,
+    private val namespace: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun namespace(): String = namespace
+    fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
     /**
      * The consistency level for a query.
@@ -156,14 +155,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [NamespaceQueryParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .namespace()
-         * ```
-         */
+        @JvmStatic fun none(): NamespaceQueryParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [NamespaceQueryParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -183,7 +177,10 @@ private constructor(
             additionalQueryParams = namespaceQueryParams.additionalQueryParams.toBuilder()
         }
 
-        fun namespace(namespace: String) = apply { this.namespace = namespace }
+        fun namespace(namespace: String?) = apply { this.namespace = namespace }
+
+        /** Alias for calling [Builder.namespace] with `namespace.orElse(null)`. */
+        fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -433,17 +430,10 @@ private constructor(
          * Returns an immutable instance of [NamespaceQueryParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .namespace()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): NamespaceQueryParams =
             NamespaceQueryParams(
-                checkRequired("namespace", namespace),
+                namespace,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -454,7 +444,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> namespace
+            0 -> namespace ?: ""
             else -> ""
         }
 
