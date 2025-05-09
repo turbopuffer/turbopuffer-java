@@ -12,6 +12,7 @@ import com.turbopuffer.core.http.QueryParams
 import java.net.Proxy
 import java.time.Clock
 import java.time.Duration
+import java.util.concurrent.Executor
 
 class TurbopufferOkHttpClientAsync private constructor() {
 
@@ -46,6 +47,10 @@ class TurbopufferOkHttpClientAsync private constructor() {
         }
 
         fun jsonMapper(jsonMapper: JsonMapper) = apply { clientOptions.jsonMapper(jsonMapper) }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            clientOptions.streamHandlerExecutor(streamHandlerExecutor)
+        }
 
         fun clock(clock: Clock) = apply { clientOptions.clock(clock) }
 

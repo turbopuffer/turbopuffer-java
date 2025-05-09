@@ -108,6 +108,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                             .let {
                                 NamespaceListPageAsync.builder()
                                     .service(NamespaceServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
