@@ -5,6 +5,7 @@ package com.turbopuffer.services.blocking
 import com.turbopuffer.core.ClientOptions
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.RequestOptions
+import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.handlers.errorHandler
 import com.turbopuffer.core.handlers.jsonHandler
 import com.turbopuffer.core.handlers.withErrorHandler
@@ -26,6 +27,7 @@ import com.turbopuffer.models.namespaces.NamespaceListParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
+import kotlin.jvm.optionals.getOrNull
 
 class NamespaceServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     NamespaceService {
@@ -118,6 +120,9 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             params: NamespaceDeleteAllParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<NamespaceDeleteAllResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("namespace", params.namespace().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -146,6 +151,9 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             params: NamespaceGetSchemaParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<NamespaceGetSchemaResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("namespace", params.namespace().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -173,6 +181,9 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             params: NamespaceQueryParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<List<DocumentRowWithScore>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("namespace", params.namespace().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -201,6 +212,9 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             params: NamespaceWriteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<NamespaceWriteResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("namespace", params.namespace().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
