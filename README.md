@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.12)
-[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.12/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.12)
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.13)
+[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.13/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.13)
 
 <!-- x-release-please-end -->
 
@@ -18,7 +18,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.12).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.13).
 
 <!-- x-release-please-end -->
 
@@ -29,7 +29,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.12")
+implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.13")
 ```
 
 ### Maven
@@ -38,7 +38,7 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.12")
 <dependency>
   <groupId>com.turbopuffer</groupId>
   <artifactId>turbopuffer-java</artifactId>
-  <version>0.1.0-beta.12</version>
+  <version>0.1.0-beta.13</version>
 </dependency>
 ```
 
@@ -59,10 +59,7 @@ import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
-NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
-    .build();
-NamespaceWriteResponse response = client.namespaces().write(params);
+NamespaceWriteResponse response = client.namespaces().write("products");
 ```
 
 ## Client configuration
@@ -140,10 +137,7 @@ import java.util.concurrent.CompletableFuture;
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
-NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
-    .build();
-CompletableFuture<NamespaceWriteResponse> response = client.async().namespaces().write(params);
+CompletableFuture<NamespaceWriteResponse> response = client.async().namespaces().write("products");
 ```
 
 Or create an asynchronous client from the beginning:
@@ -158,10 +152,7 @@ import java.util.concurrent.CompletableFuture;
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
-NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
-    .build();
-CompletableFuture<NamespaceWriteResponse> response = client.namespaces().write(params);
+CompletableFuture<NamespaceWriteResponse> response = client.namespaces().write("products");
 ```
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
@@ -178,10 +169,7 @@ import com.turbopuffer.core.http.HttpResponseFor;
 import com.turbopuffer.models.namespaces.DocumentRowWithScore;
 import com.turbopuffer.models.namespaces.NamespaceQueryParams;
 
-NamespaceQueryParams params = NamespaceQueryParams.builder()
-    .namespace("products")
-    .build();
-HttpResponseFor<List<DocumentRowWithScore>> documentRowWithScores = client.namespaces().withRawResponse().query(params);
+HttpResponseFor<List<DocumentRowWithScore>> documentRowWithScores = client.namespaces().withRawResponse().query("products");
 
 int statusCode = documentRowWithScores.statusCode();
 Headers headers = documentRowWithScores.headers();
@@ -220,53 +208,101 @@ The SDK throws custom unchecked exception types:
 
 ## Pagination
 
-For methods that return a paginated list of results, this library provides convenient ways access the results either one page at a time, or item-by-item across all pages.
+The SDK defines methods that return a paginated lists of results. It provides convenient ways to access the results either one page at a time or item-by-item across all pages.
 
 ### Auto-pagination
 
-To iterate through all results across all pages, you can use `autoPager`, which automatically handles fetching more pages for you:
+To iterate through all results across all pages, use the `autoPager()` method, which automatically fetches more pages as needed.
 
-### Synchronous
+When using the synchronous client, the method returns an [`Iterable`](https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html)
 
 ```java
 import com.turbopuffer.models.namespaces.NamespaceListPage;
 import com.turbopuffer.models.namespaces.NamespaceSummary;
 
-// As an Iterable:
-NamespaceListPage page = client.namespaces().list(params);
+NamespaceListPage page = client.namespaces().list();
+
+// Process as an Iterable
 for (NamespaceSummary namespace : page.autoPager()) {
     System.out.println(namespace);
-};
+}
 
-// As a Stream:
-client.namespaces().list(params).autoPager().stream()
+// Process as a Stream
+page.autoPager()
+    .stream()
     .limit(50)
     .forEach(namespace -> System.out.println(namespace));
 ```
 
-### Asynchronous
+When using the asynchronous client, the method returns an [`AsyncStreamResponse`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/http/AsyncStreamResponse.kt):
 
 ```java
-// Using forEach, which returns CompletableFuture<Void>:
-asyncClient.namespaces().list(params).autoPager()
-    .forEach(namespace -> System.out.println(namespace), executor);
+import com.turbopuffer.core.http.AsyncStreamResponse;
+import com.turbopuffer.models.namespaces.NamespaceListPageAsync;
+import com.turbopuffer.models.namespaces.NamespaceSummary;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
+CompletableFuture<NamespaceListPageAsync> pageFuture = client.async().namespaces().list();
+
+pageFuture.thenRun(page -> page.autoPager().subscribe(namespace -> {
+    System.out.println(namespace);
+}));
+
+// If you need to handle errors or completion of the stream
+pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
+    @Override
+    public void onNext(NamespaceSummary namespace) {
+        System.out.println(namespace);
+    }
+
+    @Override
+    public void onComplete(Optional<Throwable> error) {
+        if (error.isPresent()) {
+            System.out.println("Something went wrong!");
+            throw new RuntimeException(error.get());
+        } else {
+            System.out.println("No more!");
+        }
+    }
+}));
+
+// Or use futures
+pageFuture.thenRun(page -> page.autoPager()
+    .subscribe(namespace -> {
+        System.out.println(namespace);
+    })
+    .onCompleteFuture()
+    .whenComplete((unused, error) -> {
+        if (error != null) {
+            System.out.println("Something went wrong!");
+            throw new RuntimeException(error);
+        } else {
+            System.out.println("No more!");
+        }
+    }));
 ```
 
 ### Manual pagination
 
-If none of the above helpers meet your needs, you can also manually request pages one-by-one. A page of results has a `data()` method to fetch the list of objects, as well as top-level `response` and other methods to fetch top-level data about the page. It also has methods `hasNextPage`, `getNextPage`, and `getNextPageParams` methods to help with pagination.
+To access individual page items and manually request the next page, use the `items()`,
+`hasNextPage()`, and `nextPage()` methods:
 
 ```java
 import com.turbopuffer.models.namespaces.NamespaceListPage;
 import com.turbopuffer.models.namespaces.NamespaceSummary;
 
-NamespaceListPage page = client.namespaces().list(params);
-while (page != null) {
-    for (NamespaceSummary namespace : page.namespaces()) {
+NamespaceListPage page = client.namespaces().list();
+while (true) {
+    for (NamespaceSummary namespace : page.items()) {
         System.out.println(namespace);
     }
 
-    page = page.getNextPage().orElse(null);
+    if (!page.hasNextPage()) {
+        break;
+    }
+
+    page = page.nextPage();
 }
 ```
 
@@ -332,12 +368,9 @@ Requests time out after 1 minute by default.
 To set a custom timeout, configure the method call using the `timeout` method:
 
 ```java
-import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceWriteResponse response = client.namespaces().write(
-  params, RequestOptions.builder().timeout(Duration.ofSeconds(30)).build()
-);
+NamespaceWriteResponse response = client.namespaces().write(RequestOptions.builder().timeout(Duration.ofSeconds(30)).build());
 ```
 
 Or configure the default for all method calls at the client level:
@@ -450,9 +483,7 @@ To set a documented parameter or property to an undocumented or not yet supporte
 ```java
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
-NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
-    .build();
+NamespaceWriteParams params = NamespaceWriteParams.builder().build();
 ```
 
 The most straightforward way to create a [`JsonValue`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/Values.kt) is using its `from(...)` method:
@@ -578,12 +609,9 @@ NamespaceWriteResponse response = client.namespaces().write(params).validate();
 Or configure the method call to validate the response using the `responseValidation` method:
 
 ```java
-import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceWriteResponse response = client.namespaces().write(
-  params, RequestOptions.builder().responseValidation(true).build()
-);
+NamespaceWriteResponse response = client.namespaces().write(RequestOptions.builder().responseValidation(true).build());
 ```
 
 Or configure the default for all method calls at the client level:
