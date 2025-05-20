@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.turbopuffer.models.namespaces
+package com.turbopuffer.models
 
 import com.turbopuffer.core.Params
 import com.turbopuffer.core.http.Headers
@@ -10,7 +10,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** List namespaces. */
-class NamespaceListParams
+class ClientListNamespacesParams
 private constructor(
     private val cursor: String?,
     private val pageSize: Int?,
@@ -36,13 +36,15 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): NamespaceListParams = builder().build()
+        @JvmStatic fun none(): ClientListNamespacesParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [NamespaceListParams]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [ClientListNamespacesParams].
+         */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceListParams]. */
+    /** A builder for [ClientListNamespacesParams]. */
     class Builder internal constructor() {
 
         private var cursor: String? = null
@@ -52,12 +54,12 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(namespaceListParams: NamespaceListParams) = apply {
-            cursor = namespaceListParams.cursor
-            pageSize = namespaceListParams.pageSize
-            prefix = namespaceListParams.prefix
-            additionalHeaders = namespaceListParams.additionalHeaders.toBuilder()
-            additionalQueryParams = namespaceListParams.additionalQueryParams.toBuilder()
+        internal fun from(clientListNamespacesParams: ClientListNamespacesParams) = apply {
+            cursor = clientListNamespacesParams.cursor
+            pageSize = clientListNamespacesParams.pageSize
+            prefix = clientListNamespacesParams.prefix
+            additionalHeaders = clientListNamespacesParams.additionalHeaders.toBuilder()
+            additionalQueryParams = clientListNamespacesParams.additionalQueryParams.toBuilder()
         }
 
         /** Retrieve the next page of results. */
@@ -184,12 +186,12 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [NamespaceListParams].
+         * Returns an immutable instance of [ClientListNamespacesParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): NamespaceListParams =
-            NamespaceListParams(
+        fun build(): ClientListNamespacesParams =
+            ClientListNamespacesParams(
                 cursor,
                 pageSize,
                 prefix,
@@ -215,11 +217,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceListParams && cursor == other.cursor && pageSize == other.pageSize && prefix == other.prefix && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is ClientListNamespacesParams && cursor == other.cursor && pageSize == other.pageSize && prefix == other.prefix && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(cursor, pageSize, prefix, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceListParams{cursor=$cursor, pageSize=$pageSize, prefix=$prefix, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "ClientListNamespacesParams{cursor=$cursor, pageSize=$pageSize, prefix=$prefix, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

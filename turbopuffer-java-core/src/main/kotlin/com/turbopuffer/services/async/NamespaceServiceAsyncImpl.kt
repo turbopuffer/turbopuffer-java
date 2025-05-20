@@ -16,15 +16,14 @@ import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepareAsync
-import com.turbopuffer.models.namespaces.DocumentRowWithScore
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
-import com.turbopuffer.models.namespaces.NamespaceListPageAsync
-import com.turbopuffer.models.namespaces.NamespaceListPageResponse
-import com.turbopuffer.models.namespaces.NamespaceListParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
@@ -38,13 +37,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     }
 
     override fun withRawResponse(): NamespaceServiceAsync.WithRawResponse = withRawResponse
-
-    override fun list(
-        params: NamespaceListParams,
-        requestOptions: RequestOptions,
-    ): CompletableFuture<NamespaceListPageAsync> =
-        // get /v1/namespaces
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun deleteAll(
         params: NamespaceDeleteAllParams,
@@ -60,11 +52,18 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         // get /v1/namespaces/{namespace}/schema
         withRawResponse().getSchema(params, requestOptions).thenApply { it.parse() }
 
+    override fun multiQuery(
+        params: NamespaceMultiQueryParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceMultiQueryResponse> =
+        // post /v2/namespaces/{namespace}/query?overload=multi
+        withRawResponse().multiQuery(params, requestOptions).thenApply { it.parse() }
+
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<List<DocumentRowWithScore>> =
-        // post /v1/namespaces/{namespace}/query
+    ): CompletableFuture<NamespaceQueryResponse> =
+        // post /v2/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).thenApply { it.parse() }
 
     override fun write(
@@ -79,44 +78,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<NamespaceListPageResponse> =
-            jsonHandler<NamespaceListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
-
-        override fun list(
-            params: NamespaceListParams,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<NamespaceListPageAsync>> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .addPathSegments("v1", "namespaces")
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    response.parseable {
-                        response
-                            .use { listHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
-                            .let {
-                                NamespaceListPageAsync.builder()
-                                    .service(NamespaceServiceAsyncImpl(clientOptions))
-                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
-                                    .params(params)
-                                    .response(it)
-                                    .build()
-                            }
-                    }
-                }
-        }
-
         private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
             jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -125,13 +86,19 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             params: NamespaceDeleteAllParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("namespace", params.namespace().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("v2", "namespaces", params._pathParam(0))
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                    )
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -159,13 +126,20 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             params: NamespaceGetSchemaParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<NamespaceGetSchemaResponse>> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("namespace", params.namespace().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0), "schema")
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "schema",
+                    )
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
@@ -184,21 +158,70 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                 }
         }
 
-        private val queryHandler: Handler<List<DocumentRowWithScore>> =
-            jsonHandler<List<DocumentRowWithScore>>(clientOptions.jsonMapper)
+        private val multiQueryHandler: Handler<NamespaceMultiQueryResponse> =
+            jsonHandler<NamespaceMultiQueryResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun multiQuery(
+            params: NamespaceMultiQueryParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceMultiQueryResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "query",
+                    )
+                    .putQueryParam("overload", "multi")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { multiQueryHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val queryHandler: Handler<NamespaceQueryResponse> =
+            jsonHandler<NamespaceQueryResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun query(
             params: NamespaceQueryParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<List<DocumentRowWithScore>>> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("namespace", params.namespace().getOrNull())
+        ): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0), "query")
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "query",
+                    )
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -211,7 +234,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                             .use { queryHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
-                                    it.forEach { it.validate() }
+                                    it.validate()
                                 }
                             }
                     }
@@ -226,14 +249,20 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             params: NamespaceWriteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<NamespaceWriteResponse>> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("namespace", params.namespace().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v2", "namespaces", params._pathParam(0))
-                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                    )
+                    .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))

@@ -17,9 +17,9 @@ internal class NamespaceGetSchemaParamsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun pathParams() {
-        val params = NamespaceGetSchemaParams.builder().namespace("namespace").build()
+        val params = NamespaceGetSchemaParams.builder().build()
 
-        assertThat(params._pathParam(0)).isEqualTo("namespace")
+        assertThat(params._pathParam(0)).isEqualTo("")
         // out-of-bound path param
         assertThat(params._pathParam(1)).isEqualTo("")
     }

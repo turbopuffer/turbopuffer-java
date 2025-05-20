@@ -9,10 +9,12 @@ import com.turbopuffer.core.http.PhantomReachableClosingHttpClient
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.http.RetryingHttpClient
 import java.time.Clock
+import java.util.Optional
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.jvm.optionals.getOrNull
 
 class ClientOptions
 private constructor(
@@ -29,6 +31,7 @@ private constructor(
     @get:JvmName("timeout") val timeout: Timeout,
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("apiKey") val apiKey: String,
+    private val defaultNamespace: String?,
 ) {
 
     init {
@@ -36,6 +39,8 @@ private constructor(
             checkJacksonVersionCompatibility()
         }
     }
+
+    fun defaultNamespace(): Optional<String> = Optional.ofNullable(defaultNamespace)
 
     fun toBuilder() = Builder().from(this)
 
@@ -72,6 +77,7 @@ private constructor(
         private var timeout: Timeout = Timeout.default()
         private var maxRetries: Int = 2
         private var apiKey: String? = null
+        private var defaultNamespace: String? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -87,6 +93,7 @@ private constructor(
             timeout = clientOptions.timeout
             maxRetries = clientOptions.maxRetries
             apiKey = clientOptions.apiKey
+            defaultNamespace = clientOptions.defaultNamespace
         }
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
@@ -114,6 +121,14 @@ private constructor(
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
         fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
+
+        fun defaultNamespace(defaultNamespace: String?) = apply {
+            this.defaultNamespace = defaultNamespace
+        }
+
+        /** Alias for calling [Builder.defaultNamespace] with `defaultNamespace.orElse(null)`. */
+        fun defaultNamespace(defaultNamespace: Optional<String>) =
+            defaultNamespace(defaultNamespace.getOrNull())
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
@@ -270,6 +285,7 @@ private constructor(
                 timeout,
                 maxRetries,
                 apiKey,
+                defaultNamespace,
             )
         }
     }
