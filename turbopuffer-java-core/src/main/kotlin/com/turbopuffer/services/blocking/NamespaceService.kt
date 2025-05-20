@@ -7,6 +7,8 @@ import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceExportParams
+import com.turbopuffer.models.namespaces.NamespaceExportResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
@@ -42,6 +44,24 @@ interface NamespaceService {
     /** @see [deleteAll] */
     fun deleteAll(requestOptions: RequestOptions): NamespaceDeleteAllResponse =
         deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
+
+    /** Export documents. */
+    fun export(): NamespaceExportResponse = export(NamespaceExportParams.none())
+
+    /** @see [export] */
+    fun export(
+        params: NamespaceExportParams = NamespaceExportParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceExportResponse
+
+    /** @see [export] */
+    fun export(
+        params: NamespaceExportParams = NamespaceExportParams.none()
+    ): NamespaceExportResponse = export(params, RequestOptions.none())
+
+    /** @see [export] */
+    fun export(requestOptions: RequestOptions): NamespaceExportResponse =
+        export(NamespaceExportParams.none(), requestOptions)
 
     /** Get namespace schema. */
     fun getSchema(): NamespaceGetSchemaResponse = getSchema(NamespaceGetSchemaParams.none())
@@ -160,6 +180,32 @@ interface NamespaceService {
         @MustBeClosed
         fun deleteAll(requestOptions: RequestOptions): HttpResponseFor<NamespaceDeleteAllResponse> =
             deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}`, but is otherwise the
+         * same as [NamespaceService.export].
+         */
+        @MustBeClosed
+        fun export(): HttpResponseFor<NamespaceExportResponse> =
+            export(NamespaceExportParams.none())
+
+        /** @see [export] */
+        @MustBeClosed
+        fun export(
+            params: NamespaceExportParams = NamespaceExportParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceExportResponse>
+
+        /** @see [export] */
+        @MustBeClosed
+        fun export(
+            params: NamespaceExportParams = NamespaceExportParams.none()
+        ): HttpResponseFor<NamespaceExportResponse> = export(params, RequestOptions.none())
+
+        /** @see [export] */
+        @MustBeClosed
+        fun export(requestOptions: RequestOptions): HttpResponseFor<NamespaceExportResponse> =
+            export(NamespaceExportParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/schema`, but is otherwise
