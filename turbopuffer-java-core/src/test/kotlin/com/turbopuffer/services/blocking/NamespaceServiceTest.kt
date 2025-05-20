@@ -9,7 +9,6 @@ import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.DocumentColumns
 import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
-import com.turbopuffer.models.namespaces.NamespaceExportParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
@@ -33,23 +32,6 @@ internal class NamespaceServiceTest {
         val response =
             namespaceService.deleteAll(
                 NamespaceDeleteAllParams.builder().namespace("namespace").build()
-            )
-
-        response.validate()
-    }
-
-    @Test
-    fun export() {
-        val client =
-            TurbopufferOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .build()
-        val namespaceService = client.namespaces()
-
-        val response =
-            namespaceService.export(
-                NamespaceExportParams.builder().namespace("namespace").cursor("cursor").build()
             )
 
         response.validate()
