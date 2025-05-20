@@ -19,15 +19,7 @@ private constructor(
     private val streamHandlerExecutor: Executor,
     private val params: ClientListNamespacesParams,
     private val response: ClientListNamespacesPageResponse,
-) : PageAsync<NamespaceSummary> {
-
-    /**
-     * Delegates to [ClientListNamespacesPageResponse], but gracefully handles missing data.
-     *
-     * @see [ClientListNamespacesPageResponse.namespaces]
-     */
-    fun namespaces(): List<NamespaceSummary> =
-        response._namespaces().getOptional("namespaces").getOrNull() ?: emptyList()
+) : PageAsync<ClientListNamespacesPageResponse> {
 
     /**
      * Delegates to [ClientListNamespacesPageResponse], but gracefully handles missing data.
@@ -36,7 +28,7 @@ private constructor(
      */
     fun nextCursor(): Optional<String> = response._nextCursor().getOptional("next_cursor")
 
-    override fun items(): List<NamespaceSummary> = namespaces()
+    override fun items(): List<ClientListNamespacesPageResponse> = data()
 
     override fun hasNextPage(): Boolean = items().isNotEmpty() && nextCursor().isPresent
 
@@ -50,7 +42,7 @@ private constructor(
     override fun nextPage(): CompletableFuture<ClientListNamespacesPageAsync> =
         service.listNamespaces(nextPageParams())
 
-    fun autoPager(): AutoPagerAsync<NamespaceSummary> =
+    fun autoPager(): AutoPagerAsync<ClientListNamespacesPageResponse> =
         AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */

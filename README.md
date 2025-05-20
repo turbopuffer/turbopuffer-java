@@ -230,12 +230,12 @@ When using the synchronous client, the method returns an [`Iterable`](https://do
 
 ```java
 import com.turbopuffer.models.ClientListNamespacesPage;
-import com.turbopuffer.models.NamespaceSummary;
+import com.turbopuffer.models.ClientListNamespacesPageResponse;
 
 ClientListNamespacesPage page = client.listNamespaces();
 
 // Process as an Iterable
-for (NamespaceSummary client : page.autoPager()) {
+for (ClientListNamespacesPageResponse client : page.autoPager()) {
     System.out.println(client);
 }
 
@@ -251,7 +251,7 @@ When using the asynchronous client, the method returns an [`AsyncStreamResponse`
 ```java
 import com.turbopuffer.core.http.AsyncStreamResponse;
 import com.turbopuffer.models.ClientListNamespacesPageAsync;
-import com.turbopuffer.models.NamespaceSummary;
+import com.turbopuffer.models.ClientListNamespacesPageResponse;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -264,7 +264,7 @@ pageFuture.thenRun(page -> page.autoPager().subscribe(client -> {
 // If you need to handle errors or completion of the stream
 pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
     @Override
-    public void onNext(NamespaceSummary client) {
+    public void onNext(ClientListNamespacesPageResponse client) {
         System.out.println(client);
     }
 
@@ -302,11 +302,11 @@ To access individual page items and manually request the next page, use the `ite
 
 ```java
 import com.turbopuffer.models.ClientListNamespacesPage;
-import com.turbopuffer.models.NamespaceSummary;
+import com.turbopuffer.models.ClientListNamespacesPageResponse;
 
 ClientListNamespacesPage page = client.listNamespaces();
 while (true) {
-    for (NamespaceSummary client : page.items()) {
+    for (ClientListNamespacesPageResponse client : page.items()) {
         System.out.println(client);
     }
 
