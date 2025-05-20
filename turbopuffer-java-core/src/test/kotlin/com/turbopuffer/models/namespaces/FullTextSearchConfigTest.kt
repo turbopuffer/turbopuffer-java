@@ -5,12 +5,10 @@ package com.turbopuffer.models.namespaces
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class FullTextSearchConfigTest {
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
         val fullTextSearchConfig =
@@ -27,7 +25,6 @@ internal class FullTextSearchConfigTest {
         assertThat(fullTextSearchConfig.stemming()).contains(true)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
