@@ -2,6 +2,11 @@
 
 package com.turbopuffer.client
 
+import com.google.errorprone.annotations.MustBeClosed
+import com.turbopuffer.core.RequestOptions
+import com.turbopuffer.core.http.HttpResponseFor
+import com.turbopuffer.models.ClientListNamespacesPage
+import com.turbopuffer.models.ClientListNamespacesParams
 import com.turbopuffer.services.blocking.NamespaceService
 
 /**
@@ -35,6 +40,25 @@ interface TurbopufferClient {
 
     fun namespaces(): NamespaceService
 
+    /** List namespaces. */
+    fun listNamespaces(): ClientListNamespacesPage =
+        listNamespaces(ClientListNamespacesParams.none())
+
+    /** @see [listNamespaces] */
+    fun listNamespaces(
+        params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ClientListNamespacesPage
+
+    /** @see [listNamespaces] */
+    fun listNamespaces(
+        params: ClientListNamespacesParams = ClientListNamespacesParams.none()
+    ): ClientListNamespacesPage = listNamespaces(params, RequestOptions.none())
+
+    /** @see [listNamespaces] */
+    fun listNamespaces(requestOptions: RequestOptions): ClientListNamespacesPage =
+        listNamespaces(ClientListNamespacesParams.none(), requestOptions)
+
     /**
      * Closes this client, relinquishing any underlying resources.
      *
@@ -52,5 +76,33 @@ interface TurbopufferClient {
     interface WithRawResponse {
 
         fun namespaces(): NamespaceService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
+         * [TurbopufferClient.listNamespaces].
+         */
+        @MustBeClosed
+        fun listNamespaces(): HttpResponseFor<ClientListNamespacesPage> =
+            listNamespaces(ClientListNamespacesParams.none())
+
+        /** @see [listNamespaces] */
+        @MustBeClosed
+        fun listNamespaces(
+            params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ClientListNamespacesPage>
+
+        /** @see [listNamespaces] */
+        @MustBeClosed
+        fun listNamespaces(
+            params: ClientListNamespacesParams = ClientListNamespacesParams.none()
+        ): HttpResponseFor<ClientListNamespacesPage> = listNamespaces(params, RequestOptions.none())
+
+        /** @see [listNamespaces] */
+        @MustBeClosed
+        fun listNamespaces(
+            requestOptions: RequestOptions
+        ): HttpResponseFor<ClientListNamespacesPage> =
+            listNamespaces(ClientListNamespacesParams.none(), requestOptions)
     }
 }

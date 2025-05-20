@@ -44,7 +44,7 @@ internal class ServiceParamsTest {
     @Test
     fun query() {
         val namespaceService = client.namespaces()
-        stubFor(post(anyUrl()).willReturn(ok("[]")))
+        stubFor(post(anyUrl()).willReturn(ok("{}")))
 
         namespaceService.query(
             NamespaceQueryParams.builder()
@@ -57,10 +57,9 @@ internal class ServiceParamsTest {
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filters(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(true)
-                .includeVectors(true)
                 .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)
-                .addVector(0.0)
+                .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                 .putAdditionalHeader("Secret-Header", "42")
                 .putAdditionalQueryParam("secret_query_param", "42")
                 .putAdditionalBodyProperty("secretProperty", JsonValue.from("42"))
@@ -84,51 +83,45 @@ internal class ServiceParamsTest {
         namespaceService.write(
             NamespaceWriteParams.builder()
                 .namespace("namespace")
-                .operation(
-                    NamespaceWriteParams.Operation.WriteDocuments.builder()
-                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .patchColumns(
-                            DocumentColumns.builder()
-                                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .build()
-                        )
-                        .addPatchRow(
-                            DocumentRow.builder()
-                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .vectorOfNumber(listOf(0.0))
-                                .build()
-                        )
-                        .schema(
-                            NamespaceWriteParams.Operation.WriteDocuments.Schema.builder()
-                                .putAdditionalProperty(
-                                    "foo",
-                                    JsonValue.from(
-                                        listOf(
-                                            mapOf(
-                                                "filterable" to true,
-                                                "full_text_search" to true,
-                                                "type" to "string",
-                                            )
-                                        )
-                                    ),
+                .copyFromNamespace("copy_from_namespace")
+                .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+                .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                .patchColumns(
+                    DocumentColumns.builder().addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+                )
+                .addPatchRow(
+                    DocumentRow.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfNumber(listOf(0.0))
+                        .build()
+                )
+                .schema(
+                    NamespaceWriteParams.Schema.builder()
+                        .putAdditionalProperty(
+                            "foo",
+                            JsonValue.from(
+                                mapOf(
+                                    "filterable" to true,
+                                    "full_text_search" to true,
+                                    "type" to "string",
                                 )
-                                .build()
+                            ),
                         )
-                        .upsertColumns(
-                            DocumentColumns.builder()
-                                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .build()
-                        )
-                        .addUpsertRow(
-                            DocumentRow.builder()
-                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .vectorOfNumber(listOf(0.0))
-                                .build()
-                        )
+                        .build()
+                )
+                .upsertColumns(
+                    DocumentColumns.builder().addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+                )
+                .addUpsertRow(
+                    DocumentRow.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfNumber(listOf(0.0))
                         .build()
                 )
                 .putAdditionalHeader("Secret-Header", "42")
                 .putAdditionalQueryParam("secret_query_param", "42")
+                .putAdditionalBodyProperty("secretProperty", JsonValue.from("42"))
                 .build()
         )
 
@@ -136,6 +129,7 @@ internal class ServiceParamsTest {
             postRequestedFor(anyUrl())
                 .withHeader("Secret-Header", equalTo("42"))
                 .withQueryParam("secret_query_param", equalTo("42"))
+                .withRequestBody(matchingJsonPath("$.secretProperty", equalTo("42")))
         )
     }
 }

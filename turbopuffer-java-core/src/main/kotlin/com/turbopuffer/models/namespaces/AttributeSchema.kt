@@ -448,6 +448,9 @@ private constructor(
             /** A boolean. */
             @JvmField val BOOL = of("bool")
 
+            /** A date and time. */
+            @JvmField val DATETIME = of("datetime")
+
             /** An array of strings. */
             @JvmField val STRING_ARRAY = of("[]string")
 
@@ -456,6 +459,9 @@ private constructor(
 
             /** An array of UUIDs. */
             @JvmField val UUID_ARRAY = of("[]uuid")
+
+            /** An array of date and time values. */
+            @JvmField val DATETIME_ARRAY = of("[]datetime")
 
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }
@@ -470,12 +476,16 @@ private constructor(
             UUID,
             /** A boolean. */
             BOOL,
+            /** A date and time. */
+            DATETIME,
             /** An array of strings. */
             STRING_ARRAY,
             /** An array of unsigned integers. */
             UINT_ARRAY,
             /** An array of UUIDs. */
             UUID_ARRAY,
+            /** An array of date and time values. */
+            DATETIME_ARRAY,
         }
 
         /**
@@ -496,12 +506,16 @@ private constructor(
             UUID,
             /** A boolean. */
             BOOL,
+            /** A date and time. */
+            DATETIME,
             /** An array of strings. */
             STRING_ARRAY,
             /** An array of unsigned integers. */
             UINT_ARRAY,
             /** An array of UUIDs. */
             UUID_ARRAY,
+            /** An array of date and time values. */
+            DATETIME_ARRAY,
             /** An enum member indicating that [Type] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -519,9 +533,11 @@ private constructor(
                 UINT -> Value.UINT
                 UUID -> Value.UUID
                 BOOL -> Value.BOOL
+                DATETIME -> Value.DATETIME
                 STRING_ARRAY -> Value.STRING_ARRAY
                 UINT_ARRAY -> Value.UINT_ARRAY
                 UUID_ARRAY -> Value.UUID_ARRAY
+                DATETIME_ARRAY -> Value.DATETIME_ARRAY
                 else -> Value._UNKNOWN
             }
 
@@ -540,9 +556,11 @@ private constructor(
                 UINT -> Known.UINT
                 UUID -> Known.UUID
                 BOOL -> Known.BOOL
+                DATETIME -> Known.DATETIME
                 STRING_ARRAY -> Known.STRING_ARRAY
                 UINT_ARRAY -> Known.UINT_ARRAY
                 UUID_ARRAY -> Known.UUID_ARRAY
+                DATETIME_ARRAY -> Known.DATETIME_ARRAY
                 else -> throw TurbopufferInvalidDataException("Unknown Type: $value")
             }
 

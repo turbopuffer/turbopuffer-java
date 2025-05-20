@@ -54,7 +54,10 @@ import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
-NamespaceWriteResponse response = client.namespaces().write("products");
+NamespaceWriteParams params = NamespaceWriteParams.builder()
+    .namespace("products")
+    .build();
+NamespaceWriteResponse response = client.namespaces().write(params);
 ```
 
 ## Client configuration
@@ -89,7 +92,7 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
     // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
     .fromEnv()
-    .apiKey("My API Key")
+    .defaultNamespace("My Default Namespace")
     .build();
 ```
 
@@ -132,7 +135,10 @@ import java.util.concurrent.CompletableFuture;
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
-CompletableFuture<NamespaceWriteResponse> response = client.async().namespaces().write("products");
+NamespaceWriteParams params = NamespaceWriteParams.builder()
+    .namespace("products")
+    .build();
+CompletableFuture<NamespaceWriteResponse> response = client.async().namespaces().write(params);
 ```
 
 Or create an asynchronous client from the beginning:
@@ -147,7 +153,10 @@ import java.util.concurrent.CompletableFuture;
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
-CompletableFuture<NamespaceWriteResponse> response = client.namespaces().write("products");
+NamespaceWriteParams params = NamespaceWriteParams.builder()
+    .namespace("products")
+    .build();
+CompletableFuture<NamespaceWriteResponse> response = client.namespaces().write(params);
 ```
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
@@ -161,21 +170,24 @@ To access this data, prefix any HTTP method call on a client or service with `wi
 ```java
 import com.turbopuffer.core.http.Headers;
 import com.turbopuffer.core.http.HttpResponseFor;
-import com.turbopuffer.models.namespaces.DocumentRowWithScore;
 import com.turbopuffer.models.namespaces.NamespaceQueryParams;
+import com.turbopuffer.models.namespaces.NamespaceQueryResponse;
 
-HttpResponseFor<List<DocumentRowWithScore>> documentRowWithScores = client.namespaces().withRawResponse().query("products");
+NamespaceQueryParams params = NamespaceQueryParams.builder()
+    .namespace("products")
+    .build();
+HttpResponseFor<NamespaceQueryResponse> response = client.namespaces().withRawResponse().query(params);
 
-int statusCode = documentRowWithScores.statusCode();
-Headers headers = documentRowWithScores.headers();
+int statusCode = response.statusCode();
+Headers headers = response.headers();
 ```
 
 You can still deserialize the response into an instance of a Java class if needed:
 
 ```java
-import com.turbopuffer.models.namespaces.DocumentRowWithScore;
+import com.turbopuffer.models.namespaces.NamespaceQueryResponse;
 
-List<DocumentRowWithScore> parsedDocumentRowWithScores = documentRowWithScores.parse();
+NamespaceQueryResponse parsedResponse = response.parse();
 ```
 
 ## Error handling
@@ -212,43 +224,43 @@ To iterate through all results across all pages, use the `autoPager()` method, w
 When using the synchronous client, the method returns an [`Iterable`](https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html)
 
 ```java
-import com.turbopuffer.models.namespaces.NamespaceListPage;
-import com.turbopuffer.models.namespaces.NamespaceSummary;
+import com.turbopuffer.models.ClientListNamespacesPage;
+import com.turbopuffer.models.NamespaceSummary;
 
-NamespaceListPage page = client.namespaces().list();
+ClientListNamespacesPage page = client.listNamespaces();
 
 // Process as an Iterable
-for (NamespaceSummary namespace : page.autoPager()) {
-    System.out.println(namespace);
+for (NamespaceSummary client : page.autoPager()) {
+    System.out.println(client);
 }
 
 // Process as a Stream
 page.autoPager()
     .stream()
     .limit(50)
-    .forEach(namespace -> System.out.println(namespace));
+    .forEach(client -> System.out.println(client));
 ```
 
 When using the asynchronous client, the method returns an [`AsyncStreamResponse`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/http/AsyncStreamResponse.kt):
 
 ```java
 import com.turbopuffer.core.http.AsyncStreamResponse;
-import com.turbopuffer.models.namespaces.NamespaceListPageAsync;
-import com.turbopuffer.models.namespaces.NamespaceSummary;
+import com.turbopuffer.models.ClientListNamespacesPageAsync;
+import com.turbopuffer.models.NamespaceSummary;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-CompletableFuture<NamespaceListPageAsync> pageFuture = client.async().namespaces().list();
+CompletableFuture<ClientListNamespacesPageAsync> pageFuture = client.async().listNamespaces();
 
-pageFuture.thenRun(page -> page.autoPager().subscribe(namespace -> {
-    System.out.println(namespace);
+pageFuture.thenRun(page -> page.autoPager().subscribe(client -> {
+    System.out.println(client);
 }));
 
 // If you need to handle errors or completion of the stream
 pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
     @Override
-    public void onNext(NamespaceSummary namespace) {
-        System.out.println(namespace);
+    public void onNext(NamespaceSummary client) {
+        System.out.println(client);
     }
 
     @Override
@@ -264,8 +276,8 @@ pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Ha
 
 // Or use futures
 pageFuture.thenRun(page -> page.autoPager()
-    .subscribe(namespace -> {
-        System.out.println(namespace);
+    .subscribe(client -> {
+        System.out.println(client);
     })
     .onCompleteFuture()
     .whenComplete((unused, error) -> {
@@ -284,13 +296,13 @@ To access individual page items and manually request the next page, use the `ite
 `hasNextPage()`, and `nextPage()` methods:
 
 ```java
-import com.turbopuffer.models.namespaces.NamespaceListPage;
-import com.turbopuffer.models.namespaces.NamespaceSummary;
+import com.turbopuffer.models.ClientListNamespacesPage;
+import com.turbopuffer.models.NamespaceSummary;
 
-NamespaceListPage page = client.namespaces().list();
+ClientListNamespacesPage page = client.listNamespaces();
 while (true) {
-    for (NamespaceSummary namespace : page.items()) {
-        System.out.println(namespace);
+    for (NamespaceSummary client : page.items()) {
+        System.out.println(client);
     }
 
     if (!page.hasNextPage()) {
@@ -462,10 +474,11 @@ To set undocumented parameters on _nested_ headers, query params, or body classe
 
 ```java
 import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.namespaces.NamespaceQueryParams;
+import com.turbopuffer.models.namespaces.DocumentColumns;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
-NamespaceQueryParams params = NamespaceQueryParams.builder()
-    .consistency(NamespaceQueryParams.Consistency.builder()
+NamespaceWriteParams params = NamespaceWriteParams.builder()
+    .patchColumns(DocumentColumns.builder()
         .putAdditionalProperty("secretProperty", JsonValue.from("42"))
         .build())
     .build();
@@ -478,7 +491,9 @@ To set a documented parameter or property to an undocumented or not yet supporte
 ```java
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
-NamespaceWriteParams params = NamespaceWriteParams.builder().build();
+NamespaceWriteParams params = NamespaceWriteParams.builder()
+    .namespace("products")
+    .build();
 ```
 
 The most straightforward way to create a [`JsonValue`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/Values.kt) is using its `from(...)` method:
@@ -571,19 +586,19 @@ To access a property's raw JSON value, which may be undocumented, call its `_` p
 import com.turbopuffer.core.JsonField;
 import java.util.Optional;
 
-JsonField<Object> field = client.namespaces().write(params)._field();
+JsonField<String> copyFromNamespace = client.namespaces().write(params)._copyFromNamespace();
 
-if (field.isMissing()) {
+if (copyFromNamespace.isMissing()) {
   // The property is absent from the JSON response
-} else if (field.isNull()) {
+} else if (copyFromNamespace.isNull()) {
   // The property was set to literal null
 } else {
   // Check if value was provided as a string
   // Other methods include `asNumber()`, `asBoolean()`, etc.
-  Optional<String> jsonString = field.asString();
+  Optional<String> jsonString = copyFromNamespace.asString();
 
   // Try to deserialize into a custom type
-  MyClass myObject = field.asUnknown().orElseThrow().convert(MyClass.class);
+  MyClass myObject = copyFromNamespace.asUnknown().orElseThrow().convert(MyClass.class);
 }
 ```
 
