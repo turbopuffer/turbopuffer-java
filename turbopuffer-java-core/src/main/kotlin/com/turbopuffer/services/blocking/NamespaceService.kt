@@ -7,12 +7,16 @@ import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceExportParams
+import com.turbopuffer.models.namespaces.NamespaceExportResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 
@@ -40,6 +44,24 @@ interface NamespaceService {
     /** @see [deleteAll] */
     fun deleteAll(requestOptions: RequestOptions): NamespaceDeleteAllResponse =
         deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
+
+    /** Export documents. */
+    fun export(): NamespaceExportResponse = export(NamespaceExportParams.none())
+
+    /** @see [export] */
+    fun export(
+        params: NamespaceExportParams = NamespaceExportParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceExportResponse
+
+    /** @see [export] */
+    fun export(
+        params: NamespaceExportParams = NamespaceExportParams.none()
+    ): NamespaceExportResponse = export(params, RequestOptions.none())
+
+    /** @see [export] */
+    fun export(requestOptions: RequestOptions): NamespaceExportResponse =
+        export(NamespaceExportParams.none(), requestOptions)
 
     /** Get namespace schema. */
     fun getSchema(): NamespaceGetSchemaResponse = getSchema(NamespaceGetSchemaParams.none())
@@ -94,6 +116,25 @@ interface NamespaceService {
     fun query(requestOptions: RequestOptions): NamespaceQueryResponse =
         query(NamespaceQueryParams.none(), requestOptions)
 
+    /** Update namespace schema. */
+    fun updateSchema(): NamespaceUpdateSchemaResponse =
+        updateSchema(NamespaceUpdateSchemaParams.none())
+
+    /** @see [updateSchema] */
+    fun updateSchema(
+        params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceUpdateSchemaResponse
+
+    /** @see [updateSchema] */
+    fun updateSchema(
+        params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
+    ): NamespaceUpdateSchemaResponse = updateSchema(params, RequestOptions.none())
+
+    /** @see [updateSchema] */
+    fun updateSchema(requestOptions: RequestOptions): NamespaceUpdateSchemaResponse =
+        updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
+
     /** Create, update, or delete documents. */
     fun write(): NamespaceWriteResponse = write(NamespaceWriteParams.none())
 
@@ -139,6 +180,32 @@ interface NamespaceService {
         @MustBeClosed
         fun deleteAll(requestOptions: RequestOptions): HttpResponseFor<NamespaceDeleteAllResponse> =
             deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}`, but is otherwise the
+         * same as [NamespaceService.export].
+         */
+        @MustBeClosed
+        fun export(): HttpResponseFor<NamespaceExportResponse> =
+            export(NamespaceExportParams.none())
+
+        /** @see [export] */
+        @MustBeClosed
+        fun export(
+            params: NamespaceExportParams = NamespaceExportParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceExportResponse>
+
+        /** @see [export] */
+        @MustBeClosed
+        fun export(
+            params: NamespaceExportParams = NamespaceExportParams.none()
+        ): HttpResponseFor<NamespaceExportResponse> = export(params, RequestOptions.none())
+
+        /** @see [export] */
+        @MustBeClosed
+        fun export(requestOptions: RequestOptions): HttpResponseFor<NamespaceExportResponse> =
+            export(NamespaceExportParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/schema`, but is otherwise
@@ -218,6 +285,35 @@ interface NamespaceService {
         @MustBeClosed
         fun query(requestOptions: RequestOptions): HttpResponseFor<NamespaceQueryResponse> =
             query(NamespaceQueryParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/schema`, but is
+         * otherwise the same as [NamespaceService.updateSchema].
+         */
+        @MustBeClosed
+        fun updateSchema(): HttpResponseFor<NamespaceUpdateSchemaResponse> =
+            updateSchema(NamespaceUpdateSchemaParams.none())
+
+        /** @see [updateSchema] */
+        @MustBeClosed
+        fun updateSchema(
+            params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceUpdateSchemaResponse>
+
+        /** @see [updateSchema] */
+        @MustBeClosed
+        fun updateSchema(
+            params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
+        ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
+            updateSchema(params, RequestOptions.none())
+
+        /** @see [updateSchema] */
+        @MustBeClosed
+        fun updateSchema(
+            requestOptions: RequestOptions
+        ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
+            updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v2/namespaces/{namespace}`, but is otherwise the

@@ -7,12 +7,16 @@ import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceExportParams
+import com.turbopuffer.models.namespaces.NamespaceExportResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
@@ -42,6 +46,24 @@ interface NamespaceServiceAsync {
     /** @see [deleteAll] */
     fun deleteAll(requestOptions: RequestOptions): CompletableFuture<NamespaceDeleteAllResponse> =
         deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
+
+    /** Export documents. */
+    fun export(): CompletableFuture<NamespaceExportResponse> = export(NamespaceExportParams.none())
+
+    /** @see [export] */
+    fun export(
+        params: NamespaceExportParams = NamespaceExportParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceExportResponse>
+
+    /** @see [export] */
+    fun export(
+        params: NamespaceExportParams = NamespaceExportParams.none()
+    ): CompletableFuture<NamespaceExportResponse> = export(params, RequestOptions.none())
+
+    /** @see [export] */
+    fun export(requestOptions: RequestOptions): CompletableFuture<NamespaceExportResponse> =
+        export(NamespaceExportParams.none(), requestOptions)
 
     /** Get namespace schema. */
     fun getSchema(): CompletableFuture<NamespaceGetSchemaResponse> =
@@ -99,6 +121,28 @@ interface NamespaceServiceAsync {
     fun query(requestOptions: RequestOptions): CompletableFuture<NamespaceQueryResponse> =
         query(NamespaceQueryParams.none(), requestOptions)
 
+    /** Update namespace schema. */
+    fun updateSchema(): CompletableFuture<NamespaceUpdateSchemaResponse> =
+        updateSchema(NamespaceUpdateSchemaParams.none())
+
+    /** @see [updateSchema] */
+    fun updateSchema(
+        params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceUpdateSchemaResponse>
+
+    /** @see [updateSchema] */
+    fun updateSchema(
+        params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
+    ): CompletableFuture<NamespaceUpdateSchemaResponse> =
+        updateSchema(params, RequestOptions.none())
+
+    /** @see [updateSchema] */
+    fun updateSchema(
+        requestOptions: RequestOptions
+    ): CompletableFuture<NamespaceUpdateSchemaResponse> =
+        updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
+
     /** Create, update, or delete documents. */
     fun write(): CompletableFuture<NamespaceWriteResponse> = write(NamespaceWriteParams.none())
 
@@ -150,6 +194,35 @@ interface NamespaceServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>> =
             deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}`, but is otherwise the
+         * same as [NamespaceServiceAsync.export].
+         */
+        @MustBeClosed
+        fun export(): CompletableFuture<HttpResponseFor<NamespaceExportResponse>> =
+            export(NamespaceExportParams.none())
+
+        /** @see [export] */
+        @MustBeClosed
+        fun export(
+            params: NamespaceExportParams = NamespaceExportParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceExportResponse>>
+
+        /** @see [export] */
+        @MustBeClosed
+        fun export(
+            params: NamespaceExportParams = NamespaceExportParams.none()
+        ): CompletableFuture<HttpResponseFor<NamespaceExportResponse>> =
+            export(params, RequestOptions.none())
+
+        /** @see [export] */
+        @MustBeClosed
+        fun export(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<NamespaceExportResponse>> =
+            export(NamespaceExportParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/schema`, but is otherwise
@@ -237,6 +310,35 @@ interface NamespaceServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>> =
             query(NamespaceQueryParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/schema`, but is
+         * otherwise the same as [NamespaceServiceAsync.updateSchema].
+         */
+        @MustBeClosed
+        fun updateSchema(): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
+            updateSchema(NamespaceUpdateSchemaParams.none())
+
+        /** @see [updateSchema] */
+        @MustBeClosed
+        fun updateSchema(
+            params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>>
+
+        /** @see [updateSchema] */
+        @MustBeClosed
+        fun updateSchema(
+            params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
+        ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
+            updateSchema(params, RequestOptions.none())
+
+        /** @see [updateSchema] */
+        @MustBeClosed
+        fun updateSchema(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
+            updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v2/namespaces/{namespace}`, but is otherwise the
