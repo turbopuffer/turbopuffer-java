@@ -18,8 +18,6 @@ import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
-import com.turbopuffer.models.namespaces.NamespaceExportParams
-import com.turbopuffer.models.namespaces.NamespaceExportResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
@@ -47,13 +45,6 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     ): NamespaceDeleteAllResponse =
         // delete /v2/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).parse()
-
-    override fun export(
-        params: NamespaceExportParams,
-        requestOptions: RequestOptions,
-    ): NamespaceExportResponse =
-        // get /v1/namespaces/{namespace}
-        withRawResponse().export(params, requestOptions).parse()
 
     override fun getSchema(
         params: NamespaceGetSchemaParams,
@@ -124,42 +115,6 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             return response.parseable {
                 response
                     .use { deleteAllHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-        }
-
-        private val exportHandler: Handler<NamespaceExportResponse> =
-            jsonHandler<NamespaceExportResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
-
-        override fun export(
-            params: NamespaceExportParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<NamespaceExportResponse> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .addPathSegments(
-                        "v1",
-                        "namespaces",
-                        checkRequired(
-                            "namespace",
-                            params._pathParam(0).ifBlank {
-                                clientOptions.defaultNamespace().getOrNull()
-                            },
-                        ),
-                    )
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { exportHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

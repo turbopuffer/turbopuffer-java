@@ -16,7 +16,15 @@ private constructor(
     private val service: TurbopufferClient,
     private val params: ClientListNamespacesParams,
     private val response: ClientListNamespacesPageResponse,
-) : Page<ClientListNamespacesPageResponse> {
+) : Page<NamespaceSummary> {
+
+    /**
+     * Delegates to [ClientListNamespacesPageResponse], but gracefully handles missing data.
+     *
+     * @see [ClientListNamespacesPageResponse.namespaces]
+     */
+    fun namespaces(): List<NamespaceSummary> =
+        response._namespaces().getOptional("namespaces").getOrNull() ?: emptyList()
 
     /**
      * Delegates to [ClientListNamespacesPageResponse], but gracefully handles missing data.
@@ -25,7 +33,7 @@ private constructor(
      */
     fun nextCursor(): Optional<String> = response._nextCursor().getOptional("next_cursor")
 
-    override fun items(): List<ClientListNamespacesPageResponse> = data()
+    override fun items(): List<NamespaceSummary> = namespaces()
 
     override fun hasNextPage(): Boolean = items().isNotEmpty() && nextCursor().isPresent
 
@@ -38,7 +46,7 @@ private constructor(
 
     override fun nextPage(): ClientListNamespacesPage = service.listNamespaces(nextPageParams())
 
-    fun autoPager(): AutoPager<ClientListNamespacesPageResponse> = AutoPager.from(this)
+    fun autoPager(): AutoPager<NamespaceSummary> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): ClientListNamespacesParams = params
