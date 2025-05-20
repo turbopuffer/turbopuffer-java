@@ -53,7 +53,7 @@ internal class ServiceParamsTest {
                         .build()
                 )
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filters(JsonValue.from(mapOf<String, Any>()))
+                .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
                 .includeAttributes(true)
                 .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
                 .topK(0L)

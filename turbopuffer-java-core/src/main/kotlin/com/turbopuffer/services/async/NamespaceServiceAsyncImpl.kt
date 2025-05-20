@@ -18,12 +18,16 @@ import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepareAsync
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceExportParams
+import com.turbopuffer.models.namespaces.NamespaceExportResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
@@ -45,6 +49,13 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         // delete /v2/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).thenApply { it.parse() }
 
+    override fun export(
+        params: NamespaceExportParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceExportResponse> =
+        // get /v1/namespaces/{namespace}
+        withRawResponse().export(params, requestOptions).thenApply { it.parse() }
+
     override fun getSchema(
         params: NamespaceGetSchemaParams,
         requestOptions: RequestOptions,
@@ -65,6 +76,13 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     ): CompletableFuture<NamespaceQueryResponse> =
         // post /v2/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).thenApply { it.parse() }
+
+    override fun updateSchema(
+        params: NamespaceUpdateSchemaParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceUpdateSchemaResponse> =
+        // post /v1/namespaces/{namespace}/schema
+        withRawResponse().updateSchema(params, requestOptions).thenApply { it.parse() }
 
     override fun write(
         params: NamespaceWriteParams,
@@ -109,6 +127,45 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     response.parseable {
                         response
                             .use { deleteAllHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val exportHandler: Handler<NamespaceExportResponse> =
+            jsonHandler<NamespaceExportResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun export(
+            params: NamespaceExportParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceExportResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                    )
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { exportHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
@@ -232,6 +289,47 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     response.parseable {
                         response
                             .use { queryHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val updateSchemaHandler: Handler<NamespaceUpdateSchemaResponse> =
+            jsonHandler<NamespaceUpdateSchemaResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun updateSchema(
+            params: NamespaceUpdateSchemaParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "schema",
+                    )
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { updateSchemaHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
