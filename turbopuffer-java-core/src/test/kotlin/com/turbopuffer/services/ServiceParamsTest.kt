@@ -55,7 +55,7 @@ internal class ServiceParamsTest {
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filters(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(true)
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
+                .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
                 .topK(0L)
                 .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                 .putAdditionalHeader("Secret-Header", "42")
