@@ -22,17 +22,19 @@ import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
 import com.turbopuffer.core.allMaxBy
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
+import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Query, filter, full-text search and vector search documents. */
-class NamespaceQueryParams
+/** Send multiple queries at once. */
+class NamespaceMultiQueryParams
 private constructor(
     private val namespace: String?,
     private val body: Body,
@@ -51,32 +53,10 @@ private constructor(
     fun consistency(): Optional<Consistency> = body.consistency()
 
     /**
-     * A function used to calculate vector similarity.
-     *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun distanceMetric(): Optional<DistanceMetric> = body.distanceMetric()
-
-    fun _filters(): JsonValue = body._filters()
-
-    /**
-     * Whether to include attributes in the response.
-     *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun includeAttributes(): Optional<IncludeAttributes> = body.includeAttributes()
-
-    fun _rankBy(): JsonValue = body._rankBy()
-
-    /**
-     * The number of results to return.
-     *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun topK(): Optional<Long> = body.topK()
+    fun queries(): Optional<List<Query>> = body.queries()
 
     /**
      * The encoding to use for vectors in the response.
@@ -94,26 +74,11 @@ private constructor(
     fun _consistency(): JsonField<Consistency> = body._consistency()
 
     /**
-     * Returns the raw JSON value of [distanceMetric].
+     * Returns the raw JSON value of [queries].
      *
-     * Unlike [distanceMetric], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [queries], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _distanceMetric(): JsonField<DistanceMetric> = body._distanceMetric()
-
-    /**
-     * Returns the raw JSON value of [includeAttributes].
-     *
-     * Unlike [includeAttributes], this method doesn't throw if the JSON field has an unexpected
-     * type.
-     */
-    fun _includeAttributes(): JsonField<IncludeAttributes> = body._includeAttributes()
-
-    /**
-     * Returns the raw JSON value of [topK].
-     *
-     * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _topK(): JsonField<Long> = body._topK()
+    fun _queries(): JsonField<List<Query>> = body._queries()
 
     /**
      * Returns the raw JSON value of [vectorEncoding].
@@ -132,13 +97,15 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): NamespaceQueryParams = builder().build()
+        @JvmStatic fun none(): NamespaceMultiQueryParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [NamespaceQueryParams]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [NamespaceMultiQueryParams].
+         */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceQueryParams]. */
+    /** A builder for [NamespaceMultiQueryParams]. */
     class Builder internal constructor() {
 
         private var namespace: String? = null
@@ -147,11 +114,11 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(namespaceQueryParams: NamespaceQueryParams) = apply {
-            namespace = namespaceQueryParams.namespace
-            body = namespaceQueryParams.body.toBuilder()
-            additionalHeaders = namespaceQueryParams.additionalHeaders.toBuilder()
-            additionalQueryParams = namespaceQueryParams.additionalQueryParams.toBuilder()
+        internal fun from(namespaceMultiQueryParams: NamespaceMultiQueryParams) = apply {
+            namespace = namespaceMultiQueryParams.namespace
+            body = namespaceMultiQueryParams.body.toBuilder()
+            additionalHeaders = namespaceMultiQueryParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceMultiQueryParams.additionalQueryParams.toBuilder()
         }
 
         fun namespace(namespace: String?) = apply { this.namespace = namespace }
@@ -165,11 +132,8 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [consistency]
-         * - [distanceMetric]
-         * - [filters]
-         * - [includeAttributes]
-         * - [rankBy]
-         * - etc.
+         * - [queries]
+         * - [vectorEncoding]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -187,60 +151,23 @@ private constructor(
             body.consistency(consistency)
         }
 
-        /** A function used to calculate vector similarity. */
-        fun distanceMetric(distanceMetric: DistanceMetric) = apply {
-            body.distanceMetric(distanceMetric)
-        }
+        fun queries(queries: List<Query>) = apply { body.queries(queries) }
 
         /**
-         * Sets [Builder.distanceMetric] to an arbitrary JSON value.
+         * Sets [Builder.queries] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.distanceMetric] with a well-typed [DistanceMetric] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.queries] with a well-typed `List<Query>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
-            body.distanceMetric(distanceMetric)
-        }
-
-        fun filters(filters: JsonValue) = apply { body.filters(filters) }
-
-        /** Whether to include attributes in the response. */
-        fun includeAttributes(includeAttributes: IncludeAttributes) = apply {
-            body.includeAttributes(includeAttributes)
-        }
+        fun queries(queries: JsonField<List<Query>>) = apply { body.queries(queries) }
 
         /**
-         * Sets [Builder.includeAttributes] to an arbitrary JSON value.
+         * Adds a single [Query] to [queries].
          *
-         * You should usually call [Builder.includeAttributes] with a well-typed [IncludeAttributes]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun includeAttributes(includeAttributes: JsonField<IncludeAttributes>) = apply {
-            body.includeAttributes(includeAttributes)
-        }
-
-        /** Alias for calling [includeAttributes] with `IncludeAttributes.ofBool(bool)`. */
-        fun includeAttributes(bool: Boolean) = apply { body.includeAttributes(bool) }
-
-        /** Alias for calling [includeAttributes] with `IncludeAttributes.ofStrings(strings)`. */
-        fun includeAttributesOfStrings(strings: List<String>) = apply {
-            body.includeAttributesOfStrings(strings)
-        }
-
-        fun rankBy(rankBy: JsonValue) = apply { body.rankBy(rankBy) }
-
-        /** The number of results to return. */
-        fun topK(topK: Long) = apply { body.topK(topK) }
-
-        /**
-         * Sets [Builder.topK] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
+        fun addQuery(query: Query) = apply { body.addQuery(query) }
 
         /** The encoding to use for vectors in the response. */
         fun vectorEncoding(vectorEncoding: VectorEncoding) = apply {
@@ -376,12 +303,12 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [NamespaceQueryParams].
+         * Returns an immutable instance of [NamespaceMultiQueryParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): NamespaceQueryParams =
-            NamespaceQueryParams(
+        fun build(): NamespaceMultiQueryParams =
+            NamespaceMultiQueryParams(
                 namespace,
                 body.build(),
                 additionalHeaders.build(),
@@ -404,11 +331,7 @@ private constructor(
     class Body
     private constructor(
         private val consistency: JsonField<Consistency>,
-        private val distanceMetric: JsonField<DistanceMetric>,
-        private val filters: JsonValue,
-        private val includeAttributes: JsonField<IncludeAttributes>,
-        private val rankBy: JsonValue,
-        private val topK: JsonField<Long>,
+        private val queries: JsonField<List<Query>>,
         private val vectorEncoding: JsonField<VectorEncoding>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -418,28 +341,13 @@ private constructor(
             @JsonProperty("consistency")
             @ExcludeMissing
             consistency: JsonField<Consistency> = JsonMissing.of(),
-            @JsonProperty("distance_metric")
+            @JsonProperty("queries")
             @ExcludeMissing
-            distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
-            @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
-            @JsonProperty("include_attributes")
-            @ExcludeMissing
-            includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
-            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
-            @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
+            queries: JsonField<List<Query>> = JsonMissing.of(),
             @JsonProperty("vector_encoding")
             @ExcludeMissing
             vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of(),
-        ) : this(
-            consistency,
-            distanceMetric,
-            filters,
-            includeAttributes,
-            rankBy,
-            topK,
-            vectorEncoding,
-            mutableMapOf(),
-        )
+        ) : this(consistency, queries, vectorEncoding, mutableMapOf())
 
         /**
          * The consistency level for a query.
@@ -450,34 +358,10 @@ private constructor(
         fun consistency(): Optional<Consistency> = consistency.getOptional("consistency")
 
         /**
-         * A function used to calculate vector similarity.
-         *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun distanceMetric(): Optional<DistanceMetric> =
-            distanceMetric.getOptional("distance_metric")
-
-        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
-
-        /**
-         * Whether to include attributes in the response.
-         *
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun includeAttributes(): Optional<IncludeAttributes> =
-            includeAttributes.getOptional("include_attributes")
-
-        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
-
-        /**
-         * The number of results to return.
-         *
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun topK(): Optional<Long> = topK.getOptional("top_k")
+        fun queries(): Optional<List<Query>> = queries.getOptional("queries")
 
         /**
          * The encoding to use for vectors in the response.
@@ -498,31 +382,11 @@ private constructor(
         fun _consistency(): JsonField<Consistency> = consistency
 
         /**
-         * Returns the raw JSON value of [distanceMetric].
+         * Returns the raw JSON value of [queries].
          *
-         * Unlike [distanceMetric], this method doesn't throw if the JSON field has an unexpected
-         * type.
+         * Unlike [queries], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("distance_metric")
-        @ExcludeMissing
-        fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
-
-        /**
-         * Returns the raw JSON value of [includeAttributes].
-         *
-         * Unlike [includeAttributes], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("include_attributes")
-        @ExcludeMissing
-        fun _includeAttributes(): JsonField<IncludeAttributes> = includeAttributes
-
-        /**
-         * Returns the raw JSON value of [topK].
-         *
-         * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
+        @JsonProperty("queries") @ExcludeMissing fun _queries(): JsonField<List<Query>> = queries
 
         /**
          * Returns the raw JSON value of [vectorEncoding].
@@ -556,22 +420,14 @@ private constructor(
         class Builder internal constructor() {
 
             private var consistency: JsonField<Consistency> = JsonMissing.of()
-            private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
-            private var filters: JsonValue = JsonMissing.of()
-            private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
-            private var rankBy: JsonValue = JsonMissing.of()
-            private var topK: JsonField<Long> = JsonMissing.of()
+            private var queries: JsonField<MutableList<Query>>? = null
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 consistency = body.consistency
-                distanceMetric = body.distanceMetric
-                filters = body.filters
-                includeAttributes = body.includeAttributes
-                rankBy = body.rankBy
-                topK = body.topK
+                queries = body.queries.map { it.toMutableList() }
                 vectorEncoding = body.vectorEncoding
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -590,60 +446,30 @@ private constructor(
                 this.consistency = consistency
             }
 
-            /** A function used to calculate vector similarity. */
-            fun distanceMetric(distanceMetric: DistanceMetric) =
-                distanceMetric(JsonField.of(distanceMetric))
+            fun queries(queries: List<Query>) = queries(JsonField.of(queries))
 
             /**
-             * Sets [Builder.distanceMetric] to an arbitrary JSON value.
+             * Sets [Builder.queries] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.distanceMetric] with a well-typed [DistanceMetric]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
+             * You should usually call [Builder.queries] with a well-typed `List<Query>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
-                this.distanceMetric = distanceMetric
+            fun queries(queries: JsonField<List<Query>>) = apply {
+                this.queries = queries.map { it.toMutableList() }
             }
 
-            fun filters(filters: JsonValue) = apply { this.filters = filters }
-
-            /** Whether to include attributes in the response. */
-            fun includeAttributes(includeAttributes: IncludeAttributes) =
-                includeAttributes(JsonField.of(includeAttributes))
-
             /**
-             * Sets [Builder.includeAttributes] to an arbitrary JSON value.
+             * Adds a single [Query] to [queries].
              *
-             * You should usually call [Builder.includeAttributes] with a well-typed
-             * [IncludeAttributes] value instead. This method is primarily for setting the field to
-             * an undocumented or not yet supported value.
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
-            fun includeAttributes(includeAttributes: JsonField<IncludeAttributes>) = apply {
-                this.includeAttributes = includeAttributes
+            fun addQuery(query: Query) = apply {
+                queries =
+                    (queries ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("queries", it).add(query)
+                    }
             }
-
-            /** Alias for calling [includeAttributes] with `IncludeAttributes.ofBool(bool)`. */
-            fun includeAttributes(bool: Boolean) = includeAttributes(IncludeAttributes.ofBool(bool))
-
-            /**
-             * Alias for calling [includeAttributes] with `IncludeAttributes.ofStrings(strings)`.
-             */
-            fun includeAttributesOfStrings(strings: List<String>) =
-                includeAttributes(IncludeAttributes.ofStrings(strings))
-
-            fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
-
-            /** The number of results to return. */
-            fun topK(topK: Long) = topK(JsonField.of(topK))
-
-            /**
-             * Sets [Builder.topK] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
 
             /** The encoding to use for vectors in the response. */
             fun vectorEncoding(vectorEncoding: VectorEncoding) =
@@ -687,11 +513,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     consistency,
-                    distanceMetric,
-                    filters,
-                    includeAttributes,
-                    rankBy,
-                    topK,
+                    (queries ?: JsonMissing.of()).map { it.toImmutable() },
                     vectorEncoding,
                     additionalProperties.toMutableMap(),
                 )
@@ -705,9 +527,7 @@ private constructor(
             }
 
             consistency().ifPresent { it.validate() }
-            distanceMetric().ifPresent { it.validate() }
-            includeAttributes().ifPresent { it.validate() }
-            topK()
+            queries().ifPresent { it.forEach { it.validate() } }
             vectorEncoding().ifPresent { it.validate() }
             validated = true
         }
@@ -729,9 +549,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (consistency.asKnown().getOrNull()?.validity() ?: 0) +
-                (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
-                (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (topK.asKnown().isPresent) 1 else 0) +
+                (queries.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -739,17 +557,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && consistency == other.consistency && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && consistency == other.consistency && queries == other.queries && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(consistency, distanceMetric, filters, includeAttributes, rankBy, topK, vectorEncoding, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(consistency, queries, vectorEncoding, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{consistency=$consistency, queries=$queries, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
@@ -1047,61 +865,225 @@ private constructor(
             "Consistency{level=$level, additionalProperties=$additionalProperties}"
     }
 
-    /** Whether to include attributes in the response. */
-    @JsonDeserialize(using = IncludeAttributes.Deserializer::class)
-    @JsonSerialize(using = IncludeAttributes.Serializer::class)
-    class IncludeAttributes
+    /** Query, filter, full-text search and vector search documents. */
+    class Query
     private constructor(
-        private val bool: Boolean? = null,
-        private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
+        private val distanceMetric: JsonField<DistanceMetric>,
+        private val filters: JsonValue,
+        private val includeAttributes: JsonField<IncludeAttributes>,
+        private val rankBy: JsonValue,
+        private val topK: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
+        @JsonCreator
+        private constructor(
+            @JsonProperty("distance_metric")
+            @ExcludeMissing
+            distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
+            @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
+            @JsonProperty("include_attributes")
+            @ExcludeMissing
+            includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
+            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
+            @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
+        ) : this(distanceMetric, filters, includeAttributes, rankBy, topK, mutableMapOf())
+
         /**
-         * When `true`, include all attributes in the response. When `false`, include no attributes
-         * in the response.
+         * A function used to calculate vector similarity.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        fun bool(): Optional<Boolean> = Optional.ofNullable(bool)
+        fun distanceMetric(): Optional<DistanceMetric> =
+            distanceMetric.getOptional("distance_metric")
 
-        /** Include exactly the specified attributes in the response. */
-        fun strings(): Optional<List<String>> = Optional.ofNullable(strings)
-
-        fun isBool(): Boolean = bool != null
-
-        fun isStrings(): Boolean = strings != null
+        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
 
         /**
-         * When `true`, include all attributes in the response. When `false`, include no attributes
-         * in the response.
+         * Whether to include attributes in the response.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        fun asBool(): Boolean = bool.getOrThrow("bool")
+        fun includeAttributes(): Optional<IncludeAttributes> =
+            includeAttributes.getOptional("include_attributes")
 
-        /** Include exactly the specified attributes in the response. */
-        fun asStrings(): List<String> = strings.getOrThrow("strings")
+        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
 
-        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+        /**
+         * The number of results to return.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun topK(): Optional<Long> = topK.getOptional("top_k")
 
-        fun <T> accept(visitor: Visitor<T>): T =
-            when {
-                bool != null -> visitor.visitBool(bool)
-                strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
+        /**
+         * Returns the raw JSON value of [distanceMetric].
+         *
+         * Unlike [distanceMetric], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("distance_metric")
+        @ExcludeMissing
+        fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
+
+        /**
+         * Returns the raw JSON value of [includeAttributes].
+         *
+         * Unlike [includeAttributes], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("include_attributes")
+        @ExcludeMissing
+        fun _includeAttributes(): JsonField<IncludeAttributes> = includeAttributes
+
+        /**
+         * Returns the raw JSON value of [topK].
+         *
+         * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Query]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Query]. */
+        class Builder internal constructor() {
+
+            private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
+            private var filters: JsonValue = JsonMissing.of()
+            private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
+            private var rankBy: JsonValue = JsonMissing.of()
+            private var topK: JsonField<Long> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(query: Query) = apply {
+                distanceMetric = query.distanceMetric
+                filters = query.filters
+                includeAttributes = query.includeAttributes
+                rankBy = query.rankBy
+                topK = query.topK
+                additionalProperties = query.additionalProperties.toMutableMap()
             }
+
+            /** A function used to calculate vector similarity. */
+            fun distanceMetric(distanceMetric: DistanceMetric) =
+                distanceMetric(JsonField.of(distanceMetric))
+
+            /**
+             * Sets [Builder.distanceMetric] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.distanceMetric] with a well-typed [DistanceMetric]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
+                this.distanceMetric = distanceMetric
+            }
+
+            fun filters(filters: JsonValue) = apply { this.filters = filters }
+
+            /** Whether to include attributes in the response. */
+            fun includeAttributes(includeAttributes: IncludeAttributes) =
+                includeAttributes(JsonField.of(includeAttributes))
+
+            /**
+             * Sets [Builder.includeAttributes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.includeAttributes] with a well-typed
+             * [IncludeAttributes] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun includeAttributes(includeAttributes: JsonField<IncludeAttributes>) = apply {
+                this.includeAttributes = includeAttributes
+            }
+
+            /** Alias for calling [includeAttributes] with `IncludeAttributes.ofBool(bool)`. */
+            fun includeAttributes(bool: Boolean) = includeAttributes(IncludeAttributes.ofBool(bool))
+
+            /**
+             * Alias for calling [includeAttributes] with `IncludeAttributes.ofStrings(strings)`.
+             */
+            fun includeAttributesOfStrings(strings: List<String>) =
+                includeAttributes(IncludeAttributes.ofStrings(strings))
+
+            fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
+
+            /** The number of results to return. */
+            fun topK(topK: Long) = topK(JsonField.of(topK))
+
+            /**
+             * Sets [Builder.topK] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Query].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Query =
+                Query(
+                    distanceMetric,
+                    filters,
+                    includeAttributes,
+                    rankBy,
+                    topK,
+                    additionalProperties.toMutableMap(),
+                )
+        }
 
         private var validated: Boolean = false
 
-        fun validate(): IncludeAttributes = apply {
+        fun validate(): Query = apply {
             if (validated) {
                 return@apply
             }
 
-            accept(
-                object : Visitor<Unit> {
-                    override fun visitBool(bool: Boolean) {}
-
-                    override fun visitStrings(strings: List<String>) {}
-                }
-            )
+            distanceMetric().ifPresent { it.validate() }
+            includeAttributes().ifPresent { it.validate() }
+            topK()
             validated = true
         }
 
@@ -1121,122 +1103,220 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            accept(
-                object : Visitor<Int> {
-                    override fun visitBool(bool: Boolean) = 1
+            (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
+                (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (topK.asKnown().isPresent) 1 else 0)
 
-                    override fun visitStrings(strings: List<String>) = strings.size
+        /** Whether to include attributes in the response. */
+        @JsonDeserialize(using = IncludeAttributes.Deserializer::class)
+        @JsonSerialize(using = IncludeAttributes.Serializer::class)
+        class IncludeAttributes
+        private constructor(
+            private val bool: Boolean? = null,
+            private val strings: List<String>? = null,
+            private val _json: JsonValue? = null,
+        ) {
 
-                    override fun unknown(json: JsonValue?) = 0
+            /**
+             * When `true`, include all attributes in the response. When `false`, include no
+             * attributes in the response.
+             */
+            fun bool(): Optional<Boolean> = Optional.ofNullable(bool)
+
+            /** Include exactly the specified attributes in the response. */
+            fun strings(): Optional<List<String>> = Optional.ofNullable(strings)
+
+            fun isBool(): Boolean = bool != null
+
+            fun isStrings(): Boolean = strings != null
+
+            /**
+             * When `true`, include all attributes in the response. When `false`, include no
+             * attributes in the response.
+             */
+            fun asBool(): Boolean = bool.getOrThrow("bool")
+
+            /** Include exactly the specified attributes in the response. */
+            fun asStrings(): List<String> = strings.getOrThrow("strings")
+
+            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    bool != null -> visitor.visitBool(bool)
+                    strings != null -> visitor.visitStrings(strings)
+                    else -> visitor.unknown(_json)
                 }
-            )
+
+            private var validated: Boolean = false
+
+            fun validate(): IncludeAttributes = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitBool(bool: Boolean) {}
+
+                        override fun visitStrings(strings: List<String>) {}
+                    }
+                )
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitBool(bool: Boolean) = 1
+
+                        override fun visitStrings(strings: List<String>) = strings.size
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is IncludeAttributes && bool == other.bool && strings == other.strings /* spotless:on */
+            }
+
+            override fun hashCode(): Int = /* spotless:off */ Objects.hash(bool, strings) /* spotless:on */
+
+            override fun toString(): String =
+                when {
+                    bool != null -> "IncludeAttributes{bool=$bool}"
+                    strings != null -> "IncludeAttributes{strings=$strings}"
+                    _json != null -> "IncludeAttributes{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid IncludeAttributes")
+                }
+
+            companion object {
+
+                /**
+                 * When `true`, include all attributes in the response. When `false`, include no
+                 * attributes in the response.
+                 */
+                @JvmStatic fun ofBool(bool: Boolean) = IncludeAttributes(bool = bool)
+
+                /** Include exactly the specified attributes in the response. */
+                @JvmStatic
+                fun ofStrings(strings: List<String>) = IncludeAttributes(strings = strings)
+            }
+
+            /**
+             * An interface that defines how to map each variant of [IncludeAttributes] to a value
+             * of type [T].
+             */
+            interface Visitor<out T> {
+
+                /**
+                 * When `true`, include all attributes in the response. When `false`, include no
+                 * attributes in the response.
+                 */
+                fun visitBool(bool: Boolean): T
+
+                /** Include exactly the specified attributes in the response. */
+                fun visitStrings(strings: List<String>): T
+
+                /**
+                 * Maps an unknown variant of [IncludeAttributes] to a value of type [T].
+                 *
+                 * An instance of [IncludeAttributes] can contain an unknown variant if it was
+                 * deserialized from data that doesn't match any known variant. For example, if the
+                 * SDK is on an older version than the API, then the API may respond with new
+                 * variants that the SDK is unaware of.
+                 *
+                 * @throws TurbopufferInvalidDataException in the default implementation.
+                 */
+                fun unknown(json: JsonValue?): T {
+                    throw TurbopufferInvalidDataException("Unknown IncludeAttributes: $json")
+                }
+            }
+
+            internal class Deserializer :
+                BaseDeserializer<IncludeAttributes>(IncludeAttributes::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): IncludeAttributes {
+                    val json = JsonValue.fromJsonNode(node)
+
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<Boolean>())?.let {
+                                    IncludeAttributes(bool = it, _json = json)
+                                },
+                                tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                                    IncludeAttributes(strings = it, _json = json)
+                                },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from string).
+                        0 -> IncludeAttributes(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                    }
+                }
+            }
+
+            internal class Serializer :
+                BaseSerializer<IncludeAttributes>(IncludeAttributes::class) {
+
+                override fun serialize(
+                    value: IncludeAttributes,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.bool != null -> generator.writeObject(value.bool)
+                        value.strings != null -> generator.writeObject(value.strings)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid IncludeAttributes")
+                    }
+                }
+            }
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return /* spotless:off */ other is IncludeAttributes && bool == other.bool && strings == other.strings /* spotless:on */
+            return /* spotless:off */ other is Query && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(bool, strings) /* spotless:on */
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(distanceMetric, filters, includeAttributes, rankBy, topK, additionalProperties) }
+        /* spotless:on */
 
-        override fun toString(): String =
-            when {
-                bool != null -> "IncludeAttributes{bool=$bool}"
-                strings != null -> "IncludeAttributes{strings=$strings}"
-                _json != null -> "IncludeAttributes{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid IncludeAttributes")
-            }
+        override fun hashCode(): Int = hashCode
 
-        companion object {
-
-            /**
-             * When `true`, include all attributes in the response. When `false`, include no
-             * attributes in the response.
-             */
-            @JvmStatic fun ofBool(bool: Boolean) = IncludeAttributes(bool = bool)
-
-            /** Include exactly the specified attributes in the response. */
-            @JvmStatic fun ofStrings(strings: List<String>) = IncludeAttributes(strings = strings)
-        }
-
-        /**
-         * An interface that defines how to map each variant of [IncludeAttributes] to a value of
-         * type [T].
-         */
-        interface Visitor<out T> {
-
-            /**
-             * When `true`, include all attributes in the response. When `false`, include no
-             * attributes in the response.
-             */
-            fun visitBool(bool: Boolean): T
-
-            /** Include exactly the specified attributes in the response. */
-            fun visitStrings(strings: List<String>): T
-
-            /**
-             * Maps an unknown variant of [IncludeAttributes] to a value of type [T].
-             *
-             * An instance of [IncludeAttributes] can contain an unknown variant if it was
-             * deserialized from data that doesn't match any known variant. For example, if the SDK
-             * is on an older version than the API, then the API may respond with new variants that
-             * the SDK is unaware of.
-             *
-             * @throws TurbopufferInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw TurbopufferInvalidDataException("Unknown IncludeAttributes: $json")
-            }
-        }
-
-        internal class Deserializer :
-            BaseDeserializer<IncludeAttributes>(IncludeAttributes::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): IncludeAttributes {
-                val json = JsonValue.fromJsonNode(node)
-
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<Boolean>())?.let {
-                                IncludeAttributes(bool = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                                IncludeAttributes(strings = it, _json = json)
-                            },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from string).
-                    0 -> IncludeAttributes(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                }
-            }
-        }
-
-        internal class Serializer : BaseSerializer<IncludeAttributes>(IncludeAttributes::class) {
-
-            override fun serialize(
-                value: IncludeAttributes,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.bool != null -> generator.writeObject(value.bool)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid IncludeAttributes")
-                }
-            }
-        }
+        override fun toString() =
+            "Query{distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
     }
 
     /** The encoding to use for vectors in the response. */
@@ -1376,11 +1456,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceQueryParams && namespace == other.namespace && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceMultiQueryParams && namespace == other.namespace && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceQueryParams{namespace=$namespace, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceMultiQueryParams{namespace=$namespace, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

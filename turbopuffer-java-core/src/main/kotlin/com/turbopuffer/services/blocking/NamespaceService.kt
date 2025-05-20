@@ -5,14 +5,14 @@ package com.turbopuffer.services.blocking
 import com.google.errorprone.annotations.MustBeClosed
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
-import com.turbopuffer.models.namespaces.DocumentRowWithScore
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
-import com.turbopuffer.models.namespaces.NamespaceListPage
-import com.turbopuffer.models.namespaces.NamespaceListParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 
@@ -23,358 +23,225 @@ interface NamespaceService {
      */
     fun withRawResponse(): WithRawResponse
 
-    /** List namespaces. */
-    fun list(): NamespaceListPage = list(NamespaceListParams.none())
-
-    /** @see [list] */
-    fun list(
-        params: NamespaceListParams = NamespaceListParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): NamespaceListPage
-
-    /** @see [list] */
-    fun list(params: NamespaceListParams = NamespaceListParams.none()): NamespaceListPage =
-        list(params, RequestOptions.none())
-
-    /** @see [list] */
-    fun list(requestOptions: RequestOptions): NamespaceListPage =
-        list(NamespaceListParams.none(), requestOptions)
-
     /** Delete namespace. */
-    fun deleteAll(namespace: String): NamespaceDeleteAllResponse =
-        deleteAll(namespace, NamespaceDeleteAllParams.none())
+    fun deleteAll(): NamespaceDeleteAllResponse = deleteAll(NamespaceDeleteAllParams.none())
 
     /** @see [deleteAll] */
     fun deleteAll(
-        namespace: String,
         params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): NamespaceDeleteAllResponse =
-        deleteAll(params.toBuilder().namespace(namespace).build(), requestOptions)
-
-    /** @see [deleteAll] */
-    fun deleteAll(
-        namespace: String,
-        params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none(),
-    ): NamespaceDeleteAllResponse = deleteAll(namespace, params, RequestOptions.none())
-
-    /** @see [deleteAll] */
-    fun deleteAll(
-        params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceDeleteAllResponse
 
     /** @see [deleteAll] */
-    fun deleteAll(params: NamespaceDeleteAllParams): NamespaceDeleteAllResponse =
-        deleteAll(params, RequestOptions.none())
+    fun deleteAll(
+        params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none()
+    ): NamespaceDeleteAllResponse = deleteAll(params, RequestOptions.none())
 
     /** @see [deleteAll] */
-    fun deleteAll(namespace: String, requestOptions: RequestOptions): NamespaceDeleteAllResponse =
-        deleteAll(namespace, NamespaceDeleteAllParams.none(), requestOptions)
+    fun deleteAll(requestOptions: RequestOptions): NamespaceDeleteAllResponse =
+        deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
 
     /** Get namespace schema. */
-    fun getSchema(namespace: String): NamespaceGetSchemaResponse =
-        getSchema(namespace, NamespaceGetSchemaParams.none())
+    fun getSchema(): NamespaceGetSchemaResponse = getSchema(NamespaceGetSchemaParams.none())
 
     /** @see [getSchema] */
     fun getSchema(
-        namespace: String,
         params: NamespaceGetSchemaParams = NamespaceGetSchemaParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): NamespaceGetSchemaResponse =
-        getSchema(params.toBuilder().namespace(namespace).build(), requestOptions)
-
-    /** @see [getSchema] */
-    fun getSchema(
-        namespace: String,
-        params: NamespaceGetSchemaParams = NamespaceGetSchemaParams.none(),
-    ): NamespaceGetSchemaResponse = getSchema(namespace, params, RequestOptions.none())
-
-    /** @see [getSchema] */
-    fun getSchema(
-        params: NamespaceGetSchemaParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceGetSchemaResponse
 
     /** @see [getSchema] */
-    fun getSchema(params: NamespaceGetSchemaParams): NamespaceGetSchemaResponse =
-        getSchema(params, RequestOptions.none())
+    fun getSchema(
+        params: NamespaceGetSchemaParams = NamespaceGetSchemaParams.none()
+    ): NamespaceGetSchemaResponse = getSchema(params, RequestOptions.none())
 
     /** @see [getSchema] */
-    fun getSchema(namespace: String, requestOptions: RequestOptions): NamespaceGetSchemaResponse =
-        getSchema(namespace, NamespaceGetSchemaParams.none(), requestOptions)
+    fun getSchema(requestOptions: RequestOptions): NamespaceGetSchemaResponse =
+        getSchema(NamespaceGetSchemaParams.none(), requestOptions)
+
+    /** Send multiple queries at once. */
+    fun multiQuery(): NamespaceMultiQueryResponse = multiQuery(NamespaceMultiQueryParams.none())
+
+    /** @see [multiQuery] */
+    fun multiQuery(
+        params: NamespaceMultiQueryParams = NamespaceMultiQueryParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceMultiQueryResponse
+
+    /** @see [multiQuery] */
+    fun multiQuery(
+        params: NamespaceMultiQueryParams = NamespaceMultiQueryParams.none()
+    ): NamespaceMultiQueryResponse = multiQuery(params, RequestOptions.none())
+
+    /** @see [multiQuery] */
+    fun multiQuery(requestOptions: RequestOptions): NamespaceMultiQueryResponse =
+        multiQuery(NamespaceMultiQueryParams.none(), requestOptions)
 
     /** Query, filter, full-text search and vector search documents. */
-    fun query(namespace: String): List<DocumentRowWithScore> =
-        query(namespace, NamespaceQueryParams.none())
+    fun query(): NamespaceQueryResponse = query(NamespaceQueryParams.none())
 
     /** @see [query] */
     fun query(
-        namespace: String,
         params: NamespaceQueryParams = NamespaceQueryParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): List<DocumentRowWithScore> =
-        query(params.toBuilder().namespace(namespace).build(), requestOptions)
+    ): NamespaceQueryResponse
 
     /** @see [query] */
-    fun query(
-        namespace: String,
-        params: NamespaceQueryParams = NamespaceQueryParams.none(),
-    ): List<DocumentRowWithScore> = query(namespace, params, RequestOptions.none())
-
-    /** @see [query] */
-    fun query(
-        params: NamespaceQueryParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): List<DocumentRowWithScore>
-
-    /** @see [query] */
-    fun query(params: NamespaceQueryParams): List<DocumentRowWithScore> =
+    fun query(params: NamespaceQueryParams = NamespaceQueryParams.none()): NamespaceQueryResponse =
         query(params, RequestOptions.none())
 
     /** @see [query] */
-    fun query(namespace: String, requestOptions: RequestOptions): List<DocumentRowWithScore> =
-        query(namespace, NamespaceQueryParams.none(), requestOptions)
+    fun query(requestOptions: RequestOptions): NamespaceQueryResponse =
+        query(NamespaceQueryParams.none(), requestOptions)
 
     /** Create, update, or delete documents. */
-    fun write(namespace: String): NamespaceWriteResponse =
-        write(namespace, NamespaceWriteParams.none())
+    fun write(): NamespaceWriteResponse = write(NamespaceWriteParams.none())
 
     /** @see [write] */
     fun write(
-        namespace: String,
         params: NamespaceWriteParams = NamespaceWriteParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): NamespaceWriteResponse =
-        write(params.toBuilder().namespace(namespace).build(), requestOptions)
-
-    /** @see [write] */
-    fun write(
-        namespace: String,
-        params: NamespaceWriteParams = NamespaceWriteParams.none(),
-    ): NamespaceWriteResponse = write(namespace, params, RequestOptions.none())
-
-    /** @see [write] */
-    fun write(
-        params: NamespaceWriteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceWriteResponse
 
     /** @see [write] */
-    fun write(params: NamespaceWriteParams): NamespaceWriteResponse =
+    fun write(params: NamespaceWriteParams = NamespaceWriteParams.none()): NamespaceWriteResponse =
         write(params, RequestOptions.none())
 
     /** @see [write] */
-    fun write(namespace: String, requestOptions: RequestOptions): NamespaceWriteResponse =
-        write(namespace, NamespaceWriteParams.none(), requestOptions)
+    fun write(requestOptions: RequestOptions): NamespaceWriteResponse =
+        write(NamespaceWriteParams.none(), requestOptions)
 
     /** A view of [NamespaceService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
-
-        /**
-         * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
-         * [NamespaceService.list].
-         */
-        @MustBeClosed
-        fun list(): HttpResponseFor<NamespaceListPage> = list(NamespaceListParams.none())
-
-        /** @see [list] */
-        @MustBeClosed
-        fun list(
-            params: NamespaceListParams = NamespaceListParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<NamespaceListPage>
-
-        /** @see [list] */
-        @MustBeClosed
-        fun list(
-            params: NamespaceListParams = NamespaceListParams.none()
-        ): HttpResponseFor<NamespaceListPage> = list(params, RequestOptions.none())
-
-        /** @see [list] */
-        @MustBeClosed
-        fun list(requestOptions: RequestOptions): HttpResponseFor<NamespaceListPage> =
-            list(NamespaceListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete /v2/namespaces/{namespace}`, but is otherwise the
          * same as [NamespaceService.deleteAll].
          */
         @MustBeClosed
-        fun deleteAll(namespace: String): HttpResponseFor<NamespaceDeleteAllResponse> =
-            deleteAll(namespace, NamespaceDeleteAllParams.none())
+        fun deleteAll(): HttpResponseFor<NamespaceDeleteAllResponse> =
+            deleteAll(NamespaceDeleteAllParams.none())
 
         /** @see [deleteAll] */
         @MustBeClosed
         fun deleteAll(
-            namespace: String,
             params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<NamespaceDeleteAllResponse> =
-            deleteAll(params.toBuilder().namespace(namespace).build(), requestOptions)
-
-        /** @see [deleteAll] */
-        @MustBeClosed
-        fun deleteAll(
-            namespace: String,
-            params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none(),
-        ): HttpResponseFor<NamespaceDeleteAllResponse> =
-            deleteAll(namespace, params, RequestOptions.none())
-
-        /** @see [deleteAll] */
-        @MustBeClosed
-        fun deleteAll(
-            params: NamespaceDeleteAllParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceDeleteAllResponse>
 
         /** @see [deleteAll] */
         @MustBeClosed
         fun deleteAll(
-            params: NamespaceDeleteAllParams
+            params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none()
         ): HttpResponseFor<NamespaceDeleteAllResponse> = deleteAll(params, RequestOptions.none())
 
         /** @see [deleteAll] */
         @MustBeClosed
-        fun deleteAll(
-            namespace: String,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<NamespaceDeleteAllResponse> =
-            deleteAll(namespace, NamespaceDeleteAllParams.none(), requestOptions)
+        fun deleteAll(requestOptions: RequestOptions): HttpResponseFor<NamespaceDeleteAllResponse> =
+            deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/schema`, but is otherwise
          * the same as [NamespaceService.getSchema].
          */
         @MustBeClosed
-        fun getSchema(namespace: String): HttpResponseFor<NamespaceGetSchemaResponse> =
-            getSchema(namespace, NamespaceGetSchemaParams.none())
+        fun getSchema(): HttpResponseFor<NamespaceGetSchemaResponse> =
+            getSchema(NamespaceGetSchemaParams.none())
 
         /** @see [getSchema] */
         @MustBeClosed
         fun getSchema(
-            namespace: String,
             params: NamespaceGetSchemaParams = NamespaceGetSchemaParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<NamespaceGetSchemaResponse> =
-            getSchema(params.toBuilder().namespace(namespace).build(), requestOptions)
-
-        /** @see [getSchema] */
-        @MustBeClosed
-        fun getSchema(
-            namespace: String,
-            params: NamespaceGetSchemaParams = NamespaceGetSchemaParams.none(),
-        ): HttpResponseFor<NamespaceGetSchemaResponse> =
-            getSchema(namespace, params, RequestOptions.none())
-
-        /** @see [getSchema] */
-        @MustBeClosed
-        fun getSchema(
-            params: NamespaceGetSchemaParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceGetSchemaResponse>
 
         /** @see [getSchema] */
         @MustBeClosed
         fun getSchema(
-            params: NamespaceGetSchemaParams
+            params: NamespaceGetSchemaParams = NamespaceGetSchemaParams.none()
         ): HttpResponseFor<NamespaceGetSchemaResponse> = getSchema(params, RequestOptions.none())
 
         /** @see [getSchema] */
         @MustBeClosed
-        fun getSchema(
-            namespace: String,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<NamespaceGetSchemaResponse> =
-            getSchema(namespace, NamespaceGetSchemaParams.none(), requestOptions)
+        fun getSchema(requestOptions: RequestOptions): HttpResponseFor<NamespaceGetSchemaResponse> =
+            getSchema(NamespaceGetSchemaParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/query`, but is otherwise
+         * Returns a raw HTTP response for `post /v2/namespaces/{namespace}/query?overload=multi`,
+         * but is otherwise the same as [NamespaceService.multiQuery].
+         */
+        @MustBeClosed
+        fun multiQuery(): HttpResponseFor<NamespaceMultiQueryResponse> =
+            multiQuery(NamespaceMultiQueryParams.none())
+
+        /** @see [multiQuery] */
+        @MustBeClosed
+        fun multiQuery(
+            params: NamespaceMultiQueryParams = NamespaceMultiQueryParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceMultiQueryResponse>
+
+        /** @see [multiQuery] */
+        @MustBeClosed
+        fun multiQuery(
+            params: NamespaceMultiQueryParams = NamespaceMultiQueryParams.none()
+        ): HttpResponseFor<NamespaceMultiQueryResponse> = multiQuery(params, RequestOptions.none())
+
+        /** @see [multiQuery] */
+        @MustBeClosed
+        fun multiQuery(
+            requestOptions: RequestOptions
+        ): HttpResponseFor<NamespaceMultiQueryResponse> =
+            multiQuery(NamespaceMultiQueryParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /v2/namespaces/{namespace}/query`, but is otherwise
          * the same as [NamespaceService.query].
          */
         @MustBeClosed
-        fun query(namespace: String): HttpResponseFor<List<DocumentRowWithScore>> =
-            query(namespace, NamespaceQueryParams.none())
+        fun query(): HttpResponseFor<NamespaceQueryResponse> = query(NamespaceQueryParams.none())
 
         /** @see [query] */
         @MustBeClosed
         fun query(
-            namespace: String,
             params: NamespaceQueryParams = NamespaceQueryParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<List<DocumentRowWithScore>> =
-            query(params.toBuilder().namespace(namespace).build(), requestOptions)
+        ): HttpResponseFor<NamespaceQueryResponse>
 
         /** @see [query] */
         @MustBeClosed
         fun query(
-            namespace: String,
-            params: NamespaceQueryParams = NamespaceQueryParams.none(),
-        ): HttpResponseFor<List<DocumentRowWithScore>> =
-            query(namespace, params, RequestOptions.none())
+            params: NamespaceQueryParams = NamespaceQueryParams.none()
+        ): HttpResponseFor<NamespaceQueryResponse> = query(params, RequestOptions.none())
 
         /** @see [query] */
         @MustBeClosed
-        fun query(
-            params: NamespaceQueryParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<List<DocumentRowWithScore>>
-
-        /** @see [query] */
-        @MustBeClosed
-        fun query(params: NamespaceQueryParams): HttpResponseFor<List<DocumentRowWithScore>> =
-            query(params, RequestOptions.none())
-
-        /** @see [query] */
-        @MustBeClosed
-        fun query(
-            namespace: String,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<List<DocumentRowWithScore>> =
-            query(namespace, NamespaceQueryParams.none(), requestOptions)
+        fun query(requestOptions: RequestOptions): HttpResponseFor<NamespaceQueryResponse> =
+            query(NamespaceQueryParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v2/namespaces/{namespace}`, but is otherwise the
          * same as [NamespaceService.write].
          */
         @MustBeClosed
-        fun write(namespace: String): HttpResponseFor<NamespaceWriteResponse> =
-            write(namespace, NamespaceWriteParams.none())
+        fun write(): HttpResponseFor<NamespaceWriteResponse> = write(NamespaceWriteParams.none())
 
         /** @see [write] */
         @MustBeClosed
         fun write(
-            namespace: String,
             params: NamespaceWriteParams = NamespaceWriteParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<NamespaceWriteResponse> =
-            write(params.toBuilder().namespace(namespace).build(), requestOptions)
-
-        /** @see [write] */
-        @MustBeClosed
-        fun write(
-            namespace: String,
-            params: NamespaceWriteParams = NamespaceWriteParams.none(),
-        ): HttpResponseFor<NamespaceWriteResponse> = write(namespace, params, RequestOptions.none())
-
-        /** @see [write] */
-        @MustBeClosed
-        fun write(
-            params: NamespaceWriteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceWriteResponse>
 
         /** @see [write] */
         @MustBeClosed
-        fun write(params: NamespaceWriteParams): HttpResponseFor<NamespaceWriteResponse> =
-            write(params, RequestOptions.none())
+        fun write(
+            params: NamespaceWriteParams = NamespaceWriteParams.none()
+        ): HttpResponseFor<NamespaceWriteResponse> = write(params, RequestOptions.none())
 
         /** @see [write] */
         @MustBeClosed
-        fun write(
-            namespace: String,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<NamespaceWriteResponse> =
-            write(namespace, NamespaceWriteParams.none(), requestOptions)
+        fun write(requestOptions: RequestOptions): HttpResponseFor<NamespaceWriteResponse> =
+            write(NamespaceWriteParams.none(), requestOptions)
     }
 }

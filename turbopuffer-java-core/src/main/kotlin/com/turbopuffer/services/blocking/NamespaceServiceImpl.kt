@@ -16,15 +16,14 @@ import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
-import com.turbopuffer.models.namespaces.DocumentRowWithScore
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
-import com.turbopuffer.models.namespaces.NamespaceListPage
-import com.turbopuffer.models.namespaces.NamespaceListPageResponse
-import com.turbopuffer.models.namespaces.NamespaceListParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import kotlin.jvm.optionals.getOrNull
@@ -37,13 +36,6 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     }
 
     override fun withRawResponse(): NamespaceService.WithRawResponse = withRawResponse
-
-    override fun list(
-        params: NamespaceListParams,
-        requestOptions: RequestOptions,
-    ): NamespaceListPage =
-        // get /v1/namespaces
-        withRawResponse().list(params, requestOptions).parse()
 
     override fun deleteAll(
         params: NamespaceDeleteAllParams,
@@ -59,11 +51,18 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         // get /v1/namespaces/{namespace}/schema
         withRawResponse().getSchema(params, requestOptions).parse()
 
+    override fun multiQuery(
+        params: NamespaceMultiQueryParams,
+        requestOptions: RequestOptions,
+    ): NamespaceMultiQueryResponse =
+        // post /v2/namespaces/{namespace}/query?overload=multi
+        withRawResponse().multiQuery(params, requestOptions).parse()
+
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
-    ): List<DocumentRowWithScore> =
-        // post /v1/namespaces/{namespace}/query
+    ): NamespaceQueryResponse =
+        // post /v2/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).parse()
 
     override fun write(
@@ -78,40 +77,6 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<NamespaceListPageResponse> =
-            jsonHandler<NamespaceListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
-
-        override fun list(
-            params: NamespaceListParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<NamespaceListPage> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .addPathSegments("v1", "namespaces")
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { listHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-                    .let {
-                        NamespaceListPage.builder()
-                            .service(NamespaceServiceImpl(clientOptions))
-                            .params(params)
-                            .response(it)
-                            .build()
-                    }
-            }
-        }
-
         private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
             jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -120,13 +85,19 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             params: NamespaceDeleteAllParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<NamespaceDeleteAllResponse> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("namespace", params.namespace().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("v2", "namespaces", params._pathParam(0))
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                    )
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params)
@@ -151,13 +122,20 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             params: NamespaceGetSchemaParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<NamespaceGetSchemaResponse> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("namespace", params.namespace().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0), "schema")
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "schema",
+                    )
                     .build()
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
@@ -173,21 +151,67 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             }
         }
 
-        private val queryHandler: Handler<List<DocumentRowWithScore>> =
-            jsonHandler<List<DocumentRowWithScore>>(clientOptions.jsonMapper)
+        private val multiQueryHandler: Handler<NamespaceMultiQueryResponse> =
+            jsonHandler<NamespaceMultiQueryResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun multiQuery(
+            params: NamespaceMultiQueryParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceMultiQueryResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "query",
+                    )
+                    .putQueryParam("overload", "multi")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { multiQueryHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val queryHandler: Handler<NamespaceQueryResponse> =
+            jsonHandler<NamespaceQueryResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun query(
             params: NamespaceQueryParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<List<DocumentRowWithScore>> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("namespace", params.namespace().getOrNull())
+        ): HttpResponseFor<NamespaceQueryResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0), "query")
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "query",
+                    )
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params)
@@ -198,7 +222,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .use { queryHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
-                            it.forEach { it.validate() }
+                            it.validate()
                         }
                     }
             }
@@ -212,14 +236,20 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             params: NamespaceWriteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<NamespaceWriteResponse> {
-            // We check here instead of in the params builder because this can be specified
-            // positionally or in the params class.
-            checkRequired("namespace", params.namespace().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v2", "namespaces", params._pathParam(0))
-                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                    )
+                    .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))

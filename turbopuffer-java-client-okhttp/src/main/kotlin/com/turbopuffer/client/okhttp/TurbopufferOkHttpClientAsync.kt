@@ -12,7 +12,9 @@ import com.turbopuffer.core.http.QueryParams
 import java.net.Proxy
 import java.time.Clock
 import java.time.Duration
+import java.util.Optional
 import java.util.concurrent.Executor
+import kotlin.jvm.optionals.getOrNull
 
 class TurbopufferOkHttpClientAsync private constructor() {
 
@@ -157,6 +159,14 @@ class TurbopufferOkHttpClientAsync private constructor() {
         }
 
         fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
+
+        fun defaultNamespace(defaultNamespace: String?) = apply {
+            clientOptions.defaultNamespace(defaultNamespace)
+        }
+
+        /** Alias for calling [Builder.defaultNamespace] with `defaultNamespace.orElse(null)`. */
+        fun defaultNamespace(defaultNamespace: Optional<String>) =
+            defaultNamespace(defaultNamespace.getOrNull())
 
         fun fromEnv() = apply { clientOptions.fromEnv() }
 
