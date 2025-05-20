@@ -18,12 +18,16 @@ import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceExportParams
+import com.turbopuffer.models.namespaces.NamespaceExportResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import kotlin.jvm.optionals.getOrNull
@@ -43,6 +47,13 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     ): NamespaceDeleteAllResponse =
         // delete /v2/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).parse()
+
+    override fun export(
+        params: NamespaceExportParams,
+        requestOptions: RequestOptions,
+    ): NamespaceExportResponse =
+        // get /v1/namespaces/{namespace}
+        withRawResponse().export(params, requestOptions).parse()
 
     override fun getSchema(
         params: NamespaceGetSchemaParams,
@@ -64,6 +75,13 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     ): NamespaceQueryResponse =
         // post /v2/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).parse()
+
+    override fun updateSchema(
+        params: NamespaceUpdateSchemaParams,
+        requestOptions: RequestOptions,
+    ): NamespaceUpdateSchemaResponse =
+        // post /v1/namespaces/{namespace}/schema
+        withRawResponse().updateSchema(params, requestOptions).parse()
 
     override fun write(
         params: NamespaceWriteParams,
@@ -106,6 +124,42 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             return response.parseable {
                 response
                     .use { deleteAllHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val exportHandler: Handler<NamespaceExportResponse> =
+            jsonHandler<NamespaceExportResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun export(
+            params: NamespaceExportParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceExportResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                    )
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { exportHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
@@ -220,6 +274,44 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             return response.parseable {
                 response
                     .use { queryHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val updateSchemaHandler: Handler<NamespaceUpdateSchemaResponse> =
+            jsonHandler<NamespaceUpdateSchemaResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun updateSchema(
+            params: NamespaceUpdateSchemaParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceUpdateSchemaResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "schema",
+                    )
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { updateSchemaHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
