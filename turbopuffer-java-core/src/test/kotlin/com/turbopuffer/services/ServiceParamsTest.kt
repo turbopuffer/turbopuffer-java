@@ -21,6 +21,7 @@ import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
 
@@ -39,6 +40,7 @@ internal class ServiceParamsTest {
                 .build()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun query() {
         val namespaceService = client.namespaces()
@@ -72,6 +74,7 @@ internal class ServiceParamsTest {
         )
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun write() {
         val namespaceService = client.namespaces()

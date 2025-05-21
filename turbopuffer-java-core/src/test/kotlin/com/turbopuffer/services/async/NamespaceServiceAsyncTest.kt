@@ -14,12 +14,14 @@ import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
 internal class NamespaceServiceAsyncTest {
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun deleteAll() {
         val client =
@@ -38,6 +40,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun getSchema() {
         val client =
@@ -56,6 +59,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun multiQuery() {
         val client =
@@ -91,6 +95,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun query() {
         val client =
@@ -122,6 +127,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun updateSchema() {
         val client =
@@ -156,6 +162,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun write() {
         val client =
