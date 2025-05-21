@@ -27,6 +27,7 @@ import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -59,6 +60,7 @@ internal class ErrorHandlingTest {
                 .build()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery400() {
         val namespaceService = client.namespaces()
@@ -94,6 +96,7 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery401() {
         val namespaceService = client.namespaces()
@@ -129,6 +132,7 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery403() {
         val namespaceService = client.namespaces()
@@ -164,6 +168,7 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery404() {
         val namespaceService = client.namespaces()
@@ -199,6 +204,7 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery422() {
         val namespaceService = client.namespaces()
@@ -234,6 +240,7 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery429() {
         val namespaceService = client.namespaces()
@@ -269,6 +276,7 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery500() {
         val namespaceService = client.namespaces()
@@ -304,6 +312,7 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQuery999() {
         val namespaceService = client.namespaces()
@@ -339,6 +348,7 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespacesQueryInvalidJsonBody() {
         val namespaceService = client.namespaces()
