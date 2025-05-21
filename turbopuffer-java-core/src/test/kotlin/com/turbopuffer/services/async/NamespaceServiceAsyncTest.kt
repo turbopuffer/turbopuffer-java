@@ -80,7 +80,13 @@ internal class NamespaceServiceAsyncTest {
                     )
                     .addQuery(
                         NamespaceMultiQueryParams.Query.builder()
-                            .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                            .rankByOfVector(
+                                listOf(
+                                    JsonValue.from(mapOf<String, Any>()),
+                                    JsonValue.from(mapOf<String, Any>()),
+                                    JsonValue.from(mapOf<String, Any>()),
+                                )
+                            )
                             .topK(0L)
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
@@ -109,7 +115,13 @@ internal class NamespaceServiceAsyncTest {
             namespaceServiceAsync.query(
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
-                    .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                    .rankByOfVector(
+                        listOf(
+                            JsonValue.from(mapOf<String, Any>()),
+                            JsonValue.from(mapOf<String, Any>()),
+                            JsonValue.from(mapOf<String, Any>()),
+                        )
+                    )
                     .topK(0L)
                     .consistency(
                         NamespaceQueryParams.Consistency.builder()

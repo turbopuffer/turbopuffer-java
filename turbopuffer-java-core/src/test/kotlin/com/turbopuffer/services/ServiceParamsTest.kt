@@ -49,7 +49,13 @@ internal class ServiceParamsTest {
         namespaceService.query(
             NamespaceQueryParams.builder()
                 .namespace("namespace")
-                .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                .rankByOfVector(
+                    listOf(
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                    )
+                )
                 .topK(0L)
                 .consistency(
                     NamespaceQueryParams.Consistency.builder()

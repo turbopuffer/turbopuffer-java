@@ -15,7 +15,13 @@ internal class NamespaceQueryParamsTest {
     fun create() {
         NamespaceQueryParams.builder()
             .namespace("namespace")
-            .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+            .rankByOfVector(
+                listOf(
+                    JsonValue.from(mapOf<String, Any>()),
+                    JsonValue.from(mapOf<String, Any>()),
+                    JsonValue.from(mapOf<String, Any>()),
+                )
+            )
             .topK(0L)
             .consistency(
                 NamespaceQueryParams.Consistency.builder()
@@ -34,7 +40,13 @@ internal class NamespaceQueryParamsTest {
     fun pathParams() {
         val params =
             NamespaceQueryParams.builder()
-                .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                .rankByOfVector(
+                    listOf(
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                    )
+                )
                 .topK(0L)
                 .build()
 
@@ -49,7 +61,13 @@ internal class NamespaceQueryParamsTest {
         val params =
             NamespaceQueryParams.builder()
                 .namespace("namespace")
-                .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                .rankByOfVector(
+                    listOf(
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                    )
+                )
                 .topK(0L)
                 .consistency(
                     NamespaceQueryParams.Consistency.builder()
@@ -66,7 +84,13 @@ internal class NamespaceQueryParamsTest {
 
         assertThat(body.rankBy())
             .isEqualTo(
-                NamespaceQueryParams.RankBy.ofVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                NamespaceQueryParams.RankBy.ofVector(
+                    listOf(
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                    )
+                )
             )
         assertThat(body.topK()).isEqualTo(0L)
         assertThat(body.consistency())
@@ -88,7 +112,13 @@ internal class NamespaceQueryParamsTest {
     fun bodyWithoutOptionalFields() {
         val params =
             NamespaceQueryParams.builder()
-                .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                .rankByOfVector(
+                    listOf(
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                    )
+                )
                 .topK(0L)
                 .build()
 
@@ -96,7 +126,13 @@ internal class NamespaceQueryParamsTest {
 
         assertThat(body.rankBy())
             .isEqualTo(
-                NamespaceQueryParams.RankBy.ofVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                NamespaceQueryParams.RankBy.ofVector(
+                    listOf(
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                        JsonValue.from(mapOf<String, Any>()),
+                    )
+                )
             )
         assertThat(body.topK()).isEqualTo(0L)
     }
