@@ -78,11 +78,11 @@ internal class NamespaceServiceTest {
                     )
                     .addQuery(
                         NamespaceMultiQueryParams.Query.builder()
+                            .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                            .topK(0L)
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
                             .includeAttributes(true)
-                            .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
-                            .topK(0L)
                             .build()
                     )
                     .vectorEncoding(NamespaceMultiQueryParams.VectorEncoding.FLOAT)
@@ -106,6 +106,8 @@ internal class NamespaceServiceTest {
             namespaceService.query(
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
+                    .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                    .topK(0L)
                     .consistency(
                         NamespaceQueryParams.Consistency.builder()
                             .level(NamespaceQueryParams.Consistency.Level.STRONG)
@@ -114,8 +116,6 @@ internal class NamespaceServiceTest {
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
                     .includeAttributes(true)
-                    .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
-                    .topK(0L)
                     .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                     .build()
             )
