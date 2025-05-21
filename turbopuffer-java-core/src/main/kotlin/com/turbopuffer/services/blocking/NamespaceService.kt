@@ -80,21 +80,14 @@ interface NamespaceService {
         multiQuery(NamespaceMultiQueryParams.none(), requestOptions)
 
     /** Query, filter, full-text search and vector search documents. */
-    fun query(): NamespaceQueryResponse = query(NamespaceQueryParams.none())
-
-    /** @see [query] */
-    fun query(
-        params: NamespaceQueryParams = NamespaceQueryParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): NamespaceQueryResponse
-
-    /** @see [query] */
-    fun query(params: NamespaceQueryParams = NamespaceQueryParams.none()): NamespaceQueryResponse =
+    fun query(params: NamespaceQueryParams): NamespaceQueryResponse =
         query(params, RequestOptions.none())
 
     /** @see [query] */
-    fun query(requestOptions: RequestOptions): NamespaceQueryResponse =
-        query(NamespaceQueryParams.none(), requestOptions)
+    fun query(
+        params: NamespaceQueryParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceQueryResponse
 
     /** Update namespace schema. */
     fun updateSchema(): NamespaceUpdateSchemaResponse =
@@ -220,25 +213,15 @@ interface NamespaceService {
          * the same as [NamespaceService.query].
          */
         @MustBeClosed
-        fun query(): HttpResponseFor<NamespaceQueryResponse> = query(NamespaceQueryParams.none())
+        fun query(params: NamespaceQueryParams): HttpResponseFor<NamespaceQueryResponse> =
+            query(params, RequestOptions.none())
 
         /** @see [query] */
         @MustBeClosed
         fun query(
-            params: NamespaceQueryParams = NamespaceQueryParams.none(),
+            params: NamespaceQueryParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceQueryResponse>
-
-        /** @see [query] */
-        @MustBeClosed
-        fun query(
-            params: NamespaceQueryParams = NamespaceQueryParams.none()
-        ): HttpResponseFor<NamespaceQueryResponse> = query(params, RequestOptions.none())
-
-        /** @see [query] */
-        @MustBeClosed
-        fun query(requestOptions: RequestOptions): HttpResponseFor<NamespaceQueryResponse> =
-            query(NamespaceQueryParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/schema`, but is

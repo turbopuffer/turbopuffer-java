@@ -14,6 +14,8 @@ internal class NamespaceQueryParamsTest {
     fun create() {
         NamespaceQueryParams.builder()
             .namespace("namespace")
+            .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+            .topK(0L)
             .consistency(
                 NamespaceQueryParams.Consistency.builder()
                     .level(NamespaceQueryParams.Consistency.Level.STRONG)
@@ -22,8 +24,6 @@ internal class NamespaceQueryParamsTest {
             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
             .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
             .includeAttributes(true)
-            .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
-            .topK(0L)
             .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
             .build()
     }
@@ -31,7 +31,11 @@ internal class NamespaceQueryParamsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun pathParams() {
-        val params = NamespaceQueryParams.builder().build()
+        val params =
+            NamespaceQueryParams.builder()
+                .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                .topK(0L)
+                .build()
 
         assertThat(params._pathParam(0)).isEqualTo("")
         // out-of-bound path param
@@ -44,6 +48,8 @@ internal class NamespaceQueryParamsTest {
         val params =
             NamespaceQueryParams.builder()
                 .namespace("namespace")
+                .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                .topK(0L)
                 .consistency(
                     NamespaceQueryParams.Consistency.builder()
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
@@ -52,13 +58,16 @@ internal class NamespaceQueryParamsTest {
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
                 .includeAttributes(true)
-                .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
-                .topK(0L)
                 .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                 .build()
 
         val body = params._body()
 
+        assertThat(body.rankBy())
+            .isEqualTo(
+                NamespaceQueryParams.RankBy.ofVector(listOf(JsonValue.from(mapOf<String, Any>())))
+            )
+        assertThat(body.topK()).isEqualTo(0L)
         assertThat(body.consistency())
             .contains(
                 NamespaceQueryParams.Consistency.builder()
@@ -74,19 +83,24 @@ internal class NamespaceQueryParamsTest {
             )
         assertThat(body.includeAttributes())
             .contains(NamespaceQueryParams.IncludeAttributes.ofBool(true))
-        assertThat(body.rankBy())
-            .contains(
-                NamespaceQueryParams.RankBy.ofVector(listOf(JsonValue.from(mapOf<String, Any>())))
-            )
-        assertThat(body.topK()).contains(0L)
         assertThat(body.vectorEncoding()).contains(NamespaceQueryParams.VectorEncoding.FLOAT)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = NamespaceQueryParams.builder().build()
+        val params =
+            NamespaceQueryParams.builder()
+                .rankByOfVector(listOf(JsonValue.from(mapOf<String, Any>())))
+                .topK(0L)
+                .build()
 
         val body = params._body()
+
+        assertThat(body.rankBy())
+            .isEqualTo(
+                NamespaceQueryParams.RankBy.ofVector(listOf(JsonValue.from(mapOf<String, Any>())))
+            )
+        assertThat(body.topK()).isEqualTo(0L)
     }
 }

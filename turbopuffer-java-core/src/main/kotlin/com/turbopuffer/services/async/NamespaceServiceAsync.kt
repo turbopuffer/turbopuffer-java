@@ -84,22 +84,14 @@ interface NamespaceServiceAsync {
         multiQuery(NamespaceMultiQueryParams.none(), requestOptions)
 
     /** Query, filter, full-text search and vector search documents. */
-    fun query(): CompletableFuture<NamespaceQueryResponse> = query(NamespaceQueryParams.none())
+    fun query(params: NamespaceQueryParams): CompletableFuture<NamespaceQueryResponse> =
+        query(params, RequestOptions.none())
 
     /** @see [query] */
     fun query(
-        params: NamespaceQueryParams = NamespaceQueryParams.none(),
+        params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceQueryResponse>
-
-    /** @see [query] */
-    fun query(
-        params: NamespaceQueryParams = NamespaceQueryParams.none()
-    ): CompletableFuture<NamespaceQueryResponse> = query(params, RequestOptions.none())
-
-    /** @see [query] */
-    fun query(requestOptions: RequestOptions): CompletableFuture<NamespaceQueryResponse> =
-        query(NamespaceQueryParams.none(), requestOptions)
 
     /** Update namespace schema. */
     fun updateSchema(): CompletableFuture<NamespaceUpdateSchemaResponse> =
@@ -238,29 +230,17 @@ interface NamespaceServiceAsync {
          * the same as [NamespaceServiceAsync.query].
          */
         @MustBeClosed
-        fun query(): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>> =
-            query(NamespaceQueryParams.none())
-
-        /** @see [query] */
-        @MustBeClosed
         fun query(
-            params: NamespaceQueryParams = NamespaceQueryParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>>
-
-        /** @see [query] */
-        @MustBeClosed
-        fun query(
-            params: NamespaceQueryParams = NamespaceQueryParams.none()
+            params: NamespaceQueryParams
         ): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>> =
             query(params, RequestOptions.none())
 
         /** @see [query] */
         @MustBeClosed
         fun query(
-            requestOptions: RequestOptions
-        ): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>> =
-            query(NamespaceQueryParams.none(), requestOptions)
+            params: NamespaceQueryParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>>
 
         /**
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/schema`, but is

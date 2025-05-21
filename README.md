@@ -173,13 +173,18 @@ The SDK defines methods that deserialize responses into instances of Java classe
 To access this data, prefix any HTTP method call on a client or service with `withRawResponse()`:
 
 ```java
+import com.turbopuffer.core.JsonValue;
 import com.turbopuffer.core.http.Headers;
 import com.turbopuffer.core.http.HttpResponseFor;
 import com.turbopuffer.models.namespaces.NamespaceQueryParams;
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse;
+import java.util.List;
+import java.util.Map;
 
 NamespaceQueryParams params = NamespaceQueryParams.builder()
     .namespace("products")
+    .rankByOfVector(List.of(JsonValue.from(<String, Object>Map.of())))
+    .topK(0L)
     .build();
 HttpResponseFor<NamespaceQueryResponse> response = client.namespaces().withRawResponse().query(params);
 
