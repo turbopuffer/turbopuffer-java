@@ -3,6 +3,7 @@
 package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.models.Filter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -76,11 +77,7 @@ internal class NamespaceQueryParamsTest {
             )
         assertThat(body.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)
         assertThat(body.filters())
-            .contains(
-                NamespaceQueryParams.Filters.ofJsonValues(
-                    listOf(JsonValue.from(mapOf<String, Any>()))
-                )
-            )
+            .contains(Filter.ofJsonValues(listOf(JsonValue.from(mapOf<String, Any>()))))
         assertThat(body.includeAttributes())
             .contains(NamespaceQueryParams.IncludeAttributes.ofBool(true))
         assertThat(body.vectorEncoding()).contains(NamespaceQueryParams.VectorEncoding.FLOAT)
