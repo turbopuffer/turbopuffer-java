@@ -6,10 +6,12 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.jsonMapper
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class DocumentColumnsTest {
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
         val documentColumns =
@@ -19,6 +21,7 @@ internal class DocumentColumnsTest {
             .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()

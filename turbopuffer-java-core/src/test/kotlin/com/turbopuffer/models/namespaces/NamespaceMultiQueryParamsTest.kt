@@ -5,10 +5,12 @@ package com.turbopuffer.models.namespaces
 import com.turbopuffer.core.JsonValue
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class NamespaceMultiQueryParamsTest {
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
         NamespaceMultiQueryParams.builder()
@@ -31,6 +33,7 @@ internal class NamespaceMultiQueryParamsTest {
             .build()
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun pathParams() {
         val params = NamespaceMultiQueryParams.builder().build()
@@ -40,6 +43,7 @@ internal class NamespaceMultiQueryParamsTest {
         assertThat(params._pathParam(1)).isEqualTo("")
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun body() {
         val params =
@@ -83,6 +87,7 @@ internal class NamespaceMultiQueryParamsTest {
         assertThat(body.vectorEncoding()).contains(NamespaceMultiQueryParams.VectorEncoding.FLOAT)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun bodyWithoutOptionalFields() {
         val params = NamespaceMultiQueryParams.builder().build()

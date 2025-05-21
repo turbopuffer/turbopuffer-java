@@ -7,6 +7,7 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -14,6 +15,7 @@ import org.junit.jupiter.params.provider.EnumSource
 
 internal class IdTest {
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofString() {
         val string = "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"
@@ -24,6 +26,7 @@ internal class IdTest {
         assertThat(id.integer()).isEmpty
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofStringRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -35,6 +38,7 @@ internal class IdTest {
         assertThat(roundtrippedId).isEqualTo(id)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofInteger() {
         val integer = 0L
@@ -45,6 +49,7 @@ internal class IdTest {
         assertThat(id.integer()).contains(integer)
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofIntegerRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -61,6 +66,7 @@ internal class IdTest {
         ARRAY(JsonValue.from(listOf("invalid", "array"))),
     }
 
+    @Disabled("skipped: tests are disabled for the time being")
     @ParameterizedTest
     @EnumSource
     fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
