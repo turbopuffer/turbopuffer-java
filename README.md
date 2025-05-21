@@ -178,7 +178,11 @@ import java.util.Map;
 
 NamespaceQueryParams params = NamespaceQueryParams.builder()
     .namespace("products")
-    .rankByOfVector(List.of(JsonValue.from(<String, Object>Map.of())))
+    .rankByOfVector(List.of(
+      JsonValue.from(<String, Object>Map.of()),
+      JsonValue.from(<String, Object>Map.of()),
+      JsonValue.from(<String, Object>Map.of())
+    ))
     .topK(0L)
     .build();
 HttpResponseFor<NamespaceQueryResponse> response = client.namespaces().withRawResponse().query(params);
