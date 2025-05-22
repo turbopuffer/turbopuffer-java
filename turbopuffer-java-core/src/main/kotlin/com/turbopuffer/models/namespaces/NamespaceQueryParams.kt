@@ -27,6 +27,7 @@ import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import com.turbopuffer.models.DistanceMetric
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional

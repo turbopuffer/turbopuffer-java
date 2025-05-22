@@ -234,7 +234,7 @@ interface NamespaceServiceAsync {
         ): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>>
 
         /**
-         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/_debug/recall`, but is
+         * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/_debug/recall`, but is
          * otherwise the same as [NamespaceServiceAsync.recall].
          */
         @MustBeClosed

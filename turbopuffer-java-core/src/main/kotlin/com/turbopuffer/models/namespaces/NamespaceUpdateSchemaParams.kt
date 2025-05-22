@@ -20,7 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 class NamespaceUpdateSchemaParams
 private constructor(
     private val namespace: String?,
-    private val body: Body?,
+    private val schema: Schema?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -28,10 +28,10 @@ private constructor(
     fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
     /** The desired schema for the namespace. */
-    fun body(): Optional<Body> = Optional.ofNullable(body)
+    fun schema(): Optional<Schema> = Optional.ofNullable(schema)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> =
-        body?._additionalProperties() ?: immutableEmptyMap()
+        schema?._additionalProperties() ?: immutableEmptyMap()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -53,14 +53,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var namespace: String? = null
-        private var body: Body? = null
+        private var schema: Schema? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(namespaceUpdateSchemaParams: NamespaceUpdateSchemaParams) = apply {
             namespace = namespaceUpdateSchemaParams.namespace
-            body = namespaceUpdateSchemaParams.body
+            schema = namespaceUpdateSchemaParams.schema
             additionalHeaders = namespaceUpdateSchemaParams.additionalHeaders.toBuilder()
             additionalQueryParams = namespaceUpdateSchemaParams.additionalQueryParams.toBuilder()
         }
@@ -71,10 +71,10 @@ private constructor(
         fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
 
         /** The desired schema for the namespace. */
-        fun body(body: Body?) = apply { this.body = body }
+        fun schema(schema: Schema?) = apply { this.schema = schema }
 
-        /** Alias for calling [Builder.body] with `body.orElse(null)`. */
-        fun body(body: Optional<Body>) = body(body.getOrNull())
+        /** Alias for calling [Builder.schema] with `schema.orElse(null)`. */
+        fun schema(schema: Optional<Schema>) = schema(schema.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -182,13 +182,13 @@ private constructor(
         fun build(): NamespaceUpdateSchemaParams =
             NamespaceUpdateSchemaParams(
                 namespace,
-                body,
+                schema,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
     }
 
-    fun _body(): Optional<Body> = Optional.ofNullable(body)
+    fun _body(): Optional<Schema> = Optional.ofNullable(schema)
 
     fun _pathParam(index: Int): String =
         when (index) {
@@ -201,7 +201,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     /** The desired schema for the namespace. */
-    class Body
+    class Schema
     @JsonCreator
     private constructor(
         @com.fasterxml.jackson.annotation.JsonValue
@@ -216,18 +216,18 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [Body]. */
+            /** Returns a mutable builder for constructing an instance of [Schema]. */
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [Body]. */
+        /** A builder for [Schema]. */
         class Builder internal constructor() {
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                additionalProperties = body.additionalProperties.toMutableMap()
+            internal fun from(schema: Schema) = apply {
+                additionalProperties = schema.additionalProperties.toMutableMap()
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -250,16 +250,16 @@ private constructor(
             }
 
             /**
-             * Returns an immutable instance of [Body].
+             * Returns an immutable instance of [Schema].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Body = Body(additionalProperties.toImmutable())
+            fun build(): Schema = Schema(additionalProperties.toImmutable())
         }
 
         private var validated: Boolean = false
 
-        fun validate(): Body = apply {
+        fun validate(): Schema = apply {
             if (validated) {
                 return@apply
             }
@@ -290,7 +290,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -299,7 +299,7 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Body{additionalProperties=$additionalProperties}"
+        override fun toString() = "Schema{additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -307,11 +307,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceUpdateSchemaParams && namespace == other.namespace && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceUpdateSchemaParams && namespace == other.namespace && schema == other.schema && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, schema, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceUpdateSchemaParams{namespace=$namespace, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceUpdateSchemaParams{namespace=$namespace, schema=$schema, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

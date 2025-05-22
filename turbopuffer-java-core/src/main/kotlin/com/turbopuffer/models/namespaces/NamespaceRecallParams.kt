@@ -2,9 +2,21 @@
 
 package com.turbopuffer.models.namespaces
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.turbopuffer.core.ExcludeMissing
+import com.turbopuffer.core.JsonField
+import com.turbopuffer.core.JsonMissing
+import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
+import com.turbopuffer.core.toImmutable
+import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -13,11 +25,62 @@ import kotlin.jvm.optionals.getOrNull
 class NamespaceRecallParams
 private constructor(
     private val namespace: String?,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     fun namespace(): Optional<String> = Optional.ofNullable(namespace)
+
+    /** Filter by attributes. Same syntax as the query endpoint. */
+    fun _filters(): JsonValue = body._filters()
+
+    /**
+     * The number of searches to run.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun num(): Optional<Long> = body.num()
+
+    /**
+     * Use specific query vectors for the measurement. If omitted, sampled from the index.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun queries(): Optional<List<JsonValue>> = body.queries()
+
+    /**
+     * Search for `top_k` nearest neighbors.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun topK(): Optional<Long> = body.topK()
+
+    /**
+     * Returns the raw JSON value of [num].
+     *
+     * Unlike [num], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _num(): JsonField<Long> = body._num()
+
+    /**
+     * Returns the raw JSON value of [queries].
+     *
+     * Unlike [queries], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _queries(): JsonField<List<JsonValue>> = body._queries()
+
+    /**
+     * Returns the raw JSON value of [topK].
+     *
+     * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _topK(): JsonField<Long> = body._topK()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -37,12 +100,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var namespace: String? = null
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(namespaceRecallParams: NamespaceRecallParams) = apply {
             namespace = namespaceRecallParams.namespace
+            body = namespaceRecallParams.body.toBuilder()
             additionalHeaders = namespaceRecallParams.additionalHeaders.toBuilder()
             additionalQueryParams = namespaceRecallParams.additionalQueryParams.toBuilder()
         }
@@ -51,6 +116,81 @@ private constructor(
 
         /** Alias for calling [Builder.namespace] with `namespace.orElse(null)`. */
         fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
+
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [filters]
+         * - [num]
+         * - [queries]
+         * - [topK]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /** Filter by attributes. Same syntax as the query endpoint. */
+        fun filters(filters: JsonValue) = apply { body.filters(filters) }
+
+        /** The number of searches to run. */
+        fun num(num: Long) = apply { body.num(num) }
+
+        /**
+         * Sets [Builder.num] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.num] with a well-typed [Long] value instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun num(num: JsonField<Long>) = apply { body.num(num) }
+
+        /** Use specific query vectors for the measurement. If omitted, sampled from the index. */
+        fun queries(queries: List<JsonValue>) = apply { body.queries(queries) }
+
+        /**
+         * Sets [Builder.queries] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.queries] with a well-typed `List<JsonValue>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun queries(queries: JsonField<List<JsonValue>>) = apply { body.queries(queries) }
+
+        /**
+         * Adds a single [JsonValue] to [queries].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addQuery(query: JsonValue) = apply { body.addQuery(query) }
+
+        /** Search for `top_k` nearest neighbors. */
+        fun topK(topK: Long) = apply { body.topK(topK) }
+
+        /**
+         * Sets [Builder.topK] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -158,10 +298,13 @@ private constructor(
         fun build(): NamespaceRecallParams =
             NamespaceRecallParams(
                 namespace,
+                body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
     }
+
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {
@@ -173,16 +316,261 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
+    class Body
+    private constructor(
+        private val filters: JsonValue,
+        private val num: JsonField<Long>,
+        private val queries: JsonField<List<JsonValue>>,
+        private val topK: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
+            @JsonProperty("num") @ExcludeMissing num: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("queries")
+            @ExcludeMissing
+            queries: JsonField<List<JsonValue>> = JsonMissing.of(),
+            @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
+        ) : this(filters, num, queries, topK, mutableMapOf())
+
+        /** Filter by attributes. Same syntax as the query endpoint. */
+        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
+
+        /**
+         * The number of searches to run.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun num(): Optional<Long> = num.getOptional("num")
+
+        /**
+         * Use specific query vectors for the measurement. If omitted, sampled from the index.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun queries(): Optional<List<JsonValue>> = queries.getOptional("queries")
+
+        /**
+         * Search for `top_k` nearest neighbors.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun topK(): Optional<Long> = topK.getOptional("top_k")
+
+        /**
+         * Returns the raw JSON value of [num].
+         *
+         * Unlike [num], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("num") @ExcludeMissing fun _num(): JsonField<Long> = num
+
+        /**
+         * Returns the raw JSON value of [queries].
+         *
+         * Unlike [queries], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("queries")
+        @ExcludeMissing
+        fun _queries(): JsonField<List<JsonValue>> = queries
+
+        /**
+         * Returns the raw JSON value of [topK].
+         *
+         * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Body]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var filters: JsonValue = JsonMissing.of()
+            private var num: JsonField<Long> = JsonMissing.of()
+            private var queries: JsonField<MutableList<JsonValue>>? = null
+            private var topK: JsonField<Long> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                filters = body.filters
+                num = body.num
+                queries = body.queries.map { it.toMutableList() }
+                topK = body.topK
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** Filter by attributes. Same syntax as the query endpoint. */
+            fun filters(filters: JsonValue) = apply { this.filters = filters }
+
+            /** The number of searches to run. */
+            fun num(num: Long) = num(JsonField.of(num))
+
+            /**
+             * Sets [Builder.num] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.num] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun num(num: JsonField<Long>) = apply { this.num = num }
+
+            /**
+             * Use specific query vectors for the measurement. If omitted, sampled from the index.
+             */
+            fun queries(queries: List<JsonValue>) = queries(JsonField.of(queries))
+
+            /**
+             * Sets [Builder.queries] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.queries] with a well-typed `List<JsonValue>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun queries(queries: JsonField<List<JsonValue>>) = apply {
+                this.queries = queries.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [JsonValue] to [queries].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addQuery(query: JsonValue) = apply {
+                queries =
+                    (queries ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("queries", it).add(query)
+                    }
+            }
+
+            /** Search for `top_k` nearest neighbors. */
+            fun topK(topK: Long) = topK(JsonField.of(topK))
+
+            /**
+             * Sets [Builder.topK] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Body =
+                Body(
+                    filters,
+                    num,
+                    (queries ?: JsonMissing.of()).map { it.toImmutable() },
+                    topK,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            num()
+            queries()
+            topK()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (num.asKnown().isPresent) 1 else 0) +
+                (queries.asKnown().getOrNull()?.size ?: 0) +
+                (if (topK.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && filters == other.filters && num == other.num && queries == other.queries && topK == other.topK && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(filters, num, queries, topK, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{filters=$filters, num=$num, queries=$queries, topK=$topK, additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is NamespaceRecallParams && namespace == other.namespace && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceRecallParams && namespace == other.namespace && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceRecallParams{namespace=$namespace, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceRecallParams{namespace=$namespace, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

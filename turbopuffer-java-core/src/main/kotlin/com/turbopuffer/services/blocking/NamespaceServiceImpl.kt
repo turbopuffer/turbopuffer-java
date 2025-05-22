@@ -66,7 +66,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         params: NamespaceRecallParams,
         requestOptions: RequestOptions,
     ): NamespaceRecallResponse =
-        // get /v1/namespaces/{namespace}/_debug/recall
+        // post /v1/namespaces/{namespace}/_debug/recall
         withRawResponse().recall(params, requestOptions).parse()
 
     override fun updateSchema(
@@ -217,7 +217,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         ): HttpResponseFor<NamespaceRecallResponse> {
             val request =
                 HttpRequest.builder()
-                    .method(HttpMethod.GET)
+                    .method(HttpMethod.POST)
                     .addPathSegments(
                         "v1",
                         "namespaces",
@@ -230,6 +230,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                         "_debug",
                         "recall",
                     )
+                    .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))

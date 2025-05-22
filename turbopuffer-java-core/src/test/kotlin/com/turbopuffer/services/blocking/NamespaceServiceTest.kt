@@ -5,9 +5,9 @@ package com.turbopuffer.services.blocking
 import com.turbopuffer.TestServerExtension
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.models.namespaces.DistanceMetric
-import com.turbopuffer.models.namespaces.DocumentColumns
-import com.turbopuffer.models.namespaces.DocumentRow
+import com.turbopuffer.models.DistanceMetric
+import com.turbopuffer.models.DocumentColumns
+import com.turbopuffer.models.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
@@ -100,7 +100,15 @@ internal class NamespaceServiceTest {
         val namespaceService = client.namespaces()
 
         val response =
-            namespaceService.recall(NamespaceRecallParams.builder().namespace("namespace").build())
+            namespaceService.recall(
+                NamespaceRecallParams.builder()
+                    .namespace("namespace")
+                    .filters(JsonValue.from(mapOf<String, Any>()))
+                    .num(0L)
+                    .addQuery(JsonValue.from(mapOf<String, Any>()))
+                    .topK(0L)
+                    .build()
+            )
 
         response.validate()
     }
@@ -119,8 +127,8 @@ internal class NamespaceServiceTest {
             namespaceService.updateSchema(
                 NamespaceUpdateSchemaParams.builder()
                     .namespace("namespace")
-                    .body(
-                        NamespaceUpdateSchemaParams.Body.builder()
+                    .schema(
+                        NamespaceUpdateSchemaParams.Schema.builder()
                             .putAdditionalProperty(
                                 "foo",
                                 JsonValue.from(
