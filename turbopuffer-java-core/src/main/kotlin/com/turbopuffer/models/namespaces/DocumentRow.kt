@@ -20,6 +20,7 @@ import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.allMaxBy
+import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
@@ -44,13 +45,13 @@ private constructor(
     /**
      * An identifier for a document.
      *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun id(): Optional<Id> = id.getOptional("id")
+    fun id(): Id = id.getRequired("id")
 
     /**
-     * A vector describing the document.
+     * A vector embedding associated with a document.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -85,14 +86,21 @@ private constructor(
 
     companion object {
 
-        /** Returns a mutable builder for constructing an instance of [DocumentRow]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [DocumentRow].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
     /** A builder for [DocumentRow]. */
     class Builder internal constructor() {
 
-        private var id: JsonField<Id> = JsonMissing.of()
+        private var id: JsonField<Id>? = null
         private var vector: JsonField<Vector> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -120,11 +128,8 @@ private constructor(
         /** Alias for calling [id] with `Id.ofInteger(integer)`. */
         fun id(integer: Long) = id(Id.ofInteger(integer))
 
-        /** A vector describing the document. */
-        fun vector(vector: Vector?) = vector(JsonField.ofNullable(vector))
-
-        /** Alias for calling [Builder.vector] with `vector.orElse(null)`. */
-        fun vector(vector: Optional<Vector>) = vector(vector.getOrNull())
+        /** A vector embedding associated with a document. */
+        fun vector(vector: Vector) = vector(JsonField.of(vector))
 
         /**
          * Sets [Builder.vector] to an arbitrary JSON value.
@@ -163,8 +168,16 @@ private constructor(
          * Returns an immutable instance of [DocumentRow].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): DocumentRow = DocumentRow(id, vector, additionalProperties.toMutableMap())
+        fun build(): DocumentRow =
+            DocumentRow(checkRequired("id", id), vector, additionalProperties.toMutableMap())
     }
 
     private var validated: Boolean = false
@@ -174,7 +187,7 @@ private constructor(
             return@apply
         }
 
-        id().ifPresent { it.validate() }
+        id().validate()
         vector().ifPresent { it.validate() }
         validated = true
     }
@@ -197,7 +210,7 @@ private constructor(
         (id.asKnown().getOrNull()?.validity() ?: 0) +
             (vector.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** A vector describing the document. */
+    /** A vector embedding associated with a document. */
     @JsonDeserialize(using = Vector.Deserializer::class)
     @JsonSerialize(using = Vector.Serializer::class)
     class Vector
@@ -207,16 +220,20 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
+        /** A dense vector encoded as an array of floats. */
         fun number(): Optional<List<Double>> = Optional.ofNullable(number)
 
+        /** A dense vector encoded as a base64 string. */
         fun string(): Optional<String> = Optional.ofNullable(string)
 
         fun isNumber(): Boolean = number != null
 
         fun isString(): Boolean = string != null
 
+        /** A dense vector encoded as an array of floats. */
         fun asNumber(): List<Double> = number.getOrThrow("number")
 
+        /** A dense vector encoded as a base64 string. */
         fun asString(): String = string.getOrThrow("string")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -291,16 +308,20 @@ private constructor(
 
         companion object {
 
+            /** A dense vector encoded as an array of floats. */
             @JvmStatic fun ofNumber(number: List<Double>) = Vector(number = number)
 
+            /** A dense vector encoded as a base64 string. */
             @JvmStatic fun ofString(string: String) = Vector(string = string)
         }
 
         /** An interface that defines how to map each variant of [Vector] to a value of type [T]. */
         interface Visitor<out T> {
 
+            /** A dense vector encoded as an array of floats. */
             fun visitNumber(number: List<Double>): T
 
+            /** A dense vector encoded as a base64 string. */
             fun visitString(string: String): T
 
             /**
