@@ -31,6 +31,7 @@ private constructor(
     @get:JvmName("timeout") val timeout: Timeout,
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("apiKey") val apiKey: String,
+    @get:JvmName("region") val region: String,
     private val defaultNamespace: String?,
 ) {
 
@@ -46,7 +47,7 @@ private constructor(
 
     companion object {
 
-        const val PRODUCTION_URL = "https://api.turbopuffer.com"
+        const val PRODUCTION_URL = "https://{region}.turbopuffer.com"
 
         /**
          * Returns a mutable builder for constructing an instance of [ClientOptions].
@@ -55,6 +56,7 @@ private constructor(
          * ```java
          * .httpClient()
          * .apiKey()
+         * .region()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -77,6 +79,7 @@ private constructor(
         private var timeout: Timeout = Timeout.default()
         private var maxRetries: Int = 2
         private var apiKey: String? = null
+        private var region: String? = null
         private var defaultNamespace: String? = null
 
         @JvmSynthetic
@@ -93,6 +96,7 @@ private constructor(
             timeout = clientOptions.timeout
             maxRetries = clientOptions.maxRetries
             apiKey = clientOptions.apiKey
+            region = clientOptions.region
             defaultNamespace = clientOptions.defaultNamespace
         }
 
@@ -121,6 +125,8 @@ private constructor(
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
         fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
+
+        fun region(region: String) = apply { this.region = region }
 
         fun defaultNamespace(defaultNamespace: String?) = apply {
             this.defaultNamespace = defaultNamespace
@@ -215,6 +221,7 @@ private constructor(
         fun fromEnv() = apply {
             System.getenv("TURBOPUFFER_BASE_URL")?.let { baseUrl(it) }
             System.getenv("TURBOPUFFER_API_KEY")?.let { apiKey(it) }
+            System.getenv("TURBOPUFFER_REGION")?.let { region(it) }
         }
 
         /**
@@ -226,6 +233,7 @@ private constructor(
          * ```java
          * .httpClient()
          * .apiKey()
+         * .region()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -233,6 +241,7 @@ private constructor(
         fun build(): ClientOptions {
             val httpClient = checkRequired("httpClient", httpClient)
             val apiKey = checkRequired("apiKey", apiKey)
+            val region = checkRequired("region", region)
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
@@ -285,6 +294,7 @@ private constructor(
                 timeout,
                 maxRetries,
                 apiKey,
+                region,
                 defaultNamespace,
             )
         }
