@@ -22,7 +22,7 @@ import com.turbopuffer.errors.TurbopufferException
 import com.turbopuffer.errors.UnauthorizedException
 import com.turbopuffer.errors.UnexpectedStatusCodeException
 import com.turbopuffer.errors.UnprocessableEntityException
-import com.turbopuffer.models.DistanceMetric
+import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry

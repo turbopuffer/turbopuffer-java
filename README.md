@@ -53,8 +53,8 @@ This library requires Java 8 or later.
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.DocumentRow;
+import com.turbopuffer.models.namespaces.DistanceMetric;
+import com.turbopuffer.models.namespaces.DocumentRow;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 import java.util.List;
@@ -145,8 +145,8 @@ The default client is synchronous. To switch to asynchronous execution, call the
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.DocumentRow;
+import com.turbopuffer.models.namespaces.DistanceMetric;
+import com.turbopuffer.models.namespaces.DocumentRow;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 import java.util.List;
@@ -173,8 +173,8 @@ Or create an asynchronous client from the beginning:
 ```java
 import com.turbopuffer.client.TurbopufferClientAsync;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync;
-import com.turbopuffer.models.DistanceMetric;
-import com.turbopuffer.models.DocumentRow;
+import com.turbopuffer.models.namespaces.DistanceMetric;
+import com.turbopuffer.models.namespaces.DocumentRow;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 import java.util.List;
@@ -521,7 +521,7 @@ To set undocumented parameters on _nested_ headers, query params, or body classe
 
 ```java
 import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.DocumentColumns;
+import com.turbopuffer.models.namespaces.DocumentColumns;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
@@ -537,7 +537,7 @@ To set a documented parameter or property to an undocumented or not yet supporte
 
 ```java
 import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.DocumentRow;
+import com.turbopuffer.models.namespaces.DocumentRow;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import java.util.List;
 

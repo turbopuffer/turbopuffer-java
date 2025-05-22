@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.turbopuffer.models
+package com.turbopuffer.models.namespaces
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
