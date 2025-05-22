@@ -10,9 +10,10 @@ import com.turbopuffer.models.namespaces.DocumentColumns
 import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
-import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceWarmCacheParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -59,47 +60,6 @@ internal class NamespaceServiceTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun multiQuery() {
-        val client =
-            TurbopufferOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .build()
-        val namespaceService = client.namespaces()
-
-        val response =
-            namespaceService.multiQuery(
-                NamespaceMultiQueryParams.builder()
-                    .namespace("namespace")
-                    .consistency(
-                        NamespaceMultiQueryParams.Consistency.builder()
-                            .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
-                            .build()
-                    )
-                    .addQuery(
-                        NamespaceMultiQueryParams.Query.builder()
-                            .rankByOfVector(
-                                listOf(
-                                    JsonValue.from(mapOf<String, Any>()),
-                                    JsonValue.from(mapOf<String, Any>()),
-                                    JsonValue.from(mapOf<String, Any>()),
-                                )
-                            )
-                            .topK(0L)
-                            .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                            .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
-                            .includeAttributes(true)
-                            .build()
-                    )
-                    .vectorEncoding(NamespaceMultiQueryParams.VectorEncoding.FLOAT)
-                    .build()
-            )
-
-        response.validate()
-    }
-
-    @Disabled("skipped: tests are disabled for the time being")
-    @Test
     fun query() {
         val client =
             TurbopufferOkHttpClient.builder()
@@ -112,13 +72,7 @@ internal class NamespaceServiceTest {
             namespaceService.query(
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
-                    .rankByOfVector(
-                        listOf(
-                            JsonValue.from(mapOf<String, Any>()),
-                            JsonValue.from(mapOf<String, Any>()),
-                            JsonValue.from(mapOf<String, Any>()),
-                        )
-                    )
+                    .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
                     .consistency(
                         NamespaceQueryParams.Consistency.builder()
@@ -126,11 +80,27 @@ internal class NamespaceServiceTest {
                             .build()
                     )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                    .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
+                    .filters(JsonValue.from(mapOf<String, Any>()))
                     .includeAttributes(true)
                     .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                     .build()
             )
+
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun recall() {
+        val client =
+            TurbopufferOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.recall(NamespaceRecallParams.builder().namespace("namespace").build())
 
         response.validate()
     }
@@ -164,6 +134,24 @@ internal class NamespaceServiceTest {
                             .build()
                     )
                     .build()
+            )
+
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun warmCache() {
+        val client =
+            TurbopufferOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.warmCache(
+                NamespaceWarmCacheParams.builder().namespace("namespace").build()
             )
 
         response.validate()

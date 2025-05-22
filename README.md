@@ -178,16 +178,11 @@ import com.turbopuffer.core.http.Headers;
 import com.turbopuffer.core.http.HttpResponseFor;
 import com.turbopuffer.models.namespaces.NamespaceQueryParams;
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse;
-import java.util.List;
 import java.util.Map;
 
 NamespaceQueryParams params = NamespaceQueryParams.builder()
     .namespace("products")
-    .rankByOfVector(List.of(
-      JsonValue.from(<String, Object>Map.of()),
-      JsonValue.from(<String, Object>Map.of()),
-      JsonValue.from(<String, Object>Map.of())
-    ))
+    .rankBy(JsonValue.from(<String, Object>Map.of()))
     .topK(0L)
     .build();
 HttpResponseFor<NamespaceQueryResponse> response = client.namespaces().withRawResponse().query(params);
