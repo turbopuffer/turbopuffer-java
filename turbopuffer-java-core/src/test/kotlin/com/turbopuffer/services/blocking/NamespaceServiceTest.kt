@@ -29,6 +29,7 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceService = client.namespaces()
 
@@ -47,6 +48,7 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceService = client.namespaces()
 
@@ -65,6 +67,7 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceService = client.namespaces()
 
@@ -96,6 +99,7 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceService = client.namespaces()
 
@@ -120,6 +124,7 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceService = client.namespaces()
 
@@ -154,6 +159,7 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceService = client.namespaces()
 
@@ -172,6 +178,7 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceService = client.namespaces()
 

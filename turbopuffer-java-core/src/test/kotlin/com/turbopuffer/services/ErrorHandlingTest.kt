@@ -57,6 +57,7 @@ internal class ErrorHandlingTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(wmRuntimeInfo.httpBaseUrl)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
     }
 

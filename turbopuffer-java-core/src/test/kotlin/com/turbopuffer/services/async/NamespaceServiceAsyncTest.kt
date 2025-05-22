@@ -29,6 +29,7 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceServiceAsync = client.namespaces()
 
@@ -48,6 +49,7 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceServiceAsync = client.namespaces()
 
@@ -67,6 +69,7 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceServiceAsync = client.namespaces()
 
@@ -99,6 +102,7 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceServiceAsync = client.namespaces()
 
@@ -124,6 +128,7 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceServiceAsync = client.namespaces()
 
@@ -159,6 +164,7 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceServiceAsync = client.namespaces()
 
@@ -178,6 +184,7 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .region("My-Region")
                 .build()
         val namespaceServiceAsync = client.namespaces()
 
