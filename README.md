@@ -48,14 +48,24 @@ This library requires Java 8 or later.
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.models.DistanceMetric;
+import com.turbopuffer.models.DocumentRow;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
+import java.util.List;
 
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
     .namespace("products")
+    .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+    .addUpsertRow(DocumentRow.builder()
+        .id("2108ed60-6851-49a0-9016-8325434f3845")
+        .vectorOfNumber(List.of(
+          0.1, 0.2
+        ))
+        .build())
     .build();
 NamespaceWriteResponse response = client.namespaces().write(params);
 ```
@@ -128,8 +138,11 @@ The default client is synchronous. To switch to asynchronous execution, call the
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.models.DistanceMetric;
+import com.turbopuffer.models.DocumentRow;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
@@ -137,6 +150,13 @@ TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
     .namespace("products")
+    .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+    .addUpsertRow(DocumentRow.builder()
+        .id("2108ed60-6851-49a0-9016-8325434f3845")
+        .vectorOfNumber(List.of(
+          0.1, 0.2
+        ))
+        .build())
     .build();
 CompletableFuture<NamespaceWriteResponse> response = client.async().namespaces().write(params);
 ```
@@ -146,8 +166,11 @@ Or create an asynchronous client from the beginning:
 ```java
 import com.turbopuffer.client.TurbopufferClientAsync;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync;
+import com.turbopuffer.models.DistanceMetric;
+import com.turbopuffer.models.DocumentRow;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 // Configures using the `TURBOPUFFER_API_KEY` and `TURBOPUFFER_BASE_URL` environment variables
@@ -155,6 +178,13 @@ TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
     .namespace("products")
+    .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+    .addUpsertRow(DocumentRow.builder()
+        .id("2108ed60-6851-49a0-9016-8325434f3845")
+        .vectorOfNumber(List.of(
+          0.1, 0.2
+        ))
+        .build())
     .build();
 CompletableFuture<NamespaceWriteResponse> response = client.namespaces().write(params);
 ```
@@ -499,10 +529,20 @@ These properties can be accessed on the nested built object later using the `_ad
 To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/core/Values.kt) object to its setter:
 
 ```java
+import com.turbopuffer.core.JsonValue;
+import com.turbopuffer.models.DocumentRow;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
+import java.util.List;
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
     .namespace("products")
+    .distanceMetric(JsonValue.from(42))
+    .addUpsertRow(DocumentRow.builder()
+        .id("2108ed60-6851-49a0-9016-8325434f3845")
+        .vectorOfNumber(List.of(
+          0.1, 0.2
+        ))
+        .build())
     .build();
 ```
 
