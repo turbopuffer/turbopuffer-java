@@ -112,7 +112,7 @@ internal class NamespaceServiceAsyncTest {
                     .namespace("namespace")
                     .filters(JsonValue.from(mapOf<String, Any>()))
                     .num(0L)
-                    .addQuery(JsonValue.from(mapOf<String, Any>()))
+                    .addQuery(0.0)
                     .topK(0L)
                     .build()
             )
