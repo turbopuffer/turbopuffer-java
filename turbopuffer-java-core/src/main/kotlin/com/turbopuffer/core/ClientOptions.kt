@@ -9,6 +9,12 @@ import com.turbopuffer.core.http.PhantomReachableClosingHttpClient
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.http.RetryingHttpClient
 import java.time.Clock
+import java.util.Optional
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.atomic.AtomicLong
+import kotlin.jvm.optionals.getOrNull
 
 class ClientOptions
 private constructor(
@@ -16,6 +22,7 @@ private constructor(
     @get:JvmName("httpClient") val httpClient: HttpClient,
     @get:JvmName("checkJacksonVersionCompatibility") val checkJacksonVersionCompatibility: Boolean,
     @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
+    @get:JvmName("streamHandlerExecutor") val streamHandlerExecutor: Executor,
     @get:JvmName("clock") val clock: Clock,
     @get:JvmName("baseUrl") val baseUrl: String,
     @get:JvmName("headers") val headers: Headers,
@@ -24,6 +31,8 @@ private constructor(
     @get:JvmName("timeout") val timeout: Timeout,
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("apiKey") val apiKey: String,
+    @get:JvmName("region") val region: String,
+    private val defaultNamespace: String?,
 ) {
 
     init {
@@ -32,11 +41,13 @@ private constructor(
         }
     }
 
+    fun defaultNamespace(): Optional<String> = Optional.ofNullable(defaultNamespace)
+
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
-        const val PRODUCTION_URL = "https://api.turbopuffer.com"
+        const val PRODUCTION_URL = "https://{region}.turbopuffer.com"
 
         /**
          * Returns a mutable builder for constructing an instance of [ClientOptions].
@@ -45,6 +56,7 @@ private constructor(
          * ```java
          * .httpClient()
          * .apiKey()
+         * .region()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -58,6 +70,7 @@ private constructor(
         private var httpClient: HttpClient? = null
         private var checkJacksonVersionCompatibility: Boolean = true
         private var jsonMapper: JsonMapper = jsonMapper()
+        private var streamHandlerExecutor: Executor? = null
         private var clock: Clock = Clock.systemUTC()
         private var baseUrl: String = PRODUCTION_URL
         private var headers: Headers.Builder = Headers.builder()
@@ -66,12 +79,15 @@ private constructor(
         private var timeout: Timeout = Timeout.default()
         private var maxRetries: Int = 2
         private var apiKey: String? = null
+        private var region: String? = null
+        private var defaultNamespace: String? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
             httpClient = clientOptions.originalHttpClient
             checkJacksonVersionCompatibility = clientOptions.checkJacksonVersionCompatibility
             jsonMapper = clientOptions.jsonMapper
+            streamHandlerExecutor = clientOptions.streamHandlerExecutor
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
             headers = clientOptions.headers.toBuilder()
@@ -80,6 +96,8 @@ private constructor(
             timeout = clientOptions.timeout
             maxRetries = clientOptions.maxRetries
             apiKey = clientOptions.apiKey
+            region = clientOptions.region
+            defaultNamespace = clientOptions.defaultNamespace
         }
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
@@ -89,6 +107,10 @@ private constructor(
         }
 
         fun jsonMapper(jsonMapper: JsonMapper) = apply { this.jsonMapper = jsonMapper }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         fun clock(clock: Clock) = apply { this.clock = clock }
 
@@ -103,6 +125,16 @@ private constructor(
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
         fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
+
+        fun region(region: String) = apply { this.region = region }
+
+        fun defaultNamespace(defaultNamespace: String?) = apply {
+            this.defaultNamespace = defaultNamespace
+        }
+
+        /** Alias for calling [Builder.defaultNamespace] with `defaultNamespace.orElse(null)`. */
+        fun defaultNamespace(defaultNamespace: Optional<String>) =
+            defaultNamespace(defaultNamespace.getOrNull())
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
@@ -189,6 +221,7 @@ private constructor(
         fun fromEnv() = apply {
             System.getenv("TURBOPUFFER_BASE_URL")?.let { baseUrl(it) }
             System.getenv("TURBOPUFFER_API_KEY")?.let { apiKey(it) }
+            System.getenv("TURBOPUFFER_REGION")?.let { region(it) }
         }
 
         /**
@@ -200,6 +233,7 @@ private constructor(
          * ```java
          * .httpClient()
          * .apiKey()
+         * .region()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -207,6 +241,7 @@ private constructor(
         fun build(): ClientOptions {
             val httpClient = checkRequired("httpClient", httpClient)
             val apiKey = checkRequired("apiKey", apiKey)
+            val region = checkRequired("region", region)
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
@@ -236,6 +271,21 @@ private constructor(
                 ),
                 checkJacksonVersionCompatibility,
                 jsonMapper,
+                streamHandlerExecutor
+                    ?: Executors.newCachedThreadPool(
+                        object : ThreadFactory {
+
+                            private val threadFactory: ThreadFactory =
+                                Executors.defaultThreadFactory()
+                            private val count = AtomicLong(0)
+
+                            override fun newThread(runnable: Runnable): Thread =
+                                threadFactory.newThread(runnable).also {
+                                    it.name =
+                                        "turbopuffer-stream-handler-thread-${count.getAndIncrement()}"
+                                }
+                        }
+                    ),
                 clock,
                 baseUrl,
                 headers.build(),
@@ -244,6 +294,8 @@ private constructor(
                 timeout,
                 maxRetries,
                 apiKey,
+                region,
+                defaultNamespace,
             )
         }
     }

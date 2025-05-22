@@ -9,24 +9,15 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** List namespaces. */
-class NamespaceListParams
+/** Warm the cache for a namespace. */
+class NamespaceWarmCacheParams
 private constructor(
-    private val cursor: String?,
-    private val pageSize: Long?,
-    private val prefix: String?,
+    private val namespace: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /** Retrieve the next page of results. */
-    fun cursor(): Optional<String> = Optional.ofNullable(cursor)
-
-    /** Limit the number of results per page. */
-    fun pageSize(): Optional<Long> = Optional.ofNullable(pageSize)
-
-    /** Retrieve only the namespaces that match the prefix. */
-    fun prefix(): Optional<String> = Optional.ofNullable(prefix)
+    fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -36,54 +27,30 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): NamespaceListParams = builder().build()
+        @JvmStatic fun none(): NamespaceWarmCacheParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [NamespaceListParams]. */
+        /** Returns a mutable builder for constructing an instance of [NamespaceWarmCacheParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceListParams]. */
+    /** A builder for [NamespaceWarmCacheParams]. */
     class Builder internal constructor() {
 
-        private var cursor: String? = null
-        private var pageSize: Long? = null
-        private var prefix: String? = null
+        private var namespace: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(namespaceListParams: NamespaceListParams) = apply {
-            cursor = namespaceListParams.cursor
-            pageSize = namespaceListParams.pageSize
-            prefix = namespaceListParams.prefix
-            additionalHeaders = namespaceListParams.additionalHeaders.toBuilder()
-            additionalQueryParams = namespaceListParams.additionalQueryParams.toBuilder()
+        internal fun from(namespaceWarmCacheParams: NamespaceWarmCacheParams) = apply {
+            namespace = namespaceWarmCacheParams.namespace
+            additionalHeaders = namespaceWarmCacheParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceWarmCacheParams.additionalQueryParams.toBuilder()
         }
 
-        /** Retrieve the next page of results. */
-        fun cursor(cursor: String?) = apply { this.cursor = cursor }
+        fun namespace(namespace: String?) = apply { this.namespace = namespace }
 
-        /** Alias for calling [Builder.cursor] with `cursor.orElse(null)`. */
-        fun cursor(cursor: Optional<String>) = cursor(cursor.getOrNull())
-
-        /** Limit the number of results per page. */
-        fun pageSize(pageSize: Long?) = apply { this.pageSize = pageSize }
-
-        /**
-         * Alias for [Builder.pageSize].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun pageSize(pageSize: Long) = pageSize(pageSize as Long?)
-
-        /** Alias for calling [Builder.pageSize] with `pageSize.orElse(null)`. */
-        fun pageSize(pageSize: Optional<Long>) = pageSize(pageSize.getOrNull())
-
-        /** Retrieve only the namespaces that match the prefix. */
-        fun prefix(prefix: String?) = apply { this.prefix = prefix }
-
-        /** Alias for calling [Builder.prefix] with `prefix.orElse(null)`. */
-        fun prefix(prefix: Optional<String>) = prefix(prefix.getOrNull())
+        /** Alias for calling [Builder.namespace] with `namespace.orElse(null)`. */
+        fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -184,42 +151,38 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [NamespaceListParams].
+         * Returns an immutable instance of [NamespaceWarmCacheParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): NamespaceListParams =
-            NamespaceListParams(
-                cursor,
-                pageSize,
-                prefix,
+        fun build(): NamespaceWarmCacheParams =
+            NamespaceWarmCacheParams(
+                namespace,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
     }
 
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> namespace ?: ""
+            else -> ""
+        }
+
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                cursor?.let { put("cursor", it) }
-                pageSize?.let { put("page_size", it.toString()) }
-                prefix?.let { put("prefix", it) }
-                putAll(additionalQueryParams)
-            }
-            .build()
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is NamespaceListParams && cursor == other.cursor && pageSize == other.pageSize && prefix == other.prefix && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceWarmCacheParams && namespace == other.namespace && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(cursor, pageSize, prefix, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceListParams{cursor=$cursor, pageSize=$pageSize, prefix=$prefix, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceWarmCacheParams{namespace=$namespace, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
