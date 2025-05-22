@@ -27,7 +27,6 @@ import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.errors.TurbopufferInvalidDataException
-import com.turbopuffer.models.Filter
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -44,11 +43,8 @@ private constructor(
 
     fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
-    /**
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun rankBy(): RankBy = body.rankBy()
+    /** How to rank the documents in the namespace. */
+    fun _rankBy(): JsonValue = body._rankBy()
 
     /**
      * The number of results to return.
@@ -75,10 +71,9 @@ private constructor(
     fun distanceMetric(): Optional<DistanceMetric> = body.distanceMetric()
 
     /**
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
      */
-    fun filters(): Optional<Filter> = body.filters()
+    fun _filters(): JsonValue = body._filters()
 
     /**
      * Whether to include attributes in the response.
@@ -95,13 +90,6 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun vectorEncoding(): Optional<VectorEncoding> = body.vectorEncoding()
-
-    /**
-     * Returns the raw JSON value of [rankBy].
-     *
-     * Unlike [rankBy], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _rankBy(): JsonField<RankBy> = body._rankBy()
 
     /**
      * Returns the raw JSON value of [topK].
@@ -123,13 +111,6 @@ private constructor(
      * Unlike [distanceMetric], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _distanceMetric(): JsonField<DistanceMetric> = body._distanceMetric()
-
-    /**
-     * Returns the raw JSON value of [filters].
-     *
-     * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _filters(): JsonField<Filter> = body._filters()
 
     /**
      * Returns the raw JSON value of [includeAttributes].
@@ -203,48 +184,8 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        fun rankBy(rankBy: RankBy) = apply { body.rankBy(rankBy) }
-
-        /**
-         * Sets [Builder.rankBy] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.rankBy] with a well-typed [RankBy] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun rankBy(rankBy: JsonField<RankBy>) = apply { body.rankBy(rankBy) }
-
-        /** Alias for calling [rankBy] with `RankBy.ofVector(vector)`. */
-        fun rankByOfVector(vector: List<JsonValue>) = apply { body.rankByOfVector(vector) }
-
-        /** Alias for calling [rankBy] with `RankBy.ofJsonValues(jsonValues)`. */
-        fun rankByOfJsonValues(jsonValues: List<JsonValue>) = apply {
-            body.rankByOfJsonValues(jsonValues)
-        }
-
-        /** Alias for calling [rankBy] with `RankBy.ofJsonValues(jsonValues)`. */
-        fun rankByOfJsonValues(jsonValues: List<JsonValue>) = apply {
-            body.rankByOfJsonValues(jsonValues)
-        }
-
-        /** Alias for calling [rankBy] with `RankBy.ofJsonValues(jsonValues)`. */
-        fun rankByOfJsonValues(jsonValues: List<JsonValue>) = apply {
-            body.rankByOfJsonValues(jsonValues)
-        }
-
-        /** Alias for calling [rankBy] with `RankBy.ofJsonValues(jsonValues)`. */
-        fun rankByOfJsonValues(jsonValues: List<JsonValue>) = apply {
-            body.rankByOfJsonValues(jsonValues)
-        }
-
-        /** Alias for calling [rankBy] with `RankBy.ofJsonValues(jsonValues)`. */
-        fun rankByOfJsonValues(jsonValues: List<JsonValue>) = apply {
-            body.rankByOfJsonValues(jsonValues)
-        }
-
-        /** Alias for calling [rankBy] with `RankBy.ofAttribute(attribute)`. */
-        fun rankByOfAttribute(attribute: List<JsonValue>) = apply {
-            body.rankByOfAttribute(attribute)
-        }
+        /** How to rank the documents in the namespace. */
+        fun rankBy(rankBy: JsonValue) = apply { body.rankBy(rankBy) }
 
         /** The number of results to return. */
         fun topK(topK: Long) = apply { body.topK(topK) }
@@ -287,35 +228,11 @@ private constructor(
             body.distanceMetric(distanceMetric)
         }
 
-        fun filters(filters: Filter) = apply { body.filters(filters) }
-
         /**
-         * Sets [Builder.filters] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.filters] with a well-typed [Filter] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
+         * clause.
          */
-        fun filters(filters: JsonField<Filter>) = apply { body.filters(filters) }
-
-        /** Alias for calling [filters] with `Filter.ofJsonValues(jsonValues)`. */
-        fun filtersOfJsonValues(jsonValues: List<JsonValue>) = apply {
-            body.filtersOfJsonValues(jsonValues)
-        }
-
-        /** Alias for calling [filters] with `Filter.ofJsonValues(jsonValues)`. */
-        fun filtersOfJsonValues(jsonValues: List<JsonValue>) = apply {
-            body.filtersOfJsonValues(jsonValues)
-        }
-
-        /** Alias for calling [filters] with `Filter.ofJsonValues(jsonValues)`. */
-        fun filtersOfJsonValues(jsonValues: List<JsonValue>) = apply {
-            body.filtersOfJsonValues(jsonValues)
-        }
-
-        /** Alias for calling [filters] with `Filter.ofJsonValues(jsonValues)`. */
-        fun filtersOfJsonValues(jsonValues: List<JsonValue>) = apply {
-            body.filtersOfJsonValues(jsonValues)
-        }
+        fun filters(filters: JsonValue) = apply { body.filters(filters) }
 
         /** Whether to include attributes in the response. */
         fun includeAttributes(includeAttributes: IncludeAttributes) = apply {
@@ -510,11 +427,11 @@ private constructor(
 
     class Body
     private constructor(
-        private val rankBy: JsonField<RankBy>,
+        private val rankBy: JsonValue,
         private val topK: JsonField<Long>,
         private val consistency: JsonField<Consistency>,
         private val distanceMetric: JsonField<DistanceMetric>,
-        private val filters: JsonField<Filter>,
+        private val filters: JsonValue,
         private val includeAttributes: JsonField<IncludeAttributes>,
         private val vectorEncoding: JsonField<VectorEncoding>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -522,7 +439,7 @@ private constructor(
 
         @JsonCreator
         private constructor(
-            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonField<RankBy> = JsonMissing.of(),
+            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("consistency")
             @ExcludeMissing
@@ -530,7 +447,7 @@ private constructor(
             @JsonProperty("distance_metric")
             @ExcludeMissing
             distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
-            @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filter> = JsonMissing.of(),
+            @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
             @JsonProperty("include_attributes")
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
@@ -548,11 +465,8 @@ private constructor(
             mutableMapOf(),
         )
 
-        /**
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun rankBy(): RankBy = rankBy.getRequired("rank_by")
+        /** How to rank the documents in the namespace. */
+        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
 
         /**
          * The number of results to return.
@@ -580,10 +494,10 @@ private constructor(
             distanceMetric.getOptional("distance_metric")
 
         /**
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
+         * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
+         * clause.
          */
-        fun filters(): Optional<Filter> = filters.getOptional("filters")
+        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
 
         /**
          * Whether to include attributes in the response.
@@ -602,13 +516,6 @@ private constructor(
          */
         fun vectorEncoding(): Optional<VectorEncoding> =
             vectorEncoding.getOptional("vector_encoding")
-
-        /**
-         * Returns the raw JSON value of [rankBy].
-         *
-         * Unlike [rankBy], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonField<RankBy> = rankBy
 
         /**
          * Returns the raw JSON value of [topK].
@@ -635,13 +542,6 @@ private constructor(
         @JsonProperty("distance_metric")
         @ExcludeMissing
         fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
-
-        /**
-         * Returns the raw JSON value of [filters].
-         *
-         * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<Filter> = filters
 
         /**
          * Returns the raw JSON value of [includeAttributes].
@@ -692,11 +592,11 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var rankBy: JsonField<RankBy>? = null
+            private var rankBy: JsonValue? = null
             private var topK: JsonField<Long>? = null
             private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
-            private var filters: JsonField<Filter> = JsonMissing.of()
+            private var filters: JsonValue = JsonMissing.of()
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -713,43 +613,8 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            fun rankBy(rankBy: RankBy) = rankBy(JsonField.of(rankBy))
-
-            /**
-             * Sets [Builder.rankBy] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.rankBy] with a well-typed [RankBy] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun rankBy(rankBy: JsonField<RankBy>) = apply { this.rankBy = rankBy }
-
-            /** Alias for calling [rankBy] with `RankBy.ofVector(vector)`. */
-            fun rankByOfVector(vector: List<JsonValue>) = rankBy(RankBy.ofVector(vector))
-
-            /** Alias for calling [rankBy] with `RankBy.ofJsonValues(jsonValues)`. */
-            fun rankByOfJsonValues(jsonValues: List<JsonValue>) =
-                rankBy(RankBy.ofJsonValues(jsonValues))
-
-            /** Alias for calling [rankBy] with `RankBy.ofJsonValues(jsonValues)`. */
-            fun rankByOfJsonValues(jsonValues: List<JsonValue>) =
-                rankBy(RankBy.ofJsonValues(jsonValues))
-
-            /** Alias for calling [rankBy] with `RankBy.ofJsonValues(jsonValues)`. */
-            fun rankByOfJsonValues(jsonValues: List<JsonValue>) =
-                rankBy(RankBy.ofJsonValues(jsonValues))
-
-            /** Alias for calling [rankBy] with `RankBy.ofJsonValues(jsonValues)`. */
-            fun rankByOfJsonValues(jsonValues: List<JsonValue>) =
-                rankBy(RankBy.ofJsonValues(jsonValues))
-
-            /** Alias for calling [rankBy] with `RankBy.ofJsonValues(jsonValues)`. */
-            fun rankByOfJsonValues(jsonValues: List<JsonValue>) =
-                rankBy(RankBy.ofJsonValues(jsonValues))
-
-            /** Alias for calling [rankBy] with `RankBy.ofAttribute(attribute)`. */
-            fun rankByOfAttribute(attribute: List<JsonValue>) =
-                rankBy(RankBy.ofAttribute(attribute))
+            /** How to rank the documents in the namespace. */
+            fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
 
             /** The number of results to return. */
             fun topK(topK: Long) = topK(JsonField.of(topK))
@@ -792,32 +657,11 @@ private constructor(
                 this.distanceMetric = distanceMetric
             }
 
-            fun filters(filters: Filter) = filters(JsonField.of(filters))
-
             /**
-             * Sets [Builder.filters] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.filters] with a well-typed [Filter] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
+             * clause.
              */
-            fun filters(filters: JsonField<Filter>) = apply { this.filters = filters }
-
-            /** Alias for calling [filters] with `Filter.ofJsonValues(jsonValues)`. */
-            fun filtersOfJsonValues(jsonValues: List<JsonValue>) =
-                filters(Filter.ofJsonValues(jsonValues))
-
-            /** Alias for calling [filters] with `Filter.ofJsonValues(jsonValues)`. */
-            fun filtersOfJsonValues(jsonValues: List<JsonValue>) =
-                filters(Filter.ofJsonValues(jsonValues))
-
-            /** Alias for calling [filters] with `Filter.ofJsonValues(jsonValues)`. */
-            fun filtersOfJsonValues(jsonValues: List<JsonValue>) =
-                filters(Filter.ofJsonValues(jsonValues))
-
-            /** Alias for calling [filters] with `Filter.ofJsonValues(jsonValues)`. */
-            fun filtersOfJsonValues(jsonValues: List<JsonValue>) =
-                filters(Filter.ofJsonValues(jsonValues))
+            fun filters(filters: JsonValue) = apply { this.filters = filters }
 
             /** Whether to include attributes in the response. */
             fun includeAttributes(includeAttributes: IncludeAttributes) =
@@ -910,11 +754,9 @@ private constructor(
                 return@apply
             }
 
-            rankBy().validate()
             topK()
             consistency().ifPresent { it.validate() }
             distanceMetric().ifPresent { it.validate() }
-            filters().ifPresent { it.validate() }
             includeAttributes().ifPresent { it.validate() }
             vectorEncoding().ifPresent { it.validate() }
             validated = true
@@ -936,11 +778,9 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (rankBy.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (topK.asKnown().isPresent) 1 else 0) +
+            (if (topK.asKnown().isPresent) 1 else 0) +
                 (consistency.asKnown().getOrNull()?.validity() ?: 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
-                (filters.asKnown().getOrNull()?.validity() ?: 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
 
@@ -960,283 +800,6 @@ private constructor(
 
         override fun toString() =
             "Body{rankBy=$rankBy, topK=$topK, consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
-    }
-
-    @JsonDeserialize(using = RankBy.Deserializer::class)
-    @JsonSerialize(using = RankBy.Serializer::class)
-    class RankBy
-    private constructor(
-        private val vector: List<JsonValue>? = null,
-        private val jsonValues: List<JsonValue>? = null,
-        private val jsonValues: List<JsonValue>? = null,
-        private val jsonValues: List<JsonValue>? = null,
-        private val jsonValues: List<JsonValue>? = null,
-        private val jsonValues: List<JsonValue>? = null,
-        private val attribute: List<JsonValue>? = null,
-        private val _json: JsonValue? = null,
-    ) {
-
-        fun vector(): Optional<List<JsonValue>> = Optional.ofNullable(vector)
-
-        fun jsonValues(): Optional<List<JsonValue>> = Optional.ofNullable(jsonValues)
-
-        fun jsonValues(): Optional<List<JsonValue>> = Optional.ofNullable(jsonValues)
-
-        fun jsonValues(): Optional<List<JsonValue>> = Optional.ofNullable(jsonValues)
-
-        fun jsonValues(): Optional<List<JsonValue>> = Optional.ofNullable(jsonValues)
-
-        fun jsonValues(): Optional<List<JsonValue>> = Optional.ofNullable(jsonValues)
-
-        fun attribute(): Optional<List<JsonValue>> = Optional.ofNullable(attribute)
-
-        fun isVector(): Boolean = vector != null
-
-        fun isJsonValues(): Boolean = jsonValues != null
-
-        fun isJsonValues(): Boolean = jsonValues != null
-
-        fun isJsonValues(): Boolean = jsonValues != null
-
-        fun isJsonValues(): Boolean = jsonValues != null
-
-        fun isJsonValues(): Boolean = jsonValues != null
-
-        fun isAttribute(): Boolean = attribute != null
-
-        fun asVector(): List<JsonValue> = vector.getOrThrow("vector")
-
-        fun asJsonValues(): List<JsonValue> = jsonValues.getOrThrow("jsonValues")
-
-        fun asJsonValues(): List<JsonValue> = jsonValues.getOrThrow("jsonValues")
-
-        fun asJsonValues(): List<JsonValue> = jsonValues.getOrThrow("jsonValues")
-
-        fun asJsonValues(): List<JsonValue> = jsonValues.getOrThrow("jsonValues")
-
-        fun asJsonValues(): List<JsonValue> = jsonValues.getOrThrow("jsonValues")
-
-        fun asAttribute(): List<JsonValue> = attribute.getOrThrow("attribute")
-
-        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-        fun <T> accept(visitor: Visitor<T>): T =
-            when {
-                vector != null -> visitor.visitVector(vector)
-                jsonValues != null -> visitor.visitJsonValues(jsonValues)
-                jsonValues != null -> visitor.visitJsonValues(jsonValues)
-                jsonValues != null -> visitor.visitJsonValues(jsonValues)
-                jsonValues != null -> visitor.visitJsonValues(jsonValues)
-                jsonValues != null -> visitor.visitJsonValues(jsonValues)
-                attribute != null -> visitor.visitAttribute(attribute)
-                else -> visitor.unknown(_json)
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): RankBy = apply {
-            if (validated) {
-                return@apply
-            }
-
-            accept(
-                object : Visitor<Unit> {
-                    override fun visitVector(vector: List<JsonValue>) {}
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) {}
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) {}
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) {}
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) {}
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) {}
-
-                    override fun visitAttribute(attribute: List<JsonValue>) {}
-                }
-            )
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: TurbopufferInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            accept(
-                object : Visitor<Int> {
-                    override fun visitVector(vector: List<JsonValue>) = vector.size
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) = jsonValues.size
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) = jsonValues.size
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) = jsonValues.size
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) = jsonValues.size
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) = jsonValues.size
-
-                    override fun visitAttribute(attribute: List<JsonValue>) = attribute.size
-
-                    override fun unknown(json: JsonValue?) = 0
-                }
-            )
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is RankBy && vector == other.vector && jsonValues == other.jsonValues && jsonValues == other.jsonValues && jsonValues == other.jsonValues && jsonValues == other.jsonValues && jsonValues == other.jsonValues && attribute == other.attribute /* spotless:on */
-        }
-
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(vector, jsonValues, jsonValues, jsonValues, jsonValues, jsonValues, attribute) /* spotless:on */
-
-        override fun toString(): String =
-            when {
-                vector != null -> "RankBy{vector=$vector}"
-                jsonValues != null -> "RankBy{jsonValues=$jsonValues}"
-                jsonValues != null -> "RankBy{jsonValues=$jsonValues}"
-                jsonValues != null -> "RankBy{jsonValues=$jsonValues}"
-                jsonValues != null -> "RankBy{jsonValues=$jsonValues}"
-                jsonValues != null -> "RankBy{jsonValues=$jsonValues}"
-                attribute != null -> "RankBy{attribute=$attribute}"
-                _json != null -> "RankBy{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid RankBy")
-            }
-
-        companion object {
-
-            @JvmStatic fun ofVector(vector: List<JsonValue>) = RankBy(vector = vector)
-
-            @JvmStatic
-            fun ofJsonValues(jsonValues: List<JsonValue>) = RankBy(jsonValues = jsonValues)
-
-            @JvmStatic
-            fun ofJsonValues(jsonValues: List<JsonValue>) = RankBy(jsonValues = jsonValues)
-
-            @JvmStatic
-            fun ofJsonValues(jsonValues: List<JsonValue>) = RankBy(jsonValues = jsonValues)
-
-            @JvmStatic
-            fun ofJsonValues(jsonValues: List<JsonValue>) = RankBy(jsonValues = jsonValues)
-
-            @JvmStatic
-            fun ofJsonValues(jsonValues: List<JsonValue>) = RankBy(jsonValues = jsonValues)
-
-            @JvmStatic fun ofAttribute(attribute: List<JsonValue>) = RankBy(attribute = attribute)
-        }
-
-        /** An interface that defines how to map each variant of [RankBy] to a value of type [T]. */
-        interface Visitor<out T> {
-
-            fun visitVector(vector: List<JsonValue>): T
-
-            fun visitJsonValues(jsonValues: List<JsonValue>): T
-
-            fun visitJsonValues(jsonValues: List<JsonValue>): T
-
-            fun visitJsonValues(jsonValues: List<JsonValue>): T
-
-            fun visitJsonValues(jsonValues: List<JsonValue>): T
-
-            fun visitJsonValues(jsonValues: List<JsonValue>): T
-
-            fun visitAttribute(attribute: List<JsonValue>): T
-
-            /**
-             * Maps an unknown variant of [RankBy] to a value of type [T].
-             *
-             * An instance of [RankBy] can contain an unknown variant if it was deserialized from
-             * data that doesn't match any known variant. For example, if the SDK is on an older
-             * version than the API, then the API may respond with new variants that the SDK is
-             * unaware of.
-             *
-             * @throws TurbopufferInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw TurbopufferInvalidDataException("Unknown RankBy: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<RankBy>(RankBy::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): RankBy {
-                val json = JsonValue.fromJsonNode(node)
-
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<List<JsonValue>>())?.let {
-                                RankBy(vector = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<JsonValue>>())?.let {
-                                RankBy(jsonValues = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<JsonValue>>())?.let {
-                                RankBy(jsonValues = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<JsonValue>>())?.let {
-                                RankBy(jsonValues = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<JsonValue>>())?.let {
-                                RankBy(jsonValues = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<JsonValue>>())?.let {
-                                RankBy(jsonValues = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<JsonValue>>())?.let {
-                                RankBy(attribute = it, _json = json)
-                            },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from boolean).
-                    0 -> RankBy(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                }
-            }
-        }
-
-        internal class Serializer : BaseSerializer<RankBy>(RankBy::class) {
-
-            override fun serialize(
-                value: RankBy,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.vector != null -> generator.writeObject(value.vector)
-                    value.jsonValues != null -> generator.writeObject(value.jsonValues)
-                    value.jsonValues != null -> generator.writeObject(value.jsonValues)
-                    value.jsonValues != null -> generator.writeObject(value.jsonValues)
-                    value.jsonValues != null -> generator.writeObject(value.jsonValues)
-                    value.jsonValues != null -> generator.writeObject(value.jsonValues)
-                    value.attribute != null -> generator.writeObject(value.attribute)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid RankBy")
-                }
-            }
-        }
     }
 
     /** The consistency level for a query. */

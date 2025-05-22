@@ -20,12 +20,14 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
-import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
-import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
+import com.turbopuffer.models.namespaces.NamespaceRecallParams
+import com.turbopuffer.models.namespaces.NamespaceRecallResponse
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceWarmCacheParams
+import com.turbopuffer.models.namespaces.NamespaceWarmCacheResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
@@ -54,13 +56,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         // get /v1/namespaces/{namespace}/schema
         withRawResponse().getSchema(params, requestOptions).thenApply { it.parse() }
 
-    override fun multiQuery(
-        params: NamespaceMultiQueryParams,
-        requestOptions: RequestOptions,
-    ): CompletableFuture<NamespaceMultiQueryResponse> =
-        // post /v2/namespaces/{namespace}/query?overload=multi
-        withRawResponse().multiQuery(params, requestOptions).thenApply { it.parse() }
-
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
@@ -68,12 +63,26 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         // post /v2/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).thenApply { it.parse() }
 
+    override fun recall(
+        params: NamespaceRecallParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceRecallResponse> =
+        // get /v1/namespaces/{namespace}/_debug/recall
+        withRawResponse().recall(params, requestOptions).thenApply { it.parse() }
+
     override fun updateSchema(
         params: NamespaceUpdateSchemaParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceUpdateSchemaResponse> =
         // post /v1/namespaces/{namespace}/schema
         withRawResponse().updateSchema(params, requestOptions).thenApply { it.parse() }
+
+    override fun warmCache(
+        params: NamespaceWarmCacheParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceWarmCacheResponse> =
+        // get /v1/namespaces/{namespace}/hint_cache_warm
+        withRawResponse().warmCache(params, requestOptions).thenApply { it.parse() }
 
     override fun write(
         params: NamespaceWriteParams,
@@ -167,48 +176,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                 }
         }
 
-        private val multiQueryHandler: Handler<NamespaceMultiQueryResponse> =
-            jsonHandler<NamespaceMultiQueryResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
-
-        override fun multiQuery(
-            params: NamespaceMultiQueryParams,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<NamespaceMultiQueryResponse>> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .addPathSegments(
-                        "v2",
-                        "namespaces",
-                        checkRequired(
-                            "namespace",
-                            params._pathParam(0).ifBlank {
-                                clientOptions.defaultNamespace().getOrNull()
-                            },
-                        ),
-                        "query",
-                    )
-                    .putQueryParam("overload", "multi")
-                    .body(json(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    response.parseable {
-                        response
-                            .use { multiQueryHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
-                    }
-                }
-        }
-
         private val queryHandler: Handler<NamespaceQueryResponse> =
             jsonHandler<NamespaceQueryResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -250,6 +217,47 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                 }
         }
 
+        private val recallHandler: Handler<NamespaceRecallResponse> =
+            jsonHandler<NamespaceRecallResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun recall(
+            params: NamespaceRecallParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceRecallResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "_debug",
+                        "recall",
+                    )
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { recallHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
         private val updateSchemaHandler: Handler<NamespaceUpdateSchemaResponse> =
             jsonHandler<NamespaceUpdateSchemaResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -282,6 +290,46 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     response.parseable {
                         response
                             .use { updateSchemaHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val warmCacheHandler: Handler<NamespaceWarmCacheResponse> =
+            jsonHandler<NamespaceWarmCacheResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun warmCache(
+            params: NamespaceWarmCacheParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceWarmCacheResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "hint_cache_warm",
+                    )
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { warmCacheHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

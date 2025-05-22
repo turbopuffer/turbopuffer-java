@@ -9,12 +9,14 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
-import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
-import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
+import com.turbopuffer.models.namespaces.NamespaceRecallParams
+import com.turbopuffer.models.namespaces.NamespaceRecallResponse
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceWarmCacheParams
+import com.turbopuffer.models.namespaces.NamespaceWarmCacheResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 
@@ -61,24 +63,6 @@ interface NamespaceService {
     fun getSchema(requestOptions: RequestOptions): NamespaceGetSchemaResponse =
         getSchema(NamespaceGetSchemaParams.none(), requestOptions)
 
-    /** Send multiple queries at once. */
-    fun multiQuery(): NamespaceMultiQueryResponse = multiQuery(NamespaceMultiQueryParams.none())
-
-    /** @see [multiQuery] */
-    fun multiQuery(
-        params: NamespaceMultiQueryParams = NamespaceMultiQueryParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): NamespaceMultiQueryResponse
-
-    /** @see [multiQuery] */
-    fun multiQuery(
-        params: NamespaceMultiQueryParams = NamespaceMultiQueryParams.none()
-    ): NamespaceMultiQueryResponse = multiQuery(params, RequestOptions.none())
-
-    /** @see [multiQuery] */
-    fun multiQuery(requestOptions: RequestOptions): NamespaceMultiQueryResponse =
-        multiQuery(NamespaceMultiQueryParams.none(), requestOptions)
-
     /** Query, filter, full-text search and vector search documents. */
     fun query(params: NamespaceQueryParams): NamespaceQueryResponse =
         query(params, RequestOptions.none())
@@ -88,6 +72,24 @@ interface NamespaceService {
         params: NamespaceQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceQueryResponse
+
+    /** Evaluate recall. */
+    fun recall(): NamespaceRecallResponse = recall(NamespaceRecallParams.none())
+
+    /** @see [recall] */
+    fun recall(
+        params: NamespaceRecallParams = NamespaceRecallParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceRecallResponse
+
+    /** @see [recall] */
+    fun recall(
+        params: NamespaceRecallParams = NamespaceRecallParams.none()
+    ): NamespaceRecallResponse = recall(params, RequestOptions.none())
+
+    /** @see [recall] */
+    fun recall(requestOptions: RequestOptions): NamespaceRecallResponse =
+        recall(NamespaceRecallParams.none(), requestOptions)
 
     /** Update namespace schema. */
     fun updateSchema(): NamespaceUpdateSchemaResponse =
@@ -107,6 +109,24 @@ interface NamespaceService {
     /** @see [updateSchema] */
     fun updateSchema(requestOptions: RequestOptions): NamespaceUpdateSchemaResponse =
         updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
+
+    /** Warm the cache for a namespace. */
+    fun warmCache(): NamespaceWarmCacheResponse = warmCache(NamespaceWarmCacheParams.none())
+
+    /** @see [warmCache] */
+    fun warmCache(
+        params: NamespaceWarmCacheParams = NamespaceWarmCacheParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceWarmCacheResponse
+
+    /** @see [warmCache] */
+    fun warmCache(
+        params: NamespaceWarmCacheParams = NamespaceWarmCacheParams.none()
+    ): NamespaceWarmCacheResponse = warmCache(params, RequestOptions.none())
+
+    /** @see [warmCache] */
+    fun warmCache(requestOptions: RequestOptions): NamespaceWarmCacheResponse =
+        warmCache(NamespaceWarmCacheParams.none(), requestOptions)
 
     /** Create, update, or delete documents. */
     fun write(): NamespaceWriteResponse = write(NamespaceWriteParams.none())
@@ -181,34 +201,6 @@ interface NamespaceService {
             getSchema(NamespaceGetSchemaParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `post /v2/namespaces/{namespace}/query?overload=multi`,
-         * but is otherwise the same as [NamespaceService.multiQuery].
-         */
-        @MustBeClosed
-        fun multiQuery(): HttpResponseFor<NamespaceMultiQueryResponse> =
-            multiQuery(NamespaceMultiQueryParams.none())
-
-        /** @see [multiQuery] */
-        @MustBeClosed
-        fun multiQuery(
-            params: NamespaceMultiQueryParams = NamespaceMultiQueryParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<NamespaceMultiQueryResponse>
-
-        /** @see [multiQuery] */
-        @MustBeClosed
-        fun multiQuery(
-            params: NamespaceMultiQueryParams = NamespaceMultiQueryParams.none()
-        ): HttpResponseFor<NamespaceMultiQueryResponse> = multiQuery(params, RequestOptions.none())
-
-        /** @see [multiQuery] */
-        @MustBeClosed
-        fun multiQuery(
-            requestOptions: RequestOptions
-        ): HttpResponseFor<NamespaceMultiQueryResponse> =
-            multiQuery(NamespaceMultiQueryParams.none(), requestOptions)
-
-        /**
          * Returns a raw HTTP response for `post /v2/namespaces/{namespace}/query`, but is otherwise
          * the same as [NamespaceService.query].
          */
@@ -222,6 +214,32 @@ interface NamespaceService {
             params: NamespaceQueryParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceQueryResponse>
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/_debug/recall`, but is
+         * otherwise the same as [NamespaceService.recall].
+         */
+        @MustBeClosed
+        fun recall(): HttpResponseFor<NamespaceRecallResponse> =
+            recall(NamespaceRecallParams.none())
+
+        /** @see [recall] */
+        @MustBeClosed
+        fun recall(
+            params: NamespaceRecallParams = NamespaceRecallParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceRecallResponse>
+
+        /** @see [recall] */
+        @MustBeClosed
+        fun recall(
+            params: NamespaceRecallParams = NamespaceRecallParams.none()
+        ): HttpResponseFor<NamespaceRecallResponse> = recall(params, RequestOptions.none())
+
+        /** @see [recall] */
+        @MustBeClosed
+        fun recall(requestOptions: RequestOptions): HttpResponseFor<NamespaceRecallResponse> =
+            recall(NamespaceRecallParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/schema`, but is
@@ -251,6 +269,32 @@ interface NamespaceService {
             requestOptions: RequestOptions
         ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
             updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/hint_cache_warm`, but is
+         * otherwise the same as [NamespaceService.warmCache].
+         */
+        @MustBeClosed
+        fun warmCache(): HttpResponseFor<NamespaceWarmCacheResponse> =
+            warmCache(NamespaceWarmCacheParams.none())
+
+        /** @see [warmCache] */
+        @MustBeClosed
+        fun warmCache(
+            params: NamespaceWarmCacheParams = NamespaceWarmCacheParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceWarmCacheResponse>
+
+        /** @see [warmCache] */
+        @MustBeClosed
+        fun warmCache(
+            params: NamespaceWarmCacheParams = NamespaceWarmCacheParams.none()
+        ): HttpResponseFor<NamespaceWarmCacheResponse> = warmCache(params, RequestOptions.none())
+
+        /** @see [warmCache] */
+        @MustBeClosed
+        fun warmCache(requestOptions: RequestOptions): HttpResponseFor<NamespaceWarmCacheResponse> =
+            warmCache(NamespaceWarmCacheParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v2/namespaces/{namespace}`, but is otherwise the
