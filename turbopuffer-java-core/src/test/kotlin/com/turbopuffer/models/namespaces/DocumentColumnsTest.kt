@@ -16,19 +16,13 @@ internal class DocumentColumnsTest {
         val documentColumns =
             DocumentColumns.builder()
                 .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .vectorOfInnerVectors(
-                    listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                )
+                .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                 .build()
 
         assertThat(documentColumns.id())
             .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
         assertThat(documentColumns.vector())
-            .contains(
-                DocumentColumns.Vector.ofInnerVectors(
-                    listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                )
-            )
+            .contains(DocumentColumns.Vector.ofVectors(listOf(Vector.ofNumber(listOf(0.0)))))
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -38,9 +32,7 @@ internal class DocumentColumnsTest {
         val documentColumns =
             DocumentColumns.builder()
                 .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                .vectorOfInnerVectors(
-                    listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                )
+                .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                 .build()
 
         val roundtrippedDocumentColumns =

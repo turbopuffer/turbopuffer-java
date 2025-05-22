@@ -151,9 +151,8 @@ private constructor(
          */
         fun vector(vector: JsonField<Vector>) = apply { this.vector = vector }
 
-        /** Alias for calling [vector] with `Vector.ofInnerVectors(innerVectors)`. */
-        fun vectorOfInnerVectors(innerVectors: List<Vector.InnerVector>) =
-            vector(Vector.ofInnerVectors(innerVectors))
+        /** Alias for calling [vector] with `Vector.ofVectors(vectors)`. */
+        fun vectorOfVectors(vectors: List<Vector>) = vector(Vector.ofVectors(vectors))
 
         /** Alias for calling [vector] with `Vector.ofNumber(number)`. */
         fun vectorOfNumber(number: List<Double>) = vector(Vector.ofNumber(number))
@@ -235,14 +234,14 @@ private constructor(
     @JsonSerialize(using = Vector.Serializer::class)
     class Vector
     private constructor(
-        private val innerVectors: List<InnerVector>? = null,
+        private val vectors: List<Vector>? = null,
         private val number: List<Double>? = null,
         private val string: String? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** The vector embeddings of the documents. */
-        fun innerVectors(): Optional<List<InnerVector>> = Optional.ofNullable(innerVectors)
+        fun vectors(): Optional<List<Vector>> = Optional.ofNullable(vectors)
 
         /** A dense vector encoded as an array of floats. */
         fun number(): Optional<List<Double>> = Optional.ofNullable(number)
@@ -250,14 +249,14 @@ private constructor(
         /** A dense vector encoded as a base64 string. */
         fun string(): Optional<String> = Optional.ofNullable(string)
 
-        fun isInnerVectors(): Boolean = innerVectors != null
+        fun isVectors(): Boolean = vectors != null
 
         fun isNumber(): Boolean = number != null
 
         fun isString(): Boolean = string != null
 
         /** The vector embeddings of the documents. */
-        fun asInnerVectors(): List<InnerVector> = innerVectors.getOrThrow("innerVectors")
+        fun asVectors(): List<Vector> = vectors.getOrThrow("vectors")
 
         /** A dense vector encoded as an array of floats. */
         fun asNumber(): List<Double> = number.getOrThrow("number")
@@ -269,7 +268,7 @@ private constructor(
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                innerVectors != null -> visitor.visitInnerVectors(innerVectors)
+                vectors != null -> visitor.visitVectors(vectors)
                 number != null -> visitor.visitNumber(number)
                 string != null -> visitor.visitString(string)
                 else -> visitor.unknown(_json)
@@ -284,8 +283,8 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitInnerVectors(innerVectors: List<InnerVector>) {
-                        innerVectors.forEach { it.validate() }
+                    override fun visitVectors(vectors: List<Vector>) {
+                        vectors.forEach { it.validate() }
                     }
 
                     override fun visitNumber(number: List<Double>) {}
@@ -314,8 +313,8 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitInnerVectors(innerVectors: List<InnerVector>) =
-                        innerVectors.sumOf { it.validity().toInt() }
+                    override fun visitVectors(vectors: List<Vector>) =
+                        vectors.sumOf { it.validity().toInt() }
 
                     override fun visitNumber(number: List<Double>) = number.size
 
@@ -330,14 +329,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Vector && innerVectors == other.innerVectors && number == other.number && string == other.string /* spotless:on */
+            return /* spotless:off */ other is Vector && vectors == other.vectors && number == other.number && string == other.string /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(innerVectors, number, string) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(vectors, number, string) /* spotless:on */
 
         override fun toString(): String =
             when {
-                innerVectors != null -> "Vector{innerVectors=$innerVectors}"
+                vectors != null -> "Vector{vectors=$vectors}"
                 number != null -> "Vector{number=$number}"
                 string != null -> "Vector{string=$string}"
                 _json != null -> "Vector{_unknown=$_json}"
@@ -347,9 +346,7 @@ private constructor(
         companion object {
 
             /** The vector embeddings of the documents. */
-            @JvmStatic
-            fun ofInnerVectors(innerVectors: List<InnerVector>) =
-                Vector(innerVectors = innerVectors)
+            @JvmStatic fun ofVectors(vectors: List<Vector>) = Vector(vectors = vectors)
 
             /** A dense vector encoded as an array of floats. */
             @JvmStatic fun ofNumber(number: List<Double>) = Vector(number = number)
@@ -362,7 +359,7 @@ private constructor(
         interface Visitor<out T> {
 
             /** The vector embeddings of the documents. */
-            fun visitInnerVectors(innerVectors: List<InnerVector>): T
+            fun visitVectors(vectors: List<Vector>): T
 
             /** A dense vector encoded as an array of floats. */
             fun visitNumber(number: List<Double>): T
@@ -392,8 +389,8 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<List<InnerVector>>())?.let {
-                                Vector(innerVectors = it, _json = json)
+                            tryDeserialize(node, jacksonTypeRef<List<Vector>>())?.let {
+                                Vector(vectors = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<List<Double>>())?.let {
                                 Vector(number = it, _json = json)
@@ -426,190 +423,11 @@ private constructor(
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.innerVectors != null -> generator.writeObject(value.innerVectors)
+                    value.vectors != null -> generator.writeObject(value.vectors)
                     value.number != null -> generator.writeObject(value.number)
                     value.string != null -> generator.writeObject(value.string)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Vector")
-                }
-            }
-        }
-
-        /** A vector embedding associated with a document. */
-        @JsonDeserialize(using = InnerVector.Deserializer::class)
-        @JsonSerialize(using = InnerVector.Serializer::class)
-        class InnerVector
-        private constructor(
-            private val number: List<Double>? = null,
-            private val string: String? = null,
-            private val _json: JsonValue? = null,
-        ) {
-
-            /** A dense vector encoded as an array of floats. */
-            fun number(): Optional<List<Double>> = Optional.ofNullable(number)
-
-            /** A dense vector encoded as a base64 string. */
-            fun string(): Optional<String> = Optional.ofNullable(string)
-
-            fun isNumber(): Boolean = number != null
-
-            fun isString(): Boolean = string != null
-
-            /** A dense vector encoded as an array of floats. */
-            fun asNumber(): List<Double> = number.getOrThrow("number")
-
-            /** A dense vector encoded as a base64 string. */
-            fun asString(): String = string.getOrThrow("string")
-
-            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-            fun <T> accept(visitor: Visitor<T>): T =
-                when {
-                    number != null -> visitor.visitNumber(number)
-                    string != null -> visitor.visitString(string)
-                    else -> visitor.unknown(_json)
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): InnerVector = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                accept(
-                    object : Visitor<Unit> {
-                        override fun visitNumber(number: List<Double>) {}
-
-                        override fun visitString(string: String) {}
-                    }
-                )
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: TurbopufferInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic
-            internal fun validity(): Int =
-                accept(
-                    object : Visitor<Int> {
-                        override fun visitNumber(number: List<Double>) = number.size
-
-                        override fun visitString(string: String) = 1
-
-                        override fun unknown(json: JsonValue?) = 0
-                    }
-                )
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is InnerVector && number == other.number && string == other.string /* spotless:on */
-            }
-
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(number, string) /* spotless:on */
-
-            override fun toString(): String =
-                when {
-                    number != null -> "InnerVector{number=$number}"
-                    string != null -> "InnerVector{string=$string}"
-                    _json != null -> "InnerVector{_unknown=$_json}"
-                    else -> throw IllegalStateException("Invalid InnerVector")
-                }
-
-            companion object {
-
-                /** A dense vector encoded as an array of floats. */
-                @JvmStatic fun ofNumber(number: List<Double>) = InnerVector(number = number)
-
-                /** A dense vector encoded as a base64 string. */
-                @JvmStatic fun ofString(string: String) = InnerVector(string = string)
-            }
-
-            /**
-             * An interface that defines how to map each variant of [InnerVector] to a value of type
-             * [T].
-             */
-            interface Visitor<out T> {
-
-                /** A dense vector encoded as an array of floats. */
-                fun visitNumber(number: List<Double>): T
-
-                /** A dense vector encoded as a base64 string. */
-                fun visitString(string: String): T
-
-                /**
-                 * Maps an unknown variant of [InnerVector] to a value of type [T].
-                 *
-                 * An instance of [InnerVector] can contain an unknown variant if it was
-                 * deserialized from data that doesn't match any known variant. For example, if the
-                 * SDK is on an older version than the API, then the API may respond with new
-                 * variants that the SDK is unaware of.
-                 *
-                 * @throws TurbopufferInvalidDataException in the default implementation.
-                 */
-                fun unknown(json: JsonValue?): T {
-                    throw TurbopufferInvalidDataException("Unknown InnerVector: $json")
-                }
-            }
-
-            internal class Deserializer : BaseDeserializer<InnerVector>(InnerVector::class) {
-
-                override fun ObjectCodec.deserialize(node: JsonNode): InnerVector {
-                    val json = JsonValue.fromJsonNode(node)
-
-                    val bestMatches =
-                        sequenceOf(
-                                tryDeserialize(node, jacksonTypeRef<List<Double>>())?.let {
-                                    InnerVector(number = it, _json = json)
-                                },
-                                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                                    InnerVector(string = it, _json = json)
-                                },
-                            )
-                            .filterNotNull()
-                            .allMaxBy { it.validity() }
-                            .toList()
-                    return when (bestMatches.size) {
-                        // This can happen if what we're deserializing is completely incompatible
-                        // with all the possible variants (e.g. deserializing from object).
-                        0 -> InnerVector(_json = json)
-                        1 -> bestMatches.single()
-                        // If there's more than one match with the highest validity, then use the
-                        // first completely valid match, or simply the first match if none are
-                        // completely valid.
-                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                    }
-                }
-            }
-
-            internal class Serializer : BaseSerializer<InnerVector>(InnerVector::class) {
-
-                override fun serialize(
-                    value: InnerVector,
-                    generator: JsonGenerator,
-                    provider: SerializerProvider,
-                ) {
-                    when {
-                        value.number != null -> generator.writeObject(value.number)
-                        value.string != null -> generator.writeObject(value.string)
-                        value._json != null -> generator.writeObject(value._json)
-                        else -> throw IllegalStateException("Invalid InnerVector")
-                    }
                 }
             }
         }

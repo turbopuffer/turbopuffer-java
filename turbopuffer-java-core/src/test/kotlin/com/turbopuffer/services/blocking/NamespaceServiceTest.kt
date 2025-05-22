@@ -15,6 +15,7 @@ import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWarmCacheParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.Vector
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -193,9 +194,7 @@ internal class NamespaceServiceTest {
                     .patchColumns(
                         DocumentColumns.builder()
                             .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfInnerVectors(
-                                listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                            )
+                            .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                             .build()
                     )
                     .addPatchRow(
@@ -221,9 +220,7 @@ internal class NamespaceServiceTest {
                     .upsertColumns(
                         DocumentColumns.builder()
                             .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfInnerVectors(
-                                listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                            )
+                            .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                             .build()
                     )
                     .addUpsertRow(

@@ -20,6 +20,7 @@ import com.turbopuffer.models.namespaces.DocumentColumns
 import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.Vector
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -91,9 +92,7 @@ internal class ServiceParamsTest {
                 .patchColumns(
                     DocumentColumns.builder()
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .vectorOfInnerVectors(
-                            listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                        )
+                        .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
                 .addPatchRow(
@@ -119,9 +118,7 @@ internal class ServiceParamsTest {
                 .upsertColumns(
                     DocumentColumns.builder()
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .vectorOfInnerVectors(
-                            listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                        )
+                        .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
                 .addUpsertRow(
