@@ -199,6 +199,9 @@ internal class NamespaceServiceAsyncTest {
                     .patchColumns(
                         DocumentColumns.builder()
                             .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .vectorOfInnerVectors(
+                                listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
+                            )
                             .build()
                     )
                     .addPatchRow(
@@ -224,6 +227,9 @@ internal class NamespaceServiceAsyncTest {
                     .upsertColumns(
                         DocumentColumns.builder()
                             .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .vectorOfInnerVectors(
+                                listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
+                            )
                             .build()
                     )
                     .addUpsertRow(
