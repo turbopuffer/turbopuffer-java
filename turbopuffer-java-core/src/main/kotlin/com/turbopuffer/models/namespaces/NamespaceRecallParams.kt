@@ -49,7 +49,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun queries(): Optional<List<JsonValue>> = body.queries()
+    fun queries(): Optional<List<Double>> = body.queries()
 
     /**
      * Search for `top_k` nearest neighbors.
@@ -71,7 +71,7 @@ private constructor(
      *
      * Unlike [queries], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _queries(): JsonField<List<JsonValue>> = body._queries()
+    fun _queries(): JsonField<List<Double>> = body._queries()
 
     /**
      * Returns the raw JSON value of [topK].
@@ -144,23 +144,23 @@ private constructor(
         fun num(num: JsonField<Long>) = apply { body.num(num) }
 
         /** Use specific query vectors for the measurement. If omitted, sampled from the index. */
-        fun queries(queries: List<JsonValue>) = apply { body.queries(queries) }
+        fun queries(queries: List<Double>) = apply { body.queries(queries) }
 
         /**
          * Sets [Builder.queries] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.queries] with a well-typed `List<JsonValue>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.queries] with a well-typed `List<Double>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun queries(queries: JsonField<List<JsonValue>>) = apply { body.queries(queries) }
+        fun queries(queries: JsonField<List<Double>>) = apply { body.queries(queries) }
 
         /**
-         * Adds a single [JsonValue] to [queries].
+         * Adds a single [Double] to [queries].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addQuery(query: JsonValue) = apply { body.addQuery(query) }
+        fun addQuery(query: Double) = apply { body.addQuery(query) }
 
         /** Search for `top_k` nearest neighbors. */
         fun topK(topK: Long) = apply { body.topK(topK) }
@@ -320,7 +320,7 @@ private constructor(
     private constructor(
         private val filters: JsonValue,
         private val num: JsonField<Long>,
-        private val queries: JsonField<List<JsonValue>>,
+        private val queries: JsonField<List<Double>>,
         private val topK: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -331,7 +331,7 @@ private constructor(
             @JsonProperty("num") @ExcludeMissing num: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("queries")
             @ExcludeMissing
-            queries: JsonField<List<JsonValue>> = JsonMissing.of(),
+            queries: JsonField<List<Double>> = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
         ) : this(filters, num, queries, topK, mutableMapOf())
 
@@ -352,7 +352,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun queries(): Optional<List<JsonValue>> = queries.getOptional("queries")
+        fun queries(): Optional<List<Double>> = queries.getOptional("queries")
 
         /**
          * Search for `top_k` nearest neighbors.
@@ -374,9 +374,7 @@ private constructor(
          *
          * Unlike [queries], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("queries")
-        @ExcludeMissing
-        fun _queries(): JsonField<List<JsonValue>> = queries
+        @JsonProperty("queries") @ExcludeMissing fun _queries(): JsonField<List<Double>> = queries
 
         /**
          * Returns the raw JSON value of [topK].
@@ -408,7 +406,7 @@ private constructor(
 
             private var filters: JsonValue = JsonMissing.of()
             private var num: JsonField<Long> = JsonMissing.of()
-            private var queries: JsonField<MutableList<JsonValue>>? = null
+            private var queries: JsonField<MutableList<Double>>? = null
             private var topK: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -439,25 +437,25 @@ private constructor(
             /**
              * Use specific query vectors for the measurement. If omitted, sampled from the index.
              */
-            fun queries(queries: List<JsonValue>) = queries(JsonField.of(queries))
+            fun queries(queries: List<Double>) = queries(JsonField.of(queries))
 
             /**
              * Sets [Builder.queries] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.queries] with a well-typed `List<JsonValue>` value
+             * You should usually call [Builder.queries] with a well-typed `List<Double>` value
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun queries(queries: JsonField<List<JsonValue>>) = apply {
+            fun queries(queries: JsonField<List<Double>>) = apply {
                 this.queries = queries.map { it.toMutableList() }
             }
 
             /**
-             * Adds a single [JsonValue] to [queries].
+             * Adds a single [Double] to [queries].
              *
              * @throws IllegalStateException if the field was previously set to a non-list.
              */
-            fun addQuery(query: JsonValue) = apply {
+            fun addQuery(query: Double) = apply {
                 queries =
                     (queries ?: JsonField.of(mutableListOf())).also {
                         checkKnown("queries", it).add(query)
