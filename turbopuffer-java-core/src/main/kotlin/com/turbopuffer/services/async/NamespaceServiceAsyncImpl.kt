@@ -67,7 +67,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         params: NamespaceRecallParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceRecallResponse> =
-        // get /v1/namespaces/{namespace}/_debug/recall
+        // post /v1/namespaces/{namespace}/_debug/recall
         withRawResponse().recall(params, requestOptions).thenApply { it.parse() }
 
     override fun updateSchema(
@@ -227,7 +227,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         ): CompletableFuture<HttpResponseFor<NamespaceRecallResponse>> {
             val request =
                 HttpRequest.builder()
-                    .method(HttpMethod.GET)
+                    .method(HttpMethod.POST)
                     .addPathSegments(
                         "v1",
                         "namespaces",
@@ -240,6 +240,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                         "_debug",
                         "recall",
                     )
+                    .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))

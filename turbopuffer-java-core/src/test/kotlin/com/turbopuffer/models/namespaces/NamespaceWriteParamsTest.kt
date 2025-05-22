@@ -3,6 +3,10 @@
 package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.models.DistanceMetric
+import com.turbopuffer.models.DocumentColumns
+import com.turbopuffer.models.DocumentRow
+import com.turbopuffer.models.Id
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled

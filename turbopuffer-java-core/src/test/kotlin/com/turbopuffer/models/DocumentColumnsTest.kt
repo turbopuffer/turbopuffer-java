@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.turbopuffer.models.namespaces
+package com.turbopuffer.models
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.jsonMapper

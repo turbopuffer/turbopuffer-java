@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.turbopuffer.models.namespaces
+package com.turbopuffer.models
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.turbopuffer.core.Enum

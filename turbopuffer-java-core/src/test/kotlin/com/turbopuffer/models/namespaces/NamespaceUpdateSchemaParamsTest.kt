@@ -15,8 +15,8 @@ internal class NamespaceUpdateSchemaParamsTest {
     fun create() {
         NamespaceUpdateSchemaParams.builder()
             .namespace("namespace")
-            .body(
-                NamespaceUpdateSchemaParams.Body.builder()
+            .schema(
+                NamespaceUpdateSchemaParams.Schema.builder()
                     .putAdditionalProperty(
                         "foo",
                         JsonValue.from(
@@ -48,8 +48,8 @@ internal class NamespaceUpdateSchemaParamsTest {
         val params =
             NamespaceUpdateSchemaParams.builder()
                 .namespace("namespace")
-                .body(
-                    NamespaceUpdateSchemaParams.Body.builder()
+                .schema(
+                    NamespaceUpdateSchemaParams.Schema.builder()
                         .putAdditionalProperty(
                             "foo",
                             JsonValue.from(
@@ -68,7 +68,7 @@ internal class NamespaceUpdateSchemaParamsTest {
 
         assertThat(body)
             .isEqualTo(
-                NamespaceUpdateSchemaParams.Body.builder()
+                NamespaceUpdateSchemaParams.Schema.builder()
                     .putAdditionalProperty(
                         "foo",
                         JsonValue.from(
