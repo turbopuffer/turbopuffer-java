@@ -21,6 +21,7 @@ import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.checkKnown
+import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
@@ -46,10 +47,10 @@ private constructor(
     /**
      * The IDs of the documents.
      *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun id(): Optional<List<Id>> = id.getOptional("id")
+    fun id(): List<Id> = id.getRequired("id")
 
     /**
      * The vector embeddings of the documents.
@@ -87,7 +88,14 @@ private constructor(
 
     companion object {
 
-        /** Returns a mutable builder for constructing an instance of [DocumentColumns]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [DocumentColumns].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -176,10 +184,17 @@ private constructor(
          * Returns an immutable instance of [DocumentColumns].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): DocumentColumns =
             DocumentColumns(
-                (id ?: JsonMissing.of()).map { it.toImmutable() },
+                checkRequired("id", id).map { it.toImmutable() },
                 vector,
                 additionalProperties.toMutableMap(),
             )
@@ -192,7 +207,7 @@ private constructor(
             return@apply
         }
 
-        id().ifPresent { it.forEach { it.validate() } }
+        id().forEach { it.validate() }
         vector().ifPresent { it.validate() }
         validated = true
     }
