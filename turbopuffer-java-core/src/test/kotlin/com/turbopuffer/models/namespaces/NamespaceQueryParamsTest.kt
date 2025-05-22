@@ -3,7 +3,6 @@
 package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.models.DistanceMetric
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test

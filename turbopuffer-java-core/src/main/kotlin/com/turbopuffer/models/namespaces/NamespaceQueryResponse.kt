@@ -14,7 +14,6 @@ import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
-import com.turbopuffer.models.DocumentRow
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional

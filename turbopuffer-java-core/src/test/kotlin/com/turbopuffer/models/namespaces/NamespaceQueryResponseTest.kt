@@ -5,7 +5,6 @@ package com.turbopuffer.models.namespaces
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
-import com.turbopuffer.models.DocumentRow
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled

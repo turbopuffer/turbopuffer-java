@@ -5,9 +5,9 @@ package com.turbopuffer.services.blocking
 import com.turbopuffer.TestServerExtension
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.models.DistanceMetric
-import com.turbopuffer.models.DocumentColumns
-import com.turbopuffer.models.DocumentRow
+import com.turbopuffer.models.namespaces.DistanceMetric
+import com.turbopuffer.models.namespaces.DocumentColumns
+import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
