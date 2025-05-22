@@ -22,9 +22,7 @@ internal class NamespaceWriteParamsTest {
             .patchColumns(
                 DocumentColumns.builder()
                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .vectorOfInnerVectors(
-                        listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                    )
+                    .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                     .build()
             )
             .addPatchRow(
@@ -50,9 +48,7 @@ internal class NamespaceWriteParamsTest {
             .upsertColumns(
                 DocumentColumns.builder()
                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .vectorOfInnerVectors(
-                        listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                    )
+                    .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                     .build()
             )
             .addUpsertRow(
@@ -87,9 +83,7 @@ internal class NamespaceWriteParamsTest {
                 .patchColumns(
                     DocumentColumns.builder()
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .vectorOfInnerVectors(
-                            listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                        )
+                        .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
                 .addPatchRow(
@@ -115,9 +109,7 @@ internal class NamespaceWriteParamsTest {
                 .upsertColumns(
                     DocumentColumns.builder()
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .vectorOfInnerVectors(
-                            listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                        )
+                        .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
                 .addUpsertRow(
@@ -139,9 +131,7 @@ internal class NamespaceWriteParamsTest {
             .contains(
                 DocumentColumns.builder()
                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .vectorOfInnerVectors(
-                        listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                    )
+                    .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                     .build()
             )
         assertThat(body.patchRows().getOrNull())
@@ -170,9 +160,7 @@ internal class NamespaceWriteParamsTest {
             .contains(
                 DocumentColumns.builder()
                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .vectorOfInnerVectors(
-                        listOf(DocumentColumns.Vector.InnerVector.ofNumber(listOf(0.0)))
-                    )
+                    .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                     .build()
             )
         assertThat(body.upsertRows().getOrNull())
