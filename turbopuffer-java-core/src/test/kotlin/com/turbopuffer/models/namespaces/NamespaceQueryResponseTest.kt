@@ -5,6 +5,7 @@ package com.turbopuffer.models.namespaces
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
+import com.turbopuffer.models.DocumentRow
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
@@ -22,6 +23,22 @@ internal class NamespaceQueryResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
+                .billing(
+                    NamespaceQueryResponse.Billing.builder()
+                        .billableLogicalBytesQueried(0L)
+                        .billableLogicalBytesReturned(0L)
+                        .build()
+                )
+                .performance(
+                    NamespaceQueryResponse.Performance.builder()
+                        .approxNamespaceSize(0L)
+                        .cacheHitRatio(0.0)
+                        .cacheTemperature("cache_temperature")
+                        .exhaustiveSearchCount(0L)
+                        .queryExecutionMs(0L)
+                        .serverTotalMs(0L)
+                        .build()
+                )
                 .addRow(
                     DocumentRow.builder()
                         .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -34,6 +51,24 @@ internal class NamespaceQueryResponseTest {
             .containsExactly(
                 NamespaceQueryResponse.Aggregation.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
+        assertThat(namespaceQueryResponse.billing())
+            .contains(
+                NamespaceQueryResponse.Billing.builder()
+                    .billableLogicalBytesQueried(0L)
+                    .billableLogicalBytesReturned(0L)
+                    .build()
+            )
+        assertThat(namespaceQueryResponse.performance())
+            .contains(
+                NamespaceQueryResponse.Performance.builder()
+                    .approxNamespaceSize(0L)
+                    .cacheHitRatio(0.0)
+                    .cacheTemperature("cache_temperature")
+                    .exhaustiveSearchCount(0L)
+                    .queryExecutionMs(0L)
+                    .serverTotalMs(0L)
                     .build()
             )
         assertThat(namespaceQueryResponse.rows().getOrNull())
@@ -54,6 +89,22 @@ internal class NamespaceQueryResponseTest {
                 .addAggregation(
                     NamespaceQueryResponse.Aggregation.builder()
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
+                .billing(
+                    NamespaceQueryResponse.Billing.builder()
+                        .billableLogicalBytesQueried(0L)
+                        .billableLogicalBytesReturned(0L)
+                        .build()
+                )
+                .performance(
+                    NamespaceQueryResponse.Performance.builder()
+                        .approxNamespaceSize(0L)
+                        .cacheHitRatio(0.0)
+                        .cacheTemperature("cache_temperature")
+                        .exhaustiveSearchCount(0L)
+                        .queryExecutionMs(0L)
+                        .serverTotalMs(0L)
                         .build()
                 )
                 .addRow(

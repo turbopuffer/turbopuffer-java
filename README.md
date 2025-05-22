@@ -173,12 +173,18 @@ import com.turbopuffer.core.http.Headers;
 import com.turbopuffer.core.http.HttpResponseFor;
 import com.turbopuffer.models.namespaces.NamespaceQueryParams;
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse;
-import java.util.Map;
+import java.util.List;
 
 NamespaceQueryParams params = NamespaceQueryParams.builder()
     .namespace("products")
-    .rankBy(JsonValue.from(<String, Object>Map.of()))
-    .topK(0L)
+    .rankBy(JsonValue.from(List.of(
+      "vector",
+      "ANN",
+      List.of(
+        0.2, 0.3
+      )
+    )))
+    .topK(10L)
     .build();
 HttpResponseFor<NamespaceQueryResponse> response = client.namespaces().withRawResponse().query(params);
 
@@ -478,7 +484,7 @@ To set undocumented parameters on _nested_ headers, query params, or body classe
 
 ```java
 import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.namespaces.DocumentColumns;
+import com.turbopuffer.models.DocumentColumns;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()

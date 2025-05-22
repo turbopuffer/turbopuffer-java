@@ -14,8 +14,37 @@ internal class NamespaceWriteResponseTest {
     @Test
     fun create() {
         val namespaceWriteResponse =
-            NamespaceWriteResponse.builder().status(NamespaceWriteResponse.Status.OK).build()
+            NamespaceWriteResponse.builder()
+                .billing(
+                    NamespaceWriteResponse.Billing.builder()
+                        .billableLogicalBytesWritten(0L)
+                        .query(
+                            NamespaceWriteResponse.Billing.Query.builder()
+                                .billableLogicalBytesQueried(0L)
+                                .billableLogicalBytesReturned(0L)
+                                .build()
+                        )
+                        .build()
+                )
+                .message("message")
+                .rowsAffected(0L)
+                .status(NamespaceWriteResponse.Status.OK)
+                .build()
 
+        assertThat(namespaceWriteResponse.billing())
+            .isEqualTo(
+                NamespaceWriteResponse.Billing.builder()
+                    .billableLogicalBytesWritten(0L)
+                    .query(
+                        NamespaceWriteResponse.Billing.Query.builder()
+                            .billableLogicalBytesQueried(0L)
+                            .billableLogicalBytesReturned(0L)
+                            .build()
+                    )
+                    .build()
+            )
+        assertThat(namespaceWriteResponse.message()).isEqualTo("message")
+        assertThat(namespaceWriteResponse.rowsAffected()).isEqualTo(0L)
         assertThat(namespaceWriteResponse.status()).isEqualTo(NamespaceWriteResponse.Status.OK)
     }
 
@@ -24,7 +53,22 @@ internal class NamespaceWriteResponseTest {
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val namespaceWriteResponse =
-            NamespaceWriteResponse.builder().status(NamespaceWriteResponse.Status.OK).build()
+            NamespaceWriteResponse.builder()
+                .billing(
+                    NamespaceWriteResponse.Billing.builder()
+                        .billableLogicalBytesWritten(0L)
+                        .query(
+                            NamespaceWriteResponse.Billing.Query.builder()
+                                .billableLogicalBytesQueried(0L)
+                                .billableLogicalBytesReturned(0L)
+                                .build()
+                        )
+                        .build()
+                )
+                .message("message")
+                .rowsAffected(0L)
+                .status(NamespaceWriteResponse.Status.OK)
+                .build()
 
         val roundtrippedNamespaceWriteResponse =
             jsonMapper.readValue(
