@@ -76,13 +76,7 @@ internal class ErrorHandlingTest {
                 namespaceService.query(
                     NamespaceQueryParams.builder()
                         .namespace("namespace")
-                        .rankByOfVector(
-                            listOf(
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                            )
-                        )
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
                         .consistency(
                             NamespaceQueryParams.Consistency.builder()
@@ -90,7 +84,7 @@ internal class ErrorHandlingTest {
                                 .build()
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .includeAttributes(true)
                         .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                         .build()
@@ -118,13 +112,7 @@ internal class ErrorHandlingTest {
                 namespaceService.query(
                     NamespaceQueryParams.builder()
                         .namespace("namespace")
-                        .rankByOfVector(
-                            listOf(
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                            )
-                        )
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
                         .consistency(
                             NamespaceQueryParams.Consistency.builder()
@@ -132,7 +120,7 @@ internal class ErrorHandlingTest {
                                 .build()
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .includeAttributes(true)
                         .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                         .build()
@@ -160,13 +148,7 @@ internal class ErrorHandlingTest {
                 namespaceService.query(
                     NamespaceQueryParams.builder()
                         .namespace("namespace")
-                        .rankByOfVector(
-                            listOf(
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                            )
-                        )
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
                         .consistency(
                             NamespaceQueryParams.Consistency.builder()
@@ -174,7 +156,7 @@ internal class ErrorHandlingTest {
                                 .build()
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .includeAttributes(true)
                         .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                         .build()
@@ -202,13 +184,7 @@ internal class ErrorHandlingTest {
                 namespaceService.query(
                     NamespaceQueryParams.builder()
                         .namespace("namespace")
-                        .rankByOfVector(
-                            listOf(
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                            )
-                        )
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
                         .consistency(
                             NamespaceQueryParams.Consistency.builder()
@@ -216,7 +192,7 @@ internal class ErrorHandlingTest {
                                 .build()
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .includeAttributes(true)
                         .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                         .build()
@@ -244,13 +220,7 @@ internal class ErrorHandlingTest {
                 namespaceService.query(
                     NamespaceQueryParams.builder()
                         .namespace("namespace")
-                        .rankByOfVector(
-                            listOf(
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                            )
-                        )
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
                         .consistency(
                             NamespaceQueryParams.Consistency.builder()
@@ -258,7 +228,7 @@ internal class ErrorHandlingTest {
                                 .build()
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .includeAttributes(true)
                         .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                         .build()
@@ -286,13 +256,7 @@ internal class ErrorHandlingTest {
                 namespaceService.query(
                     NamespaceQueryParams.builder()
                         .namespace("namespace")
-                        .rankByOfVector(
-                            listOf(
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                            )
-                        )
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
                         .consistency(
                             NamespaceQueryParams.Consistency.builder()
@@ -300,7 +264,7 @@ internal class ErrorHandlingTest {
                                 .build()
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .includeAttributes(true)
                         .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                         .build()
@@ -328,13 +292,7 @@ internal class ErrorHandlingTest {
                 namespaceService.query(
                     NamespaceQueryParams.builder()
                         .namespace("namespace")
-                        .rankByOfVector(
-                            listOf(
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                            )
-                        )
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
                         .consistency(
                             NamespaceQueryParams.Consistency.builder()
@@ -342,7 +300,7 @@ internal class ErrorHandlingTest {
                                 .build()
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .includeAttributes(true)
                         .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                         .build()
@@ -370,13 +328,7 @@ internal class ErrorHandlingTest {
                 namespaceService.query(
                     NamespaceQueryParams.builder()
                         .namespace("namespace")
-                        .rankByOfVector(
-                            listOf(
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                            )
-                        )
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
                         .consistency(
                             NamespaceQueryParams.Consistency.builder()
@@ -384,7 +336,7 @@ internal class ErrorHandlingTest {
                                 .build()
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .includeAttributes(true)
                         .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                         .build()
@@ -410,13 +362,7 @@ internal class ErrorHandlingTest {
                 namespaceService.query(
                     NamespaceQueryParams.builder()
                         .namespace("namespace")
-                        .rankByOfVector(
-                            listOf(
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                                JsonValue.from(mapOf<String, Any>()),
-                            )
-                        )
+                        .rankBy(JsonValue.from(mapOf<String, Any>()))
                         .topK(0L)
                         .consistency(
                             NamespaceQueryParams.Consistency.builder()
@@ -424,7 +370,7 @@ internal class ErrorHandlingTest {
                                 .build()
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .filtersOfJsonValues(listOf(JsonValue.from(mapOf<String, Any>())))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .includeAttributes(true)
                         .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
                         .build()
