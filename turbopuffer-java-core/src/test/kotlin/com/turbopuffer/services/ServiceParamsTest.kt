@@ -36,8 +36,8 @@ internal class ServiceParamsTest {
         client =
             TurbopufferOkHttpClient.builder()
                 .baseUrl(wmRuntimeInfo.httpBaseUrl)
-                .apiKey("My API Key")
-                .region("My-Region")
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
                 .build()
     }
 

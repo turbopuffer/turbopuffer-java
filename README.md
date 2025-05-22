@@ -94,8 +94,8 @@ import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
-    .apiKey("My API Key")
-    .region("My-Region")
+    .apiKey("tpuf_A1...")
+    .region("gcp-us-central1")
     .build();
 ```
 
