@@ -16,10 +16,6 @@ import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
-import com.turbopuffer.models.DistanceMetric
-import com.turbopuffer.models.DocumentColumns
-import com.turbopuffer.models.DocumentRow
-import com.turbopuffer.models.Id
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
