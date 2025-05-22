@@ -73,8 +73,7 @@ internal class NamespaceQueryParamsTest {
             )
         assertThat(body.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)
         assertThat(body._filters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(body.includeAttributes())
-            .contains(NamespaceQueryParams.IncludeAttributes.ofBool(true))
+        assertThat(body.includeAttributes()).contains(IncludeAttributes.ofBool(true))
         assertThat(body.vectorEncoding()).contains(NamespaceQueryParams.VectorEncoding.FLOAT)
     }
 
