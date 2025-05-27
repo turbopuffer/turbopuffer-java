@@ -21,8 +21,7 @@ internal class AttributeSchemaTest {
                 .build()
 
         assertThat(attributeSchema.filterable()).contains(true)
-        assertThat(attributeSchema.fullTextSearch())
-            .contains(AttributeSchema.FullTextSearch.ofBool(true))
+        assertThat(attributeSchema.fullTextSearch()).contains(FullTextSearchConfig.ofBool(true))
         assertThat(attributeSchema.type()).contains(AttributeSchema.Type.STRING)
     }
 

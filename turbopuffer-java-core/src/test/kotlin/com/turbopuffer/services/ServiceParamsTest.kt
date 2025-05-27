@@ -4,6 +4,8 @@ package com.turbopuffer.services
 
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.post
@@ -15,10 +17,10 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.turbopuffer.client.TurbopufferClient
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.models.ClientListNamespacesParams
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.DocumentColumns
 import com.turbopuffer.models.namespaces.DocumentRow
-import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Vector
 import org.junit.jupiter.api.BeforeEach
@@ -44,35 +46,21 @@ internal class ServiceParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun query() {
-        val namespaceService = client.namespaces()
-        stubFor(post(anyUrl()).willReturn(ok("{}")))
+    fun listNamespaces() {
+        val turbopufferClient = client
+        stubFor(get(anyUrl()).willReturn(ok("{}")))
 
-        namespaceService.query(
-            NamespaceQueryParams.builder()
-                .namespace("namespace")
-                .rankBy(JsonValue.from(mapOf<String, Any>()))
-                .topK(0L)
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                        .build()
-                )
-                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .filters(JsonValue.from(mapOf<String, Any>()))
-                .includeAttributes(true)
-                .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
+        turbopufferClient.listNamespaces(
+            ClientListNamespacesParams.builder()
                 .putAdditionalHeader("Secret-Header", "42")
                 .putAdditionalQueryParam("secret_query_param", "42")
-                .putAdditionalBodyProperty("secretProperty", JsonValue.from("42"))
                 .build()
         )
 
         verify(
-            postRequestedFor(anyUrl())
+            getRequestedFor(anyUrl())
                 .withHeader("Secret-Header", equalTo("42"))
                 .withQueryParam("secret_query_param", equalTo("42"))
-                .withRequestBody(matchingJsonPath("$.secretProperty", equalTo("42")))
         )
     }
 
