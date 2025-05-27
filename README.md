@@ -200,36 +200,26 @@ The SDK defines methods that deserialize responses into instances of Java classe
 To access this data, prefix any HTTP method call on a client or service with `withRawResponse()`:
 
 ```java
-import com.turbopuffer.core.JsonValue;
 import com.turbopuffer.core.http.Headers;
 import com.turbopuffer.core.http.HttpResponseFor;
-import com.turbopuffer.models.namespaces.NamespaceQueryParams;
-import com.turbopuffer.models.namespaces.NamespaceQueryResponse;
-import java.util.List;
+import com.turbopuffer.models.ClientListNamespacesPage;
+import com.turbopuffer.models.ClientListNamespacesParams;
 
-NamespaceQueryParams params = NamespaceQueryParams.builder()
-    .namespace("products")
-    .rankBy(JsonValue.from(List.of(
-      "vector",
-      "ANN",
-      List.of(
-        0.2, 0.3
-      )
-    )))
-    .topK(10L)
+ClientListNamespacesParams params = ClientListNamespacesParams.builder()
+    .prefix("foo")
     .build();
-HttpResponseFor<NamespaceQueryResponse> response = client.namespaces().withRawResponse().query(params);
+HttpResponseFor<ClientListNamespacesPage> namespaces = client.withRawResponse().listNamespaces(params);
 
-int statusCode = response.statusCode();
-Headers headers = response.headers();
+int statusCode = namespaces.statusCode();
+Headers headers = namespaces.headers();
 ```
 
 You can still deserialize the response into an instance of a Java class if needed:
 
 ```java
-import com.turbopuffer.models.namespaces.NamespaceQueryResponse;
+import com.turbopuffer.models.ClientListNamespacesPage;
 
-NamespaceQueryResponse parsedResponse = response.parse();
+ClientListNamespacesPage parsedNamespaces = namespaces.parse();
 ```
 
 ## Error handling
