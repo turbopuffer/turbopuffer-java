@@ -20,14 +20,14 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
+import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceRecallResponse
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
-import com.turbopuffer.models.namespaces.NamespaceWarmCacheParams
-import com.turbopuffer.models.namespaces.NamespaceWarmCacheResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
@@ -56,6 +56,13 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         // get /v1/namespaces/{namespace}/schema
         withRawResponse().getSchema(params, requestOptions).thenApply { it.parse() }
 
+    override fun hintCacheWarm(
+        params: NamespaceHintCacheWarmParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceHintCacheWarmResponse> =
+        // get /v1/namespaces/{namespace}/hint_cache_warm
+        withRawResponse().hintCacheWarm(params, requestOptions).thenApply { it.parse() }
+
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
@@ -76,13 +83,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     ): CompletableFuture<NamespaceUpdateSchemaResponse> =
         // post /v1/namespaces/{namespace}/schema
         withRawResponse().updateSchema(params, requestOptions).thenApply { it.parse() }
-
-    override fun warmCache(
-        params: NamespaceWarmCacheParams,
-        requestOptions: RequestOptions,
-    ): CompletableFuture<NamespaceWarmCacheResponse> =
-        // get /v1/namespaces/{namespace}/hint_cache_warm
-        withRawResponse().warmCache(params, requestOptions).thenApply { it.parse() }
 
     override fun write(
         params: NamespaceWriteParams,
@@ -167,6 +167,46 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     response.parseable {
                         response
                             .use { getSchemaHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val hintCacheWarmHandler: Handler<NamespaceHintCacheWarmResponse> =
+            jsonHandler<NamespaceHintCacheWarmResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun hintCacheWarm(
+            params: NamespaceHintCacheWarmParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "hint_cache_warm",
+                    )
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { hintCacheWarmHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
@@ -291,46 +331,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     response.parseable {
                         response
                             .use { updateSchemaHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
-                    }
-                }
-        }
-
-        private val warmCacheHandler: Handler<NamespaceWarmCacheResponse> =
-            jsonHandler<NamespaceWarmCacheResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
-
-        override fun warmCache(
-            params: NamespaceWarmCacheParams,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<NamespaceWarmCacheResponse>> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .addPathSegments(
-                        "v1",
-                        "namespaces",
-                        checkRequired(
-                            "namespace",
-                            params._pathParam(0).ifBlank {
-                                clientOptions.defaultNamespace().getOrNull()
-                            },
-                        ),
-                        "hint_cache_warm",
-                    )
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    response.parseable {
-                        response
-                            .use { warmCacheHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

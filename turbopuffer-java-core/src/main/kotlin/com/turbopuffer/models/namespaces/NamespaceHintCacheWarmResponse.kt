@@ -19,7 +19,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** The response to a successful cache warm request. */
-class NamespaceWarmCacheResponse
+class NamespaceHintCacheWarmResponse
 private constructor(
     private val status: JsonField<Status>,
     private val message: JsonField<String>,
@@ -75,7 +75,8 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [NamespaceWarmCacheResponse].
+         * Returns a mutable builder for constructing an instance of
+         * [NamespaceHintCacheWarmResponse].
          *
          * The following fields are required:
          * ```java
@@ -85,7 +86,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceWarmCacheResponse]. */
+    /** A builder for [NamespaceHintCacheWarmResponse]. */
     class Builder internal constructor() {
 
         private var status: JsonField<Status>? = null
@@ -93,10 +94,11 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(namespaceWarmCacheResponse: NamespaceWarmCacheResponse) = apply {
-            status = namespaceWarmCacheResponse.status
-            message = namespaceWarmCacheResponse.message
-            additionalProperties = namespaceWarmCacheResponse.additionalProperties.toMutableMap()
+        internal fun from(namespaceHintCacheWarmResponse: NamespaceHintCacheWarmResponse) = apply {
+            status = namespaceHintCacheWarmResponse.status
+            message = namespaceHintCacheWarmResponse.message
+            additionalProperties =
+                namespaceHintCacheWarmResponse.additionalProperties.toMutableMap()
         }
 
         /** The status of the request. */
@@ -140,7 +142,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [NamespaceWarmCacheResponse].
+         * Returns an immutable instance of [NamespaceHintCacheWarmResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -151,8 +153,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): NamespaceWarmCacheResponse =
-            NamespaceWarmCacheResponse(
+        fun build(): NamespaceHintCacheWarmResponse =
+            NamespaceHintCacheWarmResponse(
                 checkRequired("status", status),
                 message,
                 additionalProperties.toMutableMap(),
@@ -161,7 +163,7 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): NamespaceWarmCacheResponse = apply {
+    fun validate(): NamespaceHintCacheWarmResponse = apply {
         if (validated) {
             return@apply
         }
@@ -316,7 +318,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceWarmCacheResponse && status == other.status && message == other.message && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is NamespaceHintCacheWarmResponse && status == other.status && message == other.message && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -326,5 +328,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceWarmCacheResponse{status=$status, message=$message, additionalProperties=$additionalProperties}"
+        "NamespaceHintCacheWarmResponse{status=$status, message=$message, additionalProperties=$additionalProperties}"
 }

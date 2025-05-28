@@ -9,14 +9,14 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
+import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceRecallResponse
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
-import com.turbopuffer.models.namespaces.NamespaceWarmCacheParams
-import com.turbopuffer.models.namespaces.NamespaceWarmCacheResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
@@ -65,6 +65,28 @@ interface NamespaceServiceAsync {
     /** @see [getSchema] */
     fun getSchema(requestOptions: RequestOptions): CompletableFuture<NamespaceGetSchemaResponse> =
         getSchema(NamespaceGetSchemaParams.none(), requestOptions)
+
+    /** Warm the cache for a namespace. */
+    fun hintCacheWarm(): CompletableFuture<NamespaceHintCacheWarmResponse> =
+        hintCacheWarm(NamespaceHintCacheWarmParams.none())
+
+    /** @see [hintCacheWarm] */
+    fun hintCacheWarm(
+        params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceHintCacheWarmResponse>
+
+    /** @see [hintCacheWarm] */
+    fun hintCacheWarm(
+        params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none()
+    ): CompletableFuture<NamespaceHintCacheWarmResponse> =
+        hintCacheWarm(params, RequestOptions.none())
+
+    /** @see [hintCacheWarm] */
+    fun hintCacheWarm(
+        requestOptions: RequestOptions
+    ): CompletableFuture<NamespaceHintCacheWarmResponse> =
+        hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
 
     /** Query, filter, full-text search and vector search documents. */
     fun query(params: NamespaceQueryParams): CompletableFuture<NamespaceQueryResponse> =
@@ -115,25 +137,6 @@ interface NamespaceServiceAsync {
         requestOptions: RequestOptions
     ): CompletableFuture<NamespaceUpdateSchemaResponse> =
         updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
-
-    /** Warm the cache for a namespace. */
-    fun warmCache(): CompletableFuture<NamespaceWarmCacheResponse> =
-        warmCache(NamespaceWarmCacheParams.none())
-
-    /** @see [warmCache] */
-    fun warmCache(
-        params: NamespaceWarmCacheParams = NamespaceWarmCacheParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<NamespaceWarmCacheResponse>
-
-    /** @see [warmCache] */
-    fun warmCache(
-        params: NamespaceWarmCacheParams = NamespaceWarmCacheParams.none()
-    ): CompletableFuture<NamespaceWarmCacheResponse> = warmCache(params, RequestOptions.none())
-
-    /** @see [warmCache] */
-    fun warmCache(requestOptions: RequestOptions): CompletableFuture<NamespaceWarmCacheResponse> =
-        warmCache(NamespaceWarmCacheParams.none(), requestOptions)
 
     /** Create, update, or delete documents. */
     fun write(): CompletableFuture<NamespaceWriteResponse> = write(NamespaceWriteParams.none())
@@ -217,6 +220,35 @@ interface NamespaceServiceAsync {
             getSchema(NamespaceGetSchemaParams.none(), requestOptions)
 
         /**
+         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/hint_cache_warm`, but is
+         * otherwise the same as [NamespaceServiceAsync.hintCacheWarm].
+         */
+        @MustBeClosed
+        fun hintCacheWarm(): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>> =
+            hintCacheWarm(NamespaceHintCacheWarmParams.none())
+
+        /** @see [hintCacheWarm] */
+        @MustBeClosed
+        fun hintCacheWarm(
+            params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>>
+
+        /** @see [hintCacheWarm] */
+        @MustBeClosed
+        fun hintCacheWarm(
+            params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none()
+        ): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>> =
+            hintCacheWarm(params, RequestOptions.none())
+
+        /** @see [hintCacheWarm] */
+        @MustBeClosed
+        fun hintCacheWarm(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>> =
+            hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
+
+        /**
          * Returns a raw HTTP response for `post /v2/namespaces/{namespace}/query`, but is otherwise
          * the same as [NamespaceServiceAsync.query].
          */
@@ -290,35 +322,6 @@ interface NamespaceServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
             updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
-
-        /**
-         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/hint_cache_warm`, but is
-         * otherwise the same as [NamespaceServiceAsync.warmCache].
-         */
-        @MustBeClosed
-        fun warmCache(): CompletableFuture<HttpResponseFor<NamespaceWarmCacheResponse>> =
-            warmCache(NamespaceWarmCacheParams.none())
-
-        /** @see [warmCache] */
-        @MustBeClosed
-        fun warmCache(
-            params: NamespaceWarmCacheParams = NamespaceWarmCacheParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<NamespaceWarmCacheResponse>>
-
-        /** @see [warmCache] */
-        @MustBeClosed
-        fun warmCache(
-            params: NamespaceWarmCacheParams = NamespaceWarmCacheParams.none()
-        ): CompletableFuture<HttpResponseFor<NamespaceWarmCacheResponse>> =
-            warmCache(params, RequestOptions.none())
-
-        /** @see [warmCache] */
-        @MustBeClosed
-        fun warmCache(
-            requestOptions: RequestOptions
-        ): CompletableFuture<HttpResponseFor<NamespaceWarmCacheResponse>> =
-            warmCache(NamespaceWarmCacheParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v2/namespaces/{namespace}`, but is otherwise the

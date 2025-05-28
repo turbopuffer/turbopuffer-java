@@ -10,7 +10,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Warm the cache for a namespace. */
-class NamespaceWarmCacheParams
+class NamespaceHintCacheWarmParams
 private constructor(
     private val namespace: String?,
     private val additionalHeaders: Headers,
@@ -27,13 +27,15 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): NamespaceWarmCacheParams = builder().build()
+        @JvmStatic fun none(): NamespaceHintCacheWarmParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [NamespaceWarmCacheParams]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [NamespaceHintCacheWarmParams].
+         */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceWarmCacheParams]. */
+    /** A builder for [NamespaceHintCacheWarmParams]. */
     class Builder internal constructor() {
 
         private var namespace: String? = null
@@ -41,10 +43,10 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(namespaceWarmCacheParams: NamespaceWarmCacheParams) = apply {
-            namespace = namespaceWarmCacheParams.namespace
-            additionalHeaders = namespaceWarmCacheParams.additionalHeaders.toBuilder()
-            additionalQueryParams = namespaceWarmCacheParams.additionalQueryParams.toBuilder()
+        internal fun from(namespaceHintCacheWarmParams: NamespaceHintCacheWarmParams) = apply {
+            namespace = namespaceHintCacheWarmParams.namespace
+            additionalHeaders = namespaceHintCacheWarmParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceHintCacheWarmParams.additionalQueryParams.toBuilder()
         }
 
         fun namespace(namespace: String?) = apply { this.namespace = namespace }
@@ -151,12 +153,12 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [NamespaceWarmCacheParams].
+         * Returns an immutable instance of [NamespaceHintCacheWarmParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): NamespaceWarmCacheParams =
-            NamespaceWarmCacheParams(
+        fun build(): NamespaceHintCacheWarmParams =
+            NamespaceHintCacheWarmParams(
                 namespace,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -178,11 +180,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceWarmCacheParams && namespace == other.namespace && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceHintCacheWarmParams && namespace == other.namespace && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "NamespaceWarmCacheParams{namespace=$namespace, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceHintCacheWarmParams{namespace=$namespace, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

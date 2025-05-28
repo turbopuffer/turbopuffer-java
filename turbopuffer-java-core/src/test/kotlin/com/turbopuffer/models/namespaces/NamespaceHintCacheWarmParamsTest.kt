@@ -6,18 +6,18 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-internal class NamespaceWarmCacheParamsTest {
+internal class NamespaceHintCacheWarmParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
-        NamespaceWarmCacheParams.builder().namespace("namespace").build()
+        NamespaceHintCacheWarmParams.builder().namespace("namespace").build()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun pathParams() {
-        val params = NamespaceWarmCacheParams.builder().build()
+        val params = NamespaceHintCacheWarmParams.builder().build()
 
         assertThat(params._pathParam(0)).isEqualTo("")
         // out-of-bound path param
