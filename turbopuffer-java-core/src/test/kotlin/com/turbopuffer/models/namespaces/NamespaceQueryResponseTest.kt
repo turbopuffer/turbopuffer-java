@@ -18,13 +18,13 @@ internal class NamespaceQueryResponseTest {
         val namespaceQueryResponse =
             NamespaceQueryResponse.builder()
                 .billing(
-                    NamespaceQueryResponse.Billing.builder()
+                    QueryBilling.builder()
                         .billableLogicalBytesQueried(0L)
                         .billableLogicalBytesReturned(0L)
                         .build()
                 )
                 .performance(
-                    NamespaceQueryResponse.Performance.builder()
+                    QueryPerformance.builder()
                         .approxNamespaceSize(0L)
                         .cacheHitRatio(0.0)
                         .cacheTemperature("cache_temperature")
@@ -48,14 +48,14 @@ internal class NamespaceQueryResponseTest {
 
         assertThat(namespaceQueryResponse.billing())
             .isEqualTo(
-                NamespaceQueryResponse.Billing.builder()
+                QueryBilling.builder()
                     .billableLogicalBytesQueried(0L)
                     .billableLogicalBytesReturned(0L)
                     .build()
             )
         assertThat(namespaceQueryResponse.performance())
             .isEqualTo(
-                NamespaceQueryResponse.Performance.builder()
+                QueryPerformance.builder()
                     .approxNamespaceSize(0L)
                     .cacheHitRatio(0.0)
                     .cacheTemperature("cache_temperature")
@@ -86,13 +86,13 @@ internal class NamespaceQueryResponseTest {
         val namespaceQueryResponse =
             NamespaceQueryResponse.builder()
                 .billing(
-                    NamespaceQueryResponse.Billing.builder()
+                    QueryBilling.builder()
                         .billableLogicalBytesQueried(0L)
                         .billableLogicalBytesReturned(0L)
                         .build()
                 )
                 .performance(
-                    NamespaceQueryResponse.Performance.builder()
+                    QueryPerformance.builder()
                         .approxNamespaceSize(0L)
                         .cacheHitRatio(0.0)
                         .cacheTemperature("cache_temperature")

@@ -16,10 +16,10 @@ internal class NamespaceWriteResponseTest {
         val namespaceWriteResponse =
             NamespaceWriteResponse.builder()
                 .billing(
-                    NamespaceWriteResponse.Billing.builder()
+                    WriteBilling.builder()
                         .billableLogicalBytesWritten(0L)
                         .query(
-                            NamespaceWriteResponse.Billing.Query.builder()
+                            QueryBilling.builder()
                                 .billableLogicalBytesQueried(0L)
                                 .billableLogicalBytesReturned(0L)
                                 .build()
@@ -33,10 +33,10 @@ internal class NamespaceWriteResponseTest {
 
         assertThat(namespaceWriteResponse.billing())
             .isEqualTo(
-                NamespaceWriteResponse.Billing.builder()
+                WriteBilling.builder()
                     .billableLogicalBytesWritten(0L)
                     .query(
-                        NamespaceWriteResponse.Billing.Query.builder()
+                        QueryBilling.builder()
                             .billableLogicalBytesQueried(0L)
                             .billableLogicalBytesReturned(0L)
                             .build()
@@ -55,10 +55,10 @@ internal class NamespaceWriteResponseTest {
         val namespaceWriteResponse =
             NamespaceWriteResponse.builder()
                 .billing(
-                    NamespaceWriteResponse.Billing.builder()
+                    WriteBilling.builder()
                         .billableLogicalBytesWritten(0L)
                         .query(
-                            NamespaceWriteResponse.Billing.Query.builder()
+                            QueryBilling.builder()
                                 .billableLogicalBytesQueried(0L)
                                 .billableLogicalBytesReturned(0L)
                                 .build()
