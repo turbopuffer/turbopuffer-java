@@ -38,28 +38,28 @@ import kotlin.jvm.optionals.getOrNull
 class FullTextSearchConfig
 private constructor(
     private val bool: Boolean? = null,
-    private val unionMember1: UnionMember1? = null,
+    private val detailed: FullTextSearchDetailedConfig? = null,
     private val _json: JsonValue? = null,
 ) {
 
     fun bool(): Optional<Boolean> = Optional.ofNullable(bool)
 
-    fun unionMember1(): Optional<UnionMember1> = Optional.ofNullable(unionMember1)
+    fun detailed(): Optional<FullTextSearchDetailedConfig> = Optional.ofNullable(detailed)
 
     fun isBool(): Boolean = bool != null
 
-    fun isUnionMember1(): Boolean = unionMember1 != null
+    fun isDetailed(): Boolean = detailed != null
 
     fun asBool(): Boolean = bool.getOrThrow("bool")
 
-    fun asUnionMember1(): UnionMember1 = unionMember1.getOrThrow("unionMember1")
+    fun asDetailed(): FullTextSearchDetailedConfig = detailed.getOrThrow("detailed")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T =
         when {
             bool != null -> visitor.visitBool(bool)
-            unionMember1 != null -> visitor.visitUnionMember1(unionMember1)
+            detailed != null -> visitor.visitDetailed(detailed)
             else -> visitor.unknown(_json)
         }
 
@@ -74,8 +74,8 @@ private constructor(
             object : Visitor<Unit> {
                 override fun visitBool(bool: Boolean) {}
 
-                override fun visitUnionMember1(unionMember1: UnionMember1) {
-                    unionMember1.validate()
+                override fun visitDetailed(detailed: FullTextSearchDetailedConfig) {
+                    detailed.validate()
                 }
             }
         )
@@ -101,7 +101,8 @@ private constructor(
             object : Visitor<Int> {
                 override fun visitBool(bool: Boolean) = 1
 
-                override fun visitUnionMember1(unionMember1: UnionMember1) = unionMember1.validity()
+                override fun visitDetailed(detailed: FullTextSearchDetailedConfig) =
+                    detailed.validity()
 
                 override fun unknown(json: JsonValue?) = 0
             }
@@ -112,15 +113,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FullTextSearchConfig && bool == other.bool && unionMember1 == other.unionMember1 /* spotless:on */
+        return /* spotless:off */ other is FullTextSearchConfig && bool == other.bool && detailed == other.detailed /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(bool, unionMember1) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(bool, detailed) /* spotless:on */
 
     override fun toString(): String =
         when {
             bool != null -> "FullTextSearchConfig{bool=$bool}"
-            unionMember1 != null -> "FullTextSearchConfig{unionMember1=$unionMember1}"
+            detailed != null -> "FullTextSearchConfig{detailed=$detailed}"
             _json != null -> "FullTextSearchConfig{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid FullTextSearchConfig")
         }
@@ -130,8 +131,8 @@ private constructor(
         @JvmStatic fun ofBool(bool: Boolean) = FullTextSearchConfig(bool = bool)
 
         @JvmStatic
-        fun ofUnionMember1(unionMember1: UnionMember1) =
-            FullTextSearchConfig(unionMember1 = unionMember1)
+        fun ofDetailed(detailed: FullTextSearchDetailedConfig) =
+            FullTextSearchConfig(detailed = detailed)
     }
 
     /**
@@ -142,7 +143,7 @@ private constructor(
 
         fun visitBool(bool: Boolean): T
 
-        fun visitUnionMember1(unionMember1: UnionMember1): T
+        fun visitDetailed(detailed: FullTextSearchDetailedConfig): T
 
         /**
          * Maps an unknown variant of [FullTextSearchConfig] to a value of type [T].
@@ -167,8 +168,8 @@ private constructor(
 
             val bestMatches =
                 sequenceOf(
-                        tryDeserialize(node, jacksonTypeRef<UnionMember1>())?.let {
-                            FullTextSearchConfig(unionMember1 = it, _json = json)
+                        tryDeserialize(node, jacksonTypeRef<FullTextSearchDetailedConfig>())?.let {
+                            FullTextSearchConfig(detailed = it, _json = json)
                         },
                         tryDeserialize(node, jacksonTypeRef<Boolean>())?.let {
                             FullTextSearchConfig(bool = it, _json = json)
@@ -198,14 +199,14 @@ private constructor(
         ) {
             when {
                 value.bool != null -> generator.writeObject(value.bool)
-                value.unionMember1 != null -> generator.writeObject(value.unionMember1)
+                value.detailed != null -> generator.writeObject(value.detailed)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid FullTextSearchConfig")
             }
         }
     }
 
-    class UnionMember1
+    class FullTextSearchDetailedConfig
     private constructor(
         private val caseSensitive: JsonField<Boolean>,
         private val language: JsonField<Language>,
@@ -311,11 +312,14 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [UnionMember1]. */
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [FullTextSearchDetailedConfig].
+             */
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [UnionMember1]. */
+        /** A builder for [FullTextSearchDetailedConfig]. */
         class Builder internal constructor() {
 
             private var caseSensitive: JsonField<Boolean> = JsonMissing.of()
@@ -325,12 +329,13 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(unionMember1: UnionMember1) = apply {
-                caseSensitive = unionMember1.caseSensitive
-                language = unionMember1.language
-                removeStopwords = unionMember1.removeStopwords
-                stemming = unionMember1.stemming
-                additionalProperties = unionMember1.additionalProperties.toMutableMap()
+            internal fun from(fullTextSearchDetailedConfig: FullTextSearchDetailedConfig) = apply {
+                caseSensitive = fullTextSearchDetailedConfig.caseSensitive
+                language = fullTextSearchDetailedConfig.language
+                removeStopwords = fullTextSearchDetailedConfig.removeStopwords
+                stemming = fullTextSearchDetailedConfig.stemming
+                additionalProperties =
+                    fullTextSearchDetailedConfig.additionalProperties.toMutableMap()
             }
 
             /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
@@ -409,12 +414,12 @@ private constructor(
             }
 
             /**
-             * Returns an immutable instance of [UnionMember1].
+             * Returns an immutable instance of [FullTextSearchDetailedConfig].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): UnionMember1 =
-                UnionMember1(
+            fun build(): FullTextSearchDetailedConfig =
+                FullTextSearchDetailedConfig(
                     caseSensitive,
                     language,
                     removeStopwords,
@@ -425,7 +430,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): UnionMember1 = apply {
+        fun validate(): FullTextSearchDetailedConfig = apply {
             if (validated) {
                 return@apply
             }
@@ -690,7 +695,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is UnionMember1 && caseSensitive == other.caseSensitive && language == other.language && removeStopwords == other.removeStopwords && stemming == other.stemming && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is FullTextSearchDetailedConfig && caseSensitive == other.caseSensitive && language == other.language && removeStopwords == other.removeStopwords && stemming == other.stemming && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -700,6 +705,6 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "UnionMember1{caseSensitive=$caseSensitive, language=$language, removeStopwords=$removeStopwords, stemming=$stemming, additionalProperties=$additionalProperties}"
+            "FullTextSearchDetailedConfig{caseSensitive=$caseSensitive, language=$language, removeStopwords=$removeStopwords, stemming=$stemming, additionalProperties=$additionalProperties}"
     }
 }
