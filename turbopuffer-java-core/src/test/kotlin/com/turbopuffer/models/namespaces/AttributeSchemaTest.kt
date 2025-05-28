@@ -16,27 +16,12 @@ internal class AttributeSchemaTest {
         val attributeSchema =
             AttributeSchema.builder()
                 .filterable(true)
-                .fullTextSearch(
-                    FullTextSearchConfig.builder()
-                        .caseSensitive(true)
-                        .language(Language.ARABIC)
-                        .removeStopwords(true)
-                        .stemming(true)
-                        .build()
-                )
+                .fullTextSearch(true)
                 .type(AttributeType.STRING)
                 .build()
 
         assertThat(attributeSchema.filterable()).contains(true)
-        assertThat(attributeSchema.fullTextSearch())
-            .contains(
-                FullTextSearchConfig.builder()
-                    .caseSensitive(true)
-                    .language(Language.ARABIC)
-                    .removeStopwords(true)
-                    .stemming(true)
-                    .build()
-            )
+        assertThat(attributeSchema.fullTextSearch()).contains(FullTextSearch.ofBool(true))
         assertThat(attributeSchema.type()).contains(AttributeType.STRING)
     }
 
@@ -47,14 +32,7 @@ internal class AttributeSchemaTest {
         val attributeSchema =
             AttributeSchema.builder()
                 .filterable(true)
-                .fullTextSearch(
-                    FullTextSearchConfig.builder()
-                        .caseSensitive(true)
-                        .language(Language.ARABIC)
-                        .removeStopwords(true)
-                        .stemming(true)
-                        .build()
-                )
+                .fullTextSearch(true)
                 .type(AttributeType.STRING)
                 .build()
 
