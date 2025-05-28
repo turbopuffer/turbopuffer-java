@@ -50,6 +50,7 @@ internal class FullTextSearchTest {
                 .language(Language.ARABIC)
                 .removeStopwords(true)
                 .stemming(true)
+                .tokenizer(Tokenizer.PRE_TOKENIZED_ARRAY)
                 .build()
 
         val fullTextSearch = FullTextSearch.ofConfig(config)
@@ -69,6 +70,7 @@ internal class FullTextSearchTest {
                     .language(Language.ARABIC)
                     .removeStopwords(true)
                     .stemming(true)
+                    .tokenizer(Tokenizer.PRE_TOKENIZED_ARRAY)
                     .build()
             )
 

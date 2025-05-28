@@ -23,6 +23,7 @@ private constructor(
     private val language: JsonField<Language>,
     private val removeStopwords: JsonField<Boolean>,
     private val stemming: JsonField<Boolean>,
+    private val tokenizer: JsonField<Tokenizer>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -36,7 +37,10 @@ private constructor(
         @ExcludeMissing
         removeStopwords: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("stemming") @ExcludeMissing stemming: JsonField<Boolean> = JsonMissing.of(),
-    ) : this(caseSensitive, language, removeStopwords, stemming, mutableMapOf())
+        @JsonProperty("tokenizer")
+        @ExcludeMissing
+        tokenizer: JsonField<Tokenizer> = JsonMissing.of(),
+    ) : this(caseSensitive, language, removeStopwords, stemming, tokenizer, mutableMapOf())
 
     /**
      * Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive).
@@ -72,6 +76,14 @@ private constructor(
     fun stemming(): Optional<Boolean> = stemming.getOptional("stemming")
 
     /**
+     * The tokenizer to use for full-text search on an attribute.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun tokenizer(): Optional<Tokenizer> = tokenizer.getOptional("tokenizer")
+
+    /**
      * Returns the raw JSON value of [caseSensitive].
      *
      * Unlike [caseSensitive], this method doesn't throw if the JSON field has an unexpected type.
@@ -103,6 +115,13 @@ private constructor(
      */
     @JsonProperty("stemming") @ExcludeMissing fun _stemming(): JsonField<Boolean> = stemming
 
+    /**
+     * Returns the raw JSON value of [tokenizer].
+     *
+     * Unlike [tokenizer], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("tokenizer") @ExcludeMissing fun _tokenizer(): JsonField<Tokenizer> = tokenizer
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -128,6 +147,7 @@ private constructor(
         private var language: JsonField<Language> = JsonMissing.of()
         private var removeStopwords: JsonField<Boolean> = JsonMissing.of()
         private var stemming: JsonField<Boolean> = JsonMissing.of()
+        private var tokenizer: JsonField<Tokenizer> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -136,6 +156,7 @@ private constructor(
             language = fullTextSearchConfig.language
             removeStopwords = fullTextSearchConfig.removeStopwords
             stemming = fullTextSearchConfig.stemming
+            tokenizer = fullTextSearchConfig.tokenizer
             additionalProperties = fullTextSearchConfig.additionalProperties.toMutableMap()
         }
 
@@ -195,6 +216,18 @@ private constructor(
          */
         fun stemming(stemming: JsonField<Boolean>) = apply { this.stemming = stemming }
 
+        /** The tokenizer to use for full-text search on an attribute. */
+        fun tokenizer(tokenizer: Tokenizer) = tokenizer(JsonField.of(tokenizer))
+
+        /**
+         * Sets [Builder.tokenizer] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.tokenizer] with a well-typed [Tokenizer] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun tokenizer(tokenizer: JsonField<Tokenizer>) = apply { this.tokenizer = tokenizer }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -225,6 +258,7 @@ private constructor(
                 language,
                 removeStopwords,
                 stemming,
+                tokenizer,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -240,6 +274,7 @@ private constructor(
         language().ifPresent { it.validate() }
         removeStopwords()
         stemming()
+        tokenizer().ifPresent { it.validate() }
         validated = true
     }
 
@@ -261,22 +296,23 @@ private constructor(
         (if (caseSensitive.asKnown().isPresent) 1 else 0) +
             (language.asKnown().getOrNull()?.validity() ?: 0) +
             (if (removeStopwords.asKnown().isPresent) 1 else 0) +
-            (if (stemming.asKnown().isPresent) 1 else 0)
+            (if (stemming.asKnown().isPresent) 1 else 0) +
+            (tokenizer.asKnown().getOrNull()?.validity() ?: 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is FullTextSearchConfig && caseSensitive == other.caseSensitive && language == other.language && removeStopwords == other.removeStopwords && stemming == other.stemming && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FullTextSearchConfig && caseSensitive == other.caseSensitive && language == other.language && removeStopwords == other.removeStopwords && stemming == other.stemming && tokenizer == other.tokenizer && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(caseSensitive, language, removeStopwords, stemming, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(caseSensitive, language, removeStopwords, stemming, tokenizer, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FullTextSearchConfig{caseSensitive=$caseSensitive, language=$language, removeStopwords=$removeStopwords, stemming=$stemming, additionalProperties=$additionalProperties}"
+        "FullTextSearchConfig{caseSensitive=$caseSensitive, language=$language, removeStopwords=$removeStopwords, stemming=$stemming, tokenizer=$tokenizer, additionalProperties=$additionalProperties}"
 }
