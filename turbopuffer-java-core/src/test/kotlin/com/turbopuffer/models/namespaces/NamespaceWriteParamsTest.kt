@@ -38,13 +38,7 @@ internal class NamespaceWriteParamsTest {
                         JsonValue.from(
                             mapOf(
                                 "filterable" to true,
-                                "full_text_search" to
-                                    mapOf(
-                                        "case_sensitive" to true,
-                                        "language" to "arabic",
-                                        "remove_stopwords" to true,
-                                        "stemming" to true,
-                                    ),
+                                "full_text_search" to true,
                                 "type" to "string",
                             )
                         ),
@@ -105,13 +99,7 @@ internal class NamespaceWriteParamsTest {
                             JsonValue.from(
                                 mapOf(
                                     "filterable" to true,
-                                    "full_text_search" to
-                                        mapOf(
-                                            "case_sensitive" to true,
-                                            "language" to "arabic",
-                                            "remove_stopwords" to true,
-                                            "stemming" to true,
-                                        ),
+                                    "full_text_search" to true,
                                     "type" to "string",
                                 )
                             ),
@@ -161,13 +149,7 @@ internal class NamespaceWriteParamsTest {
                         JsonValue.from(
                             mapOf(
                                 "filterable" to true,
-                                "full_text_search" to
-                                    mapOf(
-                                        "case_sensitive" to true,
-                                        "language" to "arabic",
-                                        "remove_stopwords" to true,
-                                        "stemming" to true,
-                                    ),
+                                "full_text_search" to true,
                                 "type" to "string",
                             )
                         ),
