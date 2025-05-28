@@ -19,12 +19,14 @@ internal class FullTextSearchConfigTest {
                 .language(Language.ARABIC)
                 .removeStopwords(true)
                 .stemming(true)
+                .tokenizer(Tokenizer.PRE_TOKENIZED_ARRAY)
                 .build()
 
         assertThat(fullTextSearchConfig.caseSensitive()).contains(true)
         assertThat(fullTextSearchConfig.language()).contains(Language.ARABIC)
         assertThat(fullTextSearchConfig.removeStopwords()).contains(true)
         assertThat(fullTextSearchConfig.stemming()).contains(true)
+        assertThat(fullTextSearchConfig.tokenizer()).contains(Tokenizer.PRE_TOKENIZED_ARRAY)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -37,6 +39,7 @@ internal class FullTextSearchConfigTest {
                 .language(Language.ARABIC)
                 .removeStopwords(true)
                 .stemming(true)
+                .tokenizer(Tokenizer.PRE_TOKENIZED_ARRAY)
                 .build()
 
         val roundtrippedFullTextSearchConfig =
