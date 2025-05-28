@@ -10,10 +10,10 @@ import com.turbopuffer.models.namespaces.DocumentColumns
 import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
-import com.turbopuffer.models.namespaces.NamespaceWarmCacheParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Vector
 import org.junit.jupiter.api.Disabled
@@ -56,6 +56,25 @@ internal class NamespaceServiceTest {
         val response =
             namespaceService.getSchema(
                 NamespaceGetSchemaParams.builder().namespace("namespace").build()
+            )
+
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun hintCacheWarm() {
+        val client =
+            TurbopufferOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
+                .build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.hintCacheWarm(
+                NamespaceHintCacheWarmParams.builder().namespace("namespace").build()
             )
 
         response.validate()
@@ -148,25 +167,6 @@ internal class NamespaceServiceTest {
                             .build()
                     )
                     .build()
-            )
-
-        response.validate()
-    }
-
-    @Disabled("skipped: tests are disabled for the time being")
-    @Test
-    fun warmCache() {
-        val client =
-            TurbopufferOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
-                .build()
-        val namespaceService = client.namespaces()
-
-        val response =
-            namespaceService.warmCache(
-                NamespaceWarmCacheParams.builder().namespace("namespace").build()
             )
 
         response.validate()

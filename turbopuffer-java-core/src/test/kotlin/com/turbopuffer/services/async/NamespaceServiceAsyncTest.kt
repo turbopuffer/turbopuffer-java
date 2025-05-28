@@ -10,10 +10,10 @@ import com.turbopuffer.models.namespaces.DocumentColumns
 import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
-import com.turbopuffer.models.namespaces.NamespaceWarmCacheParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Vector
 import org.junit.jupiter.api.Disabled
@@ -57,6 +57,26 @@ internal class NamespaceServiceAsyncTest {
         val responseFuture =
             namespaceServiceAsync.getSchema(
                 NamespaceGetSchemaParams.builder().namespace("namespace").build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun hintCacheWarm() {
+        val client =
+            TurbopufferOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
+                .build()
+        val namespaceServiceAsync = client.namespaces()
+
+        val responseFuture =
+            namespaceServiceAsync.hintCacheWarm(
+                NamespaceHintCacheWarmParams.builder().namespace("namespace").build()
             )
 
         val response = responseFuture.get()
@@ -152,26 +172,6 @@ internal class NamespaceServiceAsyncTest {
                             .build()
                     )
                     .build()
-            )
-
-        val response = responseFuture.get()
-        response.validate()
-    }
-
-    @Disabled("skipped: tests are disabled for the time being")
-    @Test
-    fun warmCache() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
-                .build()
-        val namespaceServiceAsync = client.namespaces()
-
-        val responseFuture =
-            namespaceServiceAsync.warmCache(
-                NamespaceWarmCacheParams.builder().namespace("namespace").build()
             )
 
         val response = responseFuture.get()
