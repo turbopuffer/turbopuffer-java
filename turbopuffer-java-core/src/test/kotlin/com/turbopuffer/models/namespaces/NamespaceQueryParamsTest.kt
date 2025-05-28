@@ -24,7 +24,7 @@ internal class NamespaceQueryParamsTest {
             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
             .filters(JsonValue.from(mapOf<String, Any>()))
             .includeAttributes(true)
-            .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
+            .vectorEncoding(VectorEncoding.FLOAT)
             .build()
     }
 
@@ -58,7 +58,7 @@ internal class NamespaceQueryParamsTest {
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .filters(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(true)
-                .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
+                .vectorEncoding(VectorEncoding.FLOAT)
                 .build()
 
         val body = params._body()
@@ -74,7 +74,7 @@ internal class NamespaceQueryParamsTest {
         assertThat(body.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)
         assertThat(body._filters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.includeAttributes()).contains(IncludeAttributes.ofBool(true))
-        assertThat(body.vectorEncoding()).contains(NamespaceQueryParams.VectorEncoding.FLOAT)
+        assertThat(body.vectorEncoding()).contains(VectorEncoding.FLOAT)
     }
 
     @Disabled("skipped: tests are disabled for the time being")

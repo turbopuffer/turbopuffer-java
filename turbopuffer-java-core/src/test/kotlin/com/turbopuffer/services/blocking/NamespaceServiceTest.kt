@@ -16,6 +16,7 @@ import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Vector
+import com.turbopuffer.models.namespaces.VectorEncoding
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -105,7 +106,7 @@ internal class NamespaceServiceTest {
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .filters(JsonValue.from(mapOf<String, Any>()))
                     .includeAttributes(true)
-                    .vectorEncoding(NamespaceQueryParams.VectorEncoding.FLOAT)
+                    .vectorEncoding(VectorEncoding.FLOAT)
                     .build()
             )
 
