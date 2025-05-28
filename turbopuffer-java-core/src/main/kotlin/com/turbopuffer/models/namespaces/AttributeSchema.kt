@@ -20,7 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 class AttributeSchema
 private constructor(
     private val filterable: JsonField<Boolean>,
-    private val fullTextSearch: JsonField<FullTextSearchConfig>,
+    private val fullTextSearch: JsonField<FullTextSearch>,
     private val type: JsonField<AttributeType>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -32,7 +32,7 @@ private constructor(
         filterable: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("full_text_search")
         @ExcludeMissing
-        fullTextSearch: JsonField<FullTextSearchConfig> = JsonMissing.of(),
+        fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonField<AttributeType> = JsonMissing.of(),
     ) : this(filterable, fullTextSearch, type, mutableMapOf())
 
@@ -45,13 +45,14 @@ private constructor(
     fun filterable(): Optional<Boolean> = filterable.getOptional("filterable")
 
     /**
-     * Configuration options for full-text search.
+     * Whether this attribute can be used as part of a BM25 full-text search. Requires the `string`
+     * or `[]string` type, and by default, BM25-enabled attributes are not filterable. You can
+     * override this by setting `filterable: true`.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun fullTextSearch(): Optional<FullTextSearchConfig> =
-        fullTextSearch.getOptional("full_text_search")
+    fun fullTextSearch(): Optional<FullTextSearch> = fullTextSearch.getOptional("full_text_search")
 
     /**
      * The data type of the attribute.
@@ -75,7 +76,7 @@ private constructor(
      */
     @JsonProperty("full_text_search")
     @ExcludeMissing
-    fun _fullTextSearch(): JsonField<FullTextSearchConfig> = fullTextSearch
+    fun _fullTextSearch(): JsonField<FullTextSearch> = fullTextSearch
 
     /**
      * Returns the raw JSON value of [type].
@@ -106,7 +107,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var filterable: JsonField<Boolean> = JsonMissing.of()
-        private var fullTextSearch: JsonField<FullTextSearchConfig> = JsonMissing.of()
+        private var fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of()
         private var type: JsonField<AttributeType> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -130,20 +131,31 @@ private constructor(
          */
         fun filterable(filterable: JsonField<Boolean>) = apply { this.filterable = filterable }
 
-        /** Configuration options for full-text search. */
-        fun fullTextSearch(fullTextSearch: FullTextSearchConfig) =
+        /**
+         * Whether this attribute can be used as part of a BM25 full-text search. Requires the
+         * `string` or `[]string` type, and by default, BM25-enabled attributes are not filterable.
+         * You can override this by setting `filterable: true`.
+         */
+        fun fullTextSearch(fullTextSearch: FullTextSearch) =
             fullTextSearch(JsonField.of(fullTextSearch))
 
         /**
          * Sets [Builder.fullTextSearch] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.fullTextSearch] with a well-typed [FullTextSearchConfig]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
+         * You should usually call [Builder.fullTextSearch] with a well-typed [FullTextSearch] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun fullTextSearch(fullTextSearch: JsonField<FullTextSearchConfig>) = apply {
+        fun fullTextSearch(fullTextSearch: JsonField<FullTextSearch>) = apply {
             this.fullTextSearch = fullTextSearch
         }
+
+        /** Alias for calling [fullTextSearch] with `FullTextSearch.ofBool(bool)`. */
+        fun fullTextSearch(bool: Boolean) = fullTextSearch(FullTextSearch.ofBool(bool))
+
+        /** Alias for calling [fullTextSearch] with `FullTextSearch.ofConfig(config)`. */
+        fun fullTextSearch(config: FullTextSearchConfig) =
+            fullTextSearch(FullTextSearch.ofConfig(config))
 
         /** The data type of the attribute. */
         fun type(type: AttributeType) = type(JsonField.of(type))
