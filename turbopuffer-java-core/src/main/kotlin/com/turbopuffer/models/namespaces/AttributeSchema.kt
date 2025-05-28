@@ -156,7 +156,7 @@ private constructor(
         fun fullTextSearch(bool: Boolean) = fullTextSearch(FullTextSearchConfig.ofBool(bool))
 
         /** Alias for calling [fullTextSearch] with `FullTextSearchConfig.ofDetailed(detailed)`. */
-        fun fullTextSearch(detailed: FullTextSearchConfig.FullTextSearchDetailedConfig) =
+        fun fullTextSearch(detailed: FullTextSearchConfig.Detailed) =
             fullTextSearch(FullTextSearchConfig.ofDetailed(detailed))
 
         /** The data type of the attribute. */
