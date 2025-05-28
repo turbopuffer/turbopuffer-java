@@ -506,11 +506,10 @@ To set undocumented parameters on _nested_ headers, query params, or body classe
 
 ```java
 import com.turbopuffer.core.JsonValue;
-import com.turbopuffer.models.namespaces.DocumentColumns;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .patchColumns(DocumentColumns.builder()
+    .encryption(NamespaceWriteParams.Encryption.builder()
         .putAdditionalProperty("secretProperty", JsonValue.from("42"))
         .build())
     .build();
