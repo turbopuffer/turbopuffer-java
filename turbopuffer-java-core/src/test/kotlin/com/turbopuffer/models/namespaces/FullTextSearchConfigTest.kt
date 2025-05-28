@@ -23,7 +23,7 @@ internal class FullTextSearchConfigTest {
         val fullTextSearchConfig = FullTextSearchConfig.ofBool(bool)
 
         assertThat(fullTextSearchConfig.bool()).contains(bool)
-        assertThat(fullTextSearchConfig.unionMember1()).isEmpty
+        assertThat(fullTextSearchConfig.detailed()).isEmpty
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -43,30 +43,30 @@ internal class FullTextSearchConfigTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun ofUnionMember1() {
-        val unionMember1 =
-            FullTextSearchConfig.UnionMember1.builder()
+    fun ofDetailed() {
+        val detailed =
+            FullTextSearchConfig.FullTextSearchDetailedConfig.builder()
                 .caseSensitive(true)
-                .language(FullTextSearchConfig.UnionMember1.Language.ARABIC)
+                .language(FullTextSearchConfig.FullTextSearchDetailedConfig.Language.ARABIC)
                 .removeStopwords(true)
                 .stemming(true)
                 .build()
 
-        val fullTextSearchConfig = FullTextSearchConfig.ofUnionMember1(unionMember1)
+        val fullTextSearchConfig = FullTextSearchConfig.ofDetailed(detailed)
 
         assertThat(fullTextSearchConfig.bool()).isEmpty
-        assertThat(fullTextSearchConfig.unionMember1()).contains(unionMember1)
+        assertThat(fullTextSearchConfig.detailed()).contains(detailed)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun ofUnionMember1Roundtrip() {
+    fun ofDetailedRoundtrip() {
         val jsonMapper = jsonMapper()
         val fullTextSearchConfig =
-            FullTextSearchConfig.ofUnionMember1(
-                FullTextSearchConfig.UnionMember1.builder()
+            FullTextSearchConfig.ofDetailed(
+                FullTextSearchConfig.FullTextSearchDetailedConfig.builder()
                     .caseSensitive(true)
-                    .language(FullTextSearchConfig.UnionMember1.Language.ARABIC)
+                    .language(FullTextSearchConfig.FullTextSearchDetailedConfig.Language.ARABIC)
                     .removeStopwords(true)
                     .stemming(true)
                     .build()

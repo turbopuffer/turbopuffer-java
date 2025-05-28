@@ -155,12 +155,9 @@ private constructor(
         /** Alias for calling [fullTextSearch] with `FullTextSearchConfig.ofBool(bool)`. */
         fun fullTextSearch(bool: Boolean) = fullTextSearch(FullTextSearchConfig.ofBool(bool))
 
-        /**
-         * Alias for calling [fullTextSearch] with
-         * `FullTextSearchConfig.ofUnionMember1(unionMember1)`.
-         */
-        fun fullTextSearch(unionMember1: FullTextSearchConfig.UnionMember1) =
-            fullTextSearch(FullTextSearchConfig.ofUnionMember1(unionMember1))
+        /** Alias for calling [fullTextSearch] with `FullTextSearchConfig.ofDetailed(detailed)`. */
+        fun fullTextSearch(detailed: FullTextSearchConfig.FullTextSearchDetailedConfig) =
+            fullTextSearch(FullTextSearchConfig.ofDetailed(detailed))
 
         /** The data type of the attribute. */
         fun type(type: Type) = type(JsonField.of(type))
