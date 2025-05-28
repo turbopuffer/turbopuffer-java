@@ -38,13 +38,13 @@ import kotlin.jvm.optionals.getOrNull
 class FullTextSearchConfig
 private constructor(
     private val bool: Boolean? = null,
-    private val detailed: FullTextSearchDetailedConfig? = null,
+    private val detailed: Detailed? = null,
     private val _json: JsonValue? = null,
 ) {
 
     fun bool(): Optional<Boolean> = Optional.ofNullable(bool)
 
-    fun detailed(): Optional<FullTextSearchDetailedConfig> = Optional.ofNullable(detailed)
+    fun detailed(): Optional<Detailed> = Optional.ofNullable(detailed)
 
     fun isBool(): Boolean = bool != null
 
@@ -52,7 +52,7 @@ private constructor(
 
     fun asBool(): Boolean = bool.getOrThrow("bool")
 
-    fun asDetailed(): FullTextSearchDetailedConfig = detailed.getOrThrow("detailed")
+    fun asDetailed(): Detailed = detailed.getOrThrow("detailed")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -74,7 +74,7 @@ private constructor(
             object : Visitor<Unit> {
                 override fun visitBool(bool: Boolean) {}
 
-                override fun visitDetailed(detailed: FullTextSearchDetailedConfig) {
+                override fun visitDetailed(detailed: Detailed) {
                     detailed.validate()
                 }
             }
@@ -101,8 +101,7 @@ private constructor(
             object : Visitor<Int> {
                 override fun visitBool(bool: Boolean) = 1
 
-                override fun visitDetailed(detailed: FullTextSearchDetailedConfig) =
-                    detailed.validity()
+                override fun visitDetailed(detailed: Detailed) = detailed.validity()
 
                 override fun unknown(json: JsonValue?) = 0
             }
@@ -130,9 +129,7 @@ private constructor(
 
         @JvmStatic fun ofBool(bool: Boolean) = FullTextSearchConfig(bool = bool)
 
-        @JvmStatic
-        fun ofDetailed(detailed: FullTextSearchDetailedConfig) =
-            FullTextSearchConfig(detailed = detailed)
+        @JvmStatic fun ofDetailed(detailed: Detailed) = FullTextSearchConfig(detailed = detailed)
     }
 
     /**
@@ -143,7 +140,7 @@ private constructor(
 
         fun visitBool(bool: Boolean): T
 
-        fun visitDetailed(detailed: FullTextSearchDetailedConfig): T
+        fun visitDetailed(detailed: Detailed): T
 
         /**
          * Maps an unknown variant of [FullTextSearchConfig] to a value of type [T].
@@ -168,7 +165,7 @@ private constructor(
 
             val bestMatches =
                 sequenceOf(
-                        tryDeserialize(node, jacksonTypeRef<FullTextSearchDetailedConfig>())?.let {
+                        tryDeserialize(node, jacksonTypeRef<Detailed>())?.let {
                             FullTextSearchConfig(detailed = it, _json = json)
                         },
                         tryDeserialize(node, jacksonTypeRef<Boolean>())?.let {
@@ -206,7 +203,7 @@ private constructor(
         }
     }
 
-    class FullTextSearchDetailedConfig
+    class Detailed
     private constructor(
         private val caseSensitive: JsonField<Boolean>,
         private val language: JsonField<Language>,
@@ -312,14 +309,11 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of
-             * [FullTextSearchDetailedConfig].
-             */
+            /** Returns a mutable builder for constructing an instance of [Detailed]. */
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [FullTextSearchDetailedConfig]. */
+        /** A builder for [Detailed]. */
         class Builder internal constructor() {
 
             private var caseSensitive: JsonField<Boolean> = JsonMissing.of()
@@ -329,13 +323,12 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(fullTextSearchDetailedConfig: FullTextSearchDetailedConfig) = apply {
-                caseSensitive = fullTextSearchDetailedConfig.caseSensitive
-                language = fullTextSearchDetailedConfig.language
-                removeStopwords = fullTextSearchDetailedConfig.removeStopwords
-                stemming = fullTextSearchDetailedConfig.stemming
-                additionalProperties =
-                    fullTextSearchDetailedConfig.additionalProperties.toMutableMap()
+            internal fun from(detailed: Detailed) = apply {
+                caseSensitive = detailed.caseSensitive
+                language = detailed.language
+                removeStopwords = detailed.removeStopwords
+                stemming = detailed.stemming
+                additionalProperties = detailed.additionalProperties.toMutableMap()
             }
 
             /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
@@ -414,12 +407,12 @@ private constructor(
             }
 
             /**
-             * Returns an immutable instance of [FullTextSearchDetailedConfig].
+             * Returns an immutable instance of [Detailed].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): FullTextSearchDetailedConfig =
-                FullTextSearchDetailedConfig(
+            fun build(): Detailed =
+                Detailed(
                     caseSensitive,
                     language,
                     removeStopwords,
@@ -430,7 +423,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): FullTextSearchDetailedConfig = apply {
+        fun validate(): Detailed = apply {
             if (validated) {
                 return@apply
             }
@@ -695,7 +688,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FullTextSearchDetailedConfig && caseSensitive == other.caseSensitive && language == other.language && removeStopwords == other.removeStopwords && stemming == other.stemming && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Detailed && caseSensitive == other.caseSensitive && language == other.language && removeStopwords == other.removeStopwords && stemming == other.stemming && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -705,6 +698,6 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "FullTextSearchDetailedConfig{caseSensitive=$caseSensitive, language=$language, removeStopwords=$removeStopwords, stemming=$stemming, additionalProperties=$additionalProperties}"
+            "Detailed{caseSensitive=$caseSensitive, language=$language, removeStopwords=$removeStopwords, stemming=$stemming, additionalProperties=$additionalProperties}"
     }
 }
