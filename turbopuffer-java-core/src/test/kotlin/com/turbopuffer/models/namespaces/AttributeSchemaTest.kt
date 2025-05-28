@@ -16,13 +16,28 @@ internal class AttributeSchemaTest {
         val attributeSchema =
             AttributeSchema.builder()
                 .filterable(true)
-                .fullTextSearch(true)
-                .type(AttributeSchema.Type.STRING)
+                .fullTextSearch(
+                    FullTextSearchConfig.builder()
+                        .caseSensitive(true)
+                        .language(Language.ARABIC)
+                        .removeStopwords(true)
+                        .stemming(true)
+                        .build()
+                )
+                .type(AttributeType.STRING)
                 .build()
 
         assertThat(attributeSchema.filterable()).contains(true)
-        assertThat(attributeSchema.fullTextSearch()).contains(FullTextSearchConfig.ofBool(true))
-        assertThat(attributeSchema.type()).contains(AttributeSchema.Type.STRING)
+        assertThat(attributeSchema.fullTextSearch())
+            .contains(
+                FullTextSearchConfig.builder()
+                    .caseSensitive(true)
+                    .language(Language.ARABIC)
+                    .removeStopwords(true)
+                    .stemming(true)
+                    .build()
+            )
+        assertThat(attributeSchema.type()).contains(AttributeType.STRING)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -32,8 +47,15 @@ internal class AttributeSchemaTest {
         val attributeSchema =
             AttributeSchema.builder()
                 .filterable(true)
-                .fullTextSearch(true)
-                .type(AttributeSchema.Type.STRING)
+                .fullTextSearch(
+                    FullTextSearchConfig.builder()
+                        .caseSensitive(true)
+                        .language(Language.ARABIC)
+                        .removeStopwords(true)
+                        .stemming(true)
+                        .build()
+                )
+                .type(AttributeType.STRING)
                 .build()
 
         val roundtrippedAttributeSchema =
