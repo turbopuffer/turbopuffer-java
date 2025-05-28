@@ -45,9 +45,9 @@ internal class FullTextSearchConfigTest {
     @Test
     fun ofDetailed() {
         val detailed =
-            FullTextSearchConfig.FullTextSearchDetailedConfig.builder()
+            FullTextSearchConfig.Detailed.builder()
                 .caseSensitive(true)
-                .language(FullTextSearchConfig.FullTextSearchDetailedConfig.Language.ARABIC)
+                .language(FullTextSearchConfig.Detailed.Language.ARABIC)
                 .removeStopwords(true)
                 .stemming(true)
                 .build()
@@ -64,9 +64,9 @@ internal class FullTextSearchConfigTest {
         val jsonMapper = jsonMapper()
         val fullTextSearchConfig =
             FullTextSearchConfig.ofDetailed(
-                FullTextSearchConfig.FullTextSearchDetailedConfig.builder()
+                FullTextSearchConfig.Detailed.builder()
                     .caseSensitive(true)
-                    .language(FullTextSearchConfig.FullTextSearchDetailedConfig.Language.ARABIC)
+                    .language(FullTextSearchConfig.Detailed.Language.ARABIC)
                     .removeStopwords(true)
                     .stemming(true)
                     .build()
