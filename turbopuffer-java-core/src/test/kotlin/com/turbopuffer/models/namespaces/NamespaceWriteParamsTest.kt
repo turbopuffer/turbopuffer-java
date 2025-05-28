@@ -19,6 +19,13 @@ internal class NamespaceWriteParamsTest {
             .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
             .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+            .encryption(
+                NamespaceWriteParams.Encryption.builder()
+                    .cmek(
+                        NamespaceWriteParams.Encryption.Cmek.builder().keyName("key_name").build()
+                    )
+                    .build()
+            )
             .patchColumns(
                 DocumentColumns.builder()
                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -80,6 +87,15 @@ internal class NamespaceWriteParamsTest {
                 .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
                 .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                .encryption(
+                    NamespaceWriteParams.Encryption.builder()
+                        .cmek(
+                            NamespaceWriteParams.Encryption.Cmek.builder()
+                                .keyName("key_name")
+                                .build()
+                        )
+                        .build()
+                )
                 .patchColumns(
                     DocumentColumns.builder()
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -127,6 +143,14 @@ internal class NamespaceWriteParamsTest {
         assertThat(body.deletes().getOrNull())
             .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
         assertThat(body.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)
+        assertThat(body.encryption())
+            .contains(
+                NamespaceWriteParams.Encryption.builder()
+                    .cmek(
+                        NamespaceWriteParams.Encryption.Cmek.builder().keyName("key_name").build()
+                    )
+                    .build()
+            )
         assertThat(body.patchColumns())
             .contains(
                 DocumentColumns.builder()
