@@ -16,17 +16,7 @@ internal class NamespaceUpdateSchemaResponseTest {
     fun create() {
         val namespaceUpdateSchemaResponse =
             NamespaceUpdateSchemaResponse.builder()
-                .putAdditionalProperty(
-                    "foo",
-                    JsonValue.from(
-                        mapOf(
-                            "ann" to true,
-                            "filterable" to true,
-                            "full_text_search" to true,
-                            "type" to "string",
-                        )
-                    ),
-                )
+                .putAdditionalProperty("foo", JsonValue.from("string"))
                 .build()
     }
 
@@ -36,17 +26,7 @@ internal class NamespaceUpdateSchemaResponseTest {
         val jsonMapper = jsonMapper()
         val namespaceUpdateSchemaResponse =
             NamespaceUpdateSchemaResponse.builder()
-                .putAdditionalProperty(
-                    "foo",
-                    JsonValue.from(
-                        mapOf(
-                            "ann" to true,
-                            "filterable" to true,
-                            "full_text_search" to true,
-                            "type" to "string",
-                        )
-                    ),
-                )
+                .putAdditionalProperty("foo", JsonValue.from("string"))
                 .build()
 
         val roundtrippedNamespaceUpdateSchemaResponse =
