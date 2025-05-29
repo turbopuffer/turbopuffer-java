@@ -83,14 +83,21 @@ interface NamespaceService {
         hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
 
     /** Query, filter, full-text search and vector search documents. */
-    fun query(params: NamespaceQueryParams): NamespaceQueryResponse =
-        query(params, RequestOptions.none())
+    fun query(): NamespaceQueryResponse = query(NamespaceQueryParams.none())
 
     /** @see [query] */
     fun query(
-        params: NamespaceQueryParams,
+        params: NamespaceQueryParams = NamespaceQueryParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceQueryResponse
+
+    /** @see [query] */
+    fun query(params: NamespaceQueryParams = NamespaceQueryParams.none()): NamespaceQueryResponse =
+        query(params, RequestOptions.none())
+
+    /** @see [query] */
+    fun query(requestOptions: RequestOptions): NamespaceQueryResponse =
+        query(NamespaceQueryParams.none(), requestOptions)
 
     /** Evaluate recall. */
     fun recall(): NamespaceRecallResponse = recall(NamespaceRecallParams.none())
@@ -235,15 +242,25 @@ interface NamespaceService {
          * the same as [NamespaceService.query].
          */
         @MustBeClosed
-        fun query(params: NamespaceQueryParams): HttpResponseFor<NamespaceQueryResponse> =
-            query(params, RequestOptions.none())
+        fun query(): HttpResponseFor<NamespaceQueryResponse> = query(NamespaceQueryParams.none())
 
         /** @see [query] */
         @MustBeClosed
         fun query(
-            params: NamespaceQueryParams,
+            params: NamespaceQueryParams = NamespaceQueryParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceQueryResponse>
+
+        /** @see [query] */
+        @MustBeClosed
+        fun query(
+            params: NamespaceQueryParams = NamespaceQueryParams.none()
+        ): HttpResponseFor<NamespaceQueryResponse> = query(params, RequestOptions.none())
+
+        /** @see [query] */
+        @MustBeClosed
+        fun query(requestOptions: RequestOptions): HttpResponseFor<NamespaceQueryResponse> =
+            query(NamespaceQueryParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/_debug/recall`, but is
