@@ -9,38 +9,39 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-internal class ClientListNamespacesResponseTest {
+internal class ClientListNamespacesPageResponseTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
-        val clientListNamespacesResponse =
-            ClientListNamespacesResponse.builder()
+        val clientListNamespacesPageResponse =
+            ClientListNamespacesPageResponse.builder()
                 .addNamespace(NamespaceSummary.builder().id("id").build())
                 .nextCursor("next_cursor")
                 .build()
 
-        assertThat(clientListNamespacesResponse.namespaces().getOrNull())
+        assertThat(clientListNamespacesPageResponse.namespaces().getOrNull())
             .containsExactly(NamespaceSummary.builder().id("id").build())
-        assertThat(clientListNamespacesResponse.nextCursor()).contains("next_cursor")
+        assertThat(clientListNamespacesPageResponse.nextCursor()).contains("next_cursor")
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val clientListNamespacesResponse =
-            ClientListNamespacesResponse.builder()
+        val clientListNamespacesPageResponse =
+            ClientListNamespacesPageResponse.builder()
                 .addNamespace(NamespaceSummary.builder().id("id").build())
                 .nextCursor("next_cursor")
                 .build()
 
-        val roundtrippedClientListNamespacesResponse =
+        val roundtrippedClientListNamespacesPageResponse =
             jsonMapper.readValue(
-                jsonMapper.writeValueAsString(clientListNamespacesResponse),
-                jacksonTypeRef<ClientListNamespacesResponse>(),
+                jsonMapper.writeValueAsString(clientListNamespacesPageResponse),
+                jacksonTypeRef<ClientListNamespacesPageResponse>(),
             )
 
-        assertThat(roundtrippedClientListNamespacesResponse).isEqualTo(clientListNamespacesResponse)
+        assertThat(roundtrippedClientListNamespacesPageResponse)
+            .isEqualTo(clientListNamespacesPageResponse)
     }
 }

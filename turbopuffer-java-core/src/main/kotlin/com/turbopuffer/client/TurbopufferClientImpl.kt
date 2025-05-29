@@ -15,8 +15,9 @@ import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
+import com.turbopuffer.models.ClientListNamespacesPage
+import com.turbopuffer.models.ClientListNamespacesPageResponse
 import com.turbopuffer.models.ClientListNamespacesParams
-import com.turbopuffer.models.ClientListNamespacesResponse
 import com.turbopuffer.services.blocking.NamespaceService
 import com.turbopuffer.services.blocking.NamespaceServiceImpl
 
@@ -50,7 +51,7 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
     override fun listNamespaces(
         params: ClientListNamespacesParams,
         requestOptions: RequestOptions,
-    ): ClientListNamespacesResponse =
+    ): ClientListNamespacesPage =
         // get /v1/namespaces
         withRawResponse().listNamespaces(params, requestOptions).parse()
 
@@ -67,14 +68,14 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
 
         override fun namespaces(): NamespaceService.WithRawResponse = namespaces
 
-        private val listNamespacesHandler: Handler<ClientListNamespacesResponse> =
-            jsonHandler<ClientListNamespacesResponse>(clientOptions.jsonMapper)
+        private val listNamespacesHandler: Handler<ClientListNamespacesPageResponse> =
+            jsonHandler<ClientListNamespacesPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun listNamespaces(
             params: ClientListNamespacesParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<ClientListNamespacesResponse> {
+        ): HttpResponseFor<ClientListNamespacesPage> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -90,6 +91,13 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
                         if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
+                    }
+                    .let {
+                        ClientListNamespacesPage.builder()
+                            .service(TurbopufferClientImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
                     }
             }
         }
