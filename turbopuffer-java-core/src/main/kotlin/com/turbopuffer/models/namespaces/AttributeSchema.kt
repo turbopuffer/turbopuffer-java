@@ -169,6 +169,14 @@ private constructor(
          */
         fun type(type: JsonField<AttributeType>) = apply { this.type = type }
 
+        /**
+         * Sets [type] to an arbitrary [String].
+         *
+         * You should usually call [type] with a well-typed [AttributeType] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun type(value: String) = type(AttributeType.of(value))
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -206,7 +214,7 @@ private constructor(
 
         filterable()
         fullTextSearch().ifPresent { it.validate() }
-        type().ifPresent { it.validate() }
+        type()
         validated = true
     }
 
@@ -227,7 +235,7 @@ private constructor(
     internal fun validity(): Int =
         (if (filterable.asKnown().isPresent) 1 else 0) +
             (fullTextSearch.asKnown().getOrNull()?.validity() ?: 0) +
-            (type.asKnown().getOrNull()?.validity() ?: 0)
+            (if (type.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
