@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 /** The schema for an attribute attached to a document. */
 class AttributeSchema
 private constructor(
+    private val ann: JsonField<Boolean>,
     private val filterable: JsonField<Boolean>,
     private val fullTextSearch: JsonField<FullTextSearch>,
     private val type: JsonField<AttributeType>,
@@ -27,6 +28,7 @@ private constructor(
 
     @JsonCreator
     private constructor(
+        @JsonProperty("ann") @ExcludeMissing ann: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("filterable")
         @ExcludeMissing
         filterable: JsonField<Boolean> = JsonMissing.of(),
@@ -34,7 +36,15 @@ private constructor(
         @ExcludeMissing
         fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonField<AttributeType> = JsonMissing.of(),
-    ) : this(filterable, fullTextSearch, type, mutableMapOf())
+    ) : this(ann, filterable, fullTextSearch, type, mutableMapOf())
+
+    /**
+     * Whether to create an approximate nearest neighbor index for the attribute.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun ann(): Optional<Boolean> = ann.getOptional("ann")
 
     /**
      * Whether or not the attributes can be used in filters/WHERE clauses.
@@ -61,6 +71,13 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun type(): Optional<AttributeType> = type.getOptional("type")
+
+    /**
+     * Returns the raw JSON value of [ann].
+     *
+     * Unlike [ann], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("ann") @ExcludeMissing fun _ann(): JsonField<Boolean> = ann
 
     /**
      * Returns the raw JSON value of [filterable].
@@ -106,6 +123,7 @@ private constructor(
     /** A builder for [AttributeSchema]. */
     class Builder internal constructor() {
 
+        private var ann: JsonField<Boolean> = JsonMissing.of()
         private var filterable: JsonField<Boolean> = JsonMissing.of()
         private var fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of()
         private var type: JsonField<AttributeType> = JsonMissing.of()
@@ -113,11 +131,23 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(attributeSchema: AttributeSchema) = apply {
+            ann = attributeSchema.ann
             filterable = attributeSchema.filterable
             fullTextSearch = attributeSchema.fullTextSearch
             type = attributeSchema.type
             additionalProperties = attributeSchema.additionalProperties.toMutableMap()
         }
+
+        /** Whether to create an approximate nearest neighbor index for the attribute. */
+        fun ann(ann: Boolean) = ann(JsonField.of(ann))
+
+        /**
+         * Sets [Builder.ann] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.ann] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun ann(ann: JsonField<Boolean>) = apply { this.ann = ann }
 
         /** Whether or not the attributes can be used in filters/WHERE clauses. */
         fun filterable(filterable: Boolean) = filterable(JsonField.of(filterable))
@@ -202,7 +232,13 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): AttributeSchema =
-            AttributeSchema(filterable, fullTextSearch, type, additionalProperties.toMutableMap())
+            AttributeSchema(
+                ann,
+                filterable,
+                fullTextSearch,
+                type,
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -212,6 +248,7 @@ private constructor(
             return@apply
         }
 
+        ann()
         filterable()
         fullTextSearch().ifPresent { it.validate() }
         type()
@@ -233,7 +270,8 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (filterable.asKnown().isPresent) 1 else 0) +
+        (if (ann.asKnown().isPresent) 1 else 0) +
+            (if (filterable.asKnown().isPresent) 1 else 0) +
             (fullTextSearch.asKnown().getOrNull()?.validity() ?: 0) +
             (if (type.asKnown().isPresent) 1 else 0)
 
@@ -242,15 +280,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AttributeSchema && filterable == other.filterable && fullTextSearch == other.fullTextSearch && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is AttributeSchema && ann == other.ann && filterable == other.filterable && fullTextSearch == other.fullTextSearch && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(filterable, fullTextSearch, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(ann, filterable, fullTextSearch, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AttributeSchema{filterable=$filterable, fullTextSearch=$fullTextSearch, type=$type, additionalProperties=$additionalProperties}"
+        "AttributeSchema{ann=$ann, filterable=$filterable, fullTextSearch=$fullTextSearch, type=$type, additionalProperties=$additionalProperties}"
 }
