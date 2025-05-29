@@ -100,10 +100,7 @@ internal class NamespaceServiceTest {
                     .topK(0L)
                     .aggregateBy(
                         NamespaceQueryParams.AggregateBy.builder()
-                            .putAdditionalProperty(
-                                "foo",
-                                JsonValue.from(listOf(mapOf<String, Any>())),
-                            )
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
                     .consistency(
