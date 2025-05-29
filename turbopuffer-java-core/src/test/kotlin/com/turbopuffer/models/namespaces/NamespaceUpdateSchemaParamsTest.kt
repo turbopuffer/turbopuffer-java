@@ -17,17 +17,7 @@ internal class NamespaceUpdateSchemaParamsTest {
             .namespace("namespace")
             .schema(
                 NamespaceUpdateSchemaParams.Schema.builder()
-                    .putAdditionalProperty(
-                        "foo",
-                        JsonValue.from(
-                            mapOf(
-                                "ann" to true,
-                                "filterable" to true,
-                                "full_text_search" to true,
-                                "type" to "string",
-                            )
-                        ),
-                    )
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
             .build()
@@ -51,17 +41,7 @@ internal class NamespaceUpdateSchemaParamsTest {
                 .namespace("namespace")
                 .schema(
                     NamespaceUpdateSchemaParams.Schema.builder()
-                        .putAdditionalProperty(
-                            "foo",
-                            JsonValue.from(
-                                mapOf(
-                                    "ann" to true,
-                                    "filterable" to true,
-                                    "full_text_search" to true,
-                                    "type" to "string",
-                                )
-                            ),
-                        )
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
                 .build()
@@ -71,17 +51,7 @@ internal class NamespaceUpdateSchemaParamsTest {
         assertThat(body)
             .isEqualTo(
                 NamespaceUpdateSchemaParams.Schema.builder()
-                    .putAdditionalProperty(
-                        "foo",
-                        JsonValue.from(
-                            mapOf(
-                                "ann" to true,
-                                "filterable" to true,
-                                "full_text_search" to true,
-                                "type" to "string",
-                            )
-                        ),
-                    )
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
     }
