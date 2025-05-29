@@ -15,9 +15,8 @@ import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepareAsync
-import com.turbopuffer.models.ClientListNamespacesPageAsync
-import com.turbopuffer.models.ClientListNamespacesPageResponse
 import com.turbopuffer.models.ClientListNamespacesParams
+import com.turbopuffer.models.ClientListNamespacesResponse
 import com.turbopuffer.services.async.NamespaceServiceAsync
 import com.turbopuffer.services.async.NamespaceServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
@@ -53,7 +52,7 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
     override fun listNamespaces(
         params: ClientListNamespacesParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<ClientListNamespacesPageAsync> =
+    ): CompletableFuture<ClientListNamespacesResponse> =
         // get /v1/namespaces
         withRawResponse().listNamespaces(params, requestOptions).thenApply { it.parse() }
 
@@ -70,14 +69,14 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
 
         override fun namespaces(): NamespaceServiceAsync.WithRawResponse = namespaces
 
-        private val listNamespacesHandler: Handler<ClientListNamespacesPageResponse> =
-            jsonHandler<ClientListNamespacesPageResponse>(clientOptions.jsonMapper)
+        private val listNamespacesHandler: Handler<ClientListNamespacesResponse> =
+            jsonHandler<ClientListNamespacesResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun listNamespaces(
             params: ClientListNamespacesParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> {
+        ): CompletableFuture<HttpResponseFor<ClientListNamespacesResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -95,14 +94,6 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
-                            }
-                            .let {
-                                ClientListNamespacesPageAsync.builder()
-                                    .service(TurbopufferClientAsyncImpl(clientOptions))
-                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
-                                    .params(params)
-                                    .response(it)
-                                    .build()
                             }
                     }
                 }
