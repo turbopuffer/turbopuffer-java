@@ -15,11 +15,13 @@ internal class AttributeSchemaTest {
     fun create() {
         val attributeSchema =
             AttributeSchema.builder()
+                .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
                 .type(AttributeType.STRING)
                 .build()
 
+        assertThat(attributeSchema.ann()).contains(true)
         assertThat(attributeSchema.filterable()).contains(true)
         assertThat(attributeSchema.fullTextSearch()).contains(FullTextSearch.ofBool(true))
         assertThat(attributeSchema.type()).contains(AttributeType.STRING)
@@ -31,6 +33,7 @@ internal class AttributeSchemaTest {
         val jsonMapper = jsonMapper()
         val attributeSchema =
             AttributeSchema.builder()
+                .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
                 .type(AttributeType.STRING)

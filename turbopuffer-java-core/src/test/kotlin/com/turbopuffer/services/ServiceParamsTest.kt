@@ -104,6 +104,7 @@ internal class ServiceParamsTest {
                             "foo",
                             JsonValue.from(
                                 mapOf(
+                                    "ann" to true,
                                     "filterable" to true,
                                     "full_text_search" to true,
                                     "type" to "string",
