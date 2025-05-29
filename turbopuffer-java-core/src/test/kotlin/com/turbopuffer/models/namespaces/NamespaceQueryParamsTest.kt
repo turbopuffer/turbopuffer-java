@@ -16,6 +16,7 @@ internal class NamespaceQueryParamsTest {
             .namespace("namespace")
             .rankBy(JsonValue.from(mapOf<String, Any>()))
             .topK(0L)
+            .aggregateBy(JsonValue.from(mapOf<String, Any>()))
             .consistency(
                 NamespaceQueryParams.Consistency.builder()
                     .level(NamespaceQueryParams.Consistency.Level.STRONG)
@@ -50,6 +51,7 @@ internal class NamespaceQueryParamsTest {
                 .namespace("namespace")
                 .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)
+                .aggregateBy(JsonValue.from(mapOf<String, Any>()))
                 .consistency(
                     NamespaceQueryParams.Consistency.builder()
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
@@ -65,6 +67,7 @@ internal class NamespaceQueryParamsTest {
 
         assertThat(body._rankBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.topK()).isEqualTo(0L)
+        assertThat(body._aggregateBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.consistency())
             .contains(
                 NamespaceQueryParams.Consistency.builder()

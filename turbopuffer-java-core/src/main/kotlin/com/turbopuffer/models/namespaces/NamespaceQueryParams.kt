@@ -43,6 +43,9 @@ private constructor(
      */
     fun topK(): Long = body.topK()
 
+    /** Aggregations to compute over all documents in the namespace that match the filters. */
+    fun _aggregateBy(): JsonValue = body._aggregateBy()
+
     /**
      * The consistency level for a query.
      *
@@ -166,9 +169,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [rankBy]
          * - [topK]
+         * - [aggregateBy]
          * - [consistency]
          * - [distanceMetric]
-         * - [filters]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -186,6 +189,9 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
+
+        /** Aggregations to compute over all documents in the namespace that match the filters. */
+        fun aggregateBy(aggregateBy: JsonValue) = apply { body.aggregateBy(aggregateBy) }
 
         /** The consistency level for a query. */
         fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
@@ -418,6 +424,7 @@ private constructor(
     private constructor(
         private val rankBy: JsonValue,
         private val topK: JsonField<Long>,
+        private val aggregateBy: JsonValue,
         private val consistency: JsonField<Consistency>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val filters: JsonValue,
@@ -430,6 +437,7 @@ private constructor(
         private constructor(
             @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("aggregate_by") @ExcludeMissing aggregateBy: JsonValue = JsonMissing.of(),
             @JsonProperty("consistency")
             @ExcludeMissing
             consistency: JsonField<Consistency> = JsonMissing.of(),
@@ -446,6 +454,7 @@ private constructor(
         ) : this(
             rankBy,
             topK,
+            aggregateBy,
             consistency,
             distanceMetric,
             filters,
@@ -464,6 +473,9 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun topK(): Long = topK.getRequired("top_k")
+
+        /** Aggregations to compute over all documents in the namespace that match the filters. */
+        @JsonProperty("aggregate_by") @ExcludeMissing fun _aggregateBy(): JsonValue = aggregateBy
 
         /**
          * The consistency level for a query.
@@ -583,6 +595,7 @@ private constructor(
 
             private var rankBy: JsonValue? = null
             private var topK: JsonField<Long>? = null
+            private var aggregateBy: JsonValue = JsonMissing.of()
             private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var filters: JsonValue = JsonMissing.of()
@@ -594,6 +607,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 rankBy = body.rankBy
                 topK = body.topK
+                aggregateBy = body.aggregateBy
                 consistency = body.consistency
                 distanceMetric = body.distanceMetric
                 filters = body.filters
@@ -616,6 +630,11 @@ private constructor(
              * value.
              */
             fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
+
+            /**
+             * Aggregations to compute over all documents in the namespace that match the filters.
+             */
+            fun aggregateBy(aggregateBy: JsonValue) = apply { this.aggregateBy = aggregateBy }
 
             /** The consistency level for a query. */
             fun consistency(consistency: Consistency) = consistency(JsonField.of(consistency))
@@ -727,6 +746,7 @@ private constructor(
                 Body(
                     checkRequired("rankBy", rankBy),
                     checkRequired("topK", topK),
+                    aggregateBy,
                     consistency,
                     distanceMetric,
                     filters,
@@ -778,17 +798,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && rankBy == other.rankBy && topK == other.topK && consistency == other.consistency && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && rankBy == other.rankBy && topK == other.topK && aggregateBy == other.aggregateBy && consistency == other.consistency && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(rankBy, topK, consistency, distanceMetric, filters, includeAttributes, vectorEncoding, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(rankBy, topK, aggregateBy, consistency, distanceMetric, filters, includeAttributes, vectorEncoding, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{rankBy=$rankBy, topK=$topK, consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{rankBy=$rankBy, topK=$topK, aggregateBy=$aggregateBy, consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
