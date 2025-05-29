@@ -12,7 +12,6 @@ import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
-import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.toImmutable
@@ -32,17 +31,6 @@ private constructor(
 ) : Params {
 
     fun namespace(): Optional<String> = Optional.ofNullable(namespace)
-
-    /** How to rank the documents in the namespace. */
-    fun _rankBy(): JsonValue = body._rankBy()
-
-    /**
-     * The number of results to return.
-     *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun topK(): Long = body.topK()
 
     /**
      * Aggregations to compute over all documents in the namespace that match the filters.
@@ -81,6 +69,17 @@ private constructor(
      */
     fun includeAttributes(): Optional<IncludeAttributes> = body.includeAttributes()
 
+    /** How to rank the documents in the namespace. */
+    fun _rankBy(): JsonValue = body._rankBy()
+
+    /**
+     * The number of results to return.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun topK(): Optional<Long> = body.topK()
+
     /**
      * The encoding to use for vectors in the response.
      *
@@ -88,13 +87,6 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun vectorEncoding(): Optional<VectorEncoding> = body.vectorEncoding()
-
-    /**
-     * Returns the raw JSON value of [topK].
-     *
-     * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _topK(): JsonField<Long> = body._topK()
 
     /**
      * Returns the raw JSON value of [aggregateBy].
@@ -126,6 +118,13 @@ private constructor(
     fun _includeAttributes(): JsonField<IncludeAttributes> = body._includeAttributes()
 
     /**
+     * Returns the raw JSON value of [topK].
+     *
+     * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _topK(): JsonField<Long> = body._topK()
+
+    /**
      * Returns the raw JSON value of [vectorEncoding].
      *
      * Unlike [vectorEncoding], this method doesn't throw if the JSON field has an unexpected type.
@@ -142,15 +141,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [NamespaceQueryParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .rankBy()
-         * .topK()
-         * ```
-         */
+        @JvmStatic fun none(): NamespaceQueryParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [NamespaceQueryParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -180,28 +173,14 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
-         * - [rankBy]
-         * - [topK]
          * - [aggregateBy]
          * - [consistency]
          * - [distanceMetric]
+         * - [filters]
+         * - [includeAttributes]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
-
-        /** How to rank the documents in the namespace. */
-        fun rankBy(rankBy: JsonValue) = apply { body.rankBy(rankBy) }
-
-        /** The number of results to return. */
-        fun topK(topK: Long) = apply { body.topK(topK) }
-
-        /**
-         * Sets [Builder.topK] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
 
         /** Aggregations to compute over all documents in the namespace that match the filters. */
         fun aggregateBy(aggregateBy: AggregateBy) = apply { body.aggregateBy(aggregateBy) }
@@ -276,6 +255,20 @@ private constructor(
         fun includeAttributesOfStrings(strings: List<String>) = apply {
             body.includeAttributesOfStrings(strings)
         }
+
+        /** How to rank the documents in the namespace. */
+        fun rankBy(rankBy: JsonValue) = apply { body.rankBy(rankBy) }
+
+        /** The number of results to return. */
+        fun topK(topK: Long) = apply { body.topK(topK) }
+
+        /**
+         * Sets [Builder.topK] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
 
         /** The encoding to use for vectors in the response. */
         fun vectorEncoding(vectorEncoding: VectorEncoding) = apply {
@@ -414,14 +407,6 @@ private constructor(
          * Returns an immutable instance of [NamespaceQueryParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .rankBy()
-         * .topK()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): NamespaceQueryParams =
             NamespaceQueryParams(
@@ -446,21 +431,19 @@ private constructor(
 
     class Body
     private constructor(
-        private val rankBy: JsonValue,
-        private val topK: JsonField<Long>,
         private val aggregateBy: JsonField<AggregateBy>,
         private val consistency: JsonField<Consistency>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val filters: JsonValue,
         private val includeAttributes: JsonField<IncludeAttributes>,
+        private val rankBy: JsonValue,
+        private val topK: JsonField<Long>,
         private val vectorEncoding: JsonField<VectorEncoding>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
-            @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("aggregate_by")
             @ExcludeMissing
             aggregateBy: JsonField<AggregateBy> = JsonMissing.of(),
@@ -474,31 +457,22 @@ private constructor(
             @JsonProperty("include_attributes")
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
+            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
+            @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("vector_encoding")
             @ExcludeMissing
             vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of(),
         ) : this(
-            rankBy,
-            topK,
             aggregateBy,
             consistency,
             distanceMetric,
             filters,
             includeAttributes,
+            rankBy,
+            topK,
             vectorEncoding,
             mutableMapOf(),
         )
-
-        /** How to rank the documents in the namespace. */
-        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
-
-        /**
-         * The number of results to return.
-         *
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun topK(): Long = topK.getRequired("top_k")
 
         /**
          * Aggregations to compute over all documents in the namespace that match the filters.
@@ -540,6 +514,17 @@ private constructor(
         fun includeAttributes(): Optional<IncludeAttributes> =
             includeAttributes.getOptional("include_attributes")
 
+        /** How to rank the documents in the namespace. */
+        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
+
+        /**
+         * The number of results to return.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun topK(): Optional<Long> = topK.getOptional("top_k")
+
         /**
          * The encoding to use for vectors in the response.
          *
@@ -548,13 +533,6 @@ private constructor(
          */
         fun vectorEncoding(): Optional<VectorEncoding> =
             vectorEncoding.getOptional("vector_encoding")
-
-        /**
-         * Returns the raw JSON value of [topK].
-         *
-         * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
 
         /**
          * Returns the raw JSON value of [aggregateBy].
@@ -595,6 +573,13 @@ private constructor(
         fun _includeAttributes(): JsonField<IncludeAttributes> = includeAttributes
 
         /**
+         * Returns the raw JSON value of [topK].
+         *
+         * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
+
+        /**
          * Returns the raw JSON value of [vectorEncoding].
          *
          * Unlike [vectorEncoding], this method doesn't throw if the JSON field has an unexpected
@@ -618,58 +603,35 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .rankBy()
-             * .topK()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var rankBy: JsonValue? = null
-            private var topK: JsonField<Long>? = null
             private var aggregateBy: JsonField<AggregateBy> = JsonMissing.of()
             private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var filters: JsonValue = JsonMissing.of()
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
+            private var rankBy: JsonValue = JsonMissing.of()
+            private var topK: JsonField<Long> = JsonMissing.of()
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
-                rankBy = body.rankBy
-                topK = body.topK
                 aggregateBy = body.aggregateBy
                 consistency = body.consistency
                 distanceMetric = body.distanceMetric
                 filters = body.filters
                 includeAttributes = body.includeAttributes
+                rankBy = body.rankBy
+                topK = body.topK
                 vectorEncoding = body.vectorEncoding
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
-
-            /** How to rank the documents in the namespace. */
-            fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
-
-            /** The number of results to return. */
-            fun topK(topK: Long) = topK(JsonField.of(topK))
-
-            /**
-             * Sets [Builder.topK] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
 
             /**
              * Aggregations to compute over all documents in the namespace that match the filters.
@@ -746,6 +708,21 @@ private constructor(
             fun includeAttributesOfStrings(strings: List<String>) =
                 includeAttributes(IncludeAttributes.ofStrings(strings))
 
+            /** How to rank the documents in the namespace. */
+            fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
+
+            /** The number of results to return. */
+            fun topK(topK: Long) = topK(JsonField.of(topK))
+
+            /**
+             * Sets [Builder.topK] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.topK] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
+
             /** The encoding to use for vectors in the response. */
             fun vectorEncoding(vectorEncoding: VectorEncoding) =
                 vectorEncoding(JsonField.of(vectorEncoding))
@@ -784,24 +761,16 @@ private constructor(
              * Returns an immutable instance of [Body].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .rankBy()
-             * .topK()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
                 Body(
-                    checkRequired("rankBy", rankBy),
-                    checkRequired("topK", topK),
                     aggregateBy,
                     consistency,
                     distanceMetric,
                     filters,
                     includeAttributes,
+                    rankBy,
+                    topK,
                     vectorEncoding,
                     additionalProperties.toMutableMap(),
                 )
@@ -814,11 +783,11 @@ private constructor(
                 return@apply
             }
 
-            topK()
             aggregateBy().ifPresent { it.validate() }
             consistency().ifPresent { it.validate() }
             distanceMetric().ifPresent { it.validate() }
             includeAttributes().ifPresent { it.validate() }
+            topK()
             vectorEncoding().ifPresent { it.validate() }
             validated = true
         }
@@ -839,11 +808,11 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (topK.asKnown().isPresent) 1 else 0) +
-                (aggregateBy.asKnown().getOrNull()?.validity() ?: 0) +
+            (aggregateBy.asKnown().getOrNull()?.validity() ?: 0) +
                 (consistency.asKnown().getOrNull()?.validity() ?: 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (topK.asKnown().isPresent) 1 else 0) +
                 (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -851,17 +820,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && rankBy == other.rankBy && topK == other.topK && aggregateBy == other.aggregateBy && consistency == other.consistency && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && aggregateBy == other.aggregateBy && consistency == other.consistency && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(rankBy, topK, aggregateBy, consistency, distanceMetric, filters, includeAttributes, vectorEncoding, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(aggregateBy, consistency, distanceMetric, filters, includeAttributes, rankBy, topK, vectorEncoding, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{rankBy=$rankBy, topK=$topK, aggregateBy=$aggregateBy, consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{aggregateBy=$aggregateBy, consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** Aggregations to compute over all documents in the namespace that match the filters. */
