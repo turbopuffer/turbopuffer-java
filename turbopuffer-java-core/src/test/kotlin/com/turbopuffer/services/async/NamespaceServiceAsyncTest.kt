@@ -99,8 +99,6 @@ internal class NamespaceServiceAsyncTest {
             namespaceServiceAsync.query(
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
-                    .rankBy(JsonValue.from(mapOf<String, Any>()))
-                    .topK(0L)
                     .aggregateBy(
                         NamespaceQueryParams.AggregateBy.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
@@ -114,6 +112,8 @@ internal class NamespaceServiceAsyncTest {
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .filters(JsonValue.from(mapOf<String, Any>()))
                     .includeAttributes(true)
+                    .rankBy(JsonValue.from(mapOf<String, Any>()))
+                    .topK(0L)
                     .vectorEncoding(VectorEncoding.FLOAT)
                     .build()
             )
