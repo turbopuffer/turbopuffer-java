@@ -98,6 +98,7 @@ internal class NamespaceServiceTest {
                     .namespace("namespace")
                     .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
+                    .aggregateBy(JsonValue.from(mapOf<String, Any>()))
                     .consistency(
                         NamespaceQueryParams.Consistency.builder()
                             .level(NamespaceQueryParams.Consistency.Level.STRONG)
