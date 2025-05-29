@@ -46,7 +46,9 @@ internal class FullTextSearchTest {
     fun ofConfig() {
         val config =
             FullTextSearchConfig.builder()
+                .b(0.0)
                 .caseSensitive(true)
+                .k1(0.0)
                 .language(Language.ARABIC)
                 .removeStopwords(true)
                 .stemming(true)
@@ -66,7 +68,9 @@ internal class FullTextSearchTest {
         val fullTextSearch =
             FullTextSearch.ofConfig(
                 FullTextSearchConfig.builder()
+                    .b(0.0)
                     .caseSensitive(true)
+                    .k1(0.0)
                     .language(Language.ARABIC)
                     .removeStopwords(true)
                     .stemming(true)

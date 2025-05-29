@@ -19,7 +19,9 @@ import kotlin.jvm.optionals.getOrNull
 /** Configuration options for full-text search. */
 class FullTextSearchConfig
 private constructor(
+    private val b: JsonField<Double>,
     private val caseSensitive: JsonField<Boolean>,
+    private val k1: JsonField<Double>,
     private val language: JsonField<Language>,
     private val removeStopwords: JsonField<Boolean>,
     private val stemming: JsonField<Boolean>,
@@ -29,9 +31,11 @@ private constructor(
 
     @JsonCreator
     private constructor(
+        @JsonProperty("b") @ExcludeMissing b: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("case_sensitive")
         @ExcludeMissing
         caseSensitive: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("k1") @ExcludeMissing k1: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("language") @ExcludeMissing language: JsonField<Language> = JsonMissing.of(),
         @JsonProperty("remove_stopwords")
         @ExcludeMissing
@@ -40,7 +44,15 @@ private constructor(
         @JsonProperty("tokenizer")
         @ExcludeMissing
         tokenizer: JsonField<Tokenizer> = JsonMissing.of(),
-    ) : this(caseSensitive, language, removeStopwords, stemming, tokenizer, mutableMapOf())
+    ) : this(b, caseSensitive, k1, language, removeStopwords, stemming, tokenizer, mutableMapOf())
+
+    /**
+     * The `b` document length normalization parameter for BM25. Defaults to `0.75`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun b(): Optional<Double> = b.getOptional("b")
 
     /**
      * Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive).
@@ -49,6 +61,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun caseSensitive(): Optional<Boolean> = caseSensitive.getOptional("case_sensitive")
+
+    /**
+     * The `k1` term saturation parameter for BM25. Defaults to `1.2`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun k1(): Optional<Double> = k1.getOptional("k1")
 
     /**
      * Describes the language of a text attribute. Defaults to `english`.
@@ -84,6 +104,13 @@ private constructor(
     fun tokenizer(): Optional<Tokenizer> = tokenizer.getOptional("tokenizer")
 
     /**
+     * Returns the raw JSON value of [b].
+     *
+     * Unlike [b], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("b") @ExcludeMissing fun _b(): JsonField<Double> = b
+
+    /**
      * Returns the raw JSON value of [caseSensitive].
      *
      * Unlike [caseSensitive], this method doesn't throw if the JSON field has an unexpected type.
@@ -91,6 +118,13 @@ private constructor(
     @JsonProperty("case_sensitive")
     @ExcludeMissing
     fun _caseSensitive(): JsonField<Boolean> = caseSensitive
+
+    /**
+     * Returns the raw JSON value of [k1].
+     *
+     * Unlike [k1], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("k1") @ExcludeMissing fun _k1(): JsonField<Double> = k1
 
     /**
      * Returns the raw JSON value of [language].
@@ -143,7 +177,9 @@ private constructor(
     /** A builder for [FullTextSearchConfig]. */
     class Builder internal constructor() {
 
+        private var b: JsonField<Double> = JsonMissing.of()
         private var caseSensitive: JsonField<Boolean> = JsonMissing.of()
+        private var k1: JsonField<Double> = JsonMissing.of()
         private var language: JsonField<Language> = JsonMissing.of()
         private var removeStopwords: JsonField<Boolean> = JsonMissing.of()
         private var stemming: JsonField<Boolean> = JsonMissing.of()
@@ -152,13 +188,26 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(fullTextSearchConfig: FullTextSearchConfig) = apply {
+            b = fullTextSearchConfig.b
             caseSensitive = fullTextSearchConfig.caseSensitive
+            k1 = fullTextSearchConfig.k1
             language = fullTextSearchConfig.language
             removeStopwords = fullTextSearchConfig.removeStopwords
             stemming = fullTextSearchConfig.stemming
             tokenizer = fullTextSearchConfig.tokenizer
             additionalProperties = fullTextSearchConfig.additionalProperties.toMutableMap()
         }
+
+        /** The `b` document length normalization parameter for BM25. Defaults to `0.75`. */
+        fun b(b: Double) = b(JsonField.of(b))
+
+        /**
+         * Sets [Builder.b] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.b] with a well-typed [Double] value instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun b(b: JsonField<Double>) = apply { this.b = b }
 
         /** Whether searching is case-sensitive. Defaults to `false` (i.e. case-insensitive). */
         fun caseSensitive(caseSensitive: Boolean) = caseSensitive(JsonField.of(caseSensitive))
@@ -173,6 +222,17 @@ private constructor(
         fun caseSensitive(caseSensitive: JsonField<Boolean>) = apply {
             this.caseSensitive = caseSensitive
         }
+
+        /** The `k1` term saturation parameter for BM25. Defaults to `1.2`. */
+        fun k1(k1: Double) = k1(JsonField.of(k1))
+
+        /**
+         * Sets [Builder.k1] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.k1] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun k1(k1: JsonField<Double>) = apply { this.k1 = k1 }
 
         /** Describes the language of a text attribute. Defaults to `english`. */
         fun language(language: Language) = language(JsonField.of(language))
@@ -254,7 +314,9 @@ private constructor(
          */
         fun build(): FullTextSearchConfig =
             FullTextSearchConfig(
+                b,
                 caseSensitive,
+                k1,
                 language,
                 removeStopwords,
                 stemming,
@@ -270,7 +332,9 @@ private constructor(
             return@apply
         }
 
+        b()
         caseSensitive()
+        k1()
         language().ifPresent { it.validate() }
         removeStopwords()
         stemming()
@@ -293,7 +357,9 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (caseSensitive.asKnown().isPresent) 1 else 0) +
+        (if (b.asKnown().isPresent) 1 else 0) +
+            (if (caseSensitive.asKnown().isPresent) 1 else 0) +
+            (if (k1.asKnown().isPresent) 1 else 0) +
             (language.asKnown().getOrNull()?.validity() ?: 0) +
             (if (removeStopwords.asKnown().isPresent) 1 else 0) +
             (if (stemming.asKnown().isPresent) 1 else 0) +
@@ -304,15 +370,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FullTextSearchConfig && caseSensitive == other.caseSensitive && language == other.language && removeStopwords == other.removeStopwords && stemming == other.stemming && tokenizer == other.tokenizer && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FullTextSearchConfig && b == other.b && caseSensitive == other.caseSensitive && k1 == other.k1 && language == other.language && removeStopwords == other.removeStopwords && stemming == other.stemming && tokenizer == other.tokenizer && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(caseSensitive, language, removeStopwords, stemming, tokenizer, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(b, caseSensitive, k1, language, removeStopwords, stemming, tokenizer, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FullTextSearchConfig{caseSensitive=$caseSensitive, language=$language, removeStopwords=$removeStopwords, stemming=$stemming, tokenizer=$tokenizer, additionalProperties=$additionalProperties}"
+        "FullTextSearchConfig{b=$b, caseSensitive=$caseSensitive, k1=$k1, language=$language, removeStopwords=$removeStopwords, stemming=$stemming, tokenizer=$tokenizer, additionalProperties=$additionalProperties}"
 }
