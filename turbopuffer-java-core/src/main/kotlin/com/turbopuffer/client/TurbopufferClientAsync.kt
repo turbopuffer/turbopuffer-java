@@ -2,7 +2,6 @@
 
 package com.turbopuffer.client
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.ClientListNamespacesPageAsync
@@ -88,26 +87,22 @@ interface TurbopufferClientAsync {
          * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
          * [TurbopufferClientAsync.listNamespaces].
          */
-        @MustBeClosed
         fun listNamespaces(): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> =
             listNamespaces(ClientListNamespacesParams.none())
 
         /** @see [listNamespaces] */
-        @MustBeClosed
         fun listNamespaces(
             params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>>
 
         /** @see [listNamespaces] */
-        @MustBeClosed
         fun listNamespaces(
             params: ClientListNamespacesParams = ClientListNamespacesParams.none()
         ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> =
             listNamespaces(params, RequestOptions.none())
 
         /** @see [listNamespaces] */
-        @MustBeClosed
         fun listNamespaces(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> =
