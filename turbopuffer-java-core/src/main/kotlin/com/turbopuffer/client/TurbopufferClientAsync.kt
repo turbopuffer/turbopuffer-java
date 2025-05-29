@@ -4,8 +4,8 @@ package com.turbopuffer.client
 
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
-import com.turbopuffer.models.ClientListNamespacesPageAsync
 import com.turbopuffer.models.ClientListNamespacesParams
+import com.turbopuffer.models.ClientListNamespacesResponse
 import com.turbopuffer.services.async.NamespaceServiceAsync
 import java.util.concurrent.CompletableFuture
 
@@ -41,25 +41,25 @@ interface TurbopufferClientAsync {
     fun namespaces(): NamespaceServiceAsync
 
     /** List namespaces. */
-    fun listNamespaces(): CompletableFuture<ClientListNamespacesPageAsync> =
+    fun listNamespaces(): CompletableFuture<ClientListNamespacesResponse> =
         listNamespaces(ClientListNamespacesParams.none())
 
     /** @see [listNamespaces] */
     fun listNamespaces(
         params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<ClientListNamespacesPageAsync>
+    ): CompletableFuture<ClientListNamespacesResponse>
 
     /** @see [listNamespaces] */
     fun listNamespaces(
         params: ClientListNamespacesParams = ClientListNamespacesParams.none()
-    ): CompletableFuture<ClientListNamespacesPageAsync> =
+    ): CompletableFuture<ClientListNamespacesResponse> =
         listNamespaces(params, RequestOptions.none())
 
     /** @see [listNamespaces] */
     fun listNamespaces(
         requestOptions: RequestOptions
-    ): CompletableFuture<ClientListNamespacesPageAsync> =
+    ): CompletableFuture<ClientListNamespacesResponse> =
         listNamespaces(ClientListNamespacesParams.none(), requestOptions)
 
     /**
@@ -87,25 +87,25 @@ interface TurbopufferClientAsync {
          * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
          * [TurbopufferClientAsync.listNamespaces].
          */
-        fun listNamespaces(): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> =
+        fun listNamespaces(): CompletableFuture<HttpResponseFor<ClientListNamespacesResponse>> =
             listNamespaces(ClientListNamespacesParams.none())
 
         /** @see [listNamespaces] */
         fun listNamespaces(
             params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>>
+        ): CompletableFuture<HttpResponseFor<ClientListNamespacesResponse>>
 
         /** @see [listNamespaces] */
         fun listNamespaces(
             params: ClientListNamespacesParams = ClientListNamespacesParams.none()
-        ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> =
+        ): CompletableFuture<HttpResponseFor<ClientListNamespacesResponse>> =
             listNamespaces(params, RequestOptions.none())
 
         /** @see [listNamespaces] */
         fun listNamespaces(
             requestOptions: RequestOptions
-        ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> =
+        ): CompletableFuture<HttpResponseFor<ClientListNamespacesResponse>> =
             listNamespaces(ClientListNamespacesParams.none(), requestOptions)
     }
 }

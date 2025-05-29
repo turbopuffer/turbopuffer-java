@@ -5,8 +5,8 @@ package com.turbopuffer.client
 import com.google.errorprone.annotations.MustBeClosed
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
-import com.turbopuffer.models.ClientListNamespacesPage
 import com.turbopuffer.models.ClientListNamespacesParams
+import com.turbopuffer.models.ClientListNamespacesResponse
 import com.turbopuffer.services.blocking.NamespaceService
 
 /**
@@ -41,22 +41,22 @@ interface TurbopufferClient {
     fun namespaces(): NamespaceService
 
     /** List namespaces. */
-    fun listNamespaces(): ClientListNamespacesPage =
+    fun listNamespaces(): ClientListNamespacesResponse =
         listNamespaces(ClientListNamespacesParams.none())
 
     /** @see [listNamespaces] */
     fun listNamespaces(
         params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): ClientListNamespacesPage
+    ): ClientListNamespacesResponse
 
     /** @see [listNamespaces] */
     fun listNamespaces(
         params: ClientListNamespacesParams = ClientListNamespacesParams.none()
-    ): ClientListNamespacesPage = listNamespaces(params, RequestOptions.none())
+    ): ClientListNamespacesResponse = listNamespaces(params, RequestOptions.none())
 
     /** @see [listNamespaces] */
-    fun listNamespaces(requestOptions: RequestOptions): ClientListNamespacesPage =
+    fun listNamespaces(requestOptions: RequestOptions): ClientListNamespacesResponse =
         listNamespaces(ClientListNamespacesParams.none(), requestOptions)
 
     /**
@@ -82,7 +82,7 @@ interface TurbopufferClient {
          * [TurbopufferClient.listNamespaces].
          */
         @MustBeClosed
-        fun listNamespaces(): HttpResponseFor<ClientListNamespacesPage> =
+        fun listNamespaces(): HttpResponseFor<ClientListNamespacesResponse> =
             listNamespaces(ClientListNamespacesParams.none())
 
         /** @see [listNamespaces] */
@@ -90,19 +90,20 @@ interface TurbopufferClient {
         fun listNamespaces(
             params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<ClientListNamespacesPage>
+        ): HttpResponseFor<ClientListNamespacesResponse>
 
         /** @see [listNamespaces] */
         @MustBeClosed
         fun listNamespaces(
             params: ClientListNamespacesParams = ClientListNamespacesParams.none()
-        ): HttpResponseFor<ClientListNamespacesPage> = listNamespaces(params, RequestOptions.none())
+        ): HttpResponseFor<ClientListNamespacesResponse> =
+            listNamespaces(params, RequestOptions.none())
 
         /** @see [listNamespaces] */
         @MustBeClosed
         fun listNamespaces(
             requestOptions: RequestOptions
-        ): HttpResponseFor<ClientListNamespacesPage> =
+        ): HttpResponseFor<ClientListNamespacesResponse> =
             listNamespaces(ClientListNamespacesParams.none(), requestOptions)
     }
 }
