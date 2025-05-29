@@ -22,7 +22,7 @@ private constructor(
     private val ann: JsonField<Boolean>,
     private val filterable: JsonField<Boolean>,
     private val fullTextSearch: JsonField<FullTextSearch>,
-    private val type: JsonField<AttributeType>,
+    private val type: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -35,7 +35,7 @@ private constructor(
         @JsonProperty("full_text_search")
         @ExcludeMissing
         fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing type: JsonField<AttributeType> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
     ) : this(ann, filterable, fullTextSearch, type, mutableMapOf())
 
     /**
@@ -65,12 +65,13 @@ private constructor(
     fun fullTextSearch(): Optional<FullTextSearch> = fullTextSearch.getOptional("full_text_search")
 
     /**
-     * The data type of the attribute.
+     * The data type of the attribute. Valid values: string, int, uint, uuid, datetime, bool,
+     * []string, []int, []uint, []uuid, []datetime, [DIMS]f16, [DIMS]f32.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun type(): Optional<AttributeType> = type.getOptional("type")
+    fun type(): Optional<String> = type.getOptional("type")
 
     /**
      * Returns the raw JSON value of [ann].
@@ -100,7 +101,7 @@ private constructor(
      *
      * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<AttributeType> = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -126,7 +127,7 @@ private constructor(
         private var ann: JsonField<Boolean> = JsonMissing.of()
         private var filterable: JsonField<Boolean> = JsonMissing.of()
         private var fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of()
-        private var type: JsonField<AttributeType> = JsonMissing.of()
+        private var type: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -187,25 +188,19 @@ private constructor(
         fun fullTextSearch(config: FullTextSearchConfig) =
             fullTextSearch(FullTextSearch.ofConfig(config))
 
-        /** The data type of the attribute. */
-        fun type(type: AttributeType) = type(JsonField.of(type))
+        /**
+         * The data type of the attribute. Valid values: string, int, uint, uuid, datetime, bool,
+         * []string, []int, []uint, []uuid, []datetime, [DIMS]f16, [DIMS]f32.
+         */
+        fun type(type: String) = type(JsonField.of(type))
 
         /**
          * Sets [Builder.type] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.type] with a well-typed [AttributeType] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun type(type: JsonField<AttributeType>) = apply { this.type = type }
-
-        /**
-         * Sets [type] to an arbitrary [String].
-         *
-         * You should usually call [type] with a well-typed [AttributeType] constant instead. This
+         * You should usually call [Builder.type] with a well-typed [String] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun type(value: String) = type(AttributeType.of(value))
+        fun type(type: JsonField<String>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()

@@ -18,13 +18,13 @@ internal class AttributeSchemaConfigTest {
                 .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
-                .type(AttributeType.STRING)
+                .type("string")
                 .build()
 
         assertThat(attributeSchemaConfig.ann()).contains(true)
         assertThat(attributeSchemaConfig.filterable()).contains(true)
         assertThat(attributeSchemaConfig.fullTextSearch()).contains(FullTextSearch.ofBool(true))
-        assertThat(attributeSchemaConfig.type()).contains(AttributeType.STRING)
+        assertThat(attributeSchemaConfig.type()).contains("string")
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -36,7 +36,7 @@ internal class AttributeSchemaConfigTest {
                 .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
-                .type(AttributeType.STRING)
+                .type("string")
                 .build()
 
         val roundtrippedAttributeSchemaConfig =
