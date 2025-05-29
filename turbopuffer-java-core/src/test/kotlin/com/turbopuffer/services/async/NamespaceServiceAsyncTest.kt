@@ -101,7 +101,14 @@ internal class NamespaceServiceAsyncTest {
                     .namespace("namespace")
                     .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
-                    .aggregateBy(JsonValue.from(mapOf<String, Any>()))
+                    .aggregateBy(
+                        NamespaceQueryParams.AggregateBy.builder()
+                            .putAdditionalProperty(
+                                "foo",
+                                JsonValue.from(listOf(mapOf<String, Any>())),
+                            )
+                            .build()
+                    )
                     .consistency(
                         NamespaceQueryParams.Consistency.builder()
                             .level(NamespaceQueryParams.Consistency.Level.STRONG)

@@ -15,6 +15,7 @@ import com.turbopuffer.core.Params
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
+import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -43,8 +44,13 @@ private constructor(
      */
     fun topK(): Long = body.topK()
 
-    /** Aggregations to compute over all documents in the namespace that match the filters. */
-    fun _aggregateBy(): JsonValue = body._aggregateBy()
+    /**
+     * Aggregations to compute over all documents in the namespace that match the filters.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun aggregateBy(): Optional<AggregateBy> = body.aggregateBy()
 
     /**
      * The consistency level for a query.
@@ -89,6 +95,13 @@ private constructor(
      * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _topK(): JsonField<Long> = body._topK()
+
+    /**
+     * Returns the raw JSON value of [aggregateBy].
+     *
+     * Unlike [aggregateBy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _aggregateBy(): JsonField<AggregateBy> = body._aggregateBy()
 
     /**
      * Returns the raw JSON value of [consistency].
@@ -191,7 +204,18 @@ private constructor(
         fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
 
         /** Aggregations to compute over all documents in the namespace that match the filters. */
-        fun aggregateBy(aggregateBy: JsonValue) = apply { body.aggregateBy(aggregateBy) }
+        fun aggregateBy(aggregateBy: AggregateBy) = apply { body.aggregateBy(aggregateBy) }
+
+        /**
+         * Sets [Builder.aggregateBy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.aggregateBy] with a well-typed [AggregateBy] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun aggregateBy(aggregateBy: JsonField<AggregateBy>) = apply {
+            body.aggregateBy(aggregateBy)
+        }
 
         /** The consistency level for a query. */
         fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
@@ -424,7 +448,7 @@ private constructor(
     private constructor(
         private val rankBy: JsonValue,
         private val topK: JsonField<Long>,
-        private val aggregateBy: JsonValue,
+        private val aggregateBy: JsonField<AggregateBy>,
         private val consistency: JsonField<Consistency>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val filters: JsonValue,
@@ -437,7 +461,9 @@ private constructor(
         private constructor(
             @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("aggregate_by") @ExcludeMissing aggregateBy: JsonValue = JsonMissing.of(),
+            @JsonProperty("aggregate_by")
+            @ExcludeMissing
+            aggregateBy: JsonField<AggregateBy> = JsonMissing.of(),
             @JsonProperty("consistency")
             @ExcludeMissing
             consistency: JsonField<Consistency> = JsonMissing.of(),
@@ -474,8 +500,13 @@ private constructor(
          */
         fun topK(): Long = topK.getRequired("top_k")
 
-        /** Aggregations to compute over all documents in the namespace that match the filters. */
-        @JsonProperty("aggregate_by") @ExcludeMissing fun _aggregateBy(): JsonValue = aggregateBy
+        /**
+         * Aggregations to compute over all documents in the namespace that match the filters.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun aggregateBy(): Optional<AggregateBy> = aggregateBy.getOptional("aggregate_by")
 
         /**
          * The consistency level for a query.
@@ -524,6 +555,15 @@ private constructor(
          * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
+
+        /**
+         * Returns the raw JSON value of [aggregateBy].
+         *
+         * Unlike [aggregateBy], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("aggregate_by")
+        @ExcludeMissing
+        fun _aggregateBy(): JsonField<AggregateBy> = aggregateBy
 
         /**
          * Returns the raw JSON value of [consistency].
@@ -595,7 +635,7 @@ private constructor(
 
             private var rankBy: JsonValue? = null
             private var topK: JsonField<Long>? = null
-            private var aggregateBy: JsonValue = JsonMissing.of()
+            private var aggregateBy: JsonField<AggregateBy> = JsonMissing.of()
             private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var filters: JsonValue = JsonMissing.of()
@@ -634,7 +674,18 @@ private constructor(
             /**
              * Aggregations to compute over all documents in the namespace that match the filters.
              */
-            fun aggregateBy(aggregateBy: JsonValue) = apply { this.aggregateBy = aggregateBy }
+            fun aggregateBy(aggregateBy: AggregateBy) = aggregateBy(JsonField.of(aggregateBy))
+
+            /**
+             * Sets [Builder.aggregateBy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.aggregateBy] with a well-typed [AggregateBy] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun aggregateBy(aggregateBy: JsonField<AggregateBy>) = apply {
+                this.aggregateBy = aggregateBy
+            }
 
             /** The consistency level for a query. */
             fun consistency(consistency: Consistency) = consistency(JsonField.of(consistency))
@@ -764,6 +815,7 @@ private constructor(
             }
 
             topK()
+            aggregateBy().ifPresent { it.validate() }
             consistency().ifPresent { it.validate() }
             distanceMetric().ifPresent { it.validate() }
             includeAttributes().ifPresent { it.validate() }
@@ -788,6 +840,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (topK.asKnown().isPresent) 1 else 0) +
+                (aggregateBy.asKnown().getOrNull()?.validity() ?: 0) +
                 (consistency.asKnown().getOrNull()?.validity() ?: 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
@@ -809,6 +862,108 @@ private constructor(
 
         override fun toString() =
             "Body{rankBy=$rankBy, topK=$topK, aggregateBy=$aggregateBy, consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+    }
+
+    /** Aggregations to compute over all documents in the namespace that match the filters. */
+    class AggregateBy
+    @JsonCreator
+    private constructor(
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
+    ) {
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [AggregateBy]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AggregateBy]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(aggregateBy: AggregateBy) = apply {
+                additionalProperties = aggregateBy.additionalProperties.toMutableMap()
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AggregateBy].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): AggregateBy = AggregateBy(additionalProperties.toImmutable())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): AggregateBy = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is AggregateBy && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "AggregateBy{additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
