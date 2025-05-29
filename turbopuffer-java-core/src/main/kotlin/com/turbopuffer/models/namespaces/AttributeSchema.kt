@@ -47,7 +47,7 @@ private constructor(
     fun ann(): Optional<Boolean> = ann.getOptional("ann")
 
     /**
-     * Whether or not the attributes can be used in filters/WHERE clauses.
+     * Whether or not the attributes can be used in filters.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -149,7 +149,7 @@ private constructor(
          */
         fun ann(ann: JsonField<Boolean>) = apply { this.ann = ann }
 
-        /** Whether or not the attributes can be used in filters/WHERE clauses. */
+        /** Whether or not the attributes can be used in filters. */
         fun filterable(filterable: Boolean) = filterable(JsonField.of(filterable))
 
         /**
