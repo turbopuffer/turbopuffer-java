@@ -19,7 +19,12 @@ internal class NamespaceGetSchemaResponseTest {
                 .putAdditionalProperty(
                     "foo",
                     JsonValue.from(
-                        mapOf("filterable" to true, "full_text_search" to true, "type" to "string")
+                        mapOf(
+                            "ann" to true,
+                            "filterable" to true,
+                            "full_text_search" to true,
+                            "type" to "string",
+                        )
                     ),
                 )
                 .build()
@@ -34,7 +39,12 @@ internal class NamespaceGetSchemaResponseTest {
                 .putAdditionalProperty(
                     "foo",
                     JsonValue.from(
-                        mapOf("filterable" to true, "full_text_search" to true, "type" to "string")
+                        mapOf(
+                            "ann" to true,
+                            "filterable" to true,
+                            "full_text_search" to true,
+                            "type" to "string",
+                        )
                     ),
                 )
                 .build()

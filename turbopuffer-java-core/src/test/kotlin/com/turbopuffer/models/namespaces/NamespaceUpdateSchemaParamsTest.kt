@@ -21,6 +21,7 @@ internal class NamespaceUpdateSchemaParamsTest {
                         "foo",
                         JsonValue.from(
                             mapOf(
+                                "ann" to true,
                                 "filterable" to true,
                                 "full_text_search" to true,
                                 "type" to "string",
@@ -54,6 +55,7 @@ internal class NamespaceUpdateSchemaParamsTest {
                             "foo",
                             JsonValue.from(
                                 mapOf(
+                                    "ann" to true,
                                     "filterable" to true,
                                     "full_text_search" to true,
                                     "type" to "string",
@@ -73,6 +75,7 @@ internal class NamespaceUpdateSchemaParamsTest {
                         "foo",
                         JsonValue.from(
                             mapOf(
+                                "ann" to true,
                                 "filterable" to true,
                                 "full_text_search" to true,
                                 "type" to "string",
