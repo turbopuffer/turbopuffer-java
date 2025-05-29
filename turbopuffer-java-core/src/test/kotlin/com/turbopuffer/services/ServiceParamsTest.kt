@@ -52,6 +52,9 @@ internal class ServiceParamsTest {
 
         turbopufferClient.listNamespaces(
             ClientListNamespacesParams.builder()
+                .cursor("cursor")
+                .pageSize(1)
+                .prefix("prefix")
                 .putAdditionalHeader("Secret-Header", "42")
                 .putAdditionalQueryParam("secret_query_param", "42")
                 .build()
