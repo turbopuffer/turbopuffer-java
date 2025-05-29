@@ -18,7 +18,7 @@ internal class NamespaceQueryParamsTest {
             .topK(0L)
             .aggregateBy(
                 NamespaceQueryParams.AggregateBy.builder()
-                    .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf<String, Any>())))
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
             .consistency(
@@ -57,7 +57,7 @@ internal class NamespaceQueryParamsTest {
                 .topK(0L)
                 .aggregateBy(
                     NamespaceQueryParams.AggregateBy.builder()
-                        .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf<String, Any>())))
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
                 .consistency(
@@ -78,7 +78,7 @@ internal class NamespaceQueryParamsTest {
         assertThat(body.aggregateBy())
             .contains(
                 NamespaceQueryParams.AggregateBy.builder()
-                    .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf<String, Any>())))
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
         assertThat(body.consistency())
