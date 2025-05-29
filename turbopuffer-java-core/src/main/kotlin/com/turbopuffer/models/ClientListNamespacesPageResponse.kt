@@ -18,7 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-class ClientListNamespacesResponse
+class ClientListNamespacesPageResponse
 private constructor(
     private val namespaces: JsonField<List<NamespaceSummary>>,
     private val nextCursor: JsonField<String>,
@@ -82,12 +82,13 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [ClientListNamespacesResponse].
+         * Returns a mutable builder for constructing an instance of
+         * [ClientListNamespacesPageResponse].
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ClientListNamespacesResponse]. */
+    /** A builder for [ClientListNamespacesPageResponse]. */
     class Builder internal constructor() {
 
         private var namespaces: JsonField<MutableList<NamespaceSummary>>? = null
@@ -95,11 +96,13 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(clientListNamespacesResponse: ClientListNamespacesResponse) = apply {
-            namespaces = clientListNamespacesResponse.namespaces.map { it.toMutableList() }
-            nextCursor = clientListNamespacesResponse.nextCursor
-            additionalProperties = clientListNamespacesResponse.additionalProperties.toMutableMap()
-        }
+        internal fun from(clientListNamespacesPageResponse: ClientListNamespacesPageResponse) =
+            apply {
+                namespaces = clientListNamespacesPageResponse.namespaces.map { it.toMutableList() }
+                nextCursor = clientListNamespacesPageResponse.nextCursor
+                additionalProperties =
+                    clientListNamespacesPageResponse.additionalProperties.toMutableMap()
+            }
 
         /** The list of namespaces. */
         fun namespaces(namespaces: List<NamespaceSummary>) = namespaces(JsonField.of(namespaces))
@@ -159,12 +162,12 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [ClientListNamespacesResponse].
+         * Returns an immutable instance of [ClientListNamespacesPageResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): ClientListNamespacesResponse =
-            ClientListNamespacesResponse(
+        fun build(): ClientListNamespacesPageResponse =
+            ClientListNamespacesPageResponse(
                 (namespaces ?: JsonMissing.of()).map { it.toImmutable() },
                 nextCursor,
                 additionalProperties.toMutableMap(),
@@ -173,7 +176,7 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): ClientListNamespacesResponse = apply {
+    fun validate(): ClientListNamespacesPageResponse = apply {
         if (validated) {
             return@apply
         }
@@ -206,7 +209,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ClientListNamespacesResponse && namespaces == other.namespaces && nextCursor == other.nextCursor && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ClientListNamespacesPageResponse && namespaces == other.namespaces && nextCursor == other.nextCursor && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -216,5 +219,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ClientListNamespacesResponse{namespaces=$namespaces, nextCursor=$nextCursor, additionalProperties=$additionalProperties}"
+        "ClientListNamespacesPageResponse{namespaces=$namespaces, nextCursor=$nextCursor, additionalProperties=$additionalProperties}"
 }

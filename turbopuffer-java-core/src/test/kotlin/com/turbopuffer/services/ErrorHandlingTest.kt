@@ -22,7 +22,6 @@ import com.turbopuffer.errors.TurbopufferException
 import com.turbopuffer.errors.UnauthorizedException
 import com.turbopuffer.errors.UnexpectedStatusCodeException
 import com.turbopuffer.errors.UnprocessableEntityException
-import com.turbopuffer.models.ClientListNamespacesParams
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.BeforeEach
@@ -71,16 +70,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e =
-            assertThrows<BadRequestException> {
-                turbopufferClient.listNamespaces(
-                    ClientListNamespacesParams.builder()
-                        .cursor("cursor")
-                        .pageSize(1)
-                        .prefix("prefix")
-                        .build()
-                )
-            }
+        val e = assertThrows<BadRequestException> { turbopufferClient.listNamespaces() }
 
         assertThat(e.statusCode()).isEqualTo(400)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -98,16 +88,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e =
-            assertThrows<UnauthorizedException> {
-                turbopufferClient.listNamespaces(
-                    ClientListNamespacesParams.builder()
-                        .cursor("cursor")
-                        .pageSize(1)
-                        .prefix("prefix")
-                        .build()
-                )
-            }
+        val e = assertThrows<UnauthorizedException> { turbopufferClient.listNamespaces() }
 
         assertThat(e.statusCode()).isEqualTo(401)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -125,16 +106,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e =
-            assertThrows<PermissionDeniedException> {
-                turbopufferClient.listNamespaces(
-                    ClientListNamespacesParams.builder()
-                        .cursor("cursor")
-                        .pageSize(1)
-                        .prefix("prefix")
-                        .build()
-                )
-            }
+        val e = assertThrows<PermissionDeniedException> { turbopufferClient.listNamespaces() }
 
         assertThat(e.statusCode()).isEqualTo(403)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -152,16 +124,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e =
-            assertThrows<NotFoundException> {
-                turbopufferClient.listNamespaces(
-                    ClientListNamespacesParams.builder()
-                        .cursor("cursor")
-                        .pageSize(1)
-                        .prefix("prefix")
-                        .build()
-                )
-            }
+        val e = assertThrows<NotFoundException> { turbopufferClient.listNamespaces() }
 
         assertThat(e.statusCode()).isEqualTo(404)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -179,16 +142,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e =
-            assertThrows<UnprocessableEntityException> {
-                turbopufferClient.listNamespaces(
-                    ClientListNamespacesParams.builder()
-                        .cursor("cursor")
-                        .pageSize(1)
-                        .prefix("prefix")
-                        .build()
-                )
-            }
+        val e = assertThrows<UnprocessableEntityException> { turbopufferClient.listNamespaces() }
 
         assertThat(e.statusCode()).isEqualTo(422)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -206,16 +160,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e =
-            assertThrows<RateLimitException> {
-                turbopufferClient.listNamespaces(
-                    ClientListNamespacesParams.builder()
-                        .cursor("cursor")
-                        .pageSize(1)
-                        .prefix("prefix")
-                        .build()
-                )
-            }
+        val e = assertThrows<RateLimitException> { turbopufferClient.listNamespaces() }
 
         assertThat(e.statusCode()).isEqualTo(429)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -233,16 +178,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e =
-            assertThrows<InternalServerException> {
-                turbopufferClient.listNamespaces(
-                    ClientListNamespacesParams.builder()
-                        .cursor("cursor")
-                        .pageSize(1)
-                        .prefix("prefix")
-                        .build()
-                )
-            }
+        val e = assertThrows<InternalServerException> { turbopufferClient.listNamespaces() }
 
         assertThat(e.statusCode()).isEqualTo(500)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -260,16 +196,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e =
-            assertThrows<UnexpectedStatusCodeException> {
-                turbopufferClient.listNamespaces(
-                    ClientListNamespacesParams.builder()
-                        .cursor("cursor")
-                        .pageSize(1)
-                        .prefix("prefix")
-                        .build()
-                )
-            }
+        val e = assertThrows<UnexpectedStatusCodeException> { turbopufferClient.listNamespaces() }
 
         assertThat(e.statusCode()).isEqualTo(999)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -285,16 +212,7 @@ internal class ErrorHandlingTest {
                 .willReturn(status(200).withHeader(HEADER_NAME, HEADER_VALUE).withBody(NOT_JSON))
         )
 
-        val e =
-            assertThrows<TurbopufferException> {
-                turbopufferClient.listNamespaces(
-                    ClientListNamespacesParams.builder()
-                        .cursor("cursor")
-                        .pageSize(1)
-                        .prefix("prefix")
-                        .build()
-                )
-            }
+        val e = assertThrows<TurbopufferException> { turbopufferClient.listNamespaces() }
 
         assertThat(e).hasMessage("Error reading response")
     }
