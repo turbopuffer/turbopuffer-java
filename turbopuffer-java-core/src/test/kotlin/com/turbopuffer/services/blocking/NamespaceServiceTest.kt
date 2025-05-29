@@ -160,17 +160,7 @@ internal class NamespaceServiceTest {
                     .namespace("namespace")
                     .schema(
                         NamespaceUpdateSchemaParams.Schema.builder()
-                            .putAdditionalProperty(
-                                "foo",
-                                JsonValue.from(
-                                    mapOf(
-                                        "ann" to true,
-                                        "filterable" to true,
-                                        "full_text_search" to true,
-                                        "type" to "string",
-                                    )
-                                ),
-                            )
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
                     .build()
@@ -221,17 +211,7 @@ internal class NamespaceServiceTest {
                     )
                     .schema(
                         NamespaceWriteParams.Schema.builder()
-                            .putAdditionalProperty(
-                                "foo",
-                                JsonValue.from(
-                                    mapOf(
-                                        "ann" to true,
-                                        "filterable" to true,
-                                        "full_text_search" to true,
-                                        "type" to "string",
-                                    )
-                                ),
-                            )
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
                     .upsertColumns(

@@ -33,8 +33,8 @@ internal class NamespaceQueryResponseTest {
                         .serverTotalMs(0L)
                         .build()
                 )
-                .addAggregation(
-                    NamespaceQueryResponse.Aggregation.builder()
+                .aggregations(
+                    NamespaceQueryResponse.Aggregations.builder()
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
@@ -64,9 +64,9 @@ internal class NamespaceQueryResponseTest {
                     .serverTotalMs(0L)
                     .build()
             )
-        assertThat(namespaceQueryResponse.aggregations().getOrNull())
-            .containsExactly(
-                NamespaceQueryResponse.Aggregation.builder()
+        assertThat(namespaceQueryResponse.aggregations())
+            .contains(
+                NamespaceQueryResponse.Aggregations.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
@@ -101,8 +101,8 @@ internal class NamespaceQueryResponseTest {
                         .serverTotalMs(0L)
                         .build()
                 )
-                .addAggregation(
-                    NamespaceQueryResponse.Aggregation.builder()
+                .aggregations(
+                    NamespaceQueryResponse.Aggregations.builder()
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
