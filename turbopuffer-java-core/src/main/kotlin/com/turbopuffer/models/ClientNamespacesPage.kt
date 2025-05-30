@@ -10,26 +10,26 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [TurbopufferClient.listNamespaces] */
-class ClientListNamespacesPage
+/** @see [TurbopufferClient.namespaces] */
+class ClientNamespacesPage
 private constructor(
     private val service: TurbopufferClient,
-    private val params: ClientListNamespacesParams,
-    private val response: ClientListNamespacesPageResponse,
+    private val params: ClientNamespacesParams,
+    private val response: ClientNamespacesPageResponse,
 ) : Page<NamespaceSummary> {
 
     /**
-     * Delegates to [ClientListNamespacesPageResponse], but gracefully handles missing data.
+     * Delegates to [ClientNamespacesPageResponse], but gracefully handles missing data.
      *
-     * @see [ClientListNamespacesPageResponse.namespaces]
+     * @see [ClientNamespacesPageResponse.namespaces]
      */
     fun namespaces(): List<NamespaceSummary> =
         response._namespaces().getOptional("namespaces").getOrNull() ?: emptyList()
 
     /**
-     * Delegates to [ClientListNamespacesPageResponse], but gracefully handles missing data.
+     * Delegates to [ClientNamespacesPageResponse], but gracefully handles missing data.
      *
-     * @see [ClientListNamespacesPageResponse.nextCursor]
+     * @see [ClientNamespacesPageResponse.nextCursor]
      */
     fun nextCursor(): Optional<String> = response._nextCursor().getOptional("next_cursor")
 
@@ -37,29 +37,29 @@ private constructor(
 
     override fun hasNextPage(): Boolean = items().isNotEmpty() && nextCursor().isPresent
 
-    fun nextPageParams(): ClientListNamespacesParams {
+    fun nextPageParams(): ClientNamespacesParams {
         val nextCursor =
             nextCursor().getOrNull()
                 ?: throw IllegalStateException("Cannot construct next page params")
         return params.toBuilder().cursor(nextCursor).build()
     }
 
-    override fun nextPage(): ClientListNamespacesPage = service.listNamespaces(nextPageParams())
+    override fun nextPage(): ClientNamespacesPage = service.namespaces(nextPageParams())
 
     fun autoPager(): AutoPager<NamespaceSummary> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
-    fun params(): ClientListNamespacesParams = params
+    fun params(): ClientNamespacesParams = params
 
     /** The response that this page was parsed from. */
-    fun response(): ClientListNamespacesPageResponse = response
+    fun response(): ClientNamespacesPageResponse = response
 
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [ClientListNamespacesPage].
+         * Returns a mutable builder for constructing an instance of [ClientNamespacesPage].
          *
          * The following fields are required:
          * ```java
@@ -71,32 +71,30 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ClientListNamespacesPage]. */
+    /** A builder for [ClientNamespacesPage]. */
     class Builder internal constructor() {
 
         private var service: TurbopufferClient? = null
-        private var params: ClientListNamespacesParams? = null
-        private var response: ClientListNamespacesPageResponse? = null
+        private var params: ClientNamespacesParams? = null
+        private var response: ClientNamespacesPageResponse? = null
 
         @JvmSynthetic
-        internal fun from(clientListNamespacesPage: ClientListNamespacesPage) = apply {
-            service = clientListNamespacesPage.service
-            params = clientListNamespacesPage.params
-            response = clientListNamespacesPage.response
+        internal fun from(clientNamespacesPage: ClientNamespacesPage) = apply {
+            service = clientNamespacesPage.service
+            params = clientNamespacesPage.params
+            response = clientNamespacesPage.response
         }
 
         fun service(service: TurbopufferClient) = apply { this.service = service }
 
         /** The parameters that were used to request this page. */
-        fun params(params: ClientListNamespacesParams) = apply { this.params = params }
+        fun params(params: ClientNamespacesParams) = apply { this.params = params }
 
         /** The response that this page was parsed from. */
-        fun response(response: ClientListNamespacesPageResponse) = apply {
-            this.response = response
-        }
+        fun response(response: ClientNamespacesPageResponse) = apply { this.response = response }
 
         /**
-         * Returns an immutable instance of [ClientListNamespacesPage].
+         * Returns an immutable instance of [ClientNamespacesPage].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -109,8 +107,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): ClientListNamespacesPage =
-            ClientListNamespacesPage(
+        fun build(): ClientNamespacesPage =
+            ClientNamespacesPage(
                 checkRequired("service", service),
                 checkRequired("params", params),
                 checkRequired("response", response),
@@ -122,11 +120,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ClientListNamespacesPage && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is ClientNamespacesPage && service == other.service && params == other.params && response == other.response /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
 
     override fun toString() =
-        "ClientListNamespacesPage{service=$service, params=$params, response=$response}"
+        "ClientNamespacesPage{service=$service, params=$params, response=$response}"
 }

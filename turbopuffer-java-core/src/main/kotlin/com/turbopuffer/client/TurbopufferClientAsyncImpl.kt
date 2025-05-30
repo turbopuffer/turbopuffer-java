@@ -15,9 +15,9 @@ import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepareAsync
-import com.turbopuffer.models.ClientListNamespacesPageAsync
-import com.turbopuffer.models.ClientListNamespacesPageResponse
-import com.turbopuffer.models.ClientListNamespacesParams
+import com.turbopuffer.models.ClientNamespacesPageAsync
+import com.turbopuffer.models.ClientNamespacesPageResponse
+import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.async.NamespaceServiceAsync
 import com.turbopuffer.services.async.NamespaceServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
@@ -50,12 +50,12 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
 
     override fun namespaces(): NamespaceServiceAsync = namespaces
 
-    override fun listNamespaces(
-        params: ClientListNamespacesParams,
+    override fun namespaces(
+        params: ClientNamespacesParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<ClientListNamespacesPageAsync> =
+    ): CompletableFuture<ClientNamespacesPageAsync> =
         // get /v1/namespaces
-        withRawResponse().listNamespaces(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().namespaces(params, requestOptions).thenApply { it.parse() }
 
     override fun close() = clientOptions.httpClient.close()
 
@@ -70,14 +70,14 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
 
         override fun namespaces(): NamespaceServiceAsync.WithRawResponse = namespaces
 
-        private val listNamespacesHandler: Handler<ClientListNamespacesPageResponse> =
-            jsonHandler<ClientListNamespacesPageResponse>(clientOptions.jsonMapper)
+        private val namespacesHandler: Handler<ClientNamespacesPageResponse> =
+            jsonHandler<ClientNamespacesPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
-        override fun listNamespaces(
-            params: ClientListNamespacesParams,
+        override fun namespaces(
+            params: ClientNamespacesParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> {
+        ): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -90,14 +90,14 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
                 .thenApply { response ->
                     response.parseable {
                         response
-                            .use { listNamespacesHandler.handle(it) }
+                            .use { namespacesHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
                             }
                             .let {
-                                ClientListNamespacesPageAsync.builder()
+                                ClientNamespacesPageAsync.builder()
                                     .service(TurbopufferClientAsyncImpl(clientOptions))
                                     .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)

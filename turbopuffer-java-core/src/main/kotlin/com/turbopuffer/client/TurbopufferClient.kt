@@ -5,8 +5,8 @@ package com.turbopuffer.client
 import com.google.errorprone.annotations.MustBeClosed
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
-import com.turbopuffer.models.ClientListNamespacesPage
-import com.turbopuffer.models.ClientListNamespacesParams
+import com.turbopuffer.models.ClientNamespacesPage
+import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.blocking.NamespaceService
 
 /**
@@ -41,23 +41,22 @@ interface TurbopufferClient {
     fun namespaces(): NamespaceService
 
     /** List namespaces. */
-    fun listNamespaces(): ClientListNamespacesPage =
-        listNamespaces(ClientListNamespacesParams.none())
+    fun namespaces(): ClientNamespacesPage = namespaces(ClientNamespacesParams.none())
 
-    /** @see [listNamespaces] */
-    fun listNamespaces(
-        params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
+    /** @see [namespaces] */
+    fun namespaces(
+        params: ClientNamespacesParams = ClientNamespacesParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): ClientListNamespacesPage
+    ): ClientNamespacesPage
 
-    /** @see [listNamespaces] */
-    fun listNamespaces(
-        params: ClientListNamespacesParams = ClientListNamespacesParams.none()
-    ): ClientListNamespacesPage = listNamespaces(params, RequestOptions.none())
+    /** @see [namespaces] */
+    fun namespaces(
+        params: ClientNamespacesParams = ClientNamespacesParams.none()
+    ): ClientNamespacesPage = namespaces(params, RequestOptions.none())
 
-    /** @see [listNamespaces] */
-    fun listNamespaces(requestOptions: RequestOptions): ClientListNamespacesPage =
-        listNamespaces(ClientListNamespacesParams.none(), requestOptions)
+    /** @see [namespaces] */
+    fun namespaces(requestOptions: RequestOptions): ClientNamespacesPage =
+        namespaces(ClientNamespacesParams.none(), requestOptions)
 
     /**
      * Closes this client, relinquishing any underlying resources.
@@ -79,30 +78,28 @@ interface TurbopufferClient {
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
-         * [TurbopufferClient.listNamespaces].
+         * [TurbopufferClient.namespaces].
          */
         @MustBeClosed
-        fun listNamespaces(): HttpResponseFor<ClientListNamespacesPage> =
-            listNamespaces(ClientListNamespacesParams.none())
+        fun namespaces(): HttpResponseFor<ClientNamespacesPage> =
+            namespaces(ClientNamespacesParams.none())
 
-        /** @see [listNamespaces] */
+        /** @see [namespaces] */
         @MustBeClosed
-        fun listNamespaces(
-            params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
+        fun namespaces(
+            params: ClientNamespacesParams = ClientNamespacesParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<ClientListNamespacesPage>
+        ): HttpResponseFor<ClientNamespacesPage>
 
-        /** @see [listNamespaces] */
+        /** @see [namespaces] */
         @MustBeClosed
-        fun listNamespaces(
-            params: ClientListNamespacesParams = ClientListNamespacesParams.none()
-        ): HttpResponseFor<ClientListNamespacesPage> = listNamespaces(params, RequestOptions.none())
+        fun namespaces(
+            params: ClientNamespacesParams = ClientNamespacesParams.none()
+        ): HttpResponseFor<ClientNamespacesPage> = namespaces(params, RequestOptions.none())
 
-        /** @see [listNamespaces] */
+        /** @see [namespaces] */
         @MustBeClosed
-        fun listNamespaces(
-            requestOptions: RequestOptions
-        ): HttpResponseFor<ClientListNamespacesPage> =
-            listNamespaces(ClientListNamespacesParams.none(), requestOptions)
+        fun namespaces(requestOptions: RequestOptions): HttpResponseFor<ClientNamespacesPage> =
+            namespaces(ClientNamespacesParams.none(), requestOptions)
     }
 }
