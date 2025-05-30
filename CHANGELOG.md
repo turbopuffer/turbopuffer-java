@@ -1,5 +1,95 @@
 # Changelog
 
+## 0.1.0-beta.13 (2025-05-30)
+
+Full Changelog: [v0.1.0-beta.12...v0.1.0-beta.13](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.12...v0.1.0-beta.13)
+
+### ⚠ BREAKING CHANGES
+
+* **client:** change precision of some numeric types
+* **client:** extract auto pagination to shared classes
+* **client:** **Migration:** - If you were referencing the `AutoPager` class on a specific `*Page` or `*PageAsync` type, then you should instead reference the shared `AutoPager` and `AutoPagerAsync` types, under the `core` package
+    - `AutoPagerAsync` now has different usage. You can call `.subscribe(...)` on the returned object instead to get called back each page item. You can also call `onCompleteFuture()` to get a future that completes when all items have been processed. Finally, you can call `.close()` on the returned object to stop auto-paginating early
+    - If you were referencing `getNextPage` or `getNextPageParams`:
+       - Swap to `nextPage()` and `nextPageParams()`
+       - Note that these both now return non-optional types (use `hasNextPage()` before calling these, since they will throw if it's impossible to get another page)
+
+### Features
+
+* **api:** api update ([555fd57](https://github.com/turbopuffer/turbopuffer-java/commit/555fd57aa97ee127c2b8c7e0bd70d7e80d162a39))
+* **api:** api update ([92f1541](https://github.com/turbopuffer/turbopuffer-java/commit/92f1541ba002225400f5a59ac7431dfd1e397818))
+* **api:** api update ([a0643c0](https://github.com/turbopuffer/turbopuffer-java/commit/a0643c0510935fc933787e564cc31f10d0686bcc))
+* **api:** api update ([490bddc](https://github.com/turbopuffer/turbopuffer-java/commit/490bddc938a74d0b63b4d206284104bf1de085b4))
+* **api:** api update ([df3583e](https://github.com/turbopuffer/turbopuffer-java/commit/df3583ecc9955a426510615cd9fffd56e8320ae8))
+* **api:** api update ([0134c48](https://github.com/turbopuffer/turbopuffer-java/commit/0134c487b35c9cf2ceae7a3b6b84b74dfdd01b95))
+* **api:** api update ([4b8fd33](https://github.com/turbopuffer/turbopuffer-java/commit/4b8fd3304cd9c8d3c0b6a1e3b7016e6febfe1df8))
+* **api:** api update ([608319b](https://github.com/turbopuffer/turbopuffer-java/commit/608319bf4b76b6c7934ebec2c9adbf1ba750d6d4))
+* **api:** api update ([dd09c8e](https://github.com/turbopuffer/turbopuffer-java/commit/dd09c8e21cc5008b8a3e20b9c0b03ef677c55d9d))
+* **api:** api update ([a2b0002](https://github.com/turbopuffer/turbopuffer-java/commit/a2b0002cca1b20bbf8947b94a6b95d68b011262d))
+* **api:** api update ([6b8db32](https://github.com/turbopuffer/turbopuffer-java/commit/6b8db32aa1e4a9b63f9727e4c1a28e68dc1e0001))
+* **api:** api update ([a6e1f68](https://github.com/turbopuffer/turbopuffer-java/commit/a6e1f689cf2cf2c47a18abcf73c07cb628e8d0cd))
+* **api:** api update ([f0552e1](https://github.com/turbopuffer/turbopuffer-java/commit/f0552e1f203b8112ba57aa70912bd090c3c6ce8f))
+* **api:** api update ([9c46bd4](https://github.com/turbopuffer/turbopuffer-java/commit/9c46bd4af5941cf5469dde92a17bd48d3ab7f41b))
+* **api:** api update ([56440a3](https://github.com/turbopuffer/turbopuffer-java/commit/56440a368e160d00fb80b2c33ea4baf57d4924d5))
+* **api:** api update ([1a17390](https://github.com/turbopuffer/turbopuffer-java/commit/1a17390ba24f8ae393909fbf65b8cdf67e26401a))
+* **api:** api update ([7844905](https://github.com/turbopuffer/turbopuffer-java/commit/784490578f1aa7a1f0c04bb0bca2e6ef09865d6d))
+* **api:** api update ([3079128](https://github.com/turbopuffer/turbopuffer-java/commit/3079128458b4391d161f796280c9d01dcdedcd0d))
+* **api:** api update ([a7fe691](https://github.com/turbopuffer/turbopuffer-java/commit/a7fe6910fef731c177481663f782dc861a6bb275))
+* **api:** api update ([59abce7](https://github.com/turbopuffer/turbopuffer-java/commit/59abce7ba40625e39a4b8484d1f08c68e87caf80))
+* **api:** api update ([cf816ac](https://github.com/turbopuffer/turbopuffer-java/commit/cf816acc6f65c4a032f166a9b3c44e5bd491d37b))
+* **api:** api update ([4e53e60](https://github.com/turbopuffer/turbopuffer-java/commit/4e53e6041b366ef8f29cfe0a13c2fca04cc3a475))
+* **api:** api update ([b4a834b](https://github.com/turbopuffer/turbopuffer-java/commit/b4a834b4ccffdea0fa4d08dd2e8a9f8ca65ec11d))
+* **api:** api update ([8aaf85c](https://github.com/turbopuffer/turbopuffer-java/commit/8aaf85cfb6dd62340d54c1e66542e1155174d415))
+* **api:** api update ([33a8c3c](https://github.com/turbopuffer/turbopuffer-java/commit/33a8c3cfeca707a635e8ce0cdaa1a7950d248c63))
+* **api:** api update ([4e1a376](https://github.com/turbopuffer/turbopuffer-java/commit/4e1a3763c311070f325cfd0f2e81efdf9e15aac4))
+* **api:** api update ([323e77f](https://github.com/turbopuffer/turbopuffer-java/commit/323e77f0cd94dccc8ac6202bd42a15a3ba56c2c9))
+* **api:** api update ([a500099](https://github.com/turbopuffer/turbopuffer-java/commit/a500099d6890546db22095d46146417ebbef0387))
+* **api:** api update ([ecbc748](https://github.com/turbopuffer/turbopuffer-java/commit/ecbc748824313c8bcaadcccfa0e22e211c0da5ec))
+* **api:** api update ([41685c8](https://github.com/turbopuffer/turbopuffer-java/commit/41685c80df2adee9f51940dd28a7c1486f2528ef))
+* **api:** api update ([35233d1](https://github.com/turbopuffer/turbopuffer-java/commit/35233d10699b913b23513226d65563028bb469b9))
+* **api:** api update ([d37e633](https://github.com/turbopuffer/turbopuffer-java/commit/d37e63354c20a2c496ff486b29e664dc7709f0f8))
+* **api:** api update ([0154464](https://github.com/turbopuffer/turbopuffer-java/commit/0154464a9911afdb4b1cd83b59f7004c130767fd))
+* **api:** api update ([78cfb7a](https://github.com/turbopuffer/turbopuffer-java/commit/78cfb7aa483fdc75a4f567954dd9593292a5b8a0))
+* **api:** api update ([73d59bf](https://github.com/turbopuffer/turbopuffer-java/commit/73d59bfc23f98c1a7ed3e72156456c08ba7feb4e))
+* **api:** api update ([16191c8](https://github.com/turbopuffer/turbopuffer-java/commit/16191c8a1ac577df925a74f73503a70ff2b31c3d))
+* **api:** api update ([a686af2](https://github.com/turbopuffer/turbopuffer-java/commit/a686af21058bf676d4fd5d52a985e6e9b643f95f))
+* **api:** api update ([9642420](https://github.com/turbopuffer/turbopuffer-java/commit/96424201b9d3d53dcaec541bbc7a14516d787cf5))
+* **api:** api update ([609f2a9](https://github.com/turbopuffer/turbopuffer-java/commit/609f2a9bc025c3fc2d3b2708fa6948ecba004693))
+* **api:** api update ([215f4d2](https://github.com/turbopuffer/turbopuffer-java/commit/215f4d253143cce38956b67df5bb576993d1ae94))
+* **api:** api update ([b8642d1](https://github.com/turbopuffer/turbopuffer-java/commit/b8642d1ac8e1f87f87ac2c71c5420cb05450cfe4))
+* **api:** api update ([8e2d350](https://github.com/turbopuffer/turbopuffer-java/commit/8e2d3506061b63a4cef46dd631ec3ec6527d1697))
+* **api:** api update ([05b4ba2](https://github.com/turbopuffer/turbopuffer-java/commit/05b4ba2d258851ba1adab2ced67f11642d01ded6))
+* **api:** api update ([fec74c5](https://github.com/turbopuffer/turbopuffer-java/commit/fec74c500dea70315de6f9f9c3603b971dba1638))
+* **api:** api update ([4fdadf6](https://github.com/turbopuffer/turbopuffer-java/commit/4fdadf6a6d2889d18567b0b0ce144f7a412e279e))
+* **api:** api update ([cdf357a](https://github.com/turbopuffer/turbopuffer-java/commit/cdf357a648097018d9259d467c376a11c060c0d4))
+* **api:** api update ([5407fa9](https://github.com/turbopuffer/turbopuffer-java/commit/5407fa9dd2b5446a90d6d63045b3a1b610a42664))
+* **api:** api update ([6c6a1b4](https://github.com/turbopuffer/turbopuffer-java/commit/6c6a1b4f1d94cae4234661e1dc30f5c68e5f1e96))
+* **api:** api update ([2c34d4a](https://github.com/turbopuffer/turbopuffer-java/commit/2c34d4a728bc9986bf695805de08a5b24ce9d413))
+* **api:** api update ([881b1d6](https://github.com/turbopuffer/turbopuffer-java/commit/881b1d6854d27e4895ffa0449ffd391258e17e87))
+* **api:** api update ([53ce0cc](https://github.com/turbopuffer/turbopuffer-java/commit/53ce0ccf8bbca45aabe54bc0c688c9e9f83493cb))
+* **api:** api update ([36b3f6f](https://github.com/turbopuffer/turbopuffer-java/commit/36b3f6ffb59ad6f2d42d9102c97878cba10b7c9c))
+* **api:** api update ([f3e3474](https://github.com/turbopuffer/turbopuffer-java/commit/f3e3474f54740195e2b0bb5799a7ae8ee5fba797))
+* **api:** manual updates ([b74b5ed](https://github.com/turbopuffer/turbopuffer-java/commit/b74b5ed5787fe214f2156f25b6f09052a3b0560d))
+* **client:** allow providing some params positionally ([fc449a3](https://github.com/turbopuffer/turbopuffer-java/commit/fc449a374ed75f62e80d860687daaf0b5927d89f))
+* **client:** extract auto pagination to shared classes ([f30fa2c](https://github.com/turbopuffer/turbopuffer-java/commit/f30fa2cbb79107aab4f82d5f963fbe5eee2f57be))
+
+
+### Bug Fixes
+
+* **client:** remove `@MustBeClosed` for future returning methods ([0b58f70](https://github.com/turbopuffer/turbopuffer-java/commit/0b58f70fd5f797199632d319049ba035aa532ff2))
+
+
+### Chores
+
+* **docs:** grammar improvements ([bc468b8](https://github.com/turbopuffer/turbopuffer-java/commit/bc468b8fa37c7da0cecdd160f205bed47682dc01))
+* **internal:** remove flaky `-Xbackend-threads=0` option ([d76b4b3](https://github.com/turbopuffer/turbopuffer-java/commit/d76b4b3ff2b663d9037638cee5467727a5425d04))
+* **internal:** update java toolchain ([5d2814b](https://github.com/turbopuffer/turbopuffer-java/commit/5d2814b048e62ef8801749e979f6774ebc962228))
+
+
+### Refactors
+
+* **client:** change precision of some numeric types ([909e381](https://github.com/turbopuffer/turbopuffer-java/commit/909e381f4b5c603345877f1b690fbb2efcc8106d))
+
 ## 0.1.0-beta.12 (2025-05-01)
 
 Full Changelog: [v0.1.0-beta.11...v0.1.0-beta.12](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.11...v0.1.0-beta.12)

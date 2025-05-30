@@ -3,7 +3,21 @@
 package com.turbopuffer.client
 
 import com.turbopuffer.core.ClientOptions
+import com.turbopuffer.core.JsonValue
+import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.getPackageVersion
+import com.turbopuffer.core.handlers.errorHandler
+import com.turbopuffer.core.handlers.jsonHandler
+import com.turbopuffer.core.handlers.withErrorHandler
+import com.turbopuffer.core.http.HttpMethod
+import com.turbopuffer.core.http.HttpRequest
+import com.turbopuffer.core.http.HttpResponse.Handler
+import com.turbopuffer.core.http.HttpResponseFor
+import com.turbopuffer.core.http.parseable
+import com.turbopuffer.core.prepare
+import com.turbopuffer.models.ClientNamespacesPage
+import com.turbopuffer.models.ClientNamespacesPageResponse
+import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.blocking.NamespaceService
 import com.turbopuffer.services.blocking.NamespaceServiceImpl
 
@@ -34,15 +48,58 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
 
     override fun namespaces(): NamespaceService = namespaces
 
+    override fun namespaces(
+        params: ClientNamespacesParams,
+        requestOptions: RequestOptions,
+    ): ClientNamespacesPage =
+        // get /v1/namespaces
+        withRawResponse().namespaces(params, requestOptions).parse()
+
     override fun close() = clientOptions.httpClient.close()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         TurbopufferClient.WithRawResponse {
+
+        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
 
         private val namespaces: NamespaceService.WithRawResponse by lazy {
             NamespaceServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun namespaces(): NamespaceService.WithRawResponse = namespaces
+
+        private val namespacesHandler: Handler<ClientNamespacesPageResponse> =
+            jsonHandler<ClientNamespacesPageResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun namespaces(
+            params: ClientNamespacesParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ClientNamespacesPage> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("v1", "namespaces")
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { namespacesHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        ClientNamespacesPage.builder()
+                            .service(TurbopufferClientImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
+            }
+        }
     }
 }

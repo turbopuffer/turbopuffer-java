@@ -19,8 +19,8 @@ internal class DocumentRowTest {
                 .vectorOfNumber(listOf(0.0))
                 .build()
 
-        assertThat(documentRow.id()).contains(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-        assertThat(documentRow.vector()).contains(DocumentRow.Vector.ofNumber(listOf(0.0)))
+        assertThat(documentRow.id()).isEqualTo(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(documentRow.vector()).contains(Vector.ofNumber(listOf(0.0)))
     }
 
     @Disabled("skipped: tests are disabled for the time being")

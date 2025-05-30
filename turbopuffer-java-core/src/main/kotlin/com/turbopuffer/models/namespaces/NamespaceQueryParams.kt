@@ -6,25 +6,12 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.turbopuffer.core.BaseDeserializer
-import com.turbopuffer.core.BaseSerializer
 import com.turbopuffer.core.Enum
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
-import com.turbopuffer.core.allMaxBy
-import com.turbopuffer.core.checkKnown
-import com.turbopuffer.core.checkRequired
-import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.toImmutable
@@ -37,13 +24,21 @@ import kotlin.jvm.optionals.getOrNull
 /** Query, filter, full-text search and vector search documents. */
 class NamespaceQueryParams
 private constructor(
-    private val namespace: String,
+    private val namespace: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun namespace(): String = namespace
+    fun namespace(): Optional<String> = Optional.ofNullable(namespace)
+
+    /**
+     * Aggregations to compute over all documents in the namespace that match the filters.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun aggregateBy(): Optional<AggregateBy> = body.aggregateBy()
 
     /**
      * The consistency level for a query.
@@ -74,16 +69,7 @@ private constructor(
      */
     fun includeAttributes(): Optional<IncludeAttributes> = body.includeAttributes()
 
-    /**
-     * Whether to return vectors for the search results. Vectors are large and slow to deserialize
-     * on the client, so use this option only if you need them.
-     *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun includeVectors(): Optional<Boolean> = body.includeVectors()
-
-    /** The attribute to rank the results by. Cannot be specified with `vector`. */
+    /** How to rank the documents in the namespace. */
     fun _rankBy(): JsonValue = body._rankBy()
 
     /**
@@ -95,13 +81,19 @@ private constructor(
     fun topK(): Optional<Long> = body.topK()
 
     /**
-     * A vector to search for. It must have the same number of dimensions as the vectors in the
-     * namespace. Cannot be specified with `rank_by`.
+     * The encoding to use for vectors in the response.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun vector(): Optional<List<Double>> = body.vector()
+    fun vectorEncoding(): Optional<VectorEncoding> = body.vectorEncoding()
+
+    /**
+     * Returns the raw JSON value of [aggregateBy].
+     *
+     * Unlike [aggregateBy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _aggregateBy(): JsonField<AggregateBy> = body._aggregateBy()
 
     /**
      * Returns the raw JSON value of [consistency].
@@ -126,13 +118,6 @@ private constructor(
     fun _includeAttributes(): JsonField<IncludeAttributes> = body._includeAttributes()
 
     /**
-     * Returns the raw JSON value of [includeVectors].
-     *
-     * Unlike [includeVectors], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _includeVectors(): JsonField<Boolean> = body._includeVectors()
-
-    /**
      * Returns the raw JSON value of [topK].
      *
      * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
@@ -140,11 +125,11 @@ private constructor(
     fun _topK(): JsonField<Long> = body._topK()
 
     /**
-     * Returns the raw JSON value of [vector].
+     * Returns the raw JSON value of [vectorEncoding].
      *
-     * Unlike [vector], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [vectorEncoding], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _vector(): JsonField<List<Double>> = body._vector()
+    fun _vectorEncoding(): JsonField<VectorEncoding> = body._vectorEncoding()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -156,14 +141,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [NamespaceQueryParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .namespace()
-         * ```
-         */
+        @JvmStatic fun none(): NamespaceQueryParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [NamespaceQueryParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -183,21 +163,38 @@ private constructor(
             additionalQueryParams = namespaceQueryParams.additionalQueryParams.toBuilder()
         }
 
-        fun namespace(namespace: String) = apply { this.namespace = namespace }
+        fun namespace(namespace: String?) = apply { this.namespace = namespace }
+
+        /** Alias for calling [Builder.namespace] with `namespace.orElse(null)`. */
+        fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
 
         /**
          * Sets the entire request body.
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [aggregateBy]
          * - [consistency]
          * - [distanceMetric]
          * - [filters]
          * - [includeAttributes]
-         * - [includeVectors]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /** Aggregations to compute over all documents in the namespace that match the filters. */
+        fun aggregateBy(aggregateBy: AggregateBy) = apply { body.aggregateBy(aggregateBy) }
+
+        /**
+         * Sets [Builder.aggregateBy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.aggregateBy] with a well-typed [AggregateBy] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun aggregateBy(aggregateBy: JsonField<AggregateBy>) = apply {
+            body.aggregateBy(aggregateBy)
+        }
 
         /** The consistency level for a query. */
         fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
@@ -259,24 +256,7 @@ private constructor(
             body.includeAttributesOfStrings(strings)
         }
 
-        /**
-         * Whether to return vectors for the search results. Vectors are large and slow to
-         * deserialize on the client, so use this option only if you need them.
-         */
-        fun includeVectors(includeVectors: Boolean) = apply { body.includeVectors(includeVectors) }
-
-        /**
-         * Sets [Builder.includeVectors] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.includeVectors] with a well-typed [Boolean] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun includeVectors(includeVectors: JsonField<Boolean>) = apply {
-            body.includeVectors(includeVectors)
-        }
-
-        /** The attribute to rank the results by. Cannot be specified with `vector`. */
+        /** How to rank the documents in the namespace. */
         fun rankBy(rankBy: JsonValue) = apply { body.rankBy(rankBy) }
 
         /** The number of results to return. */
@@ -290,27 +270,21 @@ private constructor(
          */
         fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
 
-        /**
-         * A vector to search for. It must have the same number of dimensions as the vectors in the
-         * namespace. Cannot be specified with `rank_by`.
-         */
-        fun vector(vector: List<Double>) = apply { body.vector(vector) }
+        /** The encoding to use for vectors in the response. */
+        fun vectorEncoding(vectorEncoding: VectorEncoding) = apply {
+            body.vectorEncoding(vectorEncoding)
+        }
 
         /**
-         * Sets [Builder.vector] to an arbitrary JSON value.
+         * Sets [Builder.vectorEncoding] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.vector] with a well-typed `List<Double>` value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.vectorEncoding] with a well-typed [VectorEncoding] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun vector(vector: JsonField<List<Double>>) = apply { body.vector(vector) }
-
-        /**
-         * Adds a single [Double] to [Builder.vector].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addVector(vector: Double) = apply { body.addVector(vector) }
+        fun vectorEncoding(vectorEncoding: JsonField<VectorEncoding>) = apply {
+            body.vectorEncoding(vectorEncoding)
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -433,17 +407,10 @@ private constructor(
          * Returns an immutable instance of [NamespaceQueryParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .namespace()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): NamespaceQueryParams =
             NamespaceQueryParams(
-                checkRequired("namespace", namespace),
+                namespace,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -454,7 +421,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> namespace
+            0 -> namespace ?: ""
             else -> ""
         }
 
@@ -462,22 +429,24 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
-    /** Query, filter, full-text search and vector search documents. */
     class Body
     private constructor(
+        private val aggregateBy: JsonField<AggregateBy>,
         private val consistency: JsonField<Consistency>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val filters: JsonValue,
         private val includeAttributes: JsonField<IncludeAttributes>,
-        private val includeVectors: JsonField<Boolean>,
         private val rankBy: JsonValue,
         private val topK: JsonField<Long>,
-        private val vector: JsonField<List<Double>>,
+        private val vectorEncoding: JsonField<VectorEncoding>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
+            @JsonProperty("aggregate_by")
+            @ExcludeMissing
+            aggregateBy: JsonField<AggregateBy> = JsonMissing.of(),
             @JsonProperty("consistency")
             @ExcludeMissing
             consistency: JsonField<Consistency> = JsonMissing.of(),
@@ -488,25 +457,30 @@ private constructor(
             @JsonProperty("include_attributes")
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
-            @JsonProperty("include_vectors")
-            @ExcludeMissing
-            includeVectors: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("vector")
+            @JsonProperty("vector_encoding")
             @ExcludeMissing
-            vector: JsonField<List<Double>> = JsonMissing.of(),
+            vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of(),
         ) : this(
+            aggregateBy,
             consistency,
             distanceMetric,
             filters,
             includeAttributes,
-            includeVectors,
             rankBy,
             topK,
-            vector,
+            vectorEncoding,
             mutableMapOf(),
         )
+
+        /**
+         * Aggregations to compute over all documents in the namespace that match the filters.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun aggregateBy(): Optional<AggregateBy> = aggregateBy.getOptional("aggregate_by")
 
         /**
          * The consistency level for a query.
@@ -540,16 +514,7 @@ private constructor(
         fun includeAttributes(): Optional<IncludeAttributes> =
             includeAttributes.getOptional("include_attributes")
 
-        /**
-         * Whether to return vectors for the search results. Vectors are large and slow to
-         * deserialize on the client, so use this option only if you need them.
-         *
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun includeVectors(): Optional<Boolean> = includeVectors.getOptional("include_vectors")
-
-        /** The attribute to rank the results by. Cannot be specified with `vector`. */
+        /** How to rank the documents in the namespace. */
         @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
 
         /**
@@ -561,13 +526,22 @@ private constructor(
         fun topK(): Optional<Long> = topK.getOptional("top_k")
 
         /**
-         * A vector to search for. It must have the same number of dimensions as the vectors in the
-         * namespace. Cannot be specified with `rank_by`.
+         * The encoding to use for vectors in the response.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun vector(): Optional<List<Double>> = vector.getOptional("vector")
+        fun vectorEncoding(): Optional<VectorEncoding> =
+            vectorEncoding.getOptional("vector_encoding")
+
+        /**
+         * Returns the raw JSON value of [aggregateBy].
+         *
+         * Unlike [aggregateBy], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("aggregate_by")
+        @ExcludeMissing
+        fun _aggregateBy(): JsonField<AggregateBy> = aggregateBy
 
         /**
          * Returns the raw JSON value of [consistency].
@@ -599,16 +573,6 @@ private constructor(
         fun _includeAttributes(): JsonField<IncludeAttributes> = includeAttributes
 
         /**
-         * Returns the raw JSON value of [includeVectors].
-         *
-         * Unlike [includeVectors], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("include_vectors")
-        @ExcludeMissing
-        fun _includeVectors(): JsonField<Boolean> = includeVectors
-
-        /**
          * Returns the raw JSON value of [topK].
          *
          * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
@@ -616,11 +580,14 @@ private constructor(
         @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
 
         /**
-         * Returns the raw JSON value of [vector].
+         * Returns the raw JSON value of [vectorEncoding].
          *
-         * Unlike [vector], this method doesn't throw if the JSON field has an unexpected type.
+         * Unlike [vectorEncoding], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
-        @JsonProperty("vector") @ExcludeMissing fun _vector(): JsonField<List<Double>> = vector
+        @JsonProperty("vector_encoding")
+        @ExcludeMissing
+        fun _vectorEncoding(): JsonField<VectorEncoding> = vectorEncoding
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -643,27 +610,43 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
+            private var aggregateBy: JsonField<AggregateBy> = JsonMissing.of()
             private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var filters: JsonValue = JsonMissing.of()
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
-            private var includeVectors: JsonField<Boolean> = JsonMissing.of()
             private var rankBy: JsonValue = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
-            private var vector: JsonField<MutableList<Double>>? = null
+            private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
+                aggregateBy = body.aggregateBy
                 consistency = body.consistency
                 distanceMetric = body.distanceMetric
                 filters = body.filters
                 includeAttributes = body.includeAttributes
-                includeVectors = body.includeVectors
                 rankBy = body.rankBy
                 topK = body.topK
-                vector = body.vector.map { it.toMutableList() }
+                vectorEncoding = body.vectorEncoding
                 additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Aggregations to compute over all documents in the namespace that match the filters.
+             */
+            fun aggregateBy(aggregateBy: AggregateBy) = aggregateBy(JsonField.of(aggregateBy))
+
+            /**
+             * Sets [Builder.aggregateBy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.aggregateBy] with a well-typed [AggregateBy] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun aggregateBy(aggregateBy: JsonField<AggregateBy>) = apply {
+                this.aggregateBy = aggregateBy
             }
 
             /** The consistency level for a query. */
@@ -725,25 +708,7 @@ private constructor(
             fun includeAttributesOfStrings(strings: List<String>) =
                 includeAttributes(IncludeAttributes.ofStrings(strings))
 
-            /**
-             * Whether to return vectors for the search results. Vectors are large and slow to
-             * deserialize on the client, so use this option only if you need them.
-             */
-            fun includeVectors(includeVectors: Boolean) =
-                includeVectors(JsonField.of(includeVectors))
-
-            /**
-             * Sets [Builder.includeVectors] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.includeVectors] with a well-typed [Boolean] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun includeVectors(includeVectors: JsonField<Boolean>) = apply {
-                this.includeVectors = includeVectors
-            }
-
-            /** The attribute to rank the results by. Cannot be specified with `vector`. */
+            /** How to rank the documents in the namespace. */
             fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
 
             /** The number of results to return. */
@@ -758,33 +723,19 @@ private constructor(
              */
             fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
 
-            /**
-             * A vector to search for. It must have the same number of dimensions as the vectors in
-             * the namespace. Cannot be specified with `rank_by`.
-             */
-            fun vector(vector: List<Double>) = vector(JsonField.of(vector))
+            /** The encoding to use for vectors in the response. */
+            fun vectorEncoding(vectorEncoding: VectorEncoding) =
+                vectorEncoding(JsonField.of(vectorEncoding))
 
             /**
-             * Sets [Builder.vector] to an arbitrary JSON value.
+             * Sets [Builder.vectorEncoding] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.vector] with a well-typed `List<Double>` value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.vectorEncoding] with a well-typed [VectorEncoding]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
-            fun vector(vector: JsonField<List<Double>>) = apply {
-                this.vector = vector.map { it.toMutableList() }
-            }
-
-            /**
-             * Adds a single [Double] to [Builder.vector].
-             *
-             * @throws IllegalStateException if the field was previously set to a non-list.
-             */
-            fun addVector(vector: Double) = apply {
-                this.vector =
-                    (this.vector ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("vector", it).add(vector)
-                    }
+            fun vectorEncoding(vectorEncoding: JsonField<VectorEncoding>) = apply {
+                this.vectorEncoding = vectorEncoding
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -813,14 +764,14 @@ private constructor(
              */
             fun build(): Body =
                 Body(
+                    aggregateBy,
                     consistency,
                     distanceMetric,
                     filters,
                     includeAttributes,
-                    includeVectors,
                     rankBy,
                     topK,
-                    (vector ?: JsonMissing.of()).map { it.toImmutable() },
+                    vectorEncoding,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -832,12 +783,12 @@ private constructor(
                 return@apply
             }
 
+            aggregateBy().ifPresent { it.validate() }
             consistency().ifPresent { it.validate() }
             distanceMetric().ifPresent { it.validate() }
             includeAttributes().ifPresent { it.validate() }
-            includeVectors()
             topK()
-            vector()
+            vectorEncoding().ifPresent { it.validate() }
             validated = true
         }
 
@@ -857,29 +808,131 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (consistency.asKnown().getOrNull()?.validity() ?: 0) +
+            (aggregateBy.asKnown().getOrNull()?.validity() ?: 0) +
+                (consistency.asKnown().getOrNull()?.validity() ?: 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (includeVectors.asKnown().isPresent) 1 else 0) +
                 (if (topK.asKnown().isPresent) 1 else 0) +
-                (vector.asKnown().getOrNull()?.size ?: 0)
+                (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return /* spotless:off */ other is Body && consistency == other.consistency && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && includeVectors == other.includeVectors && rankBy == other.rankBy && topK == other.topK && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && aggregateBy == other.aggregateBy && consistency == other.consistency && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(consistency, distanceMetric, filters, includeAttributes, includeVectors, rankBy, topK, vector, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(aggregateBy, consistency, distanceMetric, filters, includeAttributes, rankBy, topK, vectorEncoding, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, includeVectors=$includeVectors, rankBy=$rankBy, topK=$topK, vector=$vector, additionalProperties=$additionalProperties}"
+            "Body{aggregateBy=$aggregateBy, consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+    }
+
+    /** Aggregations to compute over all documents in the namespace that match the filters. */
+    class AggregateBy
+    @JsonCreator
+    private constructor(
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
+    ) {
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [AggregateBy]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AggregateBy]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(aggregateBy: AggregateBy) = apply {
+                additionalProperties = aggregateBy.additionalProperties.toMutableMap()
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AggregateBy].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): AggregateBy = AggregateBy(additionalProperties.toImmutable())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): AggregateBy = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is AggregateBy && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "AggregateBy{additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
@@ -1175,198 +1228,6 @@ private constructor(
 
         override fun toString() =
             "Consistency{level=$level, additionalProperties=$additionalProperties}"
-    }
-
-    /** Whether to include attributes in the response. */
-    @JsonDeserialize(using = IncludeAttributes.Deserializer::class)
-    @JsonSerialize(using = IncludeAttributes.Serializer::class)
-    class IncludeAttributes
-    private constructor(
-        private val bool: Boolean? = null,
-        private val strings: List<String>? = null,
-        private val _json: JsonValue? = null,
-    ) {
-
-        /**
-         * When `true`, include all attributes in the response. When `false`, include no attributes
-         * in the response.
-         */
-        fun bool(): Optional<Boolean> = Optional.ofNullable(bool)
-
-        /** Include exactly the specified attributes in the response. */
-        fun strings(): Optional<List<String>> = Optional.ofNullable(strings)
-
-        fun isBool(): Boolean = bool != null
-
-        fun isStrings(): Boolean = strings != null
-
-        /**
-         * When `true`, include all attributes in the response. When `false`, include no attributes
-         * in the response.
-         */
-        fun asBool(): Boolean = bool.getOrThrow("bool")
-
-        /** Include exactly the specified attributes in the response. */
-        fun asStrings(): List<String> = strings.getOrThrow("strings")
-
-        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-        fun <T> accept(visitor: Visitor<T>): T =
-            when {
-                bool != null -> visitor.visitBool(bool)
-                strings != null -> visitor.visitStrings(strings)
-                else -> visitor.unknown(_json)
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): IncludeAttributes = apply {
-            if (validated) {
-                return@apply
-            }
-
-            accept(
-                object : Visitor<Unit> {
-                    override fun visitBool(bool: Boolean) {}
-
-                    override fun visitStrings(strings: List<String>) {}
-                }
-            )
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: TurbopufferInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            accept(
-                object : Visitor<Int> {
-                    override fun visitBool(bool: Boolean) = 1
-
-                    override fun visitStrings(strings: List<String>) = strings.size
-
-                    override fun unknown(json: JsonValue?) = 0
-                }
-            )
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is IncludeAttributes && bool == other.bool && strings == other.strings /* spotless:on */
-        }
-
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(bool, strings) /* spotless:on */
-
-        override fun toString(): String =
-            when {
-                bool != null -> "IncludeAttributes{bool=$bool}"
-                strings != null -> "IncludeAttributes{strings=$strings}"
-                _json != null -> "IncludeAttributes{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid IncludeAttributes")
-            }
-
-        companion object {
-
-            /**
-             * When `true`, include all attributes in the response. When `false`, include no
-             * attributes in the response.
-             */
-            @JvmStatic fun ofBool(bool: Boolean) = IncludeAttributes(bool = bool)
-
-            /** Include exactly the specified attributes in the response. */
-            @JvmStatic fun ofStrings(strings: List<String>) = IncludeAttributes(strings = strings)
-        }
-
-        /**
-         * An interface that defines how to map each variant of [IncludeAttributes] to a value of
-         * type [T].
-         */
-        interface Visitor<out T> {
-
-            /**
-             * When `true`, include all attributes in the response. When `false`, include no
-             * attributes in the response.
-             */
-            fun visitBool(bool: Boolean): T
-
-            /** Include exactly the specified attributes in the response. */
-            fun visitStrings(strings: List<String>): T
-
-            /**
-             * Maps an unknown variant of [IncludeAttributes] to a value of type [T].
-             *
-             * An instance of [IncludeAttributes] can contain an unknown variant if it was
-             * deserialized from data that doesn't match any known variant. For example, if the SDK
-             * is on an older version than the API, then the API may respond with new variants that
-             * the SDK is unaware of.
-             *
-             * @throws TurbopufferInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw TurbopufferInvalidDataException("Unknown IncludeAttributes: $json")
-            }
-        }
-
-        internal class Deserializer :
-            BaseDeserializer<IncludeAttributes>(IncludeAttributes::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): IncludeAttributes {
-                val json = JsonValue.fromJsonNode(node)
-
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<Boolean>())?.let {
-                                IncludeAttributes(bool = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
-                                IncludeAttributes(strings = it, _json = json)
-                            },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from string).
-                    0 -> IncludeAttributes(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                }
-            }
-        }
-
-        internal class Serializer : BaseSerializer<IncludeAttributes>(IncludeAttributes::class) {
-
-            override fun serialize(
-                value: IncludeAttributes,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.bool != null -> generator.writeObject(value.bool)
-                    value.strings != null -> generator.writeObject(value.strings)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid IncludeAttributes")
-                }
-            }
-        }
     }
 
     override fun equals(other: Any?): Boolean {

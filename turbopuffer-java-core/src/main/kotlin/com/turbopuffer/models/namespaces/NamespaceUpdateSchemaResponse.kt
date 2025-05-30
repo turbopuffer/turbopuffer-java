@@ -10,8 +10,8 @@ import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 
-/** The response to a successful namespace schema request. */
-class NamespaceGetSchemaResponse
+/** The updated schema for the namespace. */
+class NamespaceUpdateSchemaResponse
 @JsonCreator
 private constructor(
     @com.fasterxml.jackson.annotation.JsonValue
@@ -27,19 +27,20 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [NamespaceGetSchemaResponse].
+         * Returns a mutable builder for constructing an instance of
+         * [NamespaceUpdateSchemaResponse].
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [NamespaceGetSchemaResponse]. */
+    /** A builder for [NamespaceUpdateSchemaResponse]. */
     class Builder internal constructor() {
 
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(namespaceGetSchemaResponse: NamespaceGetSchemaResponse) = apply {
-            additionalProperties = namespaceGetSchemaResponse.additionalProperties.toMutableMap()
+        internal fun from(namespaceUpdateSchemaResponse: NamespaceUpdateSchemaResponse) = apply {
+            additionalProperties = namespaceUpdateSchemaResponse.additionalProperties.toMutableMap()
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -62,17 +63,17 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [NamespaceGetSchemaResponse].
+         * Returns an immutable instance of [NamespaceUpdateSchemaResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): NamespaceGetSchemaResponse =
-            NamespaceGetSchemaResponse(additionalProperties.toImmutable())
+        fun build(): NamespaceUpdateSchemaResponse =
+            NamespaceUpdateSchemaResponse(additionalProperties.toImmutable())
     }
 
     private var validated: Boolean = false
 
-    fun validate(): NamespaceGetSchemaResponse = apply {
+    fun validate(): NamespaceUpdateSchemaResponse = apply {
         if (validated) {
             return@apply
         }
@@ -102,7 +103,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceGetSchemaResponse && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is NamespaceUpdateSchemaResponse && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -112,5 +113,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceGetSchemaResponse{additionalProperties=$additionalProperties}"
+        "NamespaceUpdateSchemaResponse{additionalProperties=$additionalProperties}"
 }
