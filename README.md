@@ -202,13 +202,13 @@ To access this data, prefix any HTTP method call on a client or service with `wi
 ```java
 import com.turbopuffer.core.http.Headers;
 import com.turbopuffer.core.http.HttpResponseFor;
-import com.turbopuffer.models.ClientListNamespacesPage;
-import com.turbopuffer.models.ClientListNamespacesParams;
+import com.turbopuffer.models.ClientNamespacesPage;
+import com.turbopuffer.models.ClientNamespacesParams;
 
-ClientListNamespacesParams params = ClientListNamespacesParams.builder()
+ClientNamespacesParams params = ClientNamespacesParams.builder()
     .prefix("foo")
     .build();
-HttpResponseFor<ClientListNamespacesPage> namespaces = client.withRawResponse().listNamespaces(params);
+HttpResponseFor<ClientNamespacesPage> namespaces = client.withRawResponse().namespaces(params);
 
 int statusCode = namespaces.statusCode();
 Headers headers = namespaces.headers();
@@ -217,9 +217,9 @@ Headers headers = namespaces.headers();
 You can still deserialize the response into an instance of a Java class if needed:
 
 ```java
-import com.turbopuffer.models.ClientListNamespacesPage;
+import com.turbopuffer.models.ClientNamespacesPage;
 
-ClientListNamespacesPage parsedNamespaces = namespaces.parse();
+ClientNamespacesPage parsedNamespaces = namespaces.parse();
 ```
 
 ## Error handling
@@ -256,10 +256,10 @@ To iterate through all results across all pages, use the `autoPager()` method, w
 When using the synchronous client, the method returns an [`Iterable`](https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html)
 
 ```java
-import com.turbopuffer.models.ClientListNamespacesPage;
+import com.turbopuffer.models.ClientNamespacesPage;
 import com.turbopuffer.models.NamespaceSummary;
 
-ClientListNamespacesPage page = client.listNamespaces();
+ClientNamespacesPage page = client.namespaces();
 
 // Process as an Iterable
 for (NamespaceSummary client : page.autoPager()) {
@@ -277,12 +277,12 @@ When using the asynchronous client, the method returns an [`AsyncStreamResponse`
 
 ```java
 import com.turbopuffer.core.http.AsyncStreamResponse;
-import com.turbopuffer.models.ClientListNamespacesPageAsync;
+import com.turbopuffer.models.ClientNamespacesPageAsync;
 import com.turbopuffer.models.NamespaceSummary;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-CompletableFuture<ClientListNamespacesPageAsync> pageFuture = client.async().listNamespaces();
+CompletableFuture<ClientNamespacesPageAsync> pageFuture = client.async().namespaces();
 
 pageFuture.thenRun(page -> page.autoPager().subscribe(client -> {
     System.out.println(client);
@@ -328,10 +328,10 @@ To access individual page items and manually request the next page, use the `ite
 `hasNextPage()`, and `nextPage()` methods:
 
 ```java
-import com.turbopuffer.models.ClientListNamespacesPage;
+import com.turbopuffer.models.ClientNamespacesPage;
 import com.turbopuffer.models.NamespaceSummary;
 
-ClientListNamespacesPage page = client.listNamespaces();
+ClientNamespacesPage page = client.namespaces();
 while (true) {
     for (NamespaceSummary client : page.items()) {
         System.out.println(client);

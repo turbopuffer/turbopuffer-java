@@ -9,10 +9,10 @@ import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.DocumentColumns
 import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
-import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
+import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Vector
@@ -38,25 +38,6 @@ internal class NamespaceServiceTest {
         val response =
             namespaceService.deleteAll(
                 NamespaceDeleteAllParams.builder().namespace("namespace").build()
-            )
-
-        response.validate()
-    }
-
-    @Disabled("skipped: tests are disabled for the time being")
-    @Test
-    fun getSchema() {
-        val client =
-            TurbopufferOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
-                .build()
-        val namespaceService = client.namespaces()
-
-        val response =
-            namespaceService.getSchema(
-                NamespaceGetSchemaParams.builder().namespace("namespace").build()
             )
 
         response.validate()
@@ -139,6 +120,23 @@ internal class NamespaceServiceTest {
                     .topK(0L)
                     .build()
             )
+
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun schema() {
+        val client =
+            TurbopufferOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
+                .build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.schema(NamespaceSchemaParams.builder().namespace("namespace").build())
 
         response.validate()
     }

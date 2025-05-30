@@ -4,8 +4,8 @@ package com.turbopuffer.client
 
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
-import com.turbopuffer.models.ClientListNamespacesPageAsync
-import com.turbopuffer.models.ClientListNamespacesParams
+import com.turbopuffer.models.ClientNamespacesPageAsync
+import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.async.NamespaceServiceAsync
 import java.util.concurrent.CompletableFuture
 
@@ -41,26 +41,23 @@ interface TurbopufferClientAsync {
     fun namespaces(): NamespaceServiceAsync
 
     /** List namespaces. */
-    fun listNamespaces(): CompletableFuture<ClientListNamespacesPageAsync> =
-        listNamespaces(ClientListNamespacesParams.none())
+    fun namespaces(): CompletableFuture<ClientNamespacesPageAsync> =
+        namespaces(ClientNamespacesParams.none())
 
-    /** @see [listNamespaces] */
-    fun listNamespaces(
-        params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
+    /** @see [namespaces] */
+    fun namespaces(
+        params: ClientNamespacesParams = ClientNamespacesParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<ClientListNamespacesPageAsync>
+    ): CompletableFuture<ClientNamespacesPageAsync>
 
-    /** @see [listNamespaces] */
-    fun listNamespaces(
-        params: ClientListNamespacesParams = ClientListNamespacesParams.none()
-    ): CompletableFuture<ClientListNamespacesPageAsync> =
-        listNamespaces(params, RequestOptions.none())
+    /** @see [namespaces] */
+    fun namespaces(
+        params: ClientNamespacesParams = ClientNamespacesParams.none()
+    ): CompletableFuture<ClientNamespacesPageAsync> = namespaces(params, RequestOptions.none())
 
-    /** @see [listNamespaces] */
-    fun listNamespaces(
-        requestOptions: RequestOptions
-    ): CompletableFuture<ClientListNamespacesPageAsync> =
-        listNamespaces(ClientListNamespacesParams.none(), requestOptions)
+    /** @see [namespaces] */
+    fun namespaces(requestOptions: RequestOptions): CompletableFuture<ClientNamespacesPageAsync> =
+        namespaces(ClientNamespacesParams.none(), requestOptions)
 
     /**
      * Closes this client, relinquishing any underlying resources.
@@ -85,27 +82,27 @@ interface TurbopufferClientAsync {
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
-         * [TurbopufferClientAsync.listNamespaces].
+         * [TurbopufferClientAsync.namespaces].
          */
-        fun listNamespaces(): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> =
-            listNamespaces(ClientListNamespacesParams.none())
+        fun namespaces(): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>> =
+            namespaces(ClientNamespacesParams.none())
 
-        /** @see [listNamespaces] */
-        fun listNamespaces(
-            params: ClientListNamespacesParams = ClientListNamespacesParams.none(),
+        /** @see [namespaces] */
+        fun namespaces(
+            params: ClientNamespacesParams = ClientNamespacesParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>>
+        ): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>>
 
-        /** @see [listNamespaces] */
-        fun listNamespaces(
-            params: ClientListNamespacesParams = ClientListNamespacesParams.none()
-        ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> =
-            listNamespaces(params, RequestOptions.none())
+        /** @see [namespaces] */
+        fun namespaces(
+            params: ClientNamespacesParams = ClientNamespacesParams.none()
+        ): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>> =
+            namespaces(params, RequestOptions.none())
 
-        /** @see [listNamespaces] */
-        fun listNamespaces(
+        /** @see [namespaces] */
+        fun namespaces(
             requestOptions: RequestOptions
-        ): CompletableFuture<HttpResponseFor<ClientListNamespacesPageAsync>> =
-            listNamespaces(ClientListNamespacesParams.none(), requestOptions)
+        ): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>> =
+            namespaces(ClientNamespacesParams.none(), requestOptions)
     }
 }

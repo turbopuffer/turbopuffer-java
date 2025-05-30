@@ -12,27 +12,27 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [TurbopufferClientAsync.listNamespaces] */
-class ClientListNamespacesPageAsync
+/** @see [TurbopufferClientAsync.namespaces] */
+class ClientNamespacesPageAsync
 private constructor(
     private val service: TurbopufferClientAsync,
     private val streamHandlerExecutor: Executor,
-    private val params: ClientListNamespacesParams,
-    private val response: ClientListNamespacesPageResponse,
+    private val params: ClientNamespacesParams,
+    private val response: ClientNamespacesPageResponse,
 ) : PageAsync<NamespaceSummary> {
 
     /**
-     * Delegates to [ClientListNamespacesPageResponse], but gracefully handles missing data.
+     * Delegates to [ClientNamespacesPageResponse], but gracefully handles missing data.
      *
-     * @see [ClientListNamespacesPageResponse.namespaces]
+     * @see [ClientNamespacesPageResponse.namespaces]
      */
     fun namespaces(): List<NamespaceSummary> =
         response._namespaces().getOptional("namespaces").getOrNull() ?: emptyList()
 
     /**
-     * Delegates to [ClientListNamespacesPageResponse], but gracefully handles missing data.
+     * Delegates to [ClientNamespacesPageResponse], but gracefully handles missing data.
      *
-     * @see [ClientListNamespacesPageResponse.nextCursor]
+     * @see [ClientNamespacesPageResponse.nextCursor]
      */
     fun nextCursor(): Optional<String> = response._nextCursor().getOptional("next_cursor")
 
@@ -40,32 +40,31 @@ private constructor(
 
     override fun hasNextPage(): Boolean = items().isNotEmpty() && nextCursor().isPresent
 
-    fun nextPageParams(): ClientListNamespacesParams {
+    fun nextPageParams(): ClientNamespacesParams {
         val nextCursor =
             nextCursor().getOrNull()
                 ?: throw IllegalStateException("Cannot construct next page params")
         return params.toBuilder().cursor(nextCursor).build()
     }
 
-    override fun nextPage(): CompletableFuture<ClientListNamespacesPageAsync> =
-        service.listNamespaces(nextPageParams())
+    override fun nextPage(): CompletableFuture<ClientNamespacesPageAsync> =
+        service.namespaces(nextPageParams())
 
     fun autoPager(): AutoPagerAsync<NamespaceSummary> =
         AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
-    fun params(): ClientListNamespacesParams = params
+    fun params(): ClientNamespacesParams = params
 
     /** The response that this page was parsed from. */
-    fun response(): ClientListNamespacesPageResponse = response
+    fun response(): ClientNamespacesPageResponse = response
 
     fun toBuilder() = Builder().from(this)
 
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of
-         * [ClientListNamespacesPageAsync].
+         * Returns a mutable builder for constructing an instance of [ClientNamespacesPageAsync].
          *
          * The following fields are required:
          * ```java
@@ -78,20 +77,20 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ClientListNamespacesPageAsync]. */
+    /** A builder for [ClientNamespacesPageAsync]. */
     class Builder internal constructor() {
 
         private var service: TurbopufferClientAsync? = null
         private var streamHandlerExecutor: Executor? = null
-        private var params: ClientListNamespacesParams? = null
-        private var response: ClientListNamespacesPageResponse? = null
+        private var params: ClientNamespacesParams? = null
+        private var response: ClientNamespacesPageResponse? = null
 
         @JvmSynthetic
-        internal fun from(clientListNamespacesPageAsync: ClientListNamespacesPageAsync) = apply {
-            service = clientListNamespacesPageAsync.service
-            streamHandlerExecutor = clientListNamespacesPageAsync.streamHandlerExecutor
-            params = clientListNamespacesPageAsync.params
-            response = clientListNamespacesPageAsync.response
+        internal fun from(clientNamespacesPageAsync: ClientNamespacesPageAsync) = apply {
+            service = clientNamespacesPageAsync.service
+            streamHandlerExecutor = clientNamespacesPageAsync.streamHandlerExecutor
+            params = clientNamespacesPageAsync.params
+            response = clientNamespacesPageAsync.response
         }
 
         fun service(service: TurbopufferClientAsync) = apply { this.service = service }
@@ -101,15 +100,13 @@ private constructor(
         }
 
         /** The parameters that were used to request this page. */
-        fun params(params: ClientListNamespacesParams) = apply { this.params = params }
+        fun params(params: ClientNamespacesParams) = apply { this.params = params }
 
         /** The response that this page was parsed from. */
-        fun response(response: ClientListNamespacesPageResponse) = apply {
-            this.response = response
-        }
+        fun response(response: ClientNamespacesPageResponse) = apply { this.response = response }
 
         /**
-         * Returns an immutable instance of [ClientListNamespacesPageAsync].
+         * Returns an immutable instance of [ClientNamespacesPageAsync].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -123,8 +120,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): ClientListNamespacesPageAsync =
-            ClientListNamespacesPageAsync(
+        fun build(): ClientNamespacesPageAsync =
+            ClientNamespacesPageAsync(
                 checkRequired("service", service),
                 checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
@@ -137,11 +134,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ClientListNamespacesPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is ClientNamespacesPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
     override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "ClientListNamespacesPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
+        "ClientNamespacesPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

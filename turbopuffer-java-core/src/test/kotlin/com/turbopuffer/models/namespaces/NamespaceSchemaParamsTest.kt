@@ -6,18 +6,18 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-internal class NamespaceGetSchemaParamsTest {
+internal class NamespaceSchemaParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
-        NamespaceGetSchemaParams.builder().namespace("namespace").build()
+        NamespaceSchemaParams.builder().namespace("namespace").build()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun pathParams() {
-        val params = NamespaceGetSchemaParams.builder().build()
+        val params = NamespaceSchemaParams.builder().build()
 
         assertThat(params._pathParam(0)).isEqualTo("")
         // out-of-bound path param
