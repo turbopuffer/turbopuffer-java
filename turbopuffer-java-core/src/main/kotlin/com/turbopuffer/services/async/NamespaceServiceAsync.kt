@@ -6,14 +6,14 @@ import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
-import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
-import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceRecallResponse
+import com.turbopuffer.models.namespaces.NamespaceSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
@@ -45,25 +45,6 @@ interface NamespaceServiceAsync {
     /** @see [deleteAll] */
     fun deleteAll(requestOptions: RequestOptions): CompletableFuture<NamespaceDeleteAllResponse> =
         deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
-
-    /** Get namespace schema. */
-    fun getSchema(): CompletableFuture<NamespaceGetSchemaResponse> =
-        getSchema(NamespaceGetSchemaParams.none())
-
-    /** @see [getSchema] */
-    fun getSchema(
-        params: NamespaceGetSchemaParams = NamespaceGetSchemaParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<NamespaceGetSchemaResponse>
-
-    /** @see [getSchema] */
-    fun getSchema(
-        params: NamespaceGetSchemaParams = NamespaceGetSchemaParams.none()
-    ): CompletableFuture<NamespaceGetSchemaResponse> = getSchema(params, RequestOptions.none())
-
-    /** @see [getSchema] */
-    fun getSchema(requestOptions: RequestOptions): CompletableFuture<NamespaceGetSchemaResponse> =
-        getSchema(NamespaceGetSchemaParams.none(), requestOptions)
 
     /** Warm the cache for a namespace. */
     fun hintCacheWarm(): CompletableFuture<NamespaceHintCacheWarmResponse> =
@@ -122,6 +103,24 @@ interface NamespaceServiceAsync {
     /** @see [recall] */
     fun recall(requestOptions: RequestOptions): CompletableFuture<NamespaceRecallResponse> =
         recall(NamespaceRecallParams.none(), requestOptions)
+
+    /** Get namespace schema. */
+    fun schema(): CompletableFuture<NamespaceSchemaResponse> = schema(NamespaceSchemaParams.none())
+
+    /** @see [schema] */
+    fun schema(
+        params: NamespaceSchemaParams = NamespaceSchemaParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceSchemaResponse>
+
+    /** @see [schema] */
+    fun schema(
+        params: NamespaceSchemaParams = NamespaceSchemaParams.none()
+    ): CompletableFuture<NamespaceSchemaResponse> = schema(params, RequestOptions.none())
+
+    /** @see [schema] */
+    fun schema(requestOptions: RequestOptions): CompletableFuture<NamespaceSchemaResponse> =
+        schema(NamespaceSchemaParams.none(), requestOptions)
 
     /** Update namespace schema. */
     fun updateSchema(): CompletableFuture<NamespaceUpdateSchemaResponse> =
@@ -192,31 +191,6 @@ interface NamespaceServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>> =
             deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
-
-        /**
-         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/schema`, but is otherwise
-         * the same as [NamespaceServiceAsync.getSchema].
-         */
-        fun getSchema(): CompletableFuture<HttpResponseFor<NamespaceGetSchemaResponse>> =
-            getSchema(NamespaceGetSchemaParams.none())
-
-        /** @see [getSchema] */
-        fun getSchema(
-            params: NamespaceGetSchemaParams = NamespaceGetSchemaParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<NamespaceGetSchemaResponse>>
-
-        /** @see [getSchema] */
-        fun getSchema(
-            params: NamespaceGetSchemaParams = NamespaceGetSchemaParams.none()
-        ): CompletableFuture<HttpResponseFor<NamespaceGetSchemaResponse>> =
-            getSchema(params, RequestOptions.none())
-
-        /** @see [getSchema] */
-        fun getSchema(
-            requestOptions: RequestOptions
-        ): CompletableFuture<HttpResponseFor<NamespaceGetSchemaResponse>> =
-            getSchema(NamespaceGetSchemaParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/hint_cache_warm`, but is
@@ -292,6 +266,31 @@ interface NamespaceServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceRecallResponse>> =
             recall(NamespaceRecallParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/schema`, but is otherwise
+         * the same as [NamespaceServiceAsync.schema].
+         */
+        fun schema(): CompletableFuture<HttpResponseFor<NamespaceSchemaResponse>> =
+            schema(NamespaceSchemaParams.none())
+
+        /** @see [schema] */
+        fun schema(
+            params: NamespaceSchemaParams = NamespaceSchemaParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceSchemaResponse>>
+
+        /** @see [schema] */
+        fun schema(
+            params: NamespaceSchemaParams = NamespaceSchemaParams.none()
+        ): CompletableFuture<HttpResponseFor<NamespaceSchemaResponse>> =
+            schema(params, RequestOptions.none())
+
+        /** @see [schema] */
+        fun schema(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<NamespaceSchemaResponse>> =
+            schema(NamespaceSchemaParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/schema`, but is

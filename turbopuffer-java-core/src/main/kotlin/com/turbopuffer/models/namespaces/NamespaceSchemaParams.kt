@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.turbopuffer.models
+package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.Params
 import com.turbopuffer.core.http.Headers
@@ -9,24 +9,15 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** List namespaces. */
-class ClientListNamespacesParams
+/** Get namespace schema. */
+class NamespaceSchemaParams
 private constructor(
-    private val cursor: String?,
-    private val pageSize: Int?,
-    private val prefix: String?,
+    private val namespace: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /** Retrieve the next page of results. */
-    fun cursor(): Optional<String> = Optional.ofNullable(cursor)
-
-    /** Limit the number of results per page. */
-    fun pageSize(): Optional<Int> = Optional.ofNullable(pageSize)
-
-    /** Retrieve only the namespaces that match the prefix. */
-    fun prefix(): Optional<String> = Optional.ofNullable(prefix)
+    fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -36,56 +27,30 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): ClientListNamespacesParams = builder().build()
+        @JvmStatic fun none(): NamespaceSchemaParams = builder().build()
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ClientListNamespacesParams].
-         */
+        /** Returns a mutable builder for constructing an instance of [NamespaceSchemaParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ClientListNamespacesParams]. */
+    /** A builder for [NamespaceSchemaParams]. */
     class Builder internal constructor() {
 
-        private var cursor: String? = null
-        private var pageSize: Int? = null
-        private var prefix: String? = null
+        private var namespace: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(clientListNamespacesParams: ClientListNamespacesParams) = apply {
-            cursor = clientListNamespacesParams.cursor
-            pageSize = clientListNamespacesParams.pageSize
-            prefix = clientListNamespacesParams.prefix
-            additionalHeaders = clientListNamespacesParams.additionalHeaders.toBuilder()
-            additionalQueryParams = clientListNamespacesParams.additionalQueryParams.toBuilder()
+        internal fun from(namespaceSchemaParams: NamespaceSchemaParams) = apply {
+            namespace = namespaceSchemaParams.namespace
+            additionalHeaders = namespaceSchemaParams.additionalHeaders.toBuilder()
+            additionalQueryParams = namespaceSchemaParams.additionalQueryParams.toBuilder()
         }
 
-        /** Retrieve the next page of results. */
-        fun cursor(cursor: String?) = apply { this.cursor = cursor }
+        fun namespace(namespace: String?) = apply { this.namespace = namespace }
 
-        /** Alias for calling [Builder.cursor] with `cursor.orElse(null)`. */
-        fun cursor(cursor: Optional<String>) = cursor(cursor.getOrNull())
-
-        /** Limit the number of results per page. */
-        fun pageSize(pageSize: Int?) = apply { this.pageSize = pageSize }
-
-        /**
-         * Alias for [Builder.pageSize].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun pageSize(pageSize: Int) = pageSize(pageSize as Int?)
-
-        /** Alias for calling [Builder.pageSize] with `pageSize.orElse(null)`. */
-        fun pageSize(pageSize: Optional<Int>) = pageSize(pageSize.getOrNull())
-
-        /** Retrieve only the namespaces that match the prefix. */
-        fun prefix(prefix: String?) = apply { this.prefix = prefix }
-
-        /** Alias for calling [Builder.prefix] with `prefix.orElse(null)`. */
-        fun prefix(prefix: Optional<String>) = prefix(prefix.getOrNull())
+        /** Alias for calling [Builder.namespace] with `namespace.orElse(null)`. */
+        fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -186,42 +151,38 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [ClientListNamespacesParams].
+         * Returns an immutable instance of [NamespaceSchemaParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): ClientListNamespacesParams =
-            ClientListNamespacesParams(
-                cursor,
-                pageSize,
-                prefix,
+        fun build(): NamespaceSchemaParams =
+            NamespaceSchemaParams(
+                namespace,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
     }
 
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> namespace ?: ""
+            else -> ""
+        }
+
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                cursor?.let { put("cursor", it) }
-                pageSize?.let { put("page_size", it.toString()) }
-                prefix?.let { put("prefix", it) }
-                putAll(additionalQueryParams)
-            }
-            .build()
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is ClientListNamespacesParams && cursor == other.cursor && pageSize == other.pageSize && prefix == other.prefix && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is NamespaceSchemaParams && namespace == other.namespace && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(cursor, pageSize, prefix, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "ClientListNamespacesParams{cursor=$cursor, pageSize=$pageSize, prefix=$prefix, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "NamespaceSchemaParams{namespace=$namespace, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

@@ -9,13 +9,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-internal class NamespaceGetSchemaResponseTest {
+internal class NamespaceSchemaResponseTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
-        val namespaceGetSchemaResponse =
-            NamespaceGetSchemaResponse.builder()
+        val namespaceSchemaResponse =
+            NamespaceSchemaResponse.builder()
                 .putAdditionalProperty(
                     "foo",
                     JsonValue.from(
@@ -34,8 +34,8 @@ internal class NamespaceGetSchemaResponseTest {
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val namespaceGetSchemaResponse =
-            NamespaceGetSchemaResponse.builder()
+        val namespaceSchemaResponse =
+            NamespaceSchemaResponse.builder()
                 .putAdditionalProperty(
                     "foo",
                     JsonValue.from(
@@ -49,12 +49,12 @@ internal class NamespaceGetSchemaResponseTest {
                 )
                 .build()
 
-        val roundtrippedNamespaceGetSchemaResponse =
+        val roundtrippedNamespaceSchemaResponse =
             jsonMapper.readValue(
-                jsonMapper.writeValueAsString(namespaceGetSchemaResponse),
-                jacksonTypeRef<NamespaceGetSchemaResponse>(),
+                jsonMapper.writeValueAsString(namespaceSchemaResponse),
+                jacksonTypeRef<NamespaceSchemaResponse>(),
             )
 
-        assertThat(roundtrippedNamespaceGetSchemaResponse).isEqualTo(namespaceGetSchemaResponse)
+        assertThat(roundtrippedNamespaceSchemaResponse).isEqualTo(namespaceSchemaResponse)
     }
 }

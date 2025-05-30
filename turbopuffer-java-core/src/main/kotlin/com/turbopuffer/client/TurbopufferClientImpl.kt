@@ -15,9 +15,9 @@ import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
-import com.turbopuffer.models.ClientListNamespacesPage
-import com.turbopuffer.models.ClientListNamespacesPageResponse
-import com.turbopuffer.models.ClientListNamespacesParams
+import com.turbopuffer.models.ClientNamespacesPage
+import com.turbopuffer.models.ClientNamespacesPageResponse
+import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.blocking.NamespaceService
 import com.turbopuffer.services.blocking.NamespaceServiceImpl
 
@@ -48,12 +48,12 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
 
     override fun namespaces(): NamespaceService = namespaces
 
-    override fun listNamespaces(
-        params: ClientListNamespacesParams,
+    override fun namespaces(
+        params: ClientNamespacesParams,
         requestOptions: RequestOptions,
-    ): ClientListNamespacesPage =
+    ): ClientNamespacesPage =
         // get /v1/namespaces
-        withRawResponse().listNamespaces(params, requestOptions).parse()
+        withRawResponse().namespaces(params, requestOptions).parse()
 
     override fun close() = clientOptions.httpClient.close()
 
@@ -68,14 +68,14 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
 
         override fun namespaces(): NamespaceService.WithRawResponse = namespaces
 
-        private val listNamespacesHandler: Handler<ClientListNamespacesPageResponse> =
-            jsonHandler<ClientListNamespacesPageResponse>(clientOptions.jsonMapper)
+        private val namespacesHandler: Handler<ClientNamespacesPageResponse> =
+            jsonHandler<ClientNamespacesPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
-        override fun listNamespaces(
-            params: ClientListNamespacesParams,
+        override fun namespaces(
+            params: ClientNamespacesParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<ClientListNamespacesPage> {
+        ): HttpResponseFor<ClientNamespacesPage> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -86,14 +86,14 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
                 response
-                    .use { listNamespacesHandler.handle(it) }
+                    .use { namespacesHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
                     }
                     .let {
-                        ClientListNamespacesPage.builder()
+                        ClientNamespacesPage.builder()
                             .service(TurbopufferClientImpl(clientOptions))
                             .params(params)
                             .response(it)

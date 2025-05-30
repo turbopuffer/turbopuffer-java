@@ -61,7 +61,7 @@ internal class ErrorHandlingTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun clientListNamespaces400() {
+    fun clientNamespaces400() {
         val turbopufferClient = client
         stubFor(
             get(anyUrl())
@@ -70,7 +70,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e = assertThrows<BadRequestException> { turbopufferClient.listNamespaces() }
+        val e = assertThrows<BadRequestException> { turbopufferClient.namespaces() }
 
         assertThat(e.statusCode()).isEqualTo(400)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -79,7 +79,7 @@ internal class ErrorHandlingTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun clientListNamespaces401() {
+    fun clientNamespaces401() {
         val turbopufferClient = client
         stubFor(
             get(anyUrl())
@@ -88,7 +88,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e = assertThrows<UnauthorizedException> { turbopufferClient.listNamespaces() }
+        val e = assertThrows<UnauthorizedException> { turbopufferClient.namespaces() }
 
         assertThat(e.statusCode()).isEqualTo(401)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -97,7 +97,7 @@ internal class ErrorHandlingTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun clientListNamespaces403() {
+    fun clientNamespaces403() {
         val turbopufferClient = client
         stubFor(
             get(anyUrl())
@@ -106,7 +106,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e = assertThrows<PermissionDeniedException> { turbopufferClient.listNamespaces() }
+        val e = assertThrows<PermissionDeniedException> { turbopufferClient.namespaces() }
 
         assertThat(e.statusCode()).isEqualTo(403)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -115,7 +115,7 @@ internal class ErrorHandlingTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun clientListNamespaces404() {
+    fun clientNamespaces404() {
         val turbopufferClient = client
         stubFor(
             get(anyUrl())
@@ -124,7 +124,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e = assertThrows<NotFoundException> { turbopufferClient.listNamespaces() }
+        val e = assertThrows<NotFoundException> { turbopufferClient.namespaces() }
 
         assertThat(e.statusCode()).isEqualTo(404)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -133,7 +133,7 @@ internal class ErrorHandlingTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun clientListNamespaces422() {
+    fun clientNamespaces422() {
         val turbopufferClient = client
         stubFor(
             get(anyUrl())
@@ -142,7 +142,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e = assertThrows<UnprocessableEntityException> { turbopufferClient.listNamespaces() }
+        val e = assertThrows<UnprocessableEntityException> { turbopufferClient.namespaces() }
 
         assertThat(e.statusCode()).isEqualTo(422)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -151,7 +151,7 @@ internal class ErrorHandlingTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun clientListNamespaces429() {
+    fun clientNamespaces429() {
         val turbopufferClient = client
         stubFor(
             get(anyUrl())
@@ -160,7 +160,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e = assertThrows<RateLimitException> { turbopufferClient.listNamespaces() }
+        val e = assertThrows<RateLimitException> { turbopufferClient.namespaces() }
 
         assertThat(e.statusCode()).isEqualTo(429)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -169,7 +169,7 @@ internal class ErrorHandlingTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun clientListNamespaces500() {
+    fun clientNamespaces500() {
         val turbopufferClient = client
         stubFor(
             get(anyUrl())
@@ -178,7 +178,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e = assertThrows<InternalServerException> { turbopufferClient.listNamespaces() }
+        val e = assertThrows<InternalServerException> { turbopufferClient.namespaces() }
 
         assertThat(e.statusCode()).isEqualTo(500)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -187,7 +187,7 @@ internal class ErrorHandlingTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun clientListNamespaces999() {
+    fun clientNamespaces999() {
         val turbopufferClient = client
         stubFor(
             get(anyUrl())
@@ -196,7 +196,7 @@ internal class ErrorHandlingTest {
                 )
         )
 
-        val e = assertThrows<UnexpectedStatusCodeException> { turbopufferClient.listNamespaces() }
+        val e = assertThrows<UnexpectedStatusCodeException> { turbopufferClient.namespaces() }
 
         assertThat(e.statusCode()).isEqualTo(999)
         assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
@@ -205,14 +205,14 @@ internal class ErrorHandlingTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun clientListNamespacesInvalidJsonBody() {
+    fun clientNamespacesInvalidJsonBody() {
         val turbopufferClient = client
         stubFor(
             get(anyUrl())
                 .willReturn(status(200).withHeader(HEADER_NAME, HEADER_VALUE).withBody(NOT_JSON))
         )
 
-        val e = assertThrows<TurbopufferException> { turbopufferClient.listNamespaces() }
+        val e = assertThrows<TurbopufferException> { turbopufferClient.namespaces() }
 
         assertThat(e).hasMessage("Error reading response")
     }

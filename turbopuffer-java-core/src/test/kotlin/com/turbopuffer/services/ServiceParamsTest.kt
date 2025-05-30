@@ -17,7 +17,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.turbopuffer.client.TurbopufferClient
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.models.ClientListNamespacesParams
+import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.DocumentColumns
 import com.turbopuffer.models.namespaces.DocumentRow
@@ -46,12 +46,12 @@ internal class ServiceParamsTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun listNamespaces() {
+    fun namespaces() {
         val turbopufferClient = client
         stubFor(get(anyUrl()).willReturn(ok("{}")))
 
-        turbopufferClient.listNamespaces(
-            ClientListNamespacesParams.builder()
+        turbopufferClient.namespaces(
+            ClientNamespacesParams.builder()
                 .putAdditionalHeader("Secret-Header", "42")
                 .putAdditionalQueryParam("secret_query_param", "42")
                 .build()
