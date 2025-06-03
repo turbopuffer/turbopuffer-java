@@ -39,7 +39,7 @@ internal class NamespaceQueryResponseTest {
                         .build()
                 )
                 .addRow(
-                    DocumentRow.builder()
+                    Row.builder()
                         .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .vectorOfNumber(listOf(0.0))
                         .build()
@@ -72,7 +72,7 @@ internal class NamespaceQueryResponseTest {
             )
         assertThat(namespaceQueryResponse.rows().getOrNull())
             .containsExactly(
-                DocumentRow.builder()
+                Row.builder()
                     .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .vectorOfNumber(listOf(0.0))
                     .build()
@@ -107,7 +107,7 @@ internal class NamespaceQueryResponseTest {
                         .build()
                 )
                 .addRow(
-                    DocumentRow.builder()
+                    Row.builder()
                         .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .vectorOfNumber(listOf(0.0))
                         .build()

@@ -30,8 +30,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** A list of documents in columnar format. The keys are the column names. */
-class DocumentColumns
+/**
+ * A list of documents in columnar format. Each key is a column name, mapped to an array of values
+ * for that column.
+ */
+class Columns
 private constructor(
     private val id: JsonField<List<Id>>,
     private val vector: JsonField<Vector>,
@@ -89,7 +92,7 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [DocumentColumns].
+         * Returns a mutable builder for constructing an instance of [Columns].
          *
          * The following fields are required:
          * ```java
@@ -99,7 +102,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [DocumentColumns]. */
+    /** A builder for [Columns]. */
     class Builder internal constructor() {
 
         private var id: JsonField<MutableList<Id>>? = null
@@ -107,10 +110,10 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(documentColumns: DocumentColumns) = apply {
-            id = documentColumns.id.map { it.toMutableList() }
-            vector = documentColumns.vector
-            additionalProperties = documentColumns.additionalProperties.toMutableMap()
+        internal fun from(columns: Columns) = apply {
+            id = columns.id.map { it.toMutableList() }
+            vector = columns.vector
+            additionalProperties = columns.additionalProperties.toMutableMap()
         }
 
         /** The IDs of the documents. */
@@ -180,7 +183,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [DocumentColumns].
+         * Returns an immutable instance of [Columns].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -191,8 +194,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): DocumentColumns =
-            DocumentColumns(
+        fun build(): Columns =
+            Columns(
                 checkRequired("id", id).map { it.toImmutable() },
                 vector,
                 additionalProperties.toMutableMap(),
@@ -201,7 +204,7 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): DocumentColumns = apply {
+    fun validate(): Columns = apply {
         if (validated) {
             return@apply
         }
@@ -438,7 +441,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is DocumentColumns && id == other.id && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Columns && id == other.id && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -448,5 +451,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "DocumentColumns{id=$id, vector=$vector, additionalProperties=$additionalProperties}"
+        "Columns{id=$id, vector=$vector, additionalProperties=$additionalProperties}"
 }

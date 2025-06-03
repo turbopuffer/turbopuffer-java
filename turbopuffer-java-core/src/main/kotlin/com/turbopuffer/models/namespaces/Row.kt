@@ -18,7 +18,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** A single document, in a row-based format. */
-class DocumentRow
+class Row
 private constructor(
     private val id: JsonField<Id>,
     private val vector: JsonField<Vector>,
@@ -76,7 +76,7 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [DocumentRow].
+         * Returns a mutable builder for constructing an instance of [Row].
          *
          * The following fields are required:
          * ```java
@@ -86,7 +86,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [DocumentRow]. */
+    /** A builder for [Row]. */
     class Builder internal constructor() {
 
         private var id: JsonField<Id>? = null
@@ -94,10 +94,10 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(documentRow: DocumentRow) = apply {
-            id = documentRow.id
-            vector = documentRow.vector
-            additionalProperties = documentRow.additionalProperties.toMutableMap()
+        internal fun from(row: Row) = apply {
+            id = row.id
+            vector = row.vector
+            additionalProperties = row.additionalProperties.toMutableMap()
         }
 
         /** An identifier for a document. */
@@ -154,7 +154,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [DocumentRow].
+         * Returns an immutable instance of [Row].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -165,13 +165,12 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): DocumentRow =
-            DocumentRow(checkRequired("id", id), vector, additionalProperties.toMutableMap())
+        fun build(): Row = Row(checkRequired("id", id), vector, additionalProperties.toMutableMap())
     }
 
     private var validated: Boolean = false
 
-    fun validate(): DocumentRow = apply {
+    fun validate(): Row = apply {
         if (validated) {
             return@apply
         }
@@ -204,7 +203,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is DocumentRow && id == other.id && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Row && id == other.id && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -214,5 +213,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "DocumentRow{id=$id, vector=$vector, additionalProperties=$additionalProperties}"
+        "Row{id=$id, vector=$vector, additionalProperties=$additionalProperties}"
 }

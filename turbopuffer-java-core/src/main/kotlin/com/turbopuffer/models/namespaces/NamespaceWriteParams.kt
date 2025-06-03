@@ -67,18 +67,19 @@ private constructor(
     fun encryption(): Optional<Encryption> = body.encryption()
 
     /**
-     * A list of documents in columnar format. The keys are the column names.
+     * A list of documents in columnar format. Each key is a column name, mapped to an array of
+     * values for that column.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun patchColumns(): Optional<DocumentColumns> = body.patchColumns()
+    fun patchColumns(): Optional<Columns> = body.patchColumns()
 
     /**
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun patchRows(): Optional<List<DocumentRow>> = body.patchRows()
+    fun patchRows(): Optional<List<Row>> = body.patchRows()
 
     /**
      * The schema of the attributes attached to the documents.
@@ -89,18 +90,19 @@ private constructor(
     fun schema(): Optional<Schema> = body.schema()
 
     /**
-     * A list of documents in columnar format. The keys are the column names.
+     * A list of documents in columnar format. Each key is a column name, mapped to an array of
+     * values for that column.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun upsertColumns(): Optional<DocumentColumns> = body.upsertColumns()
+    fun upsertColumns(): Optional<Columns> = body.upsertColumns()
 
     /**
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun upsertRows(): Optional<List<DocumentRow>> = body.upsertRows()
+    fun upsertRows(): Optional<List<Row>> = body.upsertRows()
 
     /**
      * Returns the raw JSON value of [copyFromNamespace].
@@ -136,14 +138,14 @@ private constructor(
      *
      * Unlike [patchColumns], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _patchColumns(): JsonField<DocumentColumns> = body._patchColumns()
+    fun _patchColumns(): JsonField<Columns> = body._patchColumns()
 
     /**
      * Returns the raw JSON value of [patchRows].
      *
      * Unlike [patchRows], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _patchRows(): JsonField<List<DocumentRow>> = body._patchRows()
+    fun _patchRows(): JsonField<List<Row>> = body._patchRows()
 
     /**
      * Returns the raw JSON value of [schema].
@@ -157,14 +159,14 @@ private constructor(
      *
      * Unlike [upsertColumns], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _upsertColumns(): JsonField<DocumentColumns> = body._upsertColumns()
+    fun _upsertColumns(): JsonField<Columns> = body._upsertColumns()
 
     /**
      * Returns the raw JSON value of [upsertRows].
      *
      * Unlike [upsertRows], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _upsertRows(): JsonField<List<DocumentRow>> = body._upsertRows()
+    fun _upsertRows(): JsonField<List<Row>> = body._upsertRows()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -290,37 +292,40 @@ private constructor(
          */
         fun encryption(encryption: JsonField<Encryption>) = apply { body.encryption(encryption) }
 
-        /** A list of documents in columnar format. The keys are the column names. */
-        fun patchColumns(patchColumns: DocumentColumns) = apply { body.patchColumns(patchColumns) }
+        /**
+         * A list of documents in columnar format. Each key is a column name, mapped to an array of
+         * values for that column.
+         */
+        fun patchColumns(patchColumns: Columns) = apply { body.patchColumns(patchColumns) }
 
         /**
          * Sets [Builder.patchColumns] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.patchColumns] with a well-typed [DocumentColumns] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.patchColumns] with a well-typed [Columns] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun patchColumns(patchColumns: JsonField<DocumentColumns>) = apply {
+        fun patchColumns(patchColumns: JsonField<Columns>) = apply {
             body.patchColumns(patchColumns)
         }
 
-        fun patchRows(patchRows: List<DocumentRow>) = apply { body.patchRows(patchRows) }
+        fun patchRows(patchRows: List<Row>) = apply { body.patchRows(patchRows) }
 
         /**
          * Sets [Builder.patchRows] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.patchRows] with a well-typed `List<DocumentRow>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.patchRows] with a well-typed `List<Row>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun patchRows(patchRows: JsonField<List<DocumentRow>>) = apply { body.patchRows(patchRows) }
+        fun patchRows(patchRows: JsonField<List<Row>>) = apply { body.patchRows(patchRows) }
 
         /**
-         * Adds a single [DocumentRow] to [patchRows].
+         * Adds a single [Row] to [patchRows].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addPatchRow(patchRow: DocumentRow) = apply { body.addPatchRow(patchRow) }
+        fun addPatchRow(patchRow: Row) = apply { body.addPatchRow(patchRow) }
 
         /** The schema of the attributes attached to the documents. */
         fun schema(schema: Schema) = apply { body.schema(schema) }
@@ -333,41 +338,40 @@ private constructor(
          */
         fun schema(schema: JsonField<Schema>) = apply { body.schema(schema) }
 
-        /** A list of documents in columnar format. The keys are the column names. */
-        fun upsertColumns(upsertColumns: DocumentColumns) = apply {
-            body.upsertColumns(upsertColumns)
-        }
+        /**
+         * A list of documents in columnar format. Each key is a column name, mapped to an array of
+         * values for that column.
+         */
+        fun upsertColumns(upsertColumns: Columns) = apply { body.upsertColumns(upsertColumns) }
 
         /**
          * Sets [Builder.upsertColumns] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.upsertColumns] with a well-typed [DocumentColumns] value
+         * You should usually call [Builder.upsertColumns] with a well-typed [Columns] value
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
-        fun upsertColumns(upsertColumns: JsonField<DocumentColumns>) = apply {
+        fun upsertColumns(upsertColumns: JsonField<Columns>) = apply {
             body.upsertColumns(upsertColumns)
         }
 
-        fun upsertRows(upsertRows: List<DocumentRow>) = apply { body.upsertRows(upsertRows) }
+        fun upsertRows(upsertRows: List<Row>) = apply { body.upsertRows(upsertRows) }
 
         /**
          * Sets [Builder.upsertRows] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.upsertRows] with a well-typed `List<DocumentRow>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.upsertRows] with a well-typed `List<Row>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun upsertRows(upsertRows: JsonField<List<DocumentRow>>) = apply {
-            body.upsertRows(upsertRows)
-        }
+        fun upsertRows(upsertRows: JsonField<List<Row>>) = apply { body.upsertRows(upsertRows) }
 
         /**
-         * Adds a single [DocumentRow] to [upsertRows].
+         * Adds a single [Row] to [upsertRows].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addUpsertRow(upsertRow: DocumentRow) = apply { body.addUpsertRow(upsertRow) }
+        fun addUpsertRow(upsertRow: Row) = apply { body.addUpsertRow(upsertRow) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -520,11 +524,11 @@ private constructor(
         private val deletes: JsonField<List<Id>>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val encryption: JsonField<Encryption>,
-        private val patchColumns: JsonField<DocumentColumns>,
-        private val patchRows: JsonField<List<DocumentRow>>,
+        private val patchColumns: JsonField<Columns>,
+        private val patchRows: JsonField<List<Row>>,
         private val schema: JsonField<Schema>,
-        private val upsertColumns: JsonField<DocumentColumns>,
-        private val upsertRows: JsonField<List<DocumentRow>>,
+        private val upsertColumns: JsonField<Columns>,
+        private val upsertRows: JsonField<List<Row>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -547,17 +551,17 @@ private constructor(
             encryption: JsonField<Encryption> = JsonMissing.of(),
             @JsonProperty("patch_columns")
             @ExcludeMissing
-            patchColumns: JsonField<DocumentColumns> = JsonMissing.of(),
+            patchColumns: JsonField<Columns> = JsonMissing.of(),
             @JsonProperty("patch_rows")
             @ExcludeMissing
-            patchRows: JsonField<List<DocumentRow>> = JsonMissing.of(),
+            patchRows: JsonField<List<Row>> = JsonMissing.of(),
             @JsonProperty("schema") @ExcludeMissing schema: JsonField<Schema> = JsonMissing.of(),
             @JsonProperty("upsert_columns")
             @ExcludeMissing
-            upsertColumns: JsonField<DocumentColumns> = JsonMissing.of(),
+            upsertColumns: JsonField<Columns> = JsonMissing.of(),
             @JsonProperty("upsert_rows")
             @ExcludeMissing
-            upsertRows: JsonField<List<DocumentRow>> = JsonMissing.of(),
+            upsertRows: JsonField<List<Row>> = JsonMissing.of(),
         ) : this(
             copyFromNamespace,
             deleteByFilter,
@@ -610,18 +614,19 @@ private constructor(
         fun encryption(): Optional<Encryption> = encryption.getOptional("encryption")
 
         /**
-         * A list of documents in columnar format. The keys are the column names.
+         * A list of documents in columnar format. Each key is a column name, mapped to an array of
+         * values for that column.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun patchColumns(): Optional<DocumentColumns> = patchColumns.getOptional("patch_columns")
+        fun patchColumns(): Optional<Columns> = patchColumns.getOptional("patch_columns")
 
         /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun patchRows(): Optional<List<DocumentRow>> = patchRows.getOptional("patch_rows")
+        fun patchRows(): Optional<List<Row>> = patchRows.getOptional("patch_rows")
 
         /**
          * The schema of the attributes attached to the documents.
@@ -632,18 +637,19 @@ private constructor(
         fun schema(): Optional<Schema> = schema.getOptional("schema")
 
         /**
-         * A list of documents in columnar format. The keys are the column names.
+         * A list of documents in columnar format. Each key is a column name, mapped to an array of
+         * values for that column.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun upsertColumns(): Optional<DocumentColumns> = upsertColumns.getOptional("upsert_columns")
+        fun upsertColumns(): Optional<Columns> = upsertColumns.getOptional("upsert_columns")
 
         /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun upsertRows(): Optional<List<DocumentRow>> = upsertRows.getOptional("upsert_rows")
+        fun upsertRows(): Optional<List<Row>> = upsertRows.getOptional("upsert_rows")
 
         /**
          * Returns the raw JSON value of [copyFromNamespace].
@@ -689,7 +695,7 @@ private constructor(
          */
         @JsonProperty("patch_columns")
         @ExcludeMissing
-        fun _patchColumns(): JsonField<DocumentColumns> = patchColumns
+        fun _patchColumns(): JsonField<Columns> = patchColumns
 
         /**
          * Returns the raw JSON value of [patchRows].
@@ -698,7 +704,7 @@ private constructor(
          */
         @JsonProperty("patch_rows")
         @ExcludeMissing
-        fun _patchRows(): JsonField<List<DocumentRow>> = patchRows
+        fun _patchRows(): JsonField<List<Row>> = patchRows
 
         /**
          * Returns the raw JSON value of [schema].
@@ -715,7 +721,7 @@ private constructor(
          */
         @JsonProperty("upsert_columns")
         @ExcludeMissing
-        fun _upsertColumns(): JsonField<DocumentColumns> = upsertColumns
+        fun _upsertColumns(): JsonField<Columns> = upsertColumns
 
         /**
          * Returns the raw JSON value of [upsertRows].
@@ -724,7 +730,7 @@ private constructor(
          */
         @JsonProperty("upsert_rows")
         @ExcludeMissing
-        fun _upsertRows(): JsonField<List<DocumentRow>> = upsertRows
+        fun _upsertRows(): JsonField<List<Row>> = upsertRows
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -752,11 +758,11 @@ private constructor(
             private var deletes: JsonField<MutableList<Id>>? = null
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var encryption: JsonField<Encryption> = JsonMissing.of()
-            private var patchColumns: JsonField<DocumentColumns> = JsonMissing.of()
-            private var patchRows: JsonField<MutableList<DocumentRow>>? = null
+            private var patchColumns: JsonField<Columns> = JsonMissing.of()
+            private var patchRows: JsonField<MutableList<Row>>? = null
             private var schema: JsonField<Schema> = JsonMissing.of()
-            private var upsertColumns: JsonField<DocumentColumns> = JsonMissing.of()
-            private var upsertRows: JsonField<MutableList<DocumentRow>>? = null
+            private var upsertColumns: JsonField<Columns> = JsonMissing.of()
+            private var upsertRows: JsonField<MutableList<Row>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -854,40 +860,42 @@ private constructor(
                 this.encryption = encryption
             }
 
-            /** A list of documents in columnar format. The keys are the column names. */
-            fun patchColumns(patchColumns: DocumentColumns) =
-                patchColumns(JsonField.of(patchColumns))
+            /**
+             * A list of documents in columnar format. Each key is a column name, mapped to an array
+             * of values for that column.
+             */
+            fun patchColumns(patchColumns: Columns) = patchColumns(JsonField.of(patchColumns))
 
             /**
              * Sets [Builder.patchColumns] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.patchColumns] with a well-typed [DocumentColumns]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
+             * You should usually call [Builder.patchColumns] with a well-typed [Columns] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun patchColumns(patchColumns: JsonField<DocumentColumns>) = apply {
+            fun patchColumns(patchColumns: JsonField<Columns>) = apply {
                 this.patchColumns = patchColumns
             }
 
-            fun patchRows(patchRows: List<DocumentRow>) = patchRows(JsonField.of(patchRows))
+            fun patchRows(patchRows: List<Row>) = patchRows(JsonField.of(patchRows))
 
             /**
              * Sets [Builder.patchRows] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.patchRows] with a well-typed `List<DocumentRow>`
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
+             * You should usually call [Builder.patchRows] with a well-typed `List<Row>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun patchRows(patchRows: JsonField<List<DocumentRow>>) = apply {
+            fun patchRows(patchRows: JsonField<List<Row>>) = apply {
                 this.patchRows = patchRows.map { it.toMutableList() }
             }
 
             /**
-             * Adds a single [DocumentRow] to [patchRows].
+             * Adds a single [Row] to [patchRows].
              *
              * @throws IllegalStateException if the field was previously set to a non-list.
              */
-            fun addPatchRow(patchRow: DocumentRow) = apply {
+            fun addPatchRow(patchRow: Row) = apply {
                 patchRows =
                     (patchRows ?: JsonField.of(mutableListOf())).also {
                         checkKnown("patchRows", it).add(patchRow)
@@ -906,40 +914,42 @@ private constructor(
              */
             fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
 
-            /** A list of documents in columnar format. The keys are the column names. */
-            fun upsertColumns(upsertColumns: DocumentColumns) =
-                upsertColumns(JsonField.of(upsertColumns))
+            /**
+             * A list of documents in columnar format. Each key is a column name, mapped to an array
+             * of values for that column.
+             */
+            fun upsertColumns(upsertColumns: Columns) = upsertColumns(JsonField.of(upsertColumns))
 
             /**
              * Sets [Builder.upsertColumns] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.upsertColumns] with a well-typed [DocumentColumns]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
+             * You should usually call [Builder.upsertColumns] with a well-typed [Columns] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun upsertColumns(upsertColumns: JsonField<DocumentColumns>) = apply {
+            fun upsertColumns(upsertColumns: JsonField<Columns>) = apply {
                 this.upsertColumns = upsertColumns
             }
 
-            fun upsertRows(upsertRows: List<DocumentRow>) = upsertRows(JsonField.of(upsertRows))
+            fun upsertRows(upsertRows: List<Row>) = upsertRows(JsonField.of(upsertRows))
 
             /**
              * Sets [Builder.upsertRows] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.upsertRows] with a well-typed `List<DocumentRow>`
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
+             * You should usually call [Builder.upsertRows] with a well-typed `List<Row>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun upsertRows(upsertRows: JsonField<List<DocumentRow>>) = apply {
+            fun upsertRows(upsertRows: JsonField<List<Row>>) = apply {
                 this.upsertRows = upsertRows.map { it.toMutableList() }
             }
 
             /**
-             * Adds a single [DocumentRow] to [upsertRows].
+             * Adds a single [Row] to [upsertRows].
              *
              * @throws IllegalStateException if the field was previously set to a non-list.
              */
-            fun addUpsertRow(upsertRow: DocumentRow) = apply {
+            fun addUpsertRow(upsertRow: Row) = apply {
                 upsertRows =
                     (upsertRows ?: JsonField.of(mutableListOf())).also {
                         checkKnown("upsertRows", it).add(upsertRow)
