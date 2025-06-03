@@ -18,10 +18,10 @@ import com.turbopuffer.client.TurbopufferClient
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.ClientNamespacesParams
+import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
-import com.turbopuffer.models.namespaces.DocumentColumns
-import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.Row
 import com.turbopuffer.models.namespaces.Vector
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
@@ -87,13 +87,13 @@ internal class ServiceParamsTest {
                         .build()
                 )
                 .patchColumns(
-                    DocumentColumns.builder()
+                    Columns.builder()
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
                 .addPatchRow(
-                    DocumentRow.builder()
+                    Row.builder()
                         .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .vectorOfNumber(listOf(0.0))
                         .build()
@@ -104,13 +104,13 @@ internal class ServiceParamsTest {
                         .build()
                 )
                 .upsertColumns(
-                    DocumentColumns.builder()
+                    Columns.builder()
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
                 .addUpsertRow(
-                    DocumentRow.builder()
+                    Row.builder()
                         .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .vectorOfNumber(listOf(0.0))
                         .build()
