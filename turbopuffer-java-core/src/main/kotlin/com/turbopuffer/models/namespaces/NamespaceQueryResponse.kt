@@ -25,7 +25,7 @@ private constructor(
     private val billing: JsonField<QueryBilling>,
     private val performance: JsonField<QueryPerformance>,
     private val aggregations: JsonField<Aggregations>,
-    private val rows: JsonField<List<DocumentRow>>,
+    private val rows: JsonField<List<Row>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -40,7 +40,7 @@ private constructor(
         @JsonProperty("aggregations")
         @ExcludeMissing
         aggregations: JsonField<Aggregations> = JsonMissing.of(),
-        @JsonProperty("rows") @ExcludeMissing rows: JsonField<List<DocumentRow>> = JsonMissing.of(),
+        @JsonProperty("rows") @ExcludeMissing rows: JsonField<List<Row>> = JsonMissing.of(),
     ) : this(billing, performance, aggregations, rows, mutableMapOf())
 
     /**
@@ -69,7 +69,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun rows(): Optional<List<DocumentRow>> = rows.getOptional("rows")
+    fun rows(): Optional<List<Row>> = rows.getOptional("rows")
 
     /**
      * Returns the raw JSON value of [billing].
@@ -101,7 +101,7 @@ private constructor(
      *
      * Unlike [rows], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("rows") @ExcludeMissing fun _rows(): JsonField<List<DocumentRow>> = rows
+    @JsonProperty("rows") @ExcludeMissing fun _rows(): JsonField<List<Row>> = rows
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -135,7 +135,7 @@ private constructor(
         private var billing: JsonField<QueryBilling>? = null
         private var performance: JsonField<QueryPerformance>? = null
         private var aggregations: JsonField<Aggregations> = JsonMissing.of()
-        private var rows: JsonField<MutableList<DocumentRow>>? = null
+        private var rows: JsonField<MutableList<Row>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -186,25 +186,22 @@ private constructor(
             this.aggregations = aggregations
         }
 
-        fun rows(rows: List<DocumentRow>) = rows(JsonField.of(rows))
+        fun rows(rows: List<Row>) = rows(JsonField.of(rows))
 
         /**
          * Sets [Builder.rows] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.rows] with a well-typed `List<DocumentRow>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.rows] with a well-typed `List<Row>` value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun rows(rows: JsonField<List<DocumentRow>>) = apply {
-            this.rows = rows.map { it.toMutableList() }
-        }
+        fun rows(rows: JsonField<List<Row>>) = apply { this.rows = rows.map { it.toMutableList() } }
 
         /**
-         * Adds a single [DocumentRow] to [rows].
+         * Adds a single [Row] to [rows].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addRow(row: DocumentRow) = apply {
+        fun addRow(row: Row) = apply {
             rows = (rows ?: JsonField.of(mutableListOf())).also { checkKnown("rows", it).add(row) }
         }
 
