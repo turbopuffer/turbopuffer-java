@@ -2,6 +2,11 @@
 
 package com.turbopuffer.client
 
+import com.google.errorprone.annotations.MustBeClosed
+import com.turbopuffer.core.RequestOptions
+import com.turbopuffer.core.http.HttpResponseFor
+import com.turbopuffer.models.ClientNamespacesPage
+import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.blocking.NamespaceService
 
 /**
@@ -35,6 +40,24 @@ interface TurbopufferClient {
 
     fun namespaces(): NamespaceService
 
+    /** List namespaces. */
+    fun namespaces(): ClientNamespacesPage = namespaces(ClientNamespacesParams.none())
+
+    /** @see [namespaces] */
+    fun namespaces(
+        params: ClientNamespacesParams = ClientNamespacesParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ClientNamespacesPage
+
+    /** @see [namespaces] */
+    fun namespaces(
+        params: ClientNamespacesParams = ClientNamespacesParams.none()
+    ): ClientNamespacesPage = namespaces(params, RequestOptions.none())
+
+    /** @see [namespaces] */
+    fun namespaces(requestOptions: RequestOptions): ClientNamespacesPage =
+        namespaces(ClientNamespacesParams.none(), requestOptions)
+
     /**
      * Closes this client, relinquishing any underlying resources.
      *
@@ -52,5 +75,31 @@ interface TurbopufferClient {
     interface WithRawResponse {
 
         fun namespaces(): NamespaceService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
+         * [TurbopufferClient.namespaces].
+         */
+        @MustBeClosed
+        fun namespaces(): HttpResponseFor<ClientNamespacesPage> =
+            namespaces(ClientNamespacesParams.none())
+
+        /** @see [namespaces] */
+        @MustBeClosed
+        fun namespaces(
+            params: ClientNamespacesParams = ClientNamespacesParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ClientNamespacesPage>
+
+        /** @see [namespaces] */
+        @MustBeClosed
+        fun namespaces(
+            params: ClientNamespacesParams = ClientNamespacesParams.none()
+        ): HttpResponseFor<ClientNamespacesPage> = namespaces(params, RequestOptions.none())
+
+        /** @see [namespaces] */
+        @MustBeClosed
+        fun namespaces(requestOptions: RequestOptions): HttpResponseFor<ClientNamespacesPage> =
+            namespaces(ClientNamespacesParams.none(), requestOptions)
     }
 }
