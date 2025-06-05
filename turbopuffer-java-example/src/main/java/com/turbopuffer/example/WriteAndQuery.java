@@ -1,8 +1,12 @@
 // A straightforward example of storing and retrieving documents via vector
 // similarity search.
 //
-// Run this example with: gradle run -Pcom.turbopuffer.example=UpsertAndQuery
+// Run this example with: gradle run -Pcom.turbopuffer.example=WriteAndQuery
 package com.turbopuffer.example;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 import com.turbopuffer.core.JsonObject;
@@ -14,11 +18,9 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams;
 import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams;
 import com.turbopuffer.models.namespaces.NamespaceQueryParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams.Operation.DeleteByFilter;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams.Operation.WriteDocuments;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams.Operation.WriteDocuments.Schema;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 public class WriteAndQuery {
 
@@ -92,26 +94,15 @@ public class WriteAndQuery {
                         NamespaceGetSchemaParams.builder().namespace(namespace).build());
         System.out.printf("Schema:\n%s\n", schema);
 
-        // Patch one document.
-        var patch = client.namespaces()
+        // Delete by filter.
+        var delete = client.namespaces()
                 .write(NamespaceWriteParams.builder()
                         .namespace(namespace)
-                        .operation(WriteDocuments.builder()
-                                .addPatchRow(DocumentRow.builder()
-                                        .id("580d4471-9a9b-44fb-b59d-637ade604f72")
-                                        .putAdditionalProperty("age", JsonValue.from(82))
-                                        .build())
-                                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                        .operation(DeleteByFilter.builder()
+                                .deleteByFilter(JsonValue.from(
+                                        List.of("And", List.of(List.of("age", "Gt", 30), List.of("age", "Lt", 35)))))
                                 .build())
                         .build());
-        System.out.printf("Patch status: %s\n", patch.status());
-
-        // Do a non-vector query to see the patched results.
-        var query2 = client.namespaces()
-                .query(NamespaceQueryParams.builder()
-                        .namespace(namespace)
-                        .includeAttributes(true)
-                        .build());
-        System.out.printf("Query result:\n%s\n", query2);
+        System.out.printf("Delete status: %s\n", delete.status());
     }
 }
