@@ -1,7 +1,7 @@
 // A straightforward example of storing and retrieving documents via vector
 // similarity search.
 //
-// Run this example with: gradle run -Pcom.turbopuffer.example=UpsertAndQuery
+// Run this example with: gradle run -Pcom.turbopuffer.example=WriteAndQuery
 package com.turbopuffer.example;
 
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
@@ -25,7 +25,7 @@ public class WriteAndQuery {
     public static void main(String[] args) {
         var client = TurbopufferOkHttpClient.builder().fromEnv().build();
 
-        var namespace = "turbopuffer-java-upsert-and-query-test";
+        var namespace = "turbopuffer-java-write-and-query-test";
         System.out.printf("Operating on namespace: %s\n", namespace);
 
         // Delete the namespace if it already exists.
