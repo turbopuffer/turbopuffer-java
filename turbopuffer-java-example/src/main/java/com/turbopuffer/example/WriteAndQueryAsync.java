@@ -37,8 +37,8 @@ public class WriteAndQueryAsync {
                             .build())
                     .join(); // Wait for delete to complete before proceeding
         } catch (Exception e) {
-            if (e.getCause() instanceof TurbopufferServiceException && 
-                ((TurbopufferServiceException) e.getCause()).statusCode() == 404) {
+            if (e.getCause() instanceof TurbopufferServiceException
+                    && ((TurbopufferServiceException) e.getCause()).statusCode() == 404) {
                 System.out.println("Namespace not found, continuing");
             } else {
                 System.out.println("Error is fatal, exiting");
@@ -123,4 +123,4 @@ public class WriteAndQueryAsync {
                 .join();
         System.out.printf("Query result:\n%s\n", query2Result);
     }
-} 
+}
