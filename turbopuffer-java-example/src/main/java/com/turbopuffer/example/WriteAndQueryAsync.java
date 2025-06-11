@@ -1,10 +1,10 @@
 // A straightforward example of storing and retrieving documents via vector
-// similarity search.
+// similarity search using async operations.
 //
-// Run this example with: gradle run -Pcom.turbopuffer.example=WriteAndQuery
+// Run this example with: gradle run -Pcom.turbopuffer.example=WriteAndQueryAsync
 package com.turbopuffer.example;
 
-import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync;
 import com.turbopuffer.core.JsonObject;
 import com.turbopuffer.core.JsonValue;
 import com.turbopuffer.errors.TurbopufferServiceException;
@@ -19,13 +19,14 @@ import com.turbopuffer.models.namespaces.NamespaceWriteParams.Operation.WriteDoc
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
-public class WriteAndQuery {
+public class WriteAndQueryAsync {
 
     public static void main(String[] args) {
-        var client = TurbopufferOkHttpClient.builder().fromEnv().build();
+        var client = TurbopufferOkHttpClientAsync.builder().fromEnv().build();
 
-        var namespace = "turbopuffer-java-write-and-query-test";
+        var namespace = "turbopuffer-java-write-and-query-async-test";
         System.out.printf("Operating on namespace: %s\n", namespace);
 
         // Delete the namespace if it already exists.
@@ -33,9 +34,11 @@ public class WriteAndQuery {
             client.namespaces()
                     .deleteAll(NamespaceDeleteAllParams.builder()
                             .namespace(namespace)
-                            .build());
-        } catch (TurbopufferServiceException e) {
-            if (e.statusCode() == 404) {
+                            .build())
+                    .join(); // Wait for delete to complete before proceeding
+        } catch (Exception e) {
+            if (e.getCause() instanceof TurbopufferServiceException
+                    && ((TurbopufferServiceException) e.getCause()).statusCode() == 404) {
                 System.out.println("Namespace not found, continuing");
             } else {
                 System.out.println("Error is fatal, exiting");
@@ -44,7 +47,7 @@ public class WriteAndQuery {
         }
 
         // Upsert some documents.
-        var upsert = client.namespaces()
+        var upsertResult = client.namespaces()
                 .write(NamespaceWriteParams.builder()
                         .namespace(namespace)
                         .operation(WriteDocuments.builder()
@@ -61,7 +64,6 @@ public class WriteAndQuery {
                                         .putAdditionalProperty("age", JsonValue.from(28))
                                         .build())
                                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                                // TODO: provide a schema builder with typed values.
                                 .schema(Schema.builder()
                                         .putAdditionalProperty("id", JsonValue.from("uuid"))
                                         .putAdditionalProperty(
@@ -71,11 +73,12 @@ public class WriteAndQuery {
                                         .putAdditionalProperty("age", JsonValue.from("uint"))
                                         .build())
                                 .build())
-                        .build());
-        System.out.printf("Upsert status: %s\n", upsert.status());
+                        .build())
+                .join();
+        System.out.printf("Upsert status: %s\n", upsertResult.status());
 
-        // Do a vector query.
-        var query = client.namespaces()
+        // Set up futures for a vector query and get schema concurrently.
+        var queryFuture = client.namespaces()
                 .query(NamespaceQueryParams.builder()
                         .namespace(namespace)
                         .vector(Arrays.asList(3.0, 4.0, 5.0))
@@ -84,16 +87,20 @@ public class WriteAndQuery {
                         .filters(JsonValue.from(
                                 List.of("And", List.of(List.of("age", "Gt", 30), List.of("age", "Lt", 35)))))
                         .build());
-        System.out.printf("Query result:\n%s\n", query);
 
-        // Print the schema.
-        var schema = client.namespaces()
+        var schemaFuture = client.namespaces()
                 .getSchema(
                         NamespaceGetSchemaParams.builder().namespace(namespace).build());
-        System.out.printf("Schema:\n%s\n", schema);
+
+        // Wait for both operations to complete.
+        CompletableFuture.allOf(queryFuture, schemaFuture).join();
+
+        // Get and print results.
+        System.out.printf("Query result:\n%s\n", queryFuture.join());
+        System.out.printf("Schema:\n%s\n", schemaFuture.join());
 
         // Patch one document.
-        var patch = client.namespaces()
+        var patchResult = client.namespaces()
                 .write(NamespaceWriteParams.builder()
                         .namespace(namespace)
                         .operation(WriteDocuments.builder()
@@ -103,15 +110,17 @@ public class WriteAndQuery {
                                         .build())
                                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                                 .build())
-                        .build());
-        System.out.printf("Patch status: %s\n", patch.status());
+                        .build())
+                .join();
+        System.out.printf("Patch status: %s\n", patchResult.status());
 
         // Do a non-vector query to see the patched results.
-        var query2 = client.namespaces()
+        var query2Result = client.namespaces()
                 .query(NamespaceQueryParams.builder()
                         .namespace(namespace)
                         .includeAttributes(true)
-                        .build());
-        System.out.printf("Query result:\n%s\n", query2);
+                        .build())
+                .join();
+        System.out.printf("Query result:\n%s\n", query2Result);
     }
 }
