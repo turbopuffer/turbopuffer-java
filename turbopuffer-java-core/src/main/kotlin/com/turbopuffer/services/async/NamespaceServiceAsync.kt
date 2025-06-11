@@ -8,6 +8,8 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
@@ -67,6 +69,17 @@ interface NamespaceServiceAsync {
         requestOptions: RequestOptions
     ): CompletableFuture<NamespaceHintCacheWarmResponse> =
         hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
+
+    /** Issue multiple concurrent queries filter or search documents. */
+    fun multiQuery(
+        params: NamespaceMultiQueryParams
+    ): CompletableFuture<NamespaceMultiQueryResponse> = multiQuery(params, RequestOptions.none())
+
+    /** @see [multiQuery] */
+    fun multiQuery(
+        params: NamespaceMultiQueryParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceMultiQueryResponse>
 
     /** Query, filter, full-text search and vector search documents. */
     fun query(): CompletableFuture<NamespaceQueryResponse> = query(NamespaceQueryParams.none())
@@ -216,6 +229,22 @@ interface NamespaceServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>> =
             hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post
+         * /v2/namespaces/{namespace}/query?stainless_overload=multiQuery`, but is otherwise the
+         * same as [NamespaceServiceAsync.multiQuery].
+         */
+        fun multiQuery(
+            params: NamespaceMultiQueryParams
+        ): CompletableFuture<HttpResponseFor<NamespaceMultiQueryResponse>> =
+            multiQuery(params, RequestOptions.none())
+
+        /** @see [multiQuery] */
+        fun multiQuery(
+            params: NamespaceMultiQueryParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceMultiQueryResponse>>
 
         /**
          * Returns a raw HTTP response for `post /v2/namespaces/{namespace}/query`, but is otherwise

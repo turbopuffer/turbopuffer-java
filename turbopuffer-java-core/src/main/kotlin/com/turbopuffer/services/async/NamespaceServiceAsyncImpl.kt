@@ -20,6 +20,8 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
@@ -55,6 +57,13 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     ): CompletableFuture<NamespaceHintCacheWarmResponse> =
         // get /v1/namespaces/{namespace}/hint_cache_warm
         withRawResponse().hintCacheWarm(params, requestOptions).thenApply { it.parse() }
+
+    override fun multiQuery(
+        params: NamespaceMultiQueryParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceMultiQueryResponse> =
+        // post /v2/namespaces/{namespace}/query?stainless_overload=multiQuery
+        withRawResponse().multiQuery(params, requestOptions).thenApply { it.parse() }
 
     override fun query(
         params: NamespaceQueryParams,
@@ -167,6 +176,48 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     response.parseable {
                         response
                             .use { hintCacheWarmHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val multiQueryHandler: Handler<NamespaceMultiQueryResponse> =
+            jsonHandler<NamespaceMultiQueryResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun multiQuery(
+            params: NamespaceMultiQueryParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceMultiQueryResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "query",
+                    )
+                    .putQueryParam("stainless_overload", "multiQuery")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { multiQueryHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
