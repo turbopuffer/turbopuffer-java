@@ -9,6 +9,7 @@ import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceSchemaParams
@@ -57,6 +58,47 @@ internal class NamespaceServiceTest {
         val response =
             namespaceService.hintCacheWarm(
                 NamespaceHintCacheWarmParams.builder().namespace("namespace").build()
+            )
+
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun multiQuery() {
+        val client =
+            TurbopufferOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
+                .build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.multiQuery(
+                NamespaceMultiQueryParams.builder()
+                    .namespace("namespace")
+                    .addQuery(
+                        NamespaceMultiQueryParams.Query.builder()
+                            .aggregateBy(
+                                NamespaceMultiQueryParams.Query.AggregateBy.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                            .filters(JsonValue.from(mapOf<String, Any>()))
+                            .includeAttributes(true)
+                            .rankBy(JsonValue.from(mapOf<String, Any>()))
+                            .topK(0L)
+                            .build()
+                    )
+                    .consistency(
+                        NamespaceMultiQueryParams.Consistency.builder()
+                            .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
+                            .build()
+                    )
+                    .vectorEncoding(VectorEncoding.FLOAT)
+                    .build()
             )
 
         response.validate()

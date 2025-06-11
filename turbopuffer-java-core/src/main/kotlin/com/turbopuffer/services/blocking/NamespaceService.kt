@@ -9,6 +9,8 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
@@ -63,6 +65,16 @@ interface NamespaceService {
     /** @see [hintCacheWarm] */
     fun hintCacheWarm(requestOptions: RequestOptions): NamespaceHintCacheWarmResponse =
         hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
+
+    /** Issue multiple concurrent queries filter or search documents. */
+    fun multiQuery(params: NamespaceMultiQueryParams): NamespaceMultiQueryResponse =
+        multiQuery(params, RequestOptions.none())
+
+    /** @see [multiQuery] */
+    fun multiQuery(
+        params: NamespaceMultiQueryParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceMultiQueryResponse
 
     /** Query, filter, full-text search and vector search documents. */
     fun query(): NamespaceQueryResponse = query(NamespaceQueryParams.none())
@@ -210,6 +222,23 @@ interface NamespaceService {
             requestOptions: RequestOptions
         ): HttpResponseFor<NamespaceHintCacheWarmResponse> =
             hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post
+         * /v2/namespaces/{namespace}/query?stainless_overload=multiQuery`, but is otherwise the
+         * same as [NamespaceService.multiQuery].
+         */
+        @MustBeClosed
+        fun multiQuery(
+            params: NamespaceMultiQueryParams
+        ): HttpResponseFor<NamespaceMultiQueryResponse> = multiQuery(params, RequestOptions.none())
+
+        /** @see [multiQuery] */
+        @MustBeClosed
+        fun multiQuery(
+            params: NamespaceMultiQueryParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceMultiQueryResponse>
 
         /**
          * Returns a raw HTTP response for `post /v2/namespaces/{namespace}/query`, but is otherwise
