@@ -79,6 +79,7 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("v1", "namespaces")
                     .build()
                     .prepare(clientOptions, params)
