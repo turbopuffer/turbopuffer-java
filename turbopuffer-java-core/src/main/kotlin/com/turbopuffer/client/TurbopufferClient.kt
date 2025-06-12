@@ -3,11 +3,13 @@
 package com.turbopuffer.client
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.turbopuffer.core.ClientOptions
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.ClientNamespacesPage
 import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.blocking.NamespaceService
+import java.util.function.Consumer
 
 /**
  * A client for interacting with the Turbopuffer REST API synchronously. You can also switch to
@@ -37,6 +39,13 @@ interface TurbopufferClient {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurbopufferClient
 
     fun namespaces(): NamespaceService
 
@@ -73,6 +82,15 @@ interface TurbopufferClient {
 
     /** A view of [TurbopufferClient] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): TurbopufferClient.WithRawResponse
 
         fun namespaces(): NamespaceService.WithRawResponse
 

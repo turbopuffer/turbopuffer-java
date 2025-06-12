@@ -2,6 +2,7 @@
 
 package com.turbopuffer.services.async
 
+import com.turbopuffer.core.ClientOptions
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
@@ -21,6 +22,7 @@ import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface NamespaceServiceAsync {
 
@@ -28,6 +30,13 @@ interface NamespaceServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): NamespaceServiceAsync
 
     /** Delete namespace. */
     fun deleteAll(): CompletableFuture<NamespaceDeleteAllResponse> =
@@ -179,6 +188,15 @@ interface NamespaceServiceAsync {
      * A view of [NamespaceServiceAsync] that provides access to raw HTTP responses for each method.
      */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): NamespaceServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `delete /v2/namespaces/{namespace}`, but is otherwise the

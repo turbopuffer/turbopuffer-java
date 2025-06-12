@@ -20,6 +20,7 @@ import com.turbopuffer.models.ClientNamespacesPageResponse
 import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.blocking.NamespaceService
 import com.turbopuffer.services.blocking.NamespaceServiceImpl
+import java.util.function.Consumer
 
 class TurbopufferClientImpl(private val clientOptions: ClientOptions) : TurbopufferClient {
 
@@ -46,6 +47,9 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
 
     override fun withRawResponse(): TurbopufferClient.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurbopufferClient =
+        TurbopufferClientImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun namespaces(): NamespaceService = namespaces
 
     override fun namespaces(
@@ -65,6 +69,13 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
         private val namespaces: NamespaceService.WithRawResponse by lazy {
             NamespaceServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): TurbopufferClient.WithRawResponse =
+            TurbopufferClientImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun namespaces(): NamespaceService.WithRawResponse = namespaces
 

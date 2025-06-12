@@ -21,6 +21,7 @@ import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.async.NamespaceServiceAsync
 import com.turbopuffer.services.async.NamespaceServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
     TurbopufferClientAsync {
@@ -48,6 +49,9 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
 
     override fun withRawResponse(): TurbopufferClientAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurbopufferClientAsync =
+        TurbopufferClientAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun namespaces(): NamespaceServiceAsync = namespaces
 
     override fun namespaces(
@@ -67,6 +71,13 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
         private val namespaces: NamespaceServiceAsync.WithRawResponse by lazy {
             NamespaceServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): TurbopufferClientAsync.WithRawResponse =
+            TurbopufferClientAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun namespaces(): NamespaceServiceAsync.WithRawResponse = namespaces
 

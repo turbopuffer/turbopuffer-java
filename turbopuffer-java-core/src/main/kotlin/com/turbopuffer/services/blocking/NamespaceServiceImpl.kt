@@ -32,6 +32,7 @@ import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class NamespaceServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -42,6 +43,9 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     }
 
     override fun withRawResponse(): NamespaceService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): NamespaceService =
+        NamespaceServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun deleteAll(
         params: NamespaceDeleteAllParams,
@@ -103,6 +107,13 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         NamespaceService.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): NamespaceService.WithRawResponse =
+            NamespaceServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
             jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
