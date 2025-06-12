@@ -31,7 +31,7 @@ configure<MavenPublishBaseExtension> {
     pom {
         name.set("turbopuffer API")
         description.set("turbopuffer is a fast search engine that combines vector and full-text search\nusing object storage.")
-        url.set("https://turbopuffer.com/docs")
+        url.set("https://turbopuffer.com/docs/auth")
 
         licenses {
             license {
