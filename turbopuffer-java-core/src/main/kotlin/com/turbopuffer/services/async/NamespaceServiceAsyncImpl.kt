@@ -33,6 +33,7 @@ import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -43,6 +44,9 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     }
 
     override fun withRawResponse(): NamespaceServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): NamespaceServiceAsync =
+        NamespaceServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun deleteAll(
         params: NamespaceDeleteAllParams,
@@ -104,6 +108,13 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         NamespaceServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): NamespaceServiceAsync.WithRawResponse =
+            NamespaceServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
             jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)

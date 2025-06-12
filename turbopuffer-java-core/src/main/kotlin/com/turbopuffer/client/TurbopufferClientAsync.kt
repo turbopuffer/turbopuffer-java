@@ -2,12 +2,14 @@
 
 package com.turbopuffer.client
 
+import com.turbopuffer.core.ClientOptions
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.ClientNamespacesPageAsync
 import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.async.NamespaceServiceAsync
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 /**
  * A client for interacting with the Turbopuffer REST API asynchronously. You can also switch to
@@ -37,6 +39,13 @@ interface TurbopufferClientAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurbopufferClientAsync
 
     fun namespaces(): NamespaceServiceAsync
 
@@ -77,6 +86,15 @@ interface TurbopufferClientAsync {
      * method.
      */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): TurbopufferClientAsync.WithRawResponse
 
         fun namespaces(): NamespaceServiceAsync.WithRawResponse
 
