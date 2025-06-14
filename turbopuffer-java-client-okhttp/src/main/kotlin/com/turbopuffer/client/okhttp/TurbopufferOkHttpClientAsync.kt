@@ -12,6 +12,9 @@ import com.turbopuffer.core.http.QueryParams
 import java.net.Proxy
 import java.time.Clock
 import java.time.Duration
+import java.util.Optional
+import java.util.concurrent.Executor
+import kotlin.jvm.optionals.getOrNull
 
 class TurbopufferOkHttpClientAsync private constructor() {
 
@@ -46,6 +49,10 @@ class TurbopufferOkHttpClientAsync private constructor() {
         }
 
         fun jsonMapper(jsonMapper: JsonMapper) = apply { clientOptions.jsonMapper(jsonMapper) }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            clientOptions.streamHandlerExecutor(streamHandlerExecutor)
+        }
 
         fun clock(clock: Clock) = apply { clientOptions.clock(clock) }
 
@@ -153,6 +160,16 @@ class TurbopufferOkHttpClientAsync private constructor() {
 
         fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
 
+        fun region(region: String) = apply { clientOptions.region(region) }
+
+        fun defaultNamespace(defaultNamespace: String?) = apply {
+            clientOptions.defaultNamespace(defaultNamespace)
+        }
+
+        /** Alias for calling [Builder.defaultNamespace] with `defaultNamespace.orElse(null)`. */
+        fun defaultNamespace(defaultNamespace: Optional<String>) =
+            defaultNamespace(defaultNamespace.getOrNull())
+
         fun fromEnv() = apply { clientOptions.fromEnv() }
 
         /**
@@ -163,13 +180,7 @@ class TurbopufferOkHttpClientAsync private constructor() {
         fun build(): TurbopufferClientAsync =
             TurbopufferClientAsyncImpl(
                 clientOptions
-                    .httpClient(
-                        OkHttpClient.builder()
-                            .baseUrl(clientOptions.baseUrl())
-                            .timeout(timeout)
-                            .proxy(proxy)
-                            .build()
-                    )
+                    .httpClient(OkHttpClient.builder().timeout(timeout).proxy(proxy).build())
                     .build()
             )
     }

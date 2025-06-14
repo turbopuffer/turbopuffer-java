@@ -2,7 +2,14 @@
 
 package com.turbopuffer.client
 
+import com.turbopuffer.core.ClientOptions
+import com.turbopuffer.core.RequestOptions
+import com.turbopuffer.core.http.HttpResponseFor
+import com.turbopuffer.models.ClientNamespacesPageAsync
+import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.services.async.NamespaceServiceAsync
+import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 /**
  * A client for interacting with the Turbopuffer REST API asynchronously. You can also switch to
@@ -33,7 +40,33 @@ interface TurbopufferClientAsync {
      */
     fun withRawResponse(): WithRawResponse
 
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurbopufferClientAsync
+
     fun namespaces(): NamespaceServiceAsync
+
+    /** List namespaces. */
+    fun namespaces(): CompletableFuture<ClientNamespacesPageAsync> =
+        namespaces(ClientNamespacesParams.none())
+
+    /** @see [namespaces] */
+    fun namespaces(
+        params: ClientNamespacesParams = ClientNamespacesParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ClientNamespacesPageAsync>
+
+    /** @see [namespaces] */
+    fun namespaces(
+        params: ClientNamespacesParams = ClientNamespacesParams.none()
+    ): CompletableFuture<ClientNamespacesPageAsync> = namespaces(params, RequestOptions.none())
+
+    /** @see [namespaces] */
+    fun namespaces(requestOptions: RequestOptions): CompletableFuture<ClientNamespacesPageAsync> =
+        namespaces(ClientNamespacesParams.none(), requestOptions)
 
     /**
      * Closes this client, relinquishing any underlying resources.
@@ -54,6 +87,40 @@ interface TurbopufferClientAsync {
      */
     interface WithRawResponse {
 
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): TurbopufferClientAsync.WithRawResponse
+
         fun namespaces(): NamespaceServiceAsync.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as
+         * [TurbopufferClientAsync.namespaces].
+         */
+        fun namespaces(): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>> =
+            namespaces(ClientNamespacesParams.none())
+
+        /** @see [namespaces] */
+        fun namespaces(
+            params: ClientNamespacesParams = ClientNamespacesParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>>
+
+        /** @see [namespaces] */
+        fun namespaces(
+            params: ClientNamespacesParams = ClientNamespacesParams.none()
+        ): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>> =
+            namespaces(params, RequestOptions.none())
+
+        /** @see [namespaces] */
+        fun namespaces(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>> =
+            namespaces(ClientNamespacesParams.none(), requestOptions)
     }
 }
