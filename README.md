@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.12)
-[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.12/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.12)
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.13)
+[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.13/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.13)
 
 <!-- x-release-please-end -->
 
@@ -18,7 +18,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs/auth). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.12).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs/auth). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.13).
 
 <!-- x-release-please-end -->
 
@@ -29,7 +29,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.12")
+implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.13")
 ```
 
 ### Maven
@@ -38,7 +38,7 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.12")
 <dependency>
   <groupId>com.turbopuffer</groupId>
   <artifactId>turbopuffer-java</artifactId>
-  <version>0.1.0-beta.12</version>
+  <version>0.1.0-beta.13</version>
 </dependency>
 ```
 
