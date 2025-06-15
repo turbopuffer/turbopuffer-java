@@ -15,16 +15,22 @@ internal class FullTextSearchConfigTest {
     fun create() {
         val fullTextSearchConfig =
             FullTextSearchConfig.builder()
+                .b(0.0)
                 .caseSensitive(true)
-                .language(FullTextSearchConfig.Language.ARABIC)
+                .k1(0.0)
+                .language(Language.ARABIC)
                 .removeStopwords(true)
                 .stemming(true)
+                .tokenizer(Tokenizer.PRE_TOKENIZED_ARRAY)
                 .build()
 
+        assertThat(fullTextSearchConfig.b()).contains(0.0)
         assertThat(fullTextSearchConfig.caseSensitive()).contains(true)
-        assertThat(fullTextSearchConfig.language()).contains(FullTextSearchConfig.Language.ARABIC)
+        assertThat(fullTextSearchConfig.k1()).contains(0.0)
+        assertThat(fullTextSearchConfig.language()).contains(Language.ARABIC)
         assertThat(fullTextSearchConfig.removeStopwords()).contains(true)
         assertThat(fullTextSearchConfig.stemming()).contains(true)
+        assertThat(fullTextSearchConfig.tokenizer()).contains(Tokenizer.PRE_TOKENIZED_ARRAY)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -33,10 +39,13 @@ internal class FullTextSearchConfigTest {
         val jsonMapper = jsonMapper()
         val fullTextSearchConfig =
             FullTextSearchConfig.builder()
+                .b(0.0)
                 .caseSensitive(true)
-                .language(FullTextSearchConfig.Language.ARABIC)
+                .k1(0.0)
+                .language(Language.ARABIC)
                 .removeStopwords(true)
                 .stemming(true)
+                .tokenizer(Tokenizer.PRE_TOKENIZED_ARRAY)
                 .build()
 
         val roundtrippedFullTextSearchConfig =

@@ -5,6 +5,7 @@ package com.turbopuffer.services.blocking
 import com.turbopuffer.core.ClientOptions
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.RequestOptions
+import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.handlers.errorHandler
 import com.turbopuffer.core.handlers.jsonHandler
 import com.turbopuffer.core.handlers.withErrorHandler
@@ -15,17 +16,24 @@ import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
-import com.turbopuffer.models.namespaces.DocumentRowWithScore
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
-import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
-import com.turbopuffer.models.namespaces.NamespaceGetSchemaResponse
-import com.turbopuffer.models.namespaces.NamespaceListPage
-import com.turbopuffer.models.namespaces.NamespaceListPageResponse
-import com.turbopuffer.models.namespaces.NamespaceListParams
+import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
+import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceQueryResponse
+import com.turbopuffer.models.namespaces.NamespaceRecallParams
+import com.turbopuffer.models.namespaces.NamespaceRecallResponse
+import com.turbopuffer.models.namespaces.NamespaceSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
+import java.util.function.Consumer
+import kotlin.jvm.optionals.getOrNull
 
 class NamespaceServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     NamespaceService {
@@ -36,33 +44,57 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
 
     override fun withRawResponse(): NamespaceService.WithRawResponse = withRawResponse
 
-    override fun list(
-        params: NamespaceListParams,
-        requestOptions: RequestOptions,
-    ): NamespaceListPage =
-        // get /v1/namespaces
-        withRawResponse().list(params, requestOptions).parse()
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): NamespaceService =
+        NamespaceServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun deleteAll(
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions,
     ): NamespaceDeleteAllResponse =
-        // delete /v1/namespaces/{namespace}
+        // delete /v2/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).parse()
 
-    override fun getSchema(
-        params: NamespaceGetSchemaParams,
+    override fun hintCacheWarm(
+        params: NamespaceHintCacheWarmParams,
         requestOptions: RequestOptions,
-    ): NamespaceGetSchemaResponse =
-        // get /v1/namespaces/{namespace}/schema
-        withRawResponse().getSchema(params, requestOptions).parse()
+    ): NamespaceHintCacheWarmResponse =
+        // get /v1/namespaces/{namespace}/hint_cache_warm
+        withRawResponse().hintCacheWarm(params, requestOptions).parse()
+
+    override fun multiQuery(
+        params: NamespaceMultiQueryParams,
+        requestOptions: RequestOptions,
+    ): NamespaceMultiQueryResponse =
+        // post /v2/namespaces/{namespace}/query?stainless_overload=multiQuery
+        withRawResponse().multiQuery(params, requestOptions).parse()
 
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
-    ): List<DocumentRowWithScore> =
-        // post /v1/namespaces/{namespace}/query
+    ): NamespaceQueryResponse =
+        // post /v2/namespaces/{namespace}/query
         withRawResponse().query(params, requestOptions).parse()
+
+    override fun recall(
+        params: NamespaceRecallParams,
+        requestOptions: RequestOptions,
+    ): NamespaceRecallResponse =
+        // post /v1/namespaces/{namespace}/_debug/recall
+        withRawResponse().recall(params, requestOptions).parse()
+
+    override fun schema(
+        params: NamespaceSchemaParams,
+        requestOptions: RequestOptions,
+    ): NamespaceSchemaResponse =
+        // get /v1/namespaces/{namespace}/schema
+        withRawResponse().schema(params, requestOptions).parse()
+
+    override fun updateSchema(
+        params: NamespaceUpdateSchemaParams,
+        requestOptions: RequestOptions,
+    ): NamespaceUpdateSchemaResponse =
+        // post /v1/namespaces/{namespace}/schema
+        withRawResponse().updateSchema(params, requestOptions).parse()
 
     override fun write(
         params: NamespaceWriteParams,
@@ -76,39 +108,12 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<NamespaceListPageResponse> =
-            jsonHandler<NamespaceListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
-
-        override fun list(
-            params: NamespaceListParams,
-            requestOptions: RequestOptions,
-        ): HttpResponseFor<NamespaceListPage> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .addPathSegments("v1", "namespaces")
-                    .build()
-                    .prepare(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
-                response
-                    .use { listHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-                    .let {
-                        NamespaceListPage.builder()
-                            .service(NamespaceServiceImpl(clientOptions))
-                            .params(params)
-                            .response(it)
-                            .build()
-                    }
-            }
-        }
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): NamespaceService.WithRawResponse =
+            NamespaceServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
             jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
@@ -121,7 +126,17 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0))
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                    )
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params)
@@ -138,25 +153,36 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             }
         }
 
-        private val getSchemaHandler: Handler<NamespaceGetSchemaResponse> =
-            jsonHandler<NamespaceGetSchemaResponse>(clientOptions.jsonMapper)
+        private val hintCacheWarmHandler: Handler<NamespaceHintCacheWarmResponse> =
+            jsonHandler<NamespaceHintCacheWarmResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
-        override fun getSchema(
-            params: NamespaceGetSchemaParams,
+        override fun hintCacheWarm(
+            params: NamespaceHintCacheWarmParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<NamespaceGetSchemaResponse> {
+        ): HttpResponseFor<NamespaceHintCacheWarmResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0), "schema")
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "hint_cache_warm",
+                    )
                     .build()
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
                 response
-                    .use { getSchemaHandler.handle(it) }
+                    .use { hintCacheWarmHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
@@ -165,18 +191,69 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             }
         }
 
-        private val queryHandler: Handler<List<DocumentRowWithScore>> =
-            jsonHandler<List<DocumentRowWithScore>>(clientOptions.jsonMapper)
+        private val multiQueryHandler: Handler<NamespaceMultiQueryResponse> =
+            jsonHandler<NamespaceMultiQueryResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun multiQuery(
+            params: NamespaceMultiQueryParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceMultiQueryResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "query",
+                    )
+                    .putQueryParam("stainless_overload", "multiQuery")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { multiQueryHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val queryHandler: Handler<NamespaceQueryResponse> =
+            jsonHandler<NamespaceQueryResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun query(
             params: NamespaceQueryParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<List<DocumentRowWithScore>> {
+        ): HttpResponseFor<NamespaceQueryResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v1", "namespaces", params._pathParam(0), "query")
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "query",
+                    )
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params)
@@ -187,7 +264,124 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .use { queryHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
-                            it.forEach { it.validate() }
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val recallHandler: Handler<NamespaceRecallResponse> =
+            jsonHandler<NamespaceRecallResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun recall(
+            params: NamespaceRecallParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceRecallResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "_debug",
+                        "recall",
+                    )
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { recallHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val schemaHandler: Handler<NamespaceSchemaResponse> =
+            jsonHandler<NamespaceSchemaResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun schema(
+            params: NamespaceSchemaParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceSchemaResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "schema",
+                    )
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { schemaHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val updateSchemaHandler: Handler<NamespaceUpdateSchemaResponse> =
+            jsonHandler<NamespaceUpdateSchemaResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun updateSchema(
+            params: NamespaceUpdateSchemaParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceUpdateSchemaResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "schema",
+                    )
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { updateSchemaHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
                         }
                     }
             }
@@ -204,8 +398,18 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("v2", "namespaces", params._pathParam(0))
-                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                    )
+                    .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
