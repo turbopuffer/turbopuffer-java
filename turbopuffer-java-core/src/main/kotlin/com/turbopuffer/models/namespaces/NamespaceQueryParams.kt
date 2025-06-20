@@ -14,7 +14,6 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -38,15 +37,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun aggregateBy(): Optional<AggregateBy> = body.aggregateBy()
-
-    /**
-     * The consistency level for a query.
-     *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun consistency(): Optional<Consistency> = body.consistency()
+    fun aggregateBy(): Optional<Query.AggregateBy> = body.aggregateBy()
 
     /**
      * A function used to calculate vector similarity.
@@ -81,6 +72,14 @@ private constructor(
     fun topK(): Optional<Long> = body.topK()
 
     /**
+     * The consistency level for a query.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun consistency(): Optional<Consistency> = body.consistency()
+
+    /**
      * The encoding to use for vectors in the response.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -93,14 +92,7 @@ private constructor(
      *
      * Unlike [aggregateBy], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _aggregateBy(): JsonField<AggregateBy> = body._aggregateBy()
-
-    /**
-     * Returns the raw JSON value of [consistency].
-     *
-     * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _consistency(): JsonField<Consistency> = body._consistency()
+    fun _aggregateBy(): JsonField<Query.AggregateBy> = body._aggregateBy()
 
     /**
      * Returns the raw JSON value of [distanceMetric].
@@ -123,6 +115,13 @@ private constructor(
      * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _topK(): JsonField<Long> = body._topK()
+
+    /**
+     * Returns the raw JSON value of [consistency].
+     *
+     * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _consistency(): JsonField<Consistency> = body._consistency()
 
     /**
      * Returns the raw JSON value of [vectorEncoding].
@@ -174,40 +173,26 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [aggregateBy]
-         * - [consistency]
          * - [distanceMetric]
          * - [filters]
          * - [includeAttributes]
+         * - [rankBy]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** Aggregations to compute over all documents in the namespace that match the filters. */
-        fun aggregateBy(aggregateBy: AggregateBy) = apply { body.aggregateBy(aggregateBy) }
+        fun aggregateBy(aggregateBy: Query.AggregateBy) = apply { body.aggregateBy(aggregateBy) }
 
         /**
          * Sets [Builder.aggregateBy] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.aggregateBy] with a well-typed [AggregateBy] value
+         * You should usually call [Builder.aggregateBy] with a well-typed [Query.AggregateBy] value
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
-        fun aggregateBy(aggregateBy: JsonField<AggregateBy>) = apply {
+        fun aggregateBy(aggregateBy: JsonField<Query.AggregateBy>) = apply {
             body.aggregateBy(aggregateBy)
-        }
-
-        /** The consistency level for a query. */
-        fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
-
-        /**
-         * Sets [Builder.consistency] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.consistency] with a well-typed [Consistency] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun consistency(consistency: JsonField<Consistency>) = apply {
-            body.consistency(consistency)
         }
 
         /** A function used to calculate vector similarity. */
@@ -269,6 +254,20 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
+
+        /** The consistency level for a query. */
+        fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
+
+        /**
+         * Sets [Builder.consistency] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.consistency] with a well-typed [Consistency] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun consistency(consistency: JsonField<Consistency>) = apply {
+            body.consistency(consistency)
+        }
 
         /** The encoding to use for vectors in the response. */
         fun vectorEncoding(vectorEncoding: VectorEncoding) = apply {
@@ -429,15 +428,16 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
+    /** Query, filter, full-text search and vector search documents. */
     class Body
     private constructor(
-        private val aggregateBy: JsonField<AggregateBy>,
-        private val consistency: JsonField<Consistency>,
+        private val aggregateBy: JsonField<Query.AggregateBy>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val filters: JsonValue,
         private val includeAttributes: JsonField<IncludeAttributes>,
         private val rankBy: JsonValue,
         private val topK: JsonField<Long>,
+        private val consistency: JsonField<Consistency>,
         private val vectorEncoding: JsonField<VectorEncoding>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -446,10 +446,7 @@ private constructor(
         private constructor(
             @JsonProperty("aggregate_by")
             @ExcludeMissing
-            aggregateBy: JsonField<AggregateBy> = JsonMissing.of(),
-            @JsonProperty("consistency")
-            @ExcludeMissing
-            consistency: JsonField<Consistency> = JsonMissing.of(),
+            aggregateBy: JsonField<Query.AggregateBy> = JsonMissing.of(),
             @JsonProperty("distance_metric")
             @ExcludeMissing
             distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
@@ -459,20 +456,33 @@ private constructor(
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
             @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("consistency")
+            @ExcludeMissing
+            consistency: JsonField<Consistency> = JsonMissing.of(),
             @JsonProperty("vector_encoding")
             @ExcludeMissing
             vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of(),
         ) : this(
             aggregateBy,
-            consistency,
             distanceMetric,
             filters,
             includeAttributes,
             rankBy,
             topK,
+            consistency,
             vectorEncoding,
             mutableMapOf(),
         )
+
+        fun toQuery(): Query =
+            Query.builder()
+                .aggregateBy(aggregateBy)
+                .distanceMetric(distanceMetric)
+                .filters(filters)
+                .includeAttributes(includeAttributes)
+                .rankBy(rankBy)
+                .topK(topK)
+                .build()
 
         /**
          * Aggregations to compute over all documents in the namespace that match the filters.
@@ -480,15 +490,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun aggregateBy(): Optional<AggregateBy> = aggregateBy.getOptional("aggregate_by")
-
-        /**
-         * The consistency level for a query.
-         *
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun consistency(): Optional<Consistency> = consistency.getOptional("consistency")
+        fun aggregateBy(): Optional<Query.AggregateBy> = aggregateBy.getOptional("aggregate_by")
 
         /**
          * A function used to calculate vector similarity.
@@ -526,6 +528,14 @@ private constructor(
         fun topK(): Optional<Long> = topK.getOptional("top_k")
 
         /**
+         * The consistency level for a query.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun consistency(): Optional<Consistency> = consistency.getOptional("consistency")
+
+        /**
          * The encoding to use for vectors in the response.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -541,16 +551,7 @@ private constructor(
          */
         @JsonProperty("aggregate_by")
         @ExcludeMissing
-        fun _aggregateBy(): JsonField<AggregateBy> = aggregateBy
-
-        /**
-         * Returns the raw JSON value of [consistency].
-         *
-         * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("consistency")
-        @ExcludeMissing
-        fun _consistency(): JsonField<Consistency> = consistency
+        fun _aggregateBy(): JsonField<Query.AggregateBy> = aggregateBy
 
         /**
          * Returns the raw JSON value of [distanceMetric].
@@ -578,6 +579,15 @@ private constructor(
          * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
+
+        /**
+         * Returns the raw JSON value of [consistency].
+         *
+         * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("consistency")
+        @ExcludeMissing
+        fun _consistency(): JsonField<Consistency> = consistency
 
         /**
          * Returns the raw JSON value of [vectorEncoding].
@@ -610,25 +620,25 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var aggregateBy: JsonField<AggregateBy> = JsonMissing.of()
-            private var consistency: JsonField<Consistency> = JsonMissing.of()
+            private var aggregateBy: JsonField<Query.AggregateBy> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var filters: JsonValue = JsonMissing.of()
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
             private var rankBy: JsonValue = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
+            private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 aggregateBy = body.aggregateBy
-                consistency = body.consistency
                 distanceMetric = body.distanceMetric
                 filters = body.filters
                 includeAttributes = body.includeAttributes
                 rankBy = body.rankBy
                 topK = body.topK
+                consistency = body.consistency
                 vectorEncoding = body.vectorEncoding
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -636,31 +646,17 @@ private constructor(
             /**
              * Aggregations to compute over all documents in the namespace that match the filters.
              */
-            fun aggregateBy(aggregateBy: AggregateBy) = aggregateBy(JsonField.of(aggregateBy))
+            fun aggregateBy(aggregateBy: Query.AggregateBy) = aggregateBy(JsonField.of(aggregateBy))
 
             /**
              * Sets [Builder.aggregateBy] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.aggregateBy] with a well-typed [AggregateBy] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.aggregateBy] with a well-typed [Query.AggregateBy]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
-            fun aggregateBy(aggregateBy: JsonField<AggregateBy>) = apply {
+            fun aggregateBy(aggregateBy: JsonField<Query.AggregateBy>) = apply {
                 this.aggregateBy = aggregateBy
-            }
-
-            /** The consistency level for a query. */
-            fun consistency(consistency: Consistency) = consistency(JsonField.of(consistency))
-
-            /**
-             * Sets [Builder.consistency] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.consistency] with a well-typed [Consistency] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun consistency(consistency: JsonField<Consistency>) = apply {
-                this.consistency = consistency
             }
 
             /** A function used to calculate vector similarity. */
@@ -723,6 +719,20 @@ private constructor(
              */
             fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
 
+            /** The consistency level for a query. */
+            fun consistency(consistency: Consistency) = consistency(JsonField.of(consistency))
+
+            /**
+             * Sets [Builder.consistency] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.consistency] with a well-typed [Consistency] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun consistency(consistency: JsonField<Consistency>) = apply {
+                this.consistency = consistency
+            }
+
             /** The encoding to use for vectors in the response. */
             fun vectorEncoding(vectorEncoding: VectorEncoding) =
                 vectorEncoding(JsonField.of(vectorEncoding))
@@ -765,12 +775,12 @@ private constructor(
             fun build(): Body =
                 Body(
                     aggregateBy,
-                    consistency,
                     distanceMetric,
                     filters,
                     includeAttributes,
                     rankBy,
                     topK,
+                    consistency,
                     vectorEncoding,
                     additionalProperties.toMutableMap(),
                 )
@@ -784,10 +794,10 @@ private constructor(
             }
 
             aggregateBy().ifPresent { it.validate() }
-            consistency().ifPresent { it.validate() }
             distanceMetric().ifPresent { it.validate() }
             includeAttributes().ifPresent { it.validate() }
             topK()
+            consistency().ifPresent { it.validate() }
             vectorEncoding().ifPresent { it.validate() }
             validated = true
         }
@@ -809,10 +819,10 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (aggregateBy.asKnown().getOrNull()?.validity() ?: 0) +
-                (consistency.asKnown().getOrNull()?.validity() ?: 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0) +
+                (consistency.asKnown().getOrNull()?.validity() ?: 0) +
                 (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -820,119 +830,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && aggregateBy == other.aggregateBy && consistency == other.consistency && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && aggregateBy == other.aggregateBy && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && consistency == other.consistency && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(aggregateBy, consistency, distanceMetric, filters, includeAttributes, rankBy, topK, vectorEncoding, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(aggregateBy, distanceMetric, filters, includeAttributes, rankBy, topK, consistency, vectorEncoding, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{aggregateBy=$aggregateBy, consistency=$consistency, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
-    }
-
-    /** Aggregations to compute over all documents in the namespace that match the filters. */
-    class AggregateBy
-    @JsonCreator
-    private constructor(
-        @com.fasterxml.jackson.annotation.JsonValue
-        private val additionalProperties: Map<String, JsonValue>
-    ) {
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [AggregateBy]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [AggregateBy]. */
-        class Builder internal constructor() {
-
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(aggregateBy: AggregateBy) = apply {
-                additionalProperties = aggregateBy.additionalProperties.toMutableMap()
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [AggregateBy].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): AggregateBy = AggregateBy(additionalProperties.toImmutable())
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): AggregateBy = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: TurbopufferInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is AggregateBy && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() = "AggregateBy{additionalProperties=$additionalProperties}"
+            "Body{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, consistency=$consistency, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */

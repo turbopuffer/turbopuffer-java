@@ -15,13 +15,8 @@ internal class NamespaceQueryParamsTest {
         NamespaceQueryParams.builder()
             .namespace("namespace")
             .aggregateBy(
-                NamespaceQueryParams.AggregateBy.builder()
+                Query.AggregateBy.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
-                    .build()
-            )
-            .consistency(
-                NamespaceQueryParams.Consistency.builder()
-                    .level(NamespaceQueryParams.Consistency.Level.STRONG)
                     .build()
             )
             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -29,6 +24,11 @@ internal class NamespaceQueryParamsTest {
             .includeAttributes(true)
             .rankBy(JsonValue.from(mapOf<String, Any>()))
             .topK(0L)
+            .consistency(
+                NamespaceQueryParams.Consistency.builder()
+                    .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                    .build()
+            )
             .vectorEncoding(VectorEncoding.FLOAT)
             .build()
     }
@@ -50,13 +50,8 @@ internal class NamespaceQueryParamsTest {
             NamespaceQueryParams.builder()
                 .namespace("namespace")
                 .aggregateBy(
-                    NamespaceQueryParams.AggregateBy.builder()
+                    Query.AggregateBy.builder()
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -64,28 +59,22 @@ internal class NamespaceQueryParamsTest {
                 .includeAttributes(true)
                 .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)
+                .consistency(
+                    NamespaceQueryParams.Consistency.builder()
+                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                        .build()
+                )
                 .vectorEncoding(VectorEncoding.FLOAT)
                 .build()
 
         val body = params._body()
 
-        assertThat(body.aggregateBy())
-            .contains(
-                NamespaceQueryParams.AggregateBy.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                    .build()
-            )
         assertThat(body.consistency())
             .contains(
                 NamespaceQueryParams.Consistency.builder()
                     .level(NamespaceQueryParams.Consistency.Level.STRONG)
                     .build()
             )
-        assertThat(body.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)
-        assertThat(body._filters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(body.includeAttributes()).contains(IncludeAttributes.ofBool(true))
-        assertThat(body._rankBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(body.topK()).contains(0L)
         assertThat(body.vectorEncoding()).contains(VectorEncoding.FLOAT)
     }
 

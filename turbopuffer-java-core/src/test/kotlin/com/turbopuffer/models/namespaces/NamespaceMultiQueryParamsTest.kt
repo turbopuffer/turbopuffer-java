@@ -15,9 +15,9 @@ internal class NamespaceMultiQueryParamsTest {
         NamespaceMultiQueryParams.builder()
             .namespace("namespace")
             .addQuery(
-                NamespaceMultiQueryParams.Query.builder()
+                Query.builder()
                     .aggregateBy(
-                        NamespaceMultiQueryParams.Query.AggregateBy.builder()
+                        Query.AggregateBy.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
@@ -40,10 +40,7 @@ internal class NamespaceMultiQueryParamsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun pathParams() {
-        val params =
-            NamespaceMultiQueryParams.builder()
-                .addQuery(NamespaceMultiQueryParams.Query.builder().build())
-                .build()
+        val params = NamespaceMultiQueryParams.builder().addQuery(Query.builder().build()).build()
 
         assertThat(params._pathParam(0)).isEqualTo("")
         // out-of-bound path param
@@ -57,9 +54,9 @@ internal class NamespaceMultiQueryParamsTest {
             NamespaceMultiQueryParams.builder()
                 .namespace("namespace")
                 .addQuery(
-                    NamespaceMultiQueryParams.Query.builder()
+                    Query.builder()
                         .aggregateBy(
-                            NamespaceMultiQueryParams.Query.AggregateBy.builder()
+                            Query.AggregateBy.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                 .build()
                         )
@@ -82,9 +79,9 @@ internal class NamespaceMultiQueryParamsTest {
 
         assertThat(body.queries())
             .containsExactly(
-                NamespaceMultiQueryParams.Query.builder()
+                Query.builder()
                     .aggregateBy(
-                        NamespaceMultiQueryParams.Query.AggregateBy.builder()
+                        Query.AggregateBy.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
@@ -107,14 +104,10 @@ internal class NamespaceMultiQueryParamsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun bodyWithoutOptionalFields() {
-        val params =
-            NamespaceMultiQueryParams.builder()
-                .addQuery(NamespaceMultiQueryParams.Query.builder().build())
-                .build()
+        val params = NamespaceMultiQueryParams.builder().addQuery(Query.builder().build()).build()
 
         val body = params._body()
 
-        assertThat(body.queries())
-            .containsExactly(NamespaceMultiQueryParams.Query.builder().build())
+        assertThat(body.queries()).containsExactly(Query.builder().build())
     }
 }

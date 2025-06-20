@@ -15,6 +15,7 @@ import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.Query
 import com.turbopuffer.models.namespaces.Row
 import com.turbopuffer.models.namespaces.Vector
 import com.turbopuffer.models.namespaces.VectorEncoding
@@ -81,9 +82,9 @@ internal class NamespaceServiceAsyncTest {
                 NamespaceMultiQueryParams.builder()
                     .namespace("namespace")
                     .addQuery(
-                        NamespaceMultiQueryParams.Query.builder()
+                        Query.builder()
                             .aggregateBy(
-                                NamespaceMultiQueryParams.Query.AggregateBy.builder()
+                                Query.AggregateBy.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
@@ -123,13 +124,8 @@ internal class NamespaceServiceAsyncTest {
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
                     .aggregateBy(
-                        NamespaceQueryParams.AggregateBy.builder()
+                        Query.AggregateBy.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
-                            .build()
-                    )
-                    .consistency(
-                        NamespaceQueryParams.Consistency.builder()
-                            .level(NamespaceQueryParams.Consistency.Level.STRONG)
                             .build()
                     )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -137,6 +133,11 @@ internal class NamespaceServiceAsyncTest {
                     .includeAttributes(true)
                     .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
+                    .consistency(
+                        NamespaceQueryParams.Consistency.builder()
+                            .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                            .build()
+                    )
                     .vectorEncoding(VectorEncoding.FLOAT)
                     .build()
             )
