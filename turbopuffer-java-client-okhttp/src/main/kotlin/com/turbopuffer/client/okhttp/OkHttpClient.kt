@@ -17,6 +17,7 @@ import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Dispatcher
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType
@@ -197,6 +198,7 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
         private var baseUrl: HttpUrl? = null
         private var timeout: Timeout = Timeout.default()
         private var proxy: Proxy? = null
+        private var maxRequests: Int = 64
 
         fun baseUrl(baseUrl: String) = apply { this.baseUrl = baseUrl.toHttpUrl() }
 
@@ -206,16 +208,31 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
 
         fun proxy(proxy: Proxy?) = apply { this.proxy = proxy }
 
-        fun build(): OkHttpClient =
-            OkHttpClient(
+        fun maxRequests(maxRequests: Int) = apply { this.maxRequests = maxRequests }
+
+        fun build(): OkHttpClient {
+            val dispatcher = Dispatcher()
+            // The default maxRequestsPerHost limit (5) is much too low for
+            // turbopuffer workloads, which can involve many concurrent queries
+            // and writes.
+            //
+            // Also, we're almost certainly making all requests against the same
+            // host, so we keep things simple by setting `maxRequestsPerHost` to
+            // the same value as `maxRequests`.
+            dispatcher.maxRequests = maxRequests
+            dispatcher.maxRequestsPerHost = maxRequests
+
+            return OkHttpClient(
                 okhttp3.OkHttpClient.Builder()
                     .connectTimeout(timeout.connect())
                     .readTimeout(timeout.read())
                     .writeTimeout(timeout.write())
                     .callTimeout(timeout.request())
                     .proxy(proxy)
+                    .dispatcher(dispatcher)
                     .build(),
                 checkRequired("baseUrl", baseUrl),
             )
+        }
     }
 }

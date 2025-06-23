@@ -31,6 +31,7 @@ class TurbopufferOkHttpClientAsync private constructor() {
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
         private var timeout: Timeout = Timeout.default()
         private var proxy: Proxy? = null
+        private var maxRequests: Int = 64
 
         fun baseUrl(baseUrl: String) = apply { clientOptions.baseUrl(baseUrl) }
 
@@ -145,6 +146,8 @@ class TurbopufferOkHttpClientAsync private constructor() {
 
         fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
 
+        fun maxRequests(maxRequests: Int) = apply { this.maxRequests = maxRequests }
+
         fun proxy(proxy: Proxy) = apply { this.proxy = proxy }
 
         fun responseValidation(responseValidation: Boolean) = apply {
@@ -168,6 +171,7 @@ class TurbopufferOkHttpClientAsync private constructor() {
                             .baseUrl(clientOptions.baseUrl())
                             .timeout(timeout)
                             .proxy(proxy)
+                            .maxRequests(maxRequests)
                             .build()
                     )
                     .build()
