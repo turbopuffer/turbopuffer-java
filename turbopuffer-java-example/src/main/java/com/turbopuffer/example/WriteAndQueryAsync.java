@@ -1,7 +1,7 @@
 // A straightforward example of storing and retrieving documents via vector
 // similarity search using async operations.
 //
-// Run this example with: gradle run -Pcom.turbopuffer.example=WriteAndQueryAsync
+// Run this example with: ./gradlew run -Pcom.turbopuffer.example=WriteAndQueryAsync
 package com.turbopuffer.example;
 
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync;
