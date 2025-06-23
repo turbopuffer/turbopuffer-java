@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.0-beta.13](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.12...v0.1.0-beta.13) (2025-06-23)
+
+
+### Features
+
+* allow configuring maxRequests ([33bbd4d](https://github.com/turbopuffer/turbopuffer-java/commit/33bbd4d3d6c8244922837423ac8c5e6458e47ac1))
+
+
+### Bug Fixes
+
+* add example of concurrent perf and memory usage ([54121fa](https://github.com/turbopuffer/turbopuffer-java/commit/54121fab7f8542bbc44e17cfea588608b428c3ca))
+* fix example running instructions for WriteAndQuery ([bbbe995](https://github.com/turbopuffer/turbopuffer-java/commit/bbbe9953c64a463eedfc02aef26072579368c2cb))
+
 ## 0.1.0-beta.12 (2025-05-01)
 
 Full Changelog: [v0.1.0-beta.11...v0.1.0-beta.12](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.11...v0.1.0-beta.12)
