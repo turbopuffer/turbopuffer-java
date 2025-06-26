@@ -1,9 +1,9 @@
-# turbopuffer Java API Library
+# turbopuffer Java API Library <a href="https://turbopuffer.com"><img src="https://github.com/user-attachments/assets/8d6cca4c-10b7-4d3a-9782-696053baf44e" align="right"></a>
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.13)
-[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.13/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.12)
+<a href="https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.13"><img src="https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java" alt="Maven Central" align="right"></a>
+<a href="https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.13"><img src="https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.13/javadoc.svg" alt="javadoc" align="right"></a>
 
 <!-- x-release-please-end -->
 
@@ -18,7 +18,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.13).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs/auth). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.13).
 
 <!-- x-release-please-end -->
 
