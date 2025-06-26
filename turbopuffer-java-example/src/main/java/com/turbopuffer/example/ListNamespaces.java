@@ -1,6 +1,6 @@
 // A simple example that lists all extant namespaces.
 //
-// Run this example with: ./gradlew run -Pcom.turbopuffer.example=ListNamespaces
+// Run this example with: gradle run -Pcom.turbopuffer.example=ListNamespaces
 package com.turbopuffer.example;
 
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
