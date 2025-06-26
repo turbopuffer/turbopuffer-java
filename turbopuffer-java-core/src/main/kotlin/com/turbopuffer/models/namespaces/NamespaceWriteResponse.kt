@@ -17,17 +17,51 @@ import java.util.Collections
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
-/** The response to a successful upsert request. */
+/** The response to a successful write request. */
 class NamespaceWriteResponse
 private constructor(
+    private val billing: JsonField<WriteBilling>,
+    private val message: JsonField<String>,
+    private val rowsAffected: JsonField<Long>,
     private val status: JsonField<Status>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of()
-    ) : this(status, mutableMapOf())
+        @JsonProperty("billing")
+        @ExcludeMissing
+        billing: JsonField<WriteBilling> = JsonMissing.of(),
+        @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("rows_affected")
+        @ExcludeMissing
+        rowsAffected: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+    ) : this(billing, message, rowsAffected, status, mutableMapOf())
+
+    /**
+     * The billing information for a write request.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun billing(): WriteBilling = billing.getRequired("billing")
+
+    /**
+     * A message describing the result of the write request.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun message(): String = message.getRequired("message")
+
+    /**
+     * The number of rows affected by the write request.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun rowsAffected(): Long = rowsAffected.getRequired("rows_affected")
 
     /**
      * The status of the request.
@@ -36,6 +70,29 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun status(): Status = status.getRequired("status")
+
+    /**
+     * Returns the raw JSON value of [billing].
+     *
+     * Unlike [billing], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("billing") @ExcludeMissing fun _billing(): JsonField<WriteBilling> = billing
+
+    /**
+     * Returns the raw JSON value of [message].
+     *
+     * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
+
+    /**
+     * Returns the raw JSON value of [rowsAffected].
+     *
+     * Unlike [rowsAffected], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("rows_affected")
+    @ExcludeMissing
+    fun _rowsAffected(): JsonField<Long> = rowsAffected
 
     /**
      * Returns the raw JSON value of [status].
@@ -63,6 +120,9 @@ private constructor(
          *
          * The following fields are required:
          * ```java
+         * .billing()
+         * .message()
+         * .rowsAffected()
          * .status()
          * ```
          */
@@ -72,14 +132,55 @@ private constructor(
     /** A builder for [NamespaceWriteResponse]. */
     class Builder internal constructor() {
 
+        private var billing: JsonField<WriteBilling>? = null
+        private var message: JsonField<String>? = null
+        private var rowsAffected: JsonField<Long>? = null
         private var status: JsonField<Status>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(namespaceWriteResponse: NamespaceWriteResponse) = apply {
+            billing = namespaceWriteResponse.billing
+            message = namespaceWriteResponse.message
+            rowsAffected = namespaceWriteResponse.rowsAffected
             status = namespaceWriteResponse.status
             additionalProperties = namespaceWriteResponse.additionalProperties.toMutableMap()
         }
+
+        /** The billing information for a write request. */
+        fun billing(billing: WriteBilling) = billing(JsonField.of(billing))
+
+        /**
+         * Sets [Builder.billing] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.billing] with a well-typed [WriteBilling] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun billing(billing: JsonField<WriteBilling>) = apply { this.billing = billing }
+
+        /** A message describing the result of the write request. */
+        fun message(message: String) = message(JsonField.of(message))
+
+        /**
+         * Sets [Builder.message] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.message] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun message(message: JsonField<String>) = apply { this.message = message }
+
+        /** The number of rows affected by the write request. */
+        fun rowsAffected(rowsAffected: Long) = rowsAffected(JsonField.of(rowsAffected))
+
+        /**
+         * Sets [Builder.rowsAffected] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.rowsAffected] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun rowsAffected(rowsAffected: JsonField<Long>) = apply { this.rowsAffected = rowsAffected }
 
         /** The status of the request. */
         fun status(status: Status) = status(JsonField.of(status))
@@ -118,6 +219,9 @@ private constructor(
          *
          * The following fields are required:
          * ```java
+         * .billing()
+         * .message()
+         * .rowsAffected()
          * .status()
          * ```
          *
@@ -125,6 +229,9 @@ private constructor(
          */
         fun build(): NamespaceWriteResponse =
             NamespaceWriteResponse(
+                checkRequired("billing", billing),
+                checkRequired("message", message),
+                checkRequired("rowsAffected", rowsAffected),
                 checkRequired("status", status),
                 additionalProperties.toMutableMap(),
             )
@@ -137,6 +244,9 @@ private constructor(
             return@apply
         }
 
+        billing().validate()
+        message()
+        rowsAffected()
         status().validate()
         validated = true
     }
@@ -154,7 +264,12 @@ private constructor(
      *
      * Used for best match union deserialization.
      */
-    @JvmSynthetic internal fun validity(): Int = (status.asKnown().getOrNull()?.validity() ?: 0)
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (billing.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (message.asKnown().isPresent) 1 else 0) +
+            (if (rowsAffected.asKnown().isPresent) 1 else 0) +
+            (status.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The status of the request. */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -283,15 +398,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceWriteResponse && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is NamespaceWriteResponse && billing == other.billing && message == other.message && rowsAffected == other.rowsAffected && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(status, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(billing, message, rowsAffected, status, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceWriteResponse{status=$status, additionalProperties=$additionalProperties}"
+        "NamespaceWriteResponse{billing=$billing, message=$message, rowsAffected=$rowsAffected, status=$status, additionalProperties=$additionalProperties}"
 }

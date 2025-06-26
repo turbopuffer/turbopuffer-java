@@ -2,7 +2,6 @@ package com.turbopuffer.client.okhttp
 
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.Timeout
-import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.HttpClient
 import com.turbopuffer.core.http.HttpMethod
@@ -17,8 +16,6 @@ import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.Dispatcher
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -29,8 +26,7 @@ import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.BufferedSink
 
-class OkHttpClient
-private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val baseUrl: HttpUrl) :
+class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpClient) :
     HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
@@ -141,11 +137,7 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
         }
 
     private fun HttpRequest.toUrl(): String {
-        url?.let {
-            return it
-        }
-
-        val builder = baseUrl.newBuilder()
+        val builder = baseUrl.toHttpUrl().newBuilder()
         pathSegments.forEach(builder::addPathSegment)
         queryParams.keys().forEach { key ->
             queryParams.values(key).forEach { builder.addQueryParameter(key, it) }
@@ -195,12 +187,8 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
 
     class Builder internal constructor() {
 
-        private var baseUrl: HttpUrl? = null
         private var timeout: Timeout = Timeout.default()
         private var proxy: Proxy? = null
-        private var maxRequests: Int = 64
-
-        fun baseUrl(baseUrl: String) = apply { this.baseUrl = baseUrl.toHttpUrl() }
 
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
 
@@ -208,31 +196,20 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
 
         fun proxy(proxy: Proxy?) = apply { this.proxy = proxy }
 
-        fun maxRequests(maxRequests: Int) = apply { this.maxRequests = maxRequests }
-
-        fun build(): OkHttpClient {
-            val dispatcher = Dispatcher()
-            // The default maxRequestsPerHost limit (5) is much too low for
-            // turbopuffer workloads, which can involve many concurrent queries
-            // and writes.
-            //
-            // Also, we're almost certainly making all requests against the same
-            // host, so we keep things simple by setting `maxRequestsPerHost` to
-            // the same value as `maxRequests`.
-            dispatcher.maxRequests = maxRequests
-            dispatcher.maxRequestsPerHost = maxRequests
-
-            return OkHttpClient(
+        fun build(): OkHttpClient =
+            OkHttpClient(
                 okhttp3.OkHttpClient.Builder()
                     .connectTimeout(timeout.connect())
                     .readTimeout(timeout.read())
                     .writeTimeout(timeout.write())
                     .callTimeout(timeout.request())
                     .proxy(proxy)
-                    .dispatcher(dispatcher)
-                    .build(),
-                checkRequired("baseUrl", baseUrl),
+                    .build()
+                    .apply {
+                        // We usually make all our requests to the same host so it makes sense to
+                        // raise the per-host limit to the overall limit.
+                        dispatcher.maxRequestsPerHost = dispatcher.maxRequests
+                    }
             )
-        }
     }
 }

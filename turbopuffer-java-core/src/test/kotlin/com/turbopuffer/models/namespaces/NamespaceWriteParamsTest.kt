@@ -15,47 +15,44 @@ internal class NamespaceWriteParamsTest {
     fun create() {
         NamespaceWriteParams.builder()
             .namespace("namespace")
-            .operation(
-                NamespaceWriteParams.Operation.WriteDocuments.builder()
-                    .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                    .patchColumns(
-                        DocumentColumns.builder()
-                            .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .build()
+            .copyFromNamespace("copy_from_namespace")
+            .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+            .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+            .encryption(
+                NamespaceWriteParams.Encryption.builder()
+                    .cmek(
+                        NamespaceWriteParams.Encryption.Cmek.builder().keyName("key_name").build()
                     )
-                    .addPatchRow(
-                        DocumentRow.builder()
-                            .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfNumber(listOf(0.0))
-                            .build()
-                    )
-                    .schema(
-                        NamespaceWriteParams.Operation.WriteDocuments.Schema.builder()
-                            .putAdditionalProperty(
-                                "foo",
-                                JsonValue.from(
-                                    listOf(
-                                        mapOf(
-                                            "filterable" to true,
-                                            "full_text_search" to true,
-                                            "type" to "string",
-                                        )
-                                    )
-                                ),
-                            )
-                            .build()
-                    )
-                    .upsertColumns(
-                        DocumentColumns.builder()
-                            .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .build()
-                    )
-                    .addUpsertRow(
-                        DocumentRow.builder()
-                            .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfNumber(listOf(0.0))
-                            .build()
-                    )
+                    .build()
+            )
+            .patchColumns(
+                Columns.builder()
+                    .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
+                    .build()
+            )
+            .addPatchRow(
+                Row.builder()
+                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .vectorOfNumber(listOf(0.0))
+                    .build()
+            )
+            .schema(
+                NamespaceWriteParams.Schema.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
+            )
+            .upsertColumns(
+                Columns.builder()
+                    .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
+                    .build()
+            )
+            .addUpsertRow(
+                Row.builder()
+                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .vectorOfNumber(listOf(0.0))
                     .build()
             )
             .build()
@@ -64,9 +61,9 @@ internal class NamespaceWriteParamsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun pathParams() {
-        val params = NamespaceWriteParams.builder().namespace("namespace").build()
+        val params = NamespaceWriteParams.builder().build()
 
-        assertThat(params._pathParam(0)).isEqualTo("namespace")
+        assertThat(params._pathParam(0)).isEqualTo("")
         // out-of-bound path param
         assertThat(params._pathParam(1)).isEqualTo("")
     }
@@ -77,106 +74,106 @@ internal class NamespaceWriteParamsTest {
         val params =
             NamespaceWriteParams.builder()
                 .namespace("namespace")
-                .operation(
-                    NamespaceWriteParams.Operation.WriteDocuments.builder()
-                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .patchColumns(
-                            DocumentColumns.builder()
-                                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .copyFromNamespace("copy_from_namespace")
+                .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+                .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                .encryption(
+                    NamespaceWriteParams.Encryption.builder()
+                        .cmek(
+                            NamespaceWriteParams.Encryption.Cmek.builder()
+                                .keyName("key_name")
                                 .build()
                         )
-                        .addPatchRow(
-                            DocumentRow.builder()
-                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .vectorOfNumber(listOf(0.0))
-                                .build()
-                        )
-                        .schema(
-                            NamespaceWriteParams.Operation.WriteDocuments.Schema.builder()
-                                .putAdditionalProperty(
-                                    "foo",
-                                    JsonValue.from(
-                                        listOf(
-                                            mapOf(
-                                                "filterable" to true,
-                                                "full_text_search" to true,
-                                                "type" to "string",
-                                            )
-                                        )
-                                    ),
-                                )
-                                .build()
-                        )
-                        .upsertColumns(
-                            DocumentColumns.builder()
-                                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .build()
-                        )
-                        .addUpsertRow(
-                            DocumentRow.builder()
-                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .vectorOfNumber(listOf(0.0))
-                                .build()
-                        )
+                        .build()
+                )
+                .patchColumns(
+                    Columns.builder()
+                        .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
+                        .build()
+                )
+                .addPatchRow(
+                    Row.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfNumber(listOf(0.0))
+                        .build()
+                )
+                .schema(
+                    NamespaceWriteParams.Schema.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
+                .upsertColumns(
+                    Columns.builder()
+                        .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
+                        .build()
+                )
+                .addUpsertRow(
+                    Row.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfNumber(listOf(0.0))
                         .build()
                 )
                 .build()
 
-        val body = params._body().getOrNull()
+        val body = params._body()
 
-        assertThat(body)
-            .isEqualTo(
-                NamespaceWriteParams.Operation.ofWriteDocuments(
-                    NamespaceWriteParams.Operation.WriteDocuments.builder()
-                        .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .patchColumns(
-                            DocumentColumns.builder()
-                                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .build()
-                        )
-                        .addPatchRow(
-                            DocumentRow.builder()
-                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .vectorOfNumber(listOf(0.0))
-                                .build()
-                        )
-                        .schema(
-                            NamespaceWriteParams.Operation.WriteDocuments.Schema.builder()
-                                .putAdditionalProperty(
-                                    "foo",
-                                    JsonValue.from(
-                                        listOf(
-                                            mapOf(
-                                                "filterable" to true,
-                                                "full_text_search" to true,
-                                                "type" to "string",
-                                            )
-                                        )
-                                    ),
-                                )
-                                .build()
-                        )
-                        .upsertColumns(
-                            DocumentColumns.builder()
-                                .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .build()
-                        )
-                        .addUpsertRow(
-                            DocumentRow.builder()
-                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .vectorOfNumber(listOf(0.0))
-                                .build()
-                        )
-                        .build()
-                )
+        assertThat(body.copyFromNamespace()).contains("copy_from_namespace")
+        assertThat(body._deleteByFilter()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.deletes().getOrNull())
+            .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(body.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)
+        assertThat(body.encryption())
+            .contains(
+                NamespaceWriteParams.Encryption.builder()
+                    .cmek(
+                        NamespaceWriteParams.Encryption.Cmek.builder().keyName("key_name").build()
+                    )
+                    .build()
+            )
+        assertThat(body.patchColumns())
+            .contains(
+                Columns.builder()
+                    .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
+                    .build()
+            )
+        assertThat(body.patchRows().getOrNull())
+            .containsExactly(
+                Row.builder()
+                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .vectorOfNumber(listOf(0.0))
+                    .build()
+            )
+        assertThat(body.schema())
+            .contains(
+                NamespaceWriteParams.Schema.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
+            )
+        assertThat(body.upsertColumns())
+            .contains(
+                Columns.builder()
+                    .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
+                    .build()
+            )
+        assertThat(body.upsertRows().getOrNull())
+            .containsExactly(
+                Row.builder()
+                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .vectorOfNumber(listOf(0.0))
+                    .build()
             )
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = NamespaceWriteParams.builder().namespace("namespace").build()
+        val params = NamespaceWriteParams.builder().build()
 
-        val body = params._body().getOrNull()
+        val body = params._body()
     }
 }

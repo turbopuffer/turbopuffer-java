@@ -5,13 +5,20 @@ package com.turbopuffer.services.blocking
 import com.turbopuffer.TestServerExtension
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
-import com.turbopuffer.models.namespaces.DocumentColumns
-import com.turbopuffer.models.namespaces.DocumentRow
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
-import com.turbopuffer.models.namespaces.NamespaceGetSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceRecallParams
+import com.turbopuffer.models.namespaces.NamespaceSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.Query
+import com.turbopuffer.models.namespaces.Row
+import com.turbopuffer.models.namespaces.Vector
+import com.turbopuffer.models.namespaces.VectorEncoding
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -21,26 +28,12 @@ internal class NamespaceServiceTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun list() {
-        val client =
-            TurbopufferOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .build()
-        val namespaceService = client.namespaces()
-
-        val page = namespaceService.list()
-
-        page.response().validate()
-    }
-
-    @Disabled("skipped: tests are disabled for the time being")
-    @Test
     fun deleteAll() {
         val client =
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespaces()
 
@@ -54,17 +47,59 @@ internal class NamespaceServiceTest {
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
-    fun getSchema() {
+    fun hintCacheWarm() {
         val client =
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespaces()
 
         val response =
-            namespaceService.getSchema(
-                NamespaceGetSchemaParams.builder().namespace("namespace").build()
+            namespaceService.hintCacheWarm(
+                NamespaceHintCacheWarmParams.builder().namespace("namespace").build()
+            )
+
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun multiQuery() {
+        val client =
+            TurbopufferOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
+                .build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.multiQuery(
+                NamespaceMultiQueryParams.builder()
+                    .namespace("namespace")
+                    .addQuery(
+                        Query.builder()
+                            .aggregateBy(
+                                Query.AggregateBy.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                            .filters(JsonValue.from(mapOf<String, Any>()))
+                            .includeAttributes(true)
+                            .rankBy(JsonValue.from(mapOf<String, Any>()))
+                            .topK(0L)
+                            .build()
+                    )
+                    .consistency(
+                        NamespaceMultiQueryParams.Consistency.builder()
+                            .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
+                            .build()
+                    )
+                    .vectorEncoding(VectorEncoding.FLOAT)
+                    .build()
             )
 
         response.validate()
@@ -76,30 +111,103 @@ internal class NamespaceServiceTest {
         val client =
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespaces()
 
-        val documentRowWithScores =
+        val response =
             namespaceService.query(
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
-                    .consistency(
-                        NamespaceQueryParams.Consistency.builder()
-                            .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                    .aggregateBy(
+                        Query.AggregateBy.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .filters(JsonValue.from(mapOf<String, Any>()))
                     .includeAttributes(true)
-                    .includeVectors(true)
                     .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
-                    .addVector(0.0)
+                    .consistency(
+                        NamespaceQueryParams.Consistency.builder()
+                            .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                            .build()
+                    )
+                    .vectorEncoding(VectorEncoding.FLOAT)
                     .build()
             )
 
-        documentRowWithScores.forEach { it.validate() }
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun recall() {
+        val client =
+            TurbopufferOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
+                .build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.recall(
+                NamespaceRecallParams.builder()
+                    .namespace("namespace")
+                    .filters(JsonValue.from(mapOf<String, Any>()))
+                    .num(0L)
+                    .addQuery(0.0)
+                    .topK(0L)
+                    .build()
+            )
+
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun schema() {
+        val client =
+            TurbopufferOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
+                .build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.schema(NamespaceSchemaParams.builder().namespace("namespace").build())
+
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun updateSchema() {
+        val client =
+            TurbopufferOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
+                .build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.updateSchema(
+                NamespaceUpdateSchemaParams.builder()
+                    .namespace("namespace")
+                    .schema(
+                        NamespaceUpdateSchemaParams.Schema.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .build()
+            )
+
+        response.validate()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -108,7 +216,8 @@ internal class NamespaceServiceTest {
         val client =
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespaces()
 
@@ -116,47 +225,46 @@ internal class NamespaceServiceTest {
             namespaceService.write(
                 NamespaceWriteParams.builder()
                     .namespace("namespace")
-                    .operation(
-                        NamespaceWriteParams.Operation.WriteDocuments.builder()
-                            .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                            .patchColumns(
-                                DocumentColumns.builder()
-                                    .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .copyFromNamespace("copy_from_namespace")
+                    .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+                    .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                    .encryption(
+                        NamespaceWriteParams.Encryption.builder()
+                            .cmek(
+                                NamespaceWriteParams.Encryption.Cmek.builder()
+                                    .keyName("key_name")
                                     .build()
                             )
-                            .addPatchRow(
-                                DocumentRow.builder()
-                                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                    .vectorOfNumber(listOf(0.0))
-                                    .build()
-                            )
-                            .schema(
-                                NamespaceWriteParams.Operation.WriteDocuments.Schema.builder()
-                                    .putAdditionalProperty(
-                                        "foo",
-                                        JsonValue.from(
-                                            listOf(
-                                                mapOf(
-                                                    "filterable" to true,
-                                                    "full_text_search" to true,
-                                                    "type" to "string",
-                                                )
-                                            )
-                                        ),
-                                    )
-                                    .build()
-                            )
-                            .upsertColumns(
-                                DocumentColumns.builder()
-                                    .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                    .build()
-                            )
-                            .addUpsertRow(
-                                DocumentRow.builder()
-                                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                    .vectorOfNumber(listOf(0.0))
-                                    .build()
-                            )
+                            .build()
+                    )
+                    .patchColumns(
+                        Columns.builder()
+                            .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
+                            .build()
+                    )
+                    .addPatchRow(
+                        Row.builder()
+                            .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .vectorOfNumber(listOf(0.0))
+                            .build()
+                    )
+                    .schema(
+                        NamespaceWriteParams.Schema.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .upsertColumns(
+                        Columns.builder()
+                            .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
+                            .build()
+                    )
+                    .addUpsertRow(
+                        Row.builder()
+                            .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .vectorOfNumber(listOf(0.0))
                             .build()
                     )
                     .build()
