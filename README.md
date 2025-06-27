@@ -7,11 +7,6 @@
 
 <!-- x-release-please-end -->
 
-> [!IMPORTANT]
-> **The turbopuffer Java client is in beta.**
->
-> Please let us know about any bugs or performance issues.
-
 The turbopuffer Java SDK provides convenient access to the [turbopuffer REST API](https://turbopuffer.com/docs/auth) from applications written in Java.
 
 It is generated with [Stainless](https://www.stainless.com/).
@@ -21,6 +16,11 @@ It is generated with [Stainless](https://www.stainless.com/).
 The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs/auth). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.13).
 
 <!-- x-release-please-end -->
+
+> [!IMPORTANT]
+> **The turbopuffer Java client is in beta.**
+>
+> Please let us know about any bugs or performance issues.
 
 ## Installation
 
