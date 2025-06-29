@@ -202,7 +202,6 @@ internal class NamespaceServiceTest {
                 NamespaceWriteParams.builder()
                     .namespace("namespace")
                     .copyFromNamespace("copy_from_namespace")
-                    .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
                     .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .encryption(
