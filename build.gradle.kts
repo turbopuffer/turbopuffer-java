@@ -8,7 +8,7 @@ repositories {
 
 allprojects {
     group = "com.turbopuffer"
-    version = "0.1.0-beta.14" // x-release-please-version
+    version = "0.1.0-beta.15" // x-release-please-version
 }
 
 subprojects {
