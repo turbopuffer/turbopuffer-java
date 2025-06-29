@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.1.0-beta.14 (2025-06-29)
+
+Full Changelog: [v0.1.0-beta.13...v0.1.0-beta.14](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.13...v0.1.0-beta.14)
+
+### Bug Fixes
+
+* avoid use-after-close bug with HTTP client ([7b7c06c](https://github.com/turbopuffer/turbopuffer-java/commit/7b7c06cf656ad8d0b0113b3b88b2a89932fbee35))
+* **ci:** release-doctor — report correct token name ([e08362c](https://github.com/turbopuffer/turbopuffer-java/commit/e08362c21179bcb930874f20bd403b2b4e803322))
+* introduce namespace resources and typed query parameters ([2b43f02](https://github.com/turbopuffer/turbopuffer-java/commit/2b43f022daaa6f5ec4a6d494a54b30b358e37927))
+* **README:** adjust location of beta warning label ([23f92e9](https://github.com/turbopuffer/turbopuffer-java/commit/23f92e971a58db2abd2fe5e8f528d0c474bad6df))
+* **README:** align formatting with other SDKs ([4a8ff86](https://github.com/turbopuffer/turbopuffer-java/commit/4a8ff867d8a69128c10d2a7928a78372c7e1bd54))
+* run examples in CI ([4ad9f9a](https://github.com/turbopuffer/turbopuffer-java/commit/4ad9f9a9f62cf1e16f6ddd6ca580c5af5953b3cf))
+* update code generator image version ([fe963a4](https://github.com/turbopuffer/turbopuffer-java/commit/fe963a4f54bbddc1097346012b645dd7d2ea553d))
+
+
+### Chores
+
+* **ci:** only run for pushes and fork pull requests ([c1b6176](https://github.com/turbopuffer/turbopuffer-java/commit/c1b6176307d007b994f0bb6a0932111bf5f1a0a0))
+* **internal:** version bump ([0e45a6f](https://github.com/turbopuffer/turbopuffer-java/commit/0e45a6fefd32fd7643d8a4c508e18cf783b9836b))
+* remove custom code ([6a01104](https://github.com/turbopuffer/turbopuffer-java/commit/6a011048b61fb5225e8daaa0405c1c3306b6eade))
+* remove example files ([bdbdb3f](https://github.com/turbopuffer/turbopuffer-java/commit/bdbdb3feca3788137366dcc3fb41acf837b5301a))
+
 ## [0.1.0-beta.13](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.12...v0.1.0-beta.13) (2025-06-23)
 
 
