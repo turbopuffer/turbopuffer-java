@@ -11,3 +11,5 @@ typealias Schema = Map<String, AttributeSchemaConfig>
 typealias NamespaceSchemaResponse = Schema
 
 typealias NamespaceUpdateSchemaResponse = Schema
+
+typealias Id = JsonValue
