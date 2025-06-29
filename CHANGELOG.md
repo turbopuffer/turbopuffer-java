@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0-beta.15 (2025-06-29)
+
+Full Changelog: [v0.1.0-beta.14...v0.1.0-beta.15](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.14...v0.1.0-beta.15)
+
+### Bug Fixes
+
+* align delete_by_filter and ID types with other SDKs ([f8770e2](https://github.com/turbopuffer/turbopuffer-java/commit/f8770e20ff75f3d194151b1d480eeb9b6d121685))
+* update tests for new deleteByFilter type ([f88c110](https://github.com/turbopuffer/turbopuffer-java/commit/f88c1104f9e9e5b68c6a28527cc3372f8cc8926f))
+
 ## 0.1.0-beta.14 (2025-06-29)
 
 Full Changelog: [v0.1.0-beta.13...v0.1.0-beta.14](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.13...v0.1.0-beta.14)
