@@ -257,7 +257,7 @@ private constructor(
         billing().validate()
         performance().validate()
         aggregations().ifPresent { it.validate() }
-        rows().ifPresent { it.forEach { it.validate() } }
+        rows()
         validated = true
     }
 
@@ -279,7 +279,7 @@ private constructor(
         (billing.asKnown().getOrNull()?.validity() ?: 0) +
             (performance.asKnown().getOrNull()?.validity() ?: 0) +
             (aggregations.asKnown().getOrNull()?.validity() ?: 0) +
-            (rows.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+            (rows.asKnown().getOrNull()?.size ?: 0)
 
     class Aggregations
     @JsonCreator

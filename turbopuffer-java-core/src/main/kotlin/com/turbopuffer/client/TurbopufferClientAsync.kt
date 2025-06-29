@@ -7,7 +7,6 @@ import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.ClientNamespacesPageAsync
 import com.turbopuffer.models.ClientNamespacesParams
-import com.turbopuffer.services.async.NamespaceServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -47,7 +46,8 @@ interface TurbopufferClientAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurbopufferClientAsync
 
-    fun namespaces(): NamespaceServiceAsync
+    /** Creates a client for interacting with a specific namespace. */
+    fun namespace(namespace: String): NamespaceAsync
 
     /** List namespaces. */
     fun namespaces(): CompletableFuture<ClientNamespacesPageAsync> =
@@ -96,7 +96,8 @@ interface TurbopufferClientAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): TurbopufferClientAsync.WithRawResponse
 
-        fun namespaces(): NamespaceServiceAsync.WithRawResponse
+        /** Creates a client for interacting with a specific namespace. */
+        fun namespace(namespace: String): NamespaceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as

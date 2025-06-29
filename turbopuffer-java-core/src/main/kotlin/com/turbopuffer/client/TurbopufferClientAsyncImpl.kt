@@ -41,10 +41,6 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
         WithRawResponseImpl(clientOptions)
     }
 
-    private val namespaces: NamespaceServiceAsync by lazy {
-        NamespaceServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
     override fun sync(): TurbopufferClient = sync
 
     override fun withRawResponse(): TurbopufferClientAsync.WithRawResponse = withRawResponse
@@ -52,7 +48,10 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurbopufferClientAsync =
         TurbopufferClientAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun namespaces(): NamespaceServiceAsync = namespaces
+    override fun namespace(namespace: String): NamespaceAsync =
+        NamespaceServiceAsyncImpl(
+            clientOptionsWithUserAgent.toBuilder().defaultNamespace(namespace).build()
+        )
 
     override fun namespaces(
         params: ClientNamespacesParams,
@@ -79,7 +78,10 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        override fun namespaces(): NamespaceServiceAsync.WithRawResponse = namespaces
+        override fun namespace(namespace: String): NamespaceAsync.WithRawResponse =
+            NamespaceServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().defaultNamespace(namespace).build()
+            )
 
         private val namespacesHandler: Handler<ClientNamespacesPageResponse> =
             jsonHandler<ClientNamespacesPageResponse>(clientOptions.jsonMapper)

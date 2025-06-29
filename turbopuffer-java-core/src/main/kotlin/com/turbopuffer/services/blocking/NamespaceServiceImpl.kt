@@ -2,6 +2,7 @@
 
 package com.turbopuffer.services.blocking
 
+import com.turbopuffer.client.Namespace
 import com.turbopuffer.core.ClientOptions
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.RequestOptions
@@ -36,7 +37,7 @@ import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class NamespaceServiceImpl internal constructor(private val clientOptions: ClientOptions) :
-    NamespaceService {
+    Namespace {
 
     private val withRawResponse: NamespaceService.WithRawResponse by lazy {
         WithRawResponseImpl(clientOptions)
@@ -104,7 +105,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         withRawResponse().write(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
-        NamespaceService.WithRawResponse {
+        Namespace.WithRawResponse {
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
 
@@ -342,7 +343,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .use { schemaHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
-                            it.validate()
+                            it.values.forEach { it.validate() }
                         }
                     }
             }
@@ -381,7 +382,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .use { updateSchemaHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
-                            it.validate()
+                            it.values.forEach { it.validate() }
                         }
                     }
             }
