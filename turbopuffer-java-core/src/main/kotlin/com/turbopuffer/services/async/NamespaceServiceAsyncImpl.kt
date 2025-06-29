@@ -403,7 +403,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                             .use { updateSchemaHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
-                                    it.validate()
+                                    it.values.forEach { it.validate() }
                                 }
                             }
                     }

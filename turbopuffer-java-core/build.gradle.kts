@@ -24,13 +24,27 @@ kotlin {
                 // this rather than removing them from the tree minimizes
                 // Stainless-generated conflicts.
                 exclude("com/turbopuffer/models/namespaces/AttributeSchema.kt")
-                exclude("com/turbopuffer/models/namespaces/Row.kt")
-                exclude("com/turbopuffer/models/namespaces/RowTest.kt")
                 exclude("com/turbopuffer/models/namespaces/Columns.kt")
-                exclude("com/turbopuffer/models/namespaces/ColumnsTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceSchemaResponse.kt")
+                exclude("com/turbopuffer/models/namespaces/Row.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceUpdateSchemaResponse.kt")
+            }
+        }
+
+        test {
+            kotlin {
+                exclude("com/turbopuffer/models/namespaces/AttributeSchemaTest.kt")
+                exclude("com/turbopuffer/models/namespaces/ColumnsTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceMultiQueryParamsTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceMultiQueryResponseTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceQueryParamsTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceQueryResponseTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceSchemaResponseTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceUpdateSchemaParamsTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceUpdateSchemaResponseTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceWriteParamsTest.kt")
+                exclude("com/turbopuffer/models/namespaces/QueryTest.kt")
+                exclude("com/turbopuffer/models/namespaces/RowTest.kt")
             }
         }
     }

@@ -5,6 +5,7 @@ package com.turbopuffer.services.blocking
 import com.turbopuffer.TestServerExtension
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
@@ -35,7 +36,7 @@ internal class NamespaceServiceTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.deleteAll(
@@ -54,7 +55,7 @@ internal class NamespaceServiceTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.hintCacheWarm(
@@ -73,7 +74,7 @@ internal class NamespaceServiceTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.multiQuery(
@@ -81,15 +82,8 @@ internal class NamespaceServiceTest {
                     .namespace("namespace")
                     .addQuery(
                         Query.builder()
-                            .aggregateBy(
-                                Query.AggregateBy.builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                    .build()
-                            )
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                            .filters(JsonValue.from(mapOf<String, Any>()))
                             .includeAttributes(true)
-                            .rankBy(JsonValue.from(mapOf<String, Any>()))
                             .topK(0L)
                             .build()
                     )
@@ -114,21 +108,14 @@ internal class NamespaceServiceTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.query(
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
-                    .aggregateBy(
-                        Query.AggregateBy.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("bar"))
-                            .build()
-                    )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                    .filters(JsonValue.from(mapOf<String, Any>()))
                     .includeAttributes(true)
-                    .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
                     .consistency(
                         NamespaceQueryParams.Consistency.builder()
@@ -151,7 +138,7 @@ internal class NamespaceServiceTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.recall(
@@ -176,12 +163,10 @@ internal class NamespaceServiceTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.schema(NamespaceSchemaParams.builder().namespace("namespace").build())
-
-        response.validate()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -193,21 +178,19 @@ internal class NamespaceServiceTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.updateSchema(
                 NamespaceUpdateSchemaParams.builder()
                     .namespace("namespace")
                     .schema(
-                        NamespaceUpdateSchemaParams.Schema.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("string"))
-                            .build()
+                        mapOf(
+                            "foo" to AttributeSchemaConfig.builder().type("string").build(),
+                        )
                     )
                     .build()
             )
-
-        response.validate()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -219,7 +202,7 @@ internal class NamespaceServiceTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.write(
@@ -239,33 +222,39 @@ internal class NamespaceServiceTest {
                             .build()
                     )
                     .patchColumns(
-                        Columns.builder()
-                            .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
-                            .build()
+                        mapOf(
+                            "id" to listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
+                            "vector" to listOf(JsonValue.from(listOf(0.0))),
+                        )
                     )
                     .addPatchRow(
-                        Row.builder()
-                            .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfNumber(listOf(0.0))
-                            .build()
+                        mapOf(
+                            "id" to JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+                            "vectorOfNumber" to JsonValue.from(listOf(0.0)),
+                        )
                     )
                     .schema(
-                        NamespaceWriteParams.Schema.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("string"))
-                            .build()
+                        mapOf(
+                            "id" to AttributeSchemaConfig.builder().type("uuid").build(),
+                            "name" to
+                                AttributeSchemaConfig.builder()
+                                    .type("string")
+                                    .filterable(false)
+                                    .build(),
+                            "age" to AttributeSchemaConfig.builder().type("uint").build(),
+                        )
                     )
                     .upsertColumns(
-                        Columns.builder()
-                            .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
-                            .build()
+                        mapOf(
+                            "id" to listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
+                            "vector" to listOf(JsonValue.from(listOf(0.0))),
+                        )
                     )
                     .addUpsertRow(
-                        Row.builder()
-                            .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfNumber(listOf(0.0))
-                            .build()
+                        mapOf(
+                            "id" to JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+                            "vectorOfNumber" to JsonValue.from(listOf(0.0)),
+                        )
                     )
                     .build()
             )

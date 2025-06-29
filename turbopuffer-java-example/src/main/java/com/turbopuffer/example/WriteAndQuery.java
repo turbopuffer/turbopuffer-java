@@ -4,10 +4,6 @@
 // Run this example with: ./gradlew run -Pcom.turbopuffer.example=WriteAndQuery
 package com.turbopuffer.example;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 import com.turbopuffer.core.JsonValue;
 import com.turbopuffer.errors.TurbopufferServiceException;
@@ -20,6 +16,9 @@ import com.turbopuffer.models.namespaces.NamespaceSchemaParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.RankBy;
 import com.turbopuffer.models.namespaces.RankByAttributeOrder;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class WriteAndQuery {
 

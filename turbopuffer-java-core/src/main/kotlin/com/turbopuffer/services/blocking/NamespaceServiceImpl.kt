@@ -382,7 +382,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .use { updateSchemaHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
-                            it.validate()
+                            it.values.forEach { it.validate() }
                         }
                     }
             }
