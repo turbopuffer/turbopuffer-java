@@ -5,7 +5,7 @@ package com.turbopuffer.services.async
 import com.turbopuffer.TestServerExtension
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.models.namespaces.Columns
+import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
@@ -16,8 +16,6 @@ import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Query
-import com.turbopuffer.models.namespaces.Row
-import com.turbopuffer.models.namespaces.Vector
 import com.turbopuffer.models.namespaces.VectorEncoding
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -35,7 +33,7 @@ internal class NamespaceServiceAsyncTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceServiceAsync = client.namespaces()
+        val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
             namespaceServiceAsync.deleteAll(
@@ -55,7 +53,7 @@ internal class NamespaceServiceAsyncTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceServiceAsync = client.namespaces()
+        val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
             namespaceServiceAsync.hintCacheWarm(
@@ -75,7 +73,7 @@ internal class NamespaceServiceAsyncTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceServiceAsync = client.namespaces()
+        val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
             namespaceServiceAsync.multiQuery(
@@ -83,15 +81,8 @@ internal class NamespaceServiceAsyncTest {
                     .namespace("namespace")
                     .addQuery(
                         Query.builder()
-                            .aggregateBy(
-                                Query.AggregateBy.builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                    .build()
-                            )
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                            .filters(JsonValue.from(mapOf<String, Any>()))
                             .includeAttributes(true)
-                            .rankBy(JsonValue.from(mapOf<String, Any>()))
                             .topK(0L)
                             .build()
                     )
@@ -117,21 +108,14 @@ internal class NamespaceServiceAsyncTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceServiceAsync = client.namespaces()
+        val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
             namespaceServiceAsync.query(
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
-                    .aggregateBy(
-                        Query.AggregateBy.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("bar"))
-                            .build()
-                    )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                    .filters(JsonValue.from(mapOf<String, Any>()))
                     .includeAttributes(true)
-                    .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
                     .consistency(
                         NamespaceQueryParams.Consistency.builder()
@@ -155,13 +139,12 @@ internal class NamespaceServiceAsyncTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceServiceAsync = client.namespaces()
+        val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
             namespaceServiceAsync.recall(
                 NamespaceRecallParams.builder()
                     .namespace("namespace")
-                    .filters(JsonValue.from(mapOf<String, Any>()))
                     .num(0L)
                     .addQuery(0.0)
                     .topK(0L)
@@ -181,7 +164,7 @@ internal class NamespaceServiceAsyncTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceServiceAsync = client.namespaces()
+        val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
             namespaceServiceAsync.schema(
@@ -189,7 +172,6 @@ internal class NamespaceServiceAsyncTest {
             )
 
         val response = responseFuture.get()
-        response.validate()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -201,22 +183,17 @@ internal class NamespaceServiceAsyncTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceServiceAsync = client.namespaces()
+        val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
             namespaceServiceAsync.updateSchema(
                 NamespaceUpdateSchemaParams.builder()
                     .namespace("namespace")
-                    .schema(
-                        NamespaceUpdateSchemaParams.Schema.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("string"))
-                            .build()
-                    )
+                    .schema(mapOf("foo" to AttributeSchemaConfig.builder().type("string").build()))
                     .build()
             )
 
         val response = responseFuture.get()
-        response.validate()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -228,7 +205,7 @@ internal class NamespaceServiceAsyncTest {
                 .apiKey("tpuf_A1...")
                 .region("gcp-us-central1")
                 .build()
-        val namespaceServiceAsync = client.namespaces()
+        val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
             namespaceServiceAsync.write(
@@ -248,33 +225,39 @@ internal class NamespaceServiceAsyncTest {
                             .build()
                     )
                     .patchColumns(
-                        Columns.builder()
-                            .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
-                            .build()
+                        mapOf(
+                            "id" to listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
+                            "vector" to listOf(JsonValue.from(listOf(0.0))),
+                        )
                     )
                     .addPatchRow(
-                        Row.builder()
-                            .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfNumber(listOf(0.0))
-                            .build()
+                        mapOf(
+                            "id" to JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+                            "vectorOfNumber" to JsonValue.from(listOf(0.0)),
+                        )
                     )
                     .schema(
-                        NamespaceWriteParams.Schema.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("string"))
-                            .build()
+                        mapOf(
+                            "id" to AttributeSchemaConfig.builder().type("uuid").build(),
+                            "name" to
+                                AttributeSchemaConfig.builder()
+                                    .type("string")
+                                    .filterable(false)
+                                    .build(),
+                            "age" to AttributeSchemaConfig.builder().type("uint").build(),
+                        )
                     )
                     .upsertColumns(
-                        Columns.builder()
-                            .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
-                            .build()
+                        mapOf(
+                            "id" to listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
+                            "vector" to listOf(JsonValue.from(listOf(0.0))),
+                        )
                     )
                     .addUpsertRow(
-                        Row.builder()
-                            .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfNumber(listOf(0.0))
-                            .build()
+                        mapOf(
+                            "id" to JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+                            "vectorOfNumber" to JsonValue.from(listOf(0.0)),
+                        )
                     )
                     .build()
             )

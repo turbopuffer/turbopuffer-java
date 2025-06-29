@@ -41,7 +41,7 @@ private constructor(
         }
     }
 
-    fun baseUrl(): String = baseUrl ?: PRODUCTION_URL
+    fun baseUrl(): String = (baseUrl ?: PRODUCTION_URL).replace("{region}", region)
 
     fun defaultNamespace(): Optional<String> = Optional.ofNullable(defaultNamespace)
 

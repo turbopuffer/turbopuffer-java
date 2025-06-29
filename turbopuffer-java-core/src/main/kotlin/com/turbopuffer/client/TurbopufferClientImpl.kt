@@ -18,7 +18,6 @@ import com.turbopuffer.core.prepare
 import com.turbopuffer.models.ClientNamespacesPage
 import com.turbopuffer.models.ClientNamespacesPageResponse
 import com.turbopuffer.models.ClientNamespacesParams
-import com.turbopuffer.services.blocking.NamespaceService
 import com.turbopuffer.services.blocking.NamespaceServiceImpl
 import java.util.function.Consumer
 
@@ -39,10 +38,6 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
         WithRawResponseImpl(clientOptions)
     }
 
-    private val namespaces: NamespaceService by lazy {
-        NamespaceServiceImpl(clientOptionsWithUserAgent)
-    }
-
     override fun async(): TurbopufferClientAsync = async
 
     override fun withRawResponse(): TurbopufferClient.WithRawResponse = withRawResponse
@@ -50,7 +45,10 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurbopufferClient =
         TurbopufferClientImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun namespaces(): NamespaceService = namespaces
+    override fun namespace(namespace: String): Namespace =
+        NamespaceServiceImpl(
+            clientOptionsWithUserAgent.toBuilder().defaultNamespace(namespace).build()
+        )
 
     override fun namespaces(
         params: ClientNamespacesParams,
@@ -66,10 +64,6 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
 
         private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
 
-        private val namespaces: NamespaceService.WithRawResponse by lazy {
-            NamespaceServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): TurbopufferClient.WithRawResponse =
@@ -77,7 +71,10 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        override fun namespaces(): NamespaceService.WithRawResponse = namespaces
+        override fun namespace(namespace: String): Namespace.WithRawResponse =
+            NamespaceServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().defaultNamespace(namespace).build()
+            )
 
         private val namespacesHandler: Handler<ClientNamespacesPageResponse> =
             jsonHandler<ClientNamespacesPageResponse>(clientOptions.jsonMapper)

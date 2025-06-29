@@ -18,11 +18,9 @@ import com.turbopuffer.client.TurbopufferClient
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.ClientNamespacesParams
-import com.turbopuffer.models.namespaces.Columns
+import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
-import com.turbopuffer.models.namespaces.Row
-import com.turbopuffer.models.namespaces.Vector
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -67,12 +65,11 @@ internal class ServiceParamsTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun write() {
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
         stubFor(post(anyUrl()).willReturn(ok("{}")))
 
         namespaceService.write(
             NamespaceWriteParams.builder()
-                .namespace("namespace")
                 .copyFromNamespace("copy_from_namespace")
                 .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
                 .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -87,33 +84,39 @@ internal class ServiceParamsTest {
                         .build()
                 )
                 .patchColumns(
-                    Columns.builder()
-                        .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
-                        .build()
+                    mapOf(
+                        "id" to listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
+                        "vector" to listOf(JsonValue.from(listOf(0.0))),
+                    )
                 )
                 .addPatchRow(
-                    Row.builder()
-                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .vectorOfNumber(listOf(0.0))
-                        .build()
+                    mapOf(
+                        "id" to JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+                        "vectorOfNumber" to JsonValue.from(listOf(0.0)),
+                    )
                 )
                 .schema(
-                    NamespaceWriteParams.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
+                    mapOf(
+                        "id" to AttributeSchemaConfig.builder().type("uuid").build(),
+                        "name" to
+                            AttributeSchemaConfig.builder()
+                                .type("string")
+                                .filterable(false)
+                                .build(),
+                        "age" to AttributeSchemaConfig.builder().type("uint").build(),
+                    )
                 )
                 .upsertColumns(
-                    Columns.builder()
-                        .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
-                        .build()
+                    mapOf(
+                        "id" to listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
+                        "vector" to listOf(JsonValue.from(listOf(0.0))),
+                    )
                 )
                 .addUpsertRow(
-                    Row.builder()
-                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .vectorOfNumber(listOf(0.0))
-                        .build()
+                    mapOf(
+                        "id" to JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+                        "vectorOfNumber" to JsonValue.from(listOf(0.0)),
+                    )
                 )
                 .putAdditionalHeader("Secret-Header", "42")
                 .putAdditionalQueryParam("secret_query_param", "42")

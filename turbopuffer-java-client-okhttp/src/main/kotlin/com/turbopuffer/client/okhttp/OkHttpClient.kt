@@ -16,6 +16,7 @@ import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Dispatcher
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -189,6 +190,7 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
 
         private var timeout: Timeout = Timeout.default()
         private var proxy: Proxy? = null
+        private var maxRequests: Int = 64
 
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
 
@@ -196,20 +198,30 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
 
         fun proxy(proxy: Proxy?) = apply { this.proxy = proxy }
 
-        fun build(): OkHttpClient =
-            OkHttpClient(
+        fun maxRequests(maxRequests: Int) = apply { this.maxRequests = maxRequests }
+
+        fun build(): OkHttpClient {
+            val dispatcher = Dispatcher()
+            // The default maxRequestsPerHost limit (5) is much too low for
+            // turbopuffer workloads, which can involve many concurrent queries
+            // and writes.
+            //
+            // Also, we're almost certainly making all requests against the same
+            // host, so we keep things simple by setting `maxRequestsPerHost` to
+            // the same value as `maxRequests`.
+            dispatcher.maxRequests = maxRequests
+            dispatcher.maxRequestsPerHost = maxRequests
+
+            return OkHttpClient(
                 okhttp3.OkHttpClient.Builder()
                     .connectTimeout(timeout.connect())
                     .readTimeout(timeout.read())
                     .writeTimeout(timeout.write())
                     .callTimeout(timeout.request())
                     .proxy(proxy)
+                    .dispatcher(dispatcher)
                     .build()
-                    .apply {
-                        // We usually make all our requests to the same host so it makes sense to
-                        // raise the per-host limit to the overall limit.
-                        dispatcher.maxRequestsPerHost = dispatcher.maxRequests
-                    }
             )
+        }
     }
 }
