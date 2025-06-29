@@ -42,7 +42,7 @@ private constructor(
     fun copyFromNamespace(): Optional<String> = body.copyFromNamespace()
 
     /** The filter specifying which documents to delete. */
-    fun _deleteByFilter(): JsonValue = body._deleteByFilter()
+    fun deleteByFilter(): Optional<Filter> = body.deleteByFilter()
 
     /**
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -111,6 +111,13 @@ private constructor(
      * type.
      */
     fun _copyFromNamespace(): JsonField<String> = body._copyFromNamespace()
+
+    /**
+     * Returns the raw JSON value of [deleteByFilter].
+     *
+     * Unlike [deleteByFilter], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _deleteByFilter(): JsonField<Filter> = body._deleteByFilter()
 
     /**
      * Returns the raw JSON value of [deletes].
@@ -236,9 +243,7 @@ private constructor(
         }
 
         /** The filter specifying which documents to delete. */
-        fun deleteByFilter(deleteByFilter: JsonValue) = apply {
-            body.deleteByFilter(deleteByFilter)
-        }
+        fun deleteByFilter(deleteByFilter: Filter) = apply { body.deleteByFilter(deleteByFilter) }
 
         fun deletes(deletes: List<Id>) = apply { body.deletes(deletes) }
 
@@ -258,10 +263,10 @@ private constructor(
          */
         fun addDelete(delete: Id) = apply { body.addDelete(delete) }
 
-        /** Alias for calling [addDelete] with `Id.ofString(string)`. */
+        /** Alias for calling [addDelete] with `JsonValue.from(string)`. */
         fun addDelete(string: String) = apply { body.addDelete(string) }
 
-        /** Alias for calling [addDelete] with `Id.ofInteger(integer)`. */
+        /** Alias for calling [addDelete] with `JsonValue.from(integer)`. */
         fun addDelete(integer: Long) = apply { body.addDelete(integer) }
 
         /** A function used to calculate vector similarity. */
@@ -520,7 +525,7 @@ private constructor(
     class Body
     private constructor(
         private val copyFromNamespace: JsonField<String>,
-        private val deleteByFilter: JsonValue,
+        private val deleteByFilter: JsonField<Filter>,
         private val deletes: JsonField<List<Id>>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val encryption: JsonField<Encryption>,
@@ -539,7 +544,7 @@ private constructor(
             copyFromNamespace: JsonField<String> = JsonMissing.of(),
             @JsonProperty("delete_by_filter")
             @ExcludeMissing
-            deleteByFilter: JsonValue = JsonMissing.of(),
+            deleteByFilter: JsonField<Filter> = JsonMissing.of(),
             @JsonProperty("deletes")
             @ExcludeMissing
             deletes: JsonField<List<Id>> = JsonMissing.of(),
@@ -586,9 +591,7 @@ private constructor(
             copyFromNamespace.getOptional("copy_from_namespace")
 
         /** The filter specifying which documents to delete. */
-        @JsonProperty("delete_by_filter")
-        @ExcludeMissing
-        fun _deleteByFilter(): JsonValue = deleteByFilter
+        fun deleteByFilter(): Optional<Filter> = deleteByFilter.getOptional("delete_by_filter")
 
         /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -667,6 +670,16 @@ private constructor(
          * Unlike [deletes], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("deletes") @ExcludeMissing fun _deletes(): JsonField<List<Id>> = deletes
+
+        /**
+         * Returns the raw JSON value of [deleteByFilter].
+         *
+         * Unlike [deleteByFilter], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("delete_by_filter")
+        @ExcludeMissing
+        fun _deleteByFilter(): JsonField<Filter> = deleteByFilter
 
         /**
          * Returns the raw JSON value of [distanceMetric].
@@ -754,7 +767,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var copyFromNamespace: JsonField<String> = JsonMissing.of()
-            private var deleteByFilter: JsonValue = JsonMissing.of()
+            private var deleteByFilter: JsonField<Filter> = JsonMissing.of()
             private var deletes: JsonField<MutableList<Id>>? = null
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var encryption: JsonField<Encryption> = JsonMissing.of()
@@ -796,7 +809,18 @@ private constructor(
             }
 
             /** The filter specifying which documents to delete. */
-            fun deleteByFilter(deleteByFilter: JsonValue) = apply {
+            fun deleteByFilter(deleteByFilter: Filter) = apply {
+                deleteByFilter(JsonField.of(deleteByFilter))
+            }
+
+            /**
+             * Sets [Builder.deleteByFilter] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.deleteByFilter] with a well-typed [Filter] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun deleteByFilter(deleteByFilter: JsonField<Filter>) = apply {
                 this.deleteByFilter = deleteByFilter
             }
 
@@ -825,11 +849,11 @@ private constructor(
                     }
             }
 
-            /** Alias for calling [addDelete] with `Id.ofString(string)`. */
-            fun addDelete(string: String) = addDelete(Id.ofString(string))
+            /** Alias for calling [addDelete] with `JsonValue.from(string)`. */
+            fun addDelete(string: String) = addDelete(JsonValue.from(string))
 
-            /** Alias for calling [addDelete] with `Id.ofInteger(integer)`. */
-            fun addDelete(integer: Long) = addDelete(Id.ofInteger(integer))
+            /** Alias for calling [addDelete] with `JsonValue.from(integer)`. */
+            fun addDelete(integer: Long) = addDelete(JsonValue.from(integer))
 
             /** A function used to calculate vector similarity. */
             fun distanceMetric(distanceMetric: DistanceMetric) =
@@ -1004,7 +1028,7 @@ private constructor(
             }
 
             copyFromNamespace()
-            deletes().ifPresent { it.forEach { it.validate() } }
+            deletes()
             distanceMetric().ifPresent { it.validate() }
             encryption().ifPresent { it.validate() }
             patchColumns()
@@ -1032,7 +1056,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (copyFromNamespace.asKnown().isPresent) 1 else 0) +
-                (deletes.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (deletes.asKnown().getOrNull()?.size ?: 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (encryption.asKnown().getOrNull()?.validity() ?: 0) +
                 (patchColumns.asKnown().getOrNull()?.values?.sumOf { it.size } ?: 0) +
