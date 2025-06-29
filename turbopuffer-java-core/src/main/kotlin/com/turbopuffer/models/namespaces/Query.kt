@@ -10,7 +10,6 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -20,11 +19,11 @@ import kotlin.jvm.optionals.getOrNull
 /** Query, filter, full-text search and vector search documents. */
 class Query
 private constructor(
-    private val aggregateBy: JsonField<AggregateBy>,
+    private val aggregateBy: JsonField<MutableMap<String, AggregateBy>>,
     private val distanceMetric: JsonField<DistanceMetric>,
-    private val filters: JsonValue,
+    private val filters: JsonField<Filter>,
     private val includeAttributes: JsonField<IncludeAttributes>,
-    private val rankBy: JsonValue,
+    private val rankBy: JsonField<RankBy>,
     private val topK: JsonField<Long>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -33,15 +32,15 @@ private constructor(
     private constructor(
         @JsonProperty("aggregate_by")
         @ExcludeMissing
-        aggregateBy: JsonField<AggregateBy> = JsonMissing.of(),
+        aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of(),
         @JsonProperty("distance_metric")
         @ExcludeMissing
         distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
-        @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
+        @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filter> = JsonMissing.of(),
         @JsonProperty("include_attributes")
         @ExcludeMissing
         includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
-        @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
+        @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonField<RankBy> = JsonMissing.of(),
         @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
     ) : this(aggregateBy, distanceMetric, filters, includeAttributes, rankBy, topK, mutableMapOf())
 
@@ -51,7 +50,8 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun aggregateBy(): Optional<AggregateBy> = aggregateBy.getOptional("aggregate_by")
+    fun aggregateBy(): Optional<MutableMap<String, AggregateBy>> =
+        aggregateBy.getOptional("aggregate_by")
 
     /**
      * A function used to calculate vector similarity.
@@ -63,8 +63,18 @@ private constructor(
 
     /**
      * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
+    fun filters(): Optional<Filter> = filters.getOptional("filters")
+
+    /**
+     * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
+     *
+     * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<Filter> = filters
 
     /**
      * Whether to include attributes in the response.
@@ -75,8 +85,20 @@ private constructor(
     fun includeAttributes(): Optional<IncludeAttributes> =
         includeAttributes.getOptional("include_attributes")
 
-    /** How to rank the documents in the namespace. */
-    @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
+    /**
+     * How to rank the documents in the namespace.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun rankBy(): Optional<RankBy> = rankBy.getOptional("rank_by")
+
+    /**
+     * How to rank the documents in the namespace.
+     *
+     * Unlike [rankBy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonField<RankBy> = rankBy
 
     /**
      * The number of results to return.
@@ -93,7 +115,7 @@ private constructor(
      */
     @JsonProperty("aggregate_by")
     @ExcludeMissing
-    fun _aggregateBy(): JsonField<AggregateBy> = aggregateBy
+    fun _aggregateBy(): JsonField<MutableMap<String, AggregateBy>> = aggregateBy
 
     /**
      * Returns the raw JSON value of [distanceMetric].
@@ -142,11 +164,11 @@ private constructor(
     /** A builder for [Query]. */
     class Builder internal constructor() {
 
-        private var aggregateBy: JsonField<AggregateBy> = JsonMissing.of()
+        private var aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of()
         private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
-        private var filters: JsonValue = JsonMissing.of()
+        private var filters: JsonField<Filter> = JsonMissing.of()
         private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
-        private var rankBy: JsonValue = JsonMissing.of()
+        private var rankBy: JsonField<RankBy> = JsonMissing.of()
         private var topK: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -162,7 +184,8 @@ private constructor(
         }
 
         /** Aggregations to compute over all documents in the namespace that match the filters. */
-        fun aggregateBy(aggregateBy: AggregateBy) = aggregateBy(JsonField.of(aggregateBy))
+        fun aggregateBy(aggregateBy: MutableMap<String, AggregateBy>) =
+            aggregateBy(JsonField.of(aggregateBy))
 
         /**
          * Sets [Builder.aggregateBy] to an arbitrary JSON value.
@@ -171,7 +194,7 @@ private constructor(
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
-        fun aggregateBy(aggregateBy: JsonField<AggregateBy>) = apply {
+        fun aggregateBy(aggregateBy: JsonField<MutableMap<String, AggregateBy>>) = apply {
             this.aggregateBy = aggregateBy
         }
 
@@ -194,7 +217,7 @@ private constructor(
          * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
          * clause.
          */
-        fun filters(filters: JsonValue) = apply { this.filters = filters }
+        fun filters(filters: JsonField<Filter>) = apply { this.filters = filters }
 
         /** Whether to include attributes in the response. */
         fun includeAttributes(includeAttributes: IncludeAttributes) =
@@ -219,7 +242,7 @@ private constructor(
             includeAttributes(IncludeAttributes.ofStrings(strings))
 
         /** How to rank the documents in the namespace. */
-        fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
+        fun rankBy(rankBy: JsonField<RankBy>) = apply { this.rankBy = rankBy }
 
         /** The number of results to return. */
         fun topK(topK: Long) = topK(JsonField.of(topK))
@@ -275,8 +298,10 @@ private constructor(
             return@apply
         }
 
-        aggregateBy().ifPresent { it.validate() }
+        aggregateBy()
         distanceMetric().ifPresent { it.validate() }
+        filters()
+        rankBy()
         includeAttributes().ifPresent { it.validate() }
         topK()
         validated = true
@@ -297,120 +322,12 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (aggregateBy.asKnown().getOrNull()?.validity() ?: 0) +
+        (if (aggregateBy.asKnown().isPresent()) 1 else 0) +
             (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (filters.asKnown().isPresent()) 1 else 0) +
+            (if (rankBy.asKnown().isPresent()) 1 else 0) +
             (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
             (if (topK.asKnown().isPresent) 1 else 0)
-
-    /** Aggregations to compute over all documents in the namespace that match the filters. */
-    class AggregateBy
-    @JsonCreator
-    private constructor(
-        @com.fasterxml.jackson.annotation.JsonValue
-        private val additionalProperties: Map<String, JsonValue>
-    ) {
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [AggregateBy]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [AggregateBy]. */
-        class Builder internal constructor() {
-
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(aggregateBy: AggregateBy) = apply {
-                additionalProperties = aggregateBy.additionalProperties.toMutableMap()
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [AggregateBy].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): AggregateBy = AggregateBy(additionalProperties.toImmutable())
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): AggregateBy = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: TurbopufferInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is AggregateBy && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() = "AggregateBy{additionalProperties=$additionalProperties}"
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is Query && aggregateBy == other.aggregateBy && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && additionalProperties == other.additionalProperties /* spotless:on */
-    }
 
     /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(aggregateBy, distanceMetric, filters, includeAttributes, rankBy, topK, additionalProperties) }

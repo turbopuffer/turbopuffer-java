@@ -8,7 +8,6 @@ import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.ClientNamespacesPage
 import com.turbopuffer.models.ClientNamespacesParams
-import com.turbopuffer.services.blocking.NamespaceService
 import java.util.function.Consumer
 
 /**
@@ -47,7 +46,8 @@ interface TurbopufferClient {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurbopufferClient
 
-    fun namespaces(): NamespaceService
+    /** Creates a client for interacting with a specific namespace. */
+    fun namespace(namespace: String): Namespace
 
     /** List namespaces. */
     fun namespaces(): ClientNamespacesPage = namespaces(ClientNamespacesParams.none())
@@ -92,7 +92,8 @@ interface TurbopufferClient {
             modifier: Consumer<ClientOptions.Builder>
         ): TurbopufferClient.WithRawResponse
 
-        fun namespaces(): NamespaceService.WithRawResponse
+        /** Creates a client for interacting with a specific namespace. */
+        fun namespace(namespace: String): Namespace.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces`, but is otherwise the same as

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+api_gen_image=ghcr.io/turbopuffer/turbopuffer-apigen:21900adc37f904eca6728878a01932c27920c315
+
+echo "==> Generating code"
+cargo run --manifest-path ../turbopuffer-apigen/Cargo.toml -- java > turbopuffer-java-core/src/main/kotlin/com/turbopuffer/models/namespaces/CustomTypes.kt
+# docker run -v "$(pwd):/work" "$api_gen_image" java > turbopuffer-java-core/src/main/kotlin/com/turbopuffer/models/namespaces/CustomTypes.kt
+scripts/format

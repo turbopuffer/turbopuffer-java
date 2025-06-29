@@ -404,7 +404,7 @@ private constructor(
             }
 
             aggregations().ifPresent { it.validate() }
-            rows().ifPresent { it.forEach { it.validate() } }
+            rows()
             validated = true
         }
 
@@ -425,7 +425,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (aggregations.asKnown().getOrNull()?.validity() ?: 0) +
-                (rows.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+                (rows.asKnown().getOrNull()?.size ?: 0)
 
         class Aggregations
         @JsonCreator

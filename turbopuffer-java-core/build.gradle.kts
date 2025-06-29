@@ -16,6 +16,26 @@ configurations.all {
     }
 }
 
+kotlin {
+    sourceSets {
+        main {
+            kotlin {
+                // These files are obsoleted by custom code. Ignoring them like
+                // this rather than removing them from the tree minimizes
+                // Stainless-generated conflicts.
+                exclude("com/turbopuffer/models/namespaces/AttributeSchema.kt")
+                exclude("com/turbopuffer/models/namespaces/Row.kt")
+                exclude("com/turbopuffer/models/namespaces/RowTest.kt")
+                exclude("com/turbopuffer/models/namespaces/Columns.kt")
+                exclude("com/turbopuffer/models/namespaces/ColumnsTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceSchemaResponse.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceSchemaResponseTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceUpdateSchemaParamsTest.kt")
+            }
+        }
+    }
+}
+
 dependencies {
     api("com.fasterxml.jackson.core:jackson-core:2.18.2")
     api("com.fasterxml.jackson.core:jackson-databind:2.18.2")
