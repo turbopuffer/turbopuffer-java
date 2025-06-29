@@ -54,3 +54,9 @@ fi
 
 echo "==> Running tests"
 ./gradlew test
+
+for example in turbopuffer-java-example/src/main/java/com/turbopuffer/example/*.java; do
+  example=$(basename "$example" .java)
+  echo "==> Running $example example"
+  ./gradlew run -Pcom.turbopuffer.example=$example
+done
