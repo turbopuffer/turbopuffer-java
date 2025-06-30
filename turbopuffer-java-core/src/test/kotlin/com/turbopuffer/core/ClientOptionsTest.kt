@@ -14,9 +14,24 @@ import org.mockito.kotlin.verify
 @ExtendWith(MockitoExtension::class)
 internal class ClientOptionsTest {
 
+    private val httpClient = mock<HttpClient>()
+
+    @Test
+    fun baseUrl_production_substitutesTemplateVariables() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("tpuf_A1...")
+                .region("gcp-us-central1")
+                .build()
+
+        val baseUrl = clientOptions.baseUrl()
+
+        assertThat(baseUrl).isEqualTo("https://gcp-us-central1.turbopuffer.com")
+    }
+
     @Test
     fun toBuilder_whenOriginalClientOptionsGarbageCollected_doesNotCloseOriginalClient() {
-        val httpClient = mock<HttpClient>()
         var clientOptions =
             ClientOptions.builder()
                 .httpClient(httpClient)
