@@ -75,6 +75,7 @@ internal class ServiceParamsTest {
                 .namespace("namespace")
                 .copyFromNamespace("copy_from_namespace")
                 .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+                .deleteCondition(JsonValue.from(mapOf<String, Any>()))
                 .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .encryption(
@@ -92,6 +93,7 @@ internal class ServiceParamsTest {
                         .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
+                .patchCondition(JsonValue.from(mapOf<String, Any>()))
                 .addPatchRow(
                     Row.builder()
                         .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -109,6 +111,7 @@ internal class ServiceParamsTest {
                         .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
+                .upsertCondition(JsonValue.from(mapOf<String, Any>()))
                 .addUpsertRow(
                     Row.builder()
                         .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
