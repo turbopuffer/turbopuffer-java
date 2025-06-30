@@ -4,7 +4,7 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-api_gen_image=ghcr.io/turbopuffer/turbopuffer-apigen:4d140311c928a539db9e1824aa5fc08277d3a4ca
+api_gen_image=ghcr.io/turbopuffer/turbopuffer-apigen:1c98fae7247323339c9c8d7ae1782bbd5ab3475a
 
 echo "==> Generating code"
 docker run -v "$(pwd):/work" "$api_gen_image" java > turbopuffer-java-core/src/main/kotlin/com/turbopuffer/models/namespaces/CustomTypes.kt

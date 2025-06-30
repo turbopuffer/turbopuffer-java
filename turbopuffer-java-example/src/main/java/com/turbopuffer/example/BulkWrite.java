@@ -4,12 +4,11 @@
 package com.turbopuffer.example;
 
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.core.JsonValue;
+import com.turbopuffer.models.namespaces.Columns;
 import com.turbopuffer.models.namespaces.DistanceMetric;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class BulkWrite {
@@ -38,7 +37,8 @@ public class BulkWrite {
         for (int batch = 0; batch < NUM_BATCHES; batch++) {
             long batchStartTime = System.currentTimeMillis();
 
-            List<Map<String, JsonValue>> documents = new ArrayList<>(BATCH_SIZE);
+            List<Integer> ids = new ArrayList<>(BATCH_SIZE);
+            List<List<Double>> vectors = new ArrayList<>(BATCH_SIZE);
 
             for (int i = 0; i < BATCH_SIZE; i++) {
                 int id = batch * BATCH_SIZE + i;
@@ -47,12 +47,16 @@ public class BulkWrite {
                     vector.add(random.nextDouble());
                 }
 
-                documents.add(Map.of("id", JsonValue.from(id), "vector", JsonValue.from(vector)));
+                ids.add(id);
+                vectors.add(vector);
             }
 
             var upsert = client.namespace(namespace)
                     .write(NamespaceWriteParams.builder()
-                            .upsertRows(documents)
+                            .upsertColumns(Columns.builder()
+                                    .put("id", ids)
+                                    .put("vector", vectors)
+                                    .build())
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .build());
 

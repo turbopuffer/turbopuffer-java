@@ -19,8 +19,10 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.models.namespaces.AttributeSchemaConfig
+import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.Row
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -83,16 +85,16 @@ internal class ServiceParamsTest {
                         .build()
                 )
                 .patchColumns(
-                    mapOf(
-                        "id" to listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
-                        "vector" to listOf(JsonValue.from(listOf(0.0))),
-                    )
+                    Columns.builder()
+                        .put("id", listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")))
+                        .put("vector", listOf(JsonValue.from(listOf(0.0))))
+                        .build()
                 )
                 .addPatchRow(
-                    mapOf(
-                        "id" to JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-                        "vectorOfNumber" to JsonValue.from(listOf(0.0)),
-                    )
+                    Row.builder()
+                        .put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .put("vectorOfNumber", listOf(0.0))
+                        .build()
                 )
                 .schema(
                     mapOf(
@@ -106,16 +108,16 @@ internal class ServiceParamsTest {
                     )
                 )
                 .upsertColumns(
-                    mapOf(
-                        "id" to listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
-                        "vector" to listOf(JsonValue.from(listOf(0.0))),
-                    )
+                    Columns.builder()
+                        .put("id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                        .put("vector", listOf(listOf(0.0)))
+                        .build()
                 )
                 .addUpsertRow(
-                    mapOf(
-                        "id" to JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-                        "vectorOfNumber" to JsonValue.from(listOf(0.0)),
-                    )
+                    Row.builder()
+                        .put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .put("vectorOfNumber", listOf(0.0))
+                        .build()
                 )
                 .putAdditionalHeader("Secret-Header", "42")
                 .putAdditionalQueryParam("secret_query_param", "42")

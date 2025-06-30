@@ -6,6 +6,7 @@ import com.turbopuffer.TestServerExtension
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.namespaces.AttributeSchemaConfig
+import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
@@ -16,6 +17,7 @@ import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Query
+import com.turbopuffer.models.namespaces.Row
 import com.turbopuffer.models.namespaces.VectorEncoding
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -214,16 +216,16 @@ internal class NamespaceServiceTest {
                             .build()
                     )
                     .patchColumns(
-                        mapOf(
-                            "id" to listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
-                            "vector" to listOf(JsonValue.from(listOf(0.0))),
-                        )
+                        Columns.builder()
+                            .put("id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                            .put("vector", listOf(listOf(0.0)))
+                            .build()
                     )
                     .addPatchRow(
-                        mapOf(
-                            "id" to JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-                            "vectorOfNumber" to JsonValue.from(listOf(0.0)),
-                        )
+                        Row.builder()
+                            .put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .put("vector", listOf(0.0))
+                            .build()
                     )
                     .schema(
                         mapOf(
@@ -237,16 +239,16 @@ internal class NamespaceServiceTest {
                         )
                     )
                     .upsertColumns(
-                        mapOf(
-                            "id" to listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
-                            "vector" to listOf(JsonValue.from(listOf(0.0))),
-                        )
+                        Columns.builder()
+                            .put("id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                            .put("vector", listOf(listOf(0.0)))
+                            .build()
                     )
                     .addUpsertRow(
-                        mapOf(
-                            "id" to JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-                            "vectorOfNumber" to JsonValue.from(listOf(0.0)),
-                        )
+                        Row.builder()
+                            .put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .put("vector", listOf(0.0))
+                            .build()
                     )
                     .build()
             )

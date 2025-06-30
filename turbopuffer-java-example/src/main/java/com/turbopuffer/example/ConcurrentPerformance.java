@@ -7,18 +7,17 @@ package com.turbopuffer.example;
 
 import com.turbopuffer.client.TurbopufferClientAsync;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync;
-import com.turbopuffer.core.JsonValue;
 import com.turbopuffer.errors.NotFoundException;
 import com.turbopuffer.models.namespaces.DistanceMetric;
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams;
 import com.turbopuffer.models.namespaces.NamespaceQueryParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.RankBy;
+import com.turbopuffer.models.namespaces.Row;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
@@ -99,18 +98,17 @@ public class ConcurrentPerformance {
             }
         }
 
-        var documents = new ArrayList<Map<String, JsonValue>>();
+        var rows = new ArrayList<Row>();
         var documentIdBase = (int) (Math.random() * 10000);
         for (int i = 0; i < 5; i++) {
-            documents.add(Map.of(
-                    "id",
-                    JsonValue.from(String.format("doc-%d", documentIdBase + i)),
-                    "vector",
-                    JsonValue.from(generateRandomVector())));
+            rows.add(Row.builder()
+                    .put("id", String.format("doc-%d", documentIdBase + i))
+                    .put("vector", generateRandomVector())
+                    .build());
         }
         client.namespace(namespace)
                 .write(NamespaceWriteParams.builder()
-                        .upsertRows(documents)
+                        .upsertRows(rows)
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .build())
                 .join();
