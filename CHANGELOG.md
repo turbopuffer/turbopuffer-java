@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.0-beta.16 (2025-06-30)
+
+Full Changelog: [v0.1.0-beta.15...v0.1.0-beta.16](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.15...v0.1.0-beta.16)
+
+### Bug Fixes
+
+* **client:** don't close client on `withOptions` usage when original is gc'd ([f866e78](https://github.com/turbopuffer/turbopuffer-java/commit/f866e7861acfc16d7f484cef530ef5e604739944))
+* improve ergonomics of filter, row, and column constructors ([18c96b1](https://github.com/turbopuffer/turbopuffer-java/commit/18c96b1e562e54d52f87e5845117da196fae5659))
+
+
+### Chores
+
+* **internal:** version bump ([f0bcab0](https://github.com/turbopuffer/turbopuffer-java/commit/f0bcab07dc5f72eb8f4554e28fe73024763ca0d8))
+* **internal:** version bump ([81af70d](https://github.com/turbopuffer/turbopuffer-java/commit/81af70db857c8b6b3b6cc37da72e4b4bc507dffc))
+
 ## 0.1.0-beta.15 (2025-06-29)
 
 Full Changelog: [v0.1.0-beta.14...v0.1.0-beta.15](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.14...v0.1.0-beta.15)
