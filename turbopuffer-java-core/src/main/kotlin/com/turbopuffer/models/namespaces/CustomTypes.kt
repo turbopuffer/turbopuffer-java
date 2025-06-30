@@ -5,7 +5,6 @@ package com.turbopuffer.models.namespaces
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.turbopuffer.core.JsonValue
@@ -19,8 +18,9 @@ sealed class AggregateBy() {
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("f0", "attr")
-class AggregateByCount private constructor(private val attr: String) : AggregateBy() {
+class AggregateByCount private constructor(attr: String) : AggregateBy() {
     private val f0: String = "Count"
+    private val attr: String = attr
 
     companion object {
         @JvmSynthetic internal fun create(attr: String): AggregateByCount = AggregateByCount(attr)
@@ -30,9 +30,10 @@ class AggregateByCount private constructor(private val attr: String) : Aggregate
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class ContainsAllTokensArray
-private constructor(private val attr: String, private val value: List<String>) : Filter() {
+class ContainsAllTokensArray private constructor(attr: String, value: List<String>) : Filter() {
+    private val attr: String = attr
     private val f0: String = "ContainsAllTokens"
+    private val value: List<String> = value
 
     companion object {
         @JvmSynthetic
@@ -43,31 +44,26 @@ private constructor(private val attr: String, private val value: List<String>) :
 
 sealed class Filter() {
     companion object {
-        @JvmStatic
-        public fun eq(attr: String, value: JsonValue): FilterEq = FilterEq.create(attr, value)
+        @JvmStatic public fun eq(attr: String, value: Any): FilterEq = FilterEq.create(attr, value)
 
         @JvmStatic
-        public fun notEq(attr: String, value: JsonValue): FilterNotEq =
-            FilterNotEq.create(attr, value)
+        public fun notEq(attr: String, value: Any): FilterNotEq = FilterNotEq.create(attr, value)
 
         @JvmStatic
-        public fun `in`(attr: String, value: JsonValue): FilterIn = FilterIn.create(attr, value)
+        public fun `in`(attr: String, value: Any): FilterIn = FilterIn.create(attr, value)
 
         @JvmStatic
-        public fun notIn(attr: String, value: JsonValue): FilterNotIn =
-            FilterNotIn.create(attr, value)
+        public fun notIn(attr: String, value: Any): FilterNotIn = FilterNotIn.create(attr, value)
+
+        @JvmStatic public fun lt(attr: String, value: Any): FilterLt = FilterLt.create(attr, value)
 
         @JvmStatic
-        public fun lt(attr: String, value: JsonValue): FilterLt = FilterLt.create(attr, value)
+        public fun lte(attr: String, value: Any): FilterLte = FilterLte.create(attr, value)
+
+        @JvmStatic public fun gt(attr: String, value: Any): FilterGt = FilterGt.create(attr, value)
 
         @JvmStatic
-        public fun lte(attr: String, value: JsonValue): FilterLte = FilterLte.create(attr, value)
-
-        @JvmStatic
-        public fun gt(attr: String, value: JsonValue): FilterGt = FilterGt.create(attr, value)
-
-        @JvmStatic
-        public fun gte(attr: String, value: JsonValue): FilterGte = FilterGte.create(attr, value)
+        public fun gte(attr: String, value: Any): FilterGte = FilterGte.create(attr, value)
 
         @JvmStatic
         public fun glob(attr: String, value: String): FilterGlob = FilterGlob.create(attr, value)
@@ -95,17 +91,20 @@ sealed class Filter() {
 
         @JvmStatic public fun not(filter: Filter): FilterNot = FilterNot.create(filter)
 
-        @JvmStatic public fun and(filters: List<Filter>): FilterAnd = FilterAnd.create(filters)
+        @JvmStatic
+        public fun and(vararg filters: Filter): FilterAnd = FilterAnd.create(filters.asList())
 
-        @JvmStatic public fun or(filters: List<Filter>): FilterOr = FilterOr.create(filters)
+        @JvmStatic
+        public fun or(vararg filters: Filter): FilterOr = FilterOr.create(filters.asList())
     }
 }
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("f0", "filters")
-class FilterAnd private constructor(private val filters: List<Filter>) : Filter() {
+class FilterAnd private constructor(filters: List<Filter>) : Filter() {
     private val f0: String = "And"
+    private val filters: List<Filter> = filters
 
     companion object {
         @JvmSynthetic internal fun create(filters: List<Filter>): FilterAnd = FilterAnd(filters)
@@ -115,9 +114,10 @@ class FilterAnd private constructor(private val filters: List<Filter>) : Filter(
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterContainsAllTokens
-private constructor(private val attr: String, private val value: String) : Filter() {
+class FilterContainsAllTokens private constructor(attr: String, value: String) : Filter() {
+    private val attr: String = attr
     private val f0: String = "ContainsAllTokens"
+    private val value: String = value
 
     companion object {
         @JvmSynthetic
@@ -129,22 +129,24 @@ private constructor(private val attr: String, private val value: String) : Filte
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterEq private constructor(private val attr: String, private val value: JsonValue) :
-    Filter() {
+class FilterEq private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
     private val f0: String = "Eq"
+    private val value: JsonValue = JsonValue.from(value)
 
     companion object {
         @JvmSynthetic
-        internal fun create(attr: String, value: JsonValue): FilterEq = FilterEq(attr, value)
+        internal fun create(attr: String, value: Any): FilterEq = FilterEq(attr, value)
     }
 }
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterGlob private constructor(private val attr: String, private val value: String) :
-    Filter() {
+class FilterGlob private constructor(attr: String, value: String) : Filter() {
+    private val attr: String = attr
     private val f0: String = "Glob"
+    private val value: String = value
 
     companion object {
         @JvmSynthetic
@@ -155,35 +157,38 @@ class FilterGlob private constructor(private val attr: String, private val value
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterGt private constructor(private val attr: String, private val value: JsonValue) :
-    Filter() {
+class FilterGt private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
     private val f0: String = "Gt"
+    private val value: JsonValue = JsonValue.from(value)
 
     companion object {
         @JvmSynthetic
-        internal fun create(attr: String, value: JsonValue): FilterGt = FilterGt(attr, value)
+        internal fun create(attr: String, value: Any): FilterGt = FilterGt(attr, value)
     }
 }
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterGte private constructor(private val attr: String, private val value: JsonValue) :
-    Filter() {
+class FilterGte private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
     private val f0: String = "Gte"
+    private val value: JsonValue = JsonValue.from(value)
 
     companion object {
         @JvmSynthetic
-        internal fun create(attr: String, value: JsonValue): FilterGte = FilterGte(attr, value)
+        internal fun create(attr: String, value: Any): FilterGte = FilterGte(attr, value)
     }
 }
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterIGlob private constructor(private val attr: String, private val value: String) :
-    Filter() {
+class FilterIGlob private constructor(attr: String, value: String) : Filter() {
+    private val attr: String = attr
     private val f0: String = "IGlob"
+    private val value: String = value
 
     companion object {
         @JvmSynthetic
@@ -194,47 +199,51 @@ class FilterIGlob private constructor(private val attr: String, private val valu
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterIn private constructor(private val attr: String, private val value: JsonValue) :
-    Filter() {
+class FilterIn private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
     private val f0: String = "In"
+    private val value: JsonValue = JsonValue.from(value)
 
     companion object {
         @JvmSynthetic
-        internal fun create(attr: String, value: JsonValue): FilterIn = FilterIn(attr, value)
+        internal fun create(attr: String, value: Any): FilterIn = FilterIn(attr, value)
     }
 }
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterLt private constructor(private val attr: String, private val value: JsonValue) :
-    Filter() {
+class FilterLt private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
     private val f0: String = "Lt"
+    private val value: JsonValue = JsonValue.from(value)
 
     companion object {
         @JvmSynthetic
-        internal fun create(attr: String, value: JsonValue): FilterLt = FilterLt(attr, value)
+        internal fun create(attr: String, value: Any): FilterLt = FilterLt(attr, value)
     }
 }
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterLte private constructor(private val attr: String, private val value: JsonValue) :
-    Filter() {
+class FilterLte private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
     private val f0: String = "Lte"
+    private val value: JsonValue = JsonValue.from(value)
 
     companion object {
         @JvmSynthetic
-        internal fun create(attr: String, value: JsonValue): FilterLte = FilterLte(attr, value)
+        internal fun create(attr: String, value: Any): FilterLte = FilterLte(attr, value)
     }
 }
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("f0", "filter")
-class FilterNot private constructor(private val filter: Filter) : Filter() {
+class FilterNot private constructor(filter: Filter) : Filter() {
     private val f0: String = "Not"
+    private val filter: Filter = filter
 
     companion object {
         @JvmSynthetic internal fun create(filter: Filter): FilterNot = FilterNot(filter)
@@ -244,22 +253,24 @@ class FilterNot private constructor(private val filter: Filter) : Filter() {
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterNotEq private constructor(private val attr: String, private val value: JsonValue) :
-    Filter() {
+class FilterNotEq private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
     private val f0: String = "NotEq"
+    private val value: JsonValue = JsonValue.from(value)
 
     companion object {
         @JvmSynthetic
-        internal fun create(attr: String, value: JsonValue): FilterNotEq = FilterNotEq(attr, value)
+        internal fun create(attr: String, value: Any): FilterNotEq = FilterNotEq(attr, value)
     }
 }
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterNotGlob private constructor(private val attr: String, private val value: String) :
-    Filter() {
+class FilterNotGlob private constructor(attr: String, value: String) : Filter() {
+    private val attr: String = attr
     private val f0: String = "NotGlob"
+    private val value: String = value
 
     companion object {
         @JvmSynthetic
@@ -270,9 +281,10 @@ class FilterNotGlob private constructor(private val attr: String, private val va
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterNotIGlob private constructor(private val attr: String, private val value: String) :
-    Filter() {
+class FilterNotIGlob private constructor(attr: String, value: String) : Filter() {
+    private val attr: String = attr
     private val f0: String = "NotIGlob"
+    private val value: String = value
 
     companion object {
         @JvmSynthetic
@@ -284,21 +296,23 @@ class FilterNotIGlob private constructor(private val attr: String, private val v
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class FilterNotIn private constructor(private val attr: String, private val value: JsonValue) :
-    Filter() {
+class FilterNotIn private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
     private val f0: String = "NotIn"
+    private val value: JsonValue = JsonValue.from(value)
 
     companion object {
         @JvmSynthetic
-        internal fun create(attr: String, value: JsonValue): FilterNotIn = FilterNotIn(attr, value)
+        internal fun create(attr: String, value: Any): FilterNotIn = FilterNotIn(attr, value)
     }
 }
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("f0", "filters")
-class FilterOr private constructor(private val filters: List<Filter>) : Filter() {
+class FilterOr private constructor(filters: List<Filter>) : Filter() {
     private val f0: String = "Or"
+    private val filters: List<Filter> = filters
 
     companion object {
         @JvmSynthetic internal fun create(filters: List<Filter>): FilterOr = FilterOr(filters)
@@ -320,8 +334,10 @@ sealed class RankBy() {
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "order")
-class RankByAttribute
-private constructor(private val attr: String, private val order: RankByAttributeOrder) : RankBy() {
+class RankByAttribute private constructor(attr: String, order: RankByAttributeOrder) : RankBy() {
+    private val attr: String = attr
+    private val order: RankByAttributeOrder = order
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, order: RankByAttributeOrder): RankByAttribute =
@@ -345,12 +361,12 @@ sealed class RankByText() : RankBy() {
             RankByTextBM25Array.create(attr, value)
 
         @JvmStatic
-        public fun sum(subqueries: List<RankByText>): RankByTextSum =
-            RankByTextSum.create(subqueries)
+        public fun sum(vararg subqueries: RankByText): RankByTextSum =
+            RankByTextSum.create(subqueries.asList())
 
         @JvmStatic
-        public fun max(subqueries: List<RankByText>): RankByTextMax =
-            RankByTextMax.create(subqueries)
+        public fun max(vararg subqueries: RankByText): RankByTextMax =
+            RankByTextMax.create(subqueries.asList())
 
         @JvmStatic
         public fun product(weight: Double, subquery: RankByText): RankByTextProduct =
@@ -361,9 +377,10 @@ sealed class RankByText() : RankBy() {
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class RankByTextBM25 private constructor(private val attr: String, private val value: String) :
-    RankByText() {
+class RankByTextBM25 private constructor(attr: String, value: String) : RankByText() {
+    private val attr: String = attr
     private val f0: String = "BM25"
+    private val value: String = value
 
     companion object {
         @JvmSynthetic
@@ -375,9 +392,10 @@ class RankByTextBM25 private constructor(private val attr: String, private val v
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class RankByTextBM25Array
-private constructor(private val attr: String, private val value: List<String>) : RankByText() {
+class RankByTextBM25Array private constructor(attr: String, value: List<String>) : RankByText() {
+    private val attr: String = attr
     private val f0: String = "BM25"
+    private val value: List<String> = value
 
     companion object {
         @JvmSynthetic
@@ -389,8 +407,9 @@ private constructor(private val attr: String, private val value: List<String>) :
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("f0", "subqueries")
-class RankByTextMax private constructor(private val subqueries: List<RankByText>) : RankByText() {
+class RankByTextMax private constructor(subqueries: List<RankByText>) : RankByText() {
     private val f0: String = "Max"
+    private val subqueries: List<RankByText> = subqueries
 
     companion object {
         @JvmSynthetic
@@ -401,11 +420,7 @@ class RankByTextMax private constructor(private val subqueries: List<RankByText>
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("f0", "f1")
-class RankByTextProduct
-private constructor(
-    @JsonIgnore private val weight: Double,
-    @JsonIgnore private val subquery: RankByText,
-) : RankByText() {
+class RankByTextProduct private constructor(weight: Double, subquery: RankByText) : RankByText() {
     private val f0: String = "Product"
     private val f1: List<JsonValue> = listOf(JsonValue.from(weight), JsonValue.from(subquery))
 
@@ -419,8 +434,9 @@ private constructor(
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("f0", "subqueries")
-class RankByTextSum private constructor(private val subqueries: List<RankByText>) : RankByText() {
+class RankByTextSum private constructor(subqueries: List<RankByText>) : RankByText() {
     private val f0: String = "Sum"
+    private val subqueries: List<RankByText> = subqueries
 
     companion object {
         @JvmSynthetic
@@ -431,9 +447,10 @@ class RankByTextSum private constructor(private val subqueries: List<RankByText>
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class RankByVector private constructor(private val attr: String, private val value: List<Float>) :
-    RankBy() {
+class RankByVector private constructor(attr: String, value: List<Float>) : RankBy() {
+    private val attr: String = attr
     private val f0: String = "ANN"
+    private val value: List<Float> = value
 
     companion object {
         @JvmSynthetic

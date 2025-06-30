@@ -6,7 +6,6 @@ package com.turbopuffer.example;
 
 import com.turbopuffer.client.TurbopufferClientAsync;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync;
-import com.turbopuffer.core.JsonValue;
 import com.turbopuffer.errors.NotFoundException;
 import com.turbopuffer.models.namespaces.AttributeSchemaConfig;
 import com.turbopuffer.models.namespaces.DistanceMetric;
@@ -17,6 +16,7 @@ import com.turbopuffer.models.namespaces.NamespaceSchemaParams;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.RankBy;
 import com.turbopuffer.models.namespaces.RankByAttributeOrder;
+import com.turbopuffer.models.namespaces.Row;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -65,16 +65,18 @@ public class WriteAndQueryAsync {
         var upsert = client.namespace(namespace)
                 .write(NamespaceWriteParams.builder()
                         .namespace(namespace)
-                        .addUpsertRow(Map.of(
-                                "id", JsonValue.from("b3ff34ea-87bb-469c-a854-9cb7e3713fc3"),
-                                "vector", JsonValue.from(Arrays.asList(1.0, 2.0, 3.0)),
-                                "name", JsonValue.from("Luke"),
-                                "age", JsonValue.from(32)))
-                        .addUpsertRow(Map.of(
-                                "id", JsonValue.from("580d4471-9a9b-44fb-b59d-637ade604f72"),
-                                "vector", JsonValue.from(Arrays.asList(4.0, 5.0, 6.0)),
-                                "name", JsonValue.from("Leia"),
-                                "age", JsonValue.from(28)))
+                        .addUpsertRow(Row.builder()
+                                .put("id", "b3ff34ea-87bb-469c-a854-9cb7e3713fc3")
+                                .put("vector", Arrays.asList(1.0, 2.0, 3.0))
+                                .put("name", "Luke")
+                                .put("age", 32)
+                                .build())
+                        .addUpsertRow(Row.builder()
+                                .put("id", "580d4471-9a9b-44fb-b59d-637ade604f72")
+                                .put("vector", Arrays.asList(4.0, 5.0, 6.0))
+                                .put("name", "Leia")
+                                .put("age", 28)
+                                .build())
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .schema(Map.of(
                                 "id",
@@ -96,8 +98,7 @@ public class WriteAndQueryAsync {
                         .rankBy(RankBy.vector("vector", List.of(3.0f, 4.0f, 5.0f)))
                         .topK(10)
                         .includeAttributes(true)
-                        .filters(Filter.and(
-                                List.of(Filter.gt("age", JsonValue.from(30)), Filter.lt("age", JsonValue.from(35)))))
+                        .filters(Filter.and(Filter.gt("age", 30), Filter.lt("age", 35)))
                         .build());
         var schemaFuture = client.namespace(namespace)
                 .schema(NamespaceSchemaParams.builder().namespace(namespace).build());
@@ -113,9 +114,10 @@ public class WriteAndQueryAsync {
         var patch = client.namespace(namespace)
                 .write(NamespaceWriteParams.builder()
                         .namespace(namespace)
-                        .addPatchRow(Map.of(
-                                "id", JsonValue.from("580d4471-9a9b-44fb-b59d-637ade604f72"),
-                                "age", JsonValue.from(82)))
+                        .addPatchRow(Row.builder()
+                                .put("id", "580d4471-9a9b-44fb-b59d-637ade604f72")
+                                .put("age", 82)
+                                .build())
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .build())
                 .join();
