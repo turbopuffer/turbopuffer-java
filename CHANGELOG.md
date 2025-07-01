@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.0 (2025-07-01)
+
+Full Changelog: [v0.1.0-beta.17...v0.1.0](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.17...v0.1.0)
+
+### Bug Fixes
+
+* add support for `$ref_new` expressions ([#162](https://github.com/turbopuffer/turbopuffer-java/issues/162)) ([f16db2b](https://github.com/turbopuffer/turbopuffer-java/commit/f16db2bb8bba174c8713e49fdbc8972a3c53180d))
+* **api:** api update ([8573835](https://github.com/turbopuffer/turbopuffer-java/commit/857383531d3f4bca7ad5e3fe6b88d330dffd9f72))
+* correct name of stainless bot ([#163](https://github.com/turbopuffer/turbopuffer-java/issues/163)) ([111e34b](https://github.com/turbopuffer/turbopuffer-java/commit/111e34bd97c83f573cb8cfbc3d10fc7a86afdb27))
+* further strengthen conditional write types ([4263dcd](https://github.com/turbopuffer/turbopuffer-java/commit/4263dcdaa6df7d9826519543f0e7b1928a281a10))
+* **README:** improve headline example ([3d1cfe7](https://github.com/turbopuffer/turbopuffer-java/commit/3d1cfe724fea1a27ec6296bf2371536aac9fce24))
+* **README:** remove beta label ([de18072](https://github.com/turbopuffer/turbopuffer-java/commit/de180726039f4faa270eb55afd8ee5573f924065))
+
+
+### Chores
+
+* **internal:** codegen related update ([3dfa166](https://github.com/turbopuffer/turbopuffer-java/commit/3dfa1662b6009b7e7c8028f70ac3d01131bc4087))
+
 ## 0.1.0-beta.17 (2025-07-01)
 
 Full Changelog: [v0.1.0-beta.16...v0.1.0-beta.17](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.16...v0.1.0-beta.17)
