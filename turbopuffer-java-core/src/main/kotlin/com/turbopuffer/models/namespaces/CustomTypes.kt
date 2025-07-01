@@ -358,8 +358,8 @@ sealed class RankByText() : RankBy() {
             RankByTextBM25.create(attr, value)
 
         @JvmStatic
-        public fun bm25(attr: String, value: List<String>): RankByTextRankByTextBM25Array =
-            RankByTextRankByTextBM25Array.create(attr, value)
+        public fun bm25(attr: String, value: List<String>): RankByTextBM25Array =
+            RankByTextBM25Array.create(attr, value)
 
         @JvmStatic
         public fun sum(vararg subqueries: RankByText): RankByTextSum =
@@ -432,22 +432,6 @@ class RankByTextProduct2 private constructor(subquery: RankByText, weight: Doubl
         @JvmSynthetic
         internal fun create(subquery: RankByText, weight: Double): RankByTextProduct2 =
             RankByTextProduct2(subquery, weight)
-    }
-}
-
-@JsonAutoDetect(fieldVisibility = Visibility.ANY)
-@JsonFormat(shape = JsonFormat.Shape.ARRAY)
-@JsonPropertyOrder("attr", "f0", "value")
-class RankByTextRankByTextBM25Array private constructor(attr: String, value: List<String>) :
-    RankByText() {
-    private val attr: String = attr
-    private val f0: String = "BM25"
-    private val value: List<String> = value
-
-    companion object {
-        @JvmSynthetic
-        internal fun create(attr: String, value: List<String>): RankByTextRankByTextBM25Array =
-            RankByTextRankByTextBM25Array(attr, value)
     }
 }
 

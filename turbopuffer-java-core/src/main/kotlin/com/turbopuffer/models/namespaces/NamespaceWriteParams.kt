@@ -45,6 +45,12 @@ private constructor(
     fun deleteByFilter(): Optional<Filter> = body.deleteByFilter()
 
     /**
+     * A condition evaluated against the current value of each document targeted by a delete write.
+     * Only documents that pass the condition are deleted.
+     */
+    fun deleteCondition(): Optional<Filter> = body.deleteCondition()
+
+    /**
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -76,6 +82,12 @@ private constructor(
     fun patchColumns(): Optional<Columns> = body.patchColumns()
 
     /**
+     * A condition evaluated against the current value of each document targeted by a patch write.
+     * Only documents that pass the condition are patched.
+     */
+    fun patchCondition(): Optional<Filter> = body.patchCondition()
+
+    /**
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -99,6 +111,12 @@ private constructor(
     fun upsertColumns(): Optional<Columns> = body.upsertColumns()
 
     /**
+     * A condition evaluated against the current value of each document targeted by an upsert write.
+     * Only documents that pass the condition are upserted.
+     */
+    fun upsertCondition(): Optional<Filter> = body.upsertCondition()
+
+    /**
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -118,6 +136,13 @@ private constructor(
      * Unlike [deleteByFilter], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _deleteByFilter(): JsonField<Filter> = body._deleteByFilter()
+
+    /**
+     * Returns the raw JSON value of [deleteCondition].
+     *
+     * Unlike [deleteCondition], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _deleteCondition(): JsonField<Filter> = body._deleteCondition()
 
     /**
      * Returns the raw JSON value of [deletes].
@@ -148,6 +173,13 @@ private constructor(
     fun _patchColumns(): JsonField<Columns> = body._patchColumns()
 
     /**
+     * Returns the raw JSON value of [patchCondition].
+     *
+     * Unlike [patchCondition], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _patchCondition(): JsonField<Filter> = body._patchCondition()
+
+    /**
      * Returns the raw JSON value of [patchRows].
      *
      * Unlike [patchRows], this method doesn't throw if the JSON field has an unexpected type.
@@ -167,6 +199,13 @@ private constructor(
      * Unlike [upsertColumns], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _upsertColumns(): JsonField<Columns> = body._upsertColumns()
+
+    /**
+     * Returns the raw JSON value of [upsertCondition].
+     *
+     * Unlike [upsertCondition], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _upsertCondition(): JsonField<Filter> = body._upsertCondition()
 
     /**
      * Returns the raw JSON value of [upsertRows].
@@ -219,9 +258,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [copyFromNamespace]
          * - [deleteByFilter]
+         * - [deleteCondition]
          * - [deletes]
          * - [distanceMetric]
-         * - [encryption]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -244,6 +283,14 @@ private constructor(
 
         /** The filter specifying which documents to delete. */
         fun deleteByFilter(deleteByFilter: Filter) = apply { body.deleteByFilter(deleteByFilter) }
+
+        /**
+         * A condition evaluated against the current value of each document targeted by a delete
+         * write. Only documents that pass the condition are deleted.
+         */
+        fun deleteCondition(deleteCondition: JsonValue) = apply {
+            body.deleteCondition(deleteCondition)
+        }
 
         fun deletes(deletes: List<Any>) = apply {
             deletes.forEach { body.addDelete(JsonValue.from(it)) }
@@ -316,6 +363,14 @@ private constructor(
             body.patchColumns(patchColumns)
         }
 
+        /**
+         * A condition evaluated against the current value of each document targeted by a patch
+         * write. Only documents that pass the condition are patched.
+         */
+        fun patchCondition(patchCondition: JsonValue) = apply {
+            body.patchCondition(patchCondition)
+        }
+
         fun patchRows(patchRows: List<Row>) = apply { body.patchRows(patchRows) }
 
         /**
@@ -360,6 +415,14 @@ private constructor(
          */
         fun upsertColumns(upsertColumns: JsonField<Columns>) = apply {
             body.upsertColumns(upsertColumns)
+        }
+
+        /**
+         * A condition evaluated against the current value of each document targeted by an upsert
+         * write. Only documents that pass the condition are upserted.
+         */
+        fun upsertCondition(upsertCondition: JsonValue) = apply {
+            body.upsertCondition(upsertCondition)
         }
 
         fun upsertRows(upsertRows: List<Row>) = apply { body.upsertRows(upsertRows) }
@@ -528,13 +591,16 @@ private constructor(
     private constructor(
         private val copyFromNamespace: JsonField<String>,
         private val deleteByFilter: JsonField<Filter>,
+        private val deleteCondition: JsonField<Filter>,
         private val deletes: JsonField<List<Id>>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val encryption: JsonField<Encryption>,
         private val patchColumns: JsonField<Columns>,
+        private val patchCondition: JsonField<Filter>,
         private val patchRows: JsonField<List<Row>>,
         private val schema: JsonField<Schema>,
         private val upsertColumns: JsonField<Columns>,
+        private val upsertCondition: JsonField<Filter>,
         private val upsertRows: JsonField<List<Row>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -547,6 +613,9 @@ private constructor(
             @JsonProperty("delete_by_filter")
             @ExcludeMissing
             deleteByFilter: JsonField<Filter> = JsonMissing.of(),
+            @JsonProperty("delete_condition")
+            @ExcludeMissing
+            deleteCondition: JsonField<Filter> = JsonMissing.of(),
             @JsonProperty("deletes")
             @ExcludeMissing
             deletes: JsonField<List<Id>> = JsonMissing.of(),
@@ -559,6 +628,9 @@ private constructor(
             @JsonProperty("patch_columns")
             @ExcludeMissing
             patchColumns: JsonField<Columns> = JsonMissing.of(),
+            @JsonProperty("patch_condition")
+            @ExcludeMissing
+            patchCondition: JsonField<Filter> = JsonMissing.of(),
             @JsonProperty("patch_rows")
             @ExcludeMissing
             patchRows: JsonField<List<Row>> = JsonMissing.of(),
@@ -566,19 +638,25 @@ private constructor(
             @JsonProperty("upsert_columns")
             @ExcludeMissing
             upsertColumns: JsonField<Columns> = JsonMissing.of(),
+            @JsonProperty("upsert_condition")
+            @ExcludeMissing
+            upsertCondition: JsonField<Filter> = JsonMissing.of(),
             @JsonProperty("upsert_rows")
             @ExcludeMissing
             upsertRows: JsonField<List<Row>> = JsonMissing.of(),
         ) : this(
             copyFromNamespace,
             deleteByFilter,
+            deleteCondition,
             deletes,
             distanceMetric,
             encryption,
             patchColumns,
+            patchCondition,
             patchRows,
             schema,
             upsertColumns,
+            upsertCondition,
             upsertRows,
             mutableMapOf(),
         )
@@ -592,8 +670,22 @@ private constructor(
         fun copyFromNamespace(): Optional<String> =
             copyFromNamespace.getOptional("copy_from_namespace")
 
-        /** The filter specifying which documents to delete. */
+        /**
+         * The filter specifying which documents to delete.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
         fun deleteByFilter(): Optional<Filter> = deleteByFilter.getOptional("delete_by_filter")
+
+        /**
+         * A condition evaluated against the current value of each document targeted by a delete
+         * write. Only documents that pass the condition are deleted.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun deleteCondition(): Optional<Filter> = deleteCondition.getOptional("delete_condition")
 
         /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -628,6 +720,12 @@ private constructor(
         fun patchColumns(): Optional<Columns> = patchColumns.getOptional("patch_columns")
 
         /**
+         * A condition evaluated against the current value of each document targeted by a patch
+         * write. Only documents that pass the condition are patched.
+         */
+        fun patchCondition(): Optional<Filter> = patchCondition.getOptional("patch_condition")
+
+        /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
@@ -649,6 +747,12 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun upsertColumns(): Optional<Columns> = upsertColumns.getOptional("upsert_columns")
+
+        /**
+         * A condition evaluated against the current value of each document targeted by an upsert
+         * write. Only documents that pass the condition are upserted.
+         */
+        fun upsertCondition(): Optional<Filter> = upsertCondition.getOptional("upsert_condition")
 
         /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -683,6 +787,10 @@ private constructor(
         @ExcludeMissing
         fun _deleteByFilter(): JsonField<Filter> = deleteByFilter
 
+        @JsonProperty("delete_condition")
+        @ExcludeMissing
+        fun _deleteCondition(): JsonField<Filter> = deleteCondition
+
         /**
          * Returns the raw JSON value of [distanceMetric].
          *
@@ -713,6 +821,16 @@ private constructor(
         fun _patchColumns(): JsonField<Columns> = patchColumns
 
         /**
+         * Returns the raw JSON value of [patchCondition].
+         *
+         * Unlike [patchCondition], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("patch_condition")
+        @ExcludeMissing
+        fun _patchCondition(): JsonField<Filter> = patchCondition
+
+        /**
          * Returns the raw JSON value of [patchRows].
          *
          * Unlike [patchRows], this method doesn't throw if the JSON field has an unexpected type.
@@ -737,6 +855,16 @@ private constructor(
         @JsonProperty("upsert_columns")
         @ExcludeMissing
         fun _upsertColumns(): JsonField<Columns> = upsertColumns
+
+        /**
+         * Returns the raw JSON value of [upsertCondition].
+         *
+         * Unlike [upsertCondition], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("upsert_condition")
+        @ExcludeMissing
+        fun _upsertCondition(): JsonField<Filter> = upsertCondition
 
         /**
          * Returns the raw JSON value of [upsertRows].
@@ -770,13 +898,16 @@ private constructor(
 
             private var copyFromNamespace: JsonField<String> = JsonMissing.of()
             private var deleteByFilter: JsonField<Filter> = JsonMissing.of()
+            private var deleteCondition: JsonField<Filter> = JsonMissing.of()
             private var deletes: JsonField<MutableList<Id>>? = null
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var encryption: JsonField<Encryption> = JsonMissing.of()
             private var patchColumns: JsonField<Columns> = JsonMissing.of()
+            private var patchCondition: JsonField<Filter> = JsonMissing.of()
             private var patchRows: JsonField<MutableList<Row>>? = null
             private var schema: JsonField<Schema> = JsonMissing.of()
             private var upsertColumns: JsonField<Columns> = JsonMissing.of()
+            private var upsertCondition: JsonField<Filter> = JsonMissing.of()
             private var upsertRows: JsonField<MutableList<Row>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -784,13 +915,16 @@ private constructor(
             internal fun from(body: Body) = apply {
                 copyFromNamespace = body.copyFromNamespace
                 deleteByFilter = body.deleteByFilter
+                deleteCondition = body.deleteCondition
                 deletes = body.deletes.map { it.toMutableList() }
                 distanceMetric = body.distanceMetric
                 encryption = body.encryption
                 patchColumns = body.patchColumns
+                patchCondition = body.patchCondition
                 patchRows = body.patchRows.map { it.toMutableList() }
                 schema = body.schema
                 upsertColumns = body.upsertColumns
+                upsertCondition = body.upsertCondition
                 upsertRows = body.upsertRows.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -824,6 +958,14 @@ private constructor(
              */
             fun deleteByFilter(deleteByFilter: JsonField<Filter>) = apply {
                 this.deleteByFilter = deleteByFilter
+            }
+
+            /**
+             * A condition evaluated against the current value of each document targeted by a delete
+             * write. Only documents that pass the condition are deleted.
+             */
+            fun deleteCondition(deleteCondition: JsonValue) = apply {
+                this.deleteCondition = deleteCondition
             }
 
             fun deletes(deletes: List<Id>) = deletes(JsonField.of(deletes))
@@ -903,6 +1045,14 @@ private constructor(
                 this.patchColumns = patchColumns
             }
 
+            /**
+             * A condition evaluated against the current value of each document targeted by a patch
+             * write. Only documents that pass the condition are patched.
+             */
+            fun patchCondition(patchCondition: JsonValue) = apply {
+                this.patchCondition = patchCondition
+            }
+
             fun patchRows(patchRows: List<Row>) = patchRows(JsonField.of(patchRows))
 
             /**
@@ -955,6 +1105,14 @@ private constructor(
              */
             fun upsertColumns(upsertColumns: JsonField<Columns>) = apply {
                 this.upsertColumns = upsertColumns
+            }
+
+            /**
+             * A condition evaluated against the current value of each document targeted by an
+             * upsert write. Only documents that pass the condition are upserted.
+             */
+            fun upsertCondition(upsertCondition: JsonValue) = apply {
+                this.upsertCondition = upsertCondition
             }
 
             fun upsertRows(upsertRows: List<Row>) = upsertRows(JsonField.of(upsertRows))
@@ -1010,13 +1168,16 @@ private constructor(
                 Body(
                     copyFromNamespace,
                     deleteByFilter,
+                    deleteCondition,
                     (deletes ?: JsonMissing.of()).map { it.toImmutable() },
                     distanceMetric,
                     encryption,
                     patchColumns,
+                    patchCondition,
                     (patchRows ?: JsonMissing.of()).map { it.toImmutable() },
                     schema,
                     upsertColumns,
+                    upsertCondition,
                     (upsertRows ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
@@ -1072,17 +1233,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter && deletes == other.deletes && distanceMetric == other.distanceMetric && encryption == other.encryption && patchColumns == other.patchColumns && patchRows == other.patchRows && schema == other.schema && upsertColumns == other.upsertColumns && upsertRows == other.upsertRows && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter && deleteCondition == other.deleteCondition && deletes == other.deletes && distanceMetric == other.distanceMetric && encryption == other.encryption && patchColumns == other.patchColumns && patchCondition == other.patchCondition && patchRows == other.patchRows && schema == other.schema && upsertColumns == other.upsertColumns && upsertCondition == other.upsertCondition && upsertRows == other.upsertRows && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(copyFromNamespace, deleteByFilter, deletes, distanceMetric, encryption, patchColumns, patchRows, schema, upsertColumns, upsertRows, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(copyFromNamespace, deleteByFilter, deleteCondition, deletes, distanceMetric, encryption, patchColumns, patchCondition, patchRows, schema, upsertColumns, upsertCondition, upsertRows, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deletes=$deletes, distanceMetric=$distanceMetric, encryption=$encryption, patchColumns=$patchColumns, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteCondition=$deleteCondition, deletes=$deletes, distanceMetric=$distanceMetric, encryption=$encryption, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
     }
 
     /** The encryption configuration for a namespace. */

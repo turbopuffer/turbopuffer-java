@@ -261,8 +261,11 @@ private constructor(
         fun includeAttributes(bool: Boolean) = apply { body.includeAttributes(bool) }
 
         /** Alias for calling [includeAttributes] with `IncludeAttributes.ofStrings(strings)`. */
-        fun includeAttributesOfStrings(strings: List<String>) = apply {
-            body.includeAttributesOfStrings(strings)
+        fun includeAttributes(strings: List<String>) = apply { body.includeAttributes(strings) }
+
+        /** Alias for calling [includeAttributes] with `IncludeAttributes.ofStrings(strings)`. */
+        fun includeAttributes(vararg strings: String) = apply {
+            body.includeAttributes(strings.toList())
         }
 
         /** How to rank the documents in the namespace. */
@@ -760,7 +763,7 @@ private constructor(
             /**
              * Alias for calling [includeAttributes] with `IncludeAttributes.ofStrings(strings)`.
              */
-            fun includeAttributesOfStrings(strings: List<String>) =
+            fun includeAttributes(strings: List<String>) =
                 includeAttributes(IncludeAttributes.ofStrings(strings))
 
             /** How to rank the documents in the namespace. */
