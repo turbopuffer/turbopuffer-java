@@ -27,6 +27,22 @@ class AggregateByCount private constructor(attr: String) : AggregateBy() {
     }
 }
 
+sealed class Expr() {
+    companion object {
+        @JvmStatic public fun refNew(refNew: String): ExprRefNew = ExprRefNew.create(refNew)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonPropertyOrder("refNew")
+class ExprRefNew private constructor(refNew: String) : Expr() {
+    @JsonProperty("\$ref_new") private val refNew: String = refNew
+
+    companion object {
+        @JvmSynthetic internal fun create(refNew: String): ExprRefNew = ExprRefNew(refNew)
+    }
+}
+
 sealed class Filter() {
     companion object {
         @JvmStatic public fun eq(attr: String, value: Any): FilterEq = FilterEq.create(attr, value)
@@ -391,6 +407,21 @@ class RankByTextBM25 private constructor(attr: String, value: String) : RankByTe
         @JvmSynthetic
         internal fun create(attr: String, value: String): RankByTextBM25 =
             RankByTextBM25(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class RankByTextBM25Array private constructor(attr: String, value: List<String>) : RankByText() {
+    private val attr: String = attr
+    private val f0: String = "BM25"
+    private val value: List<String> = value
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: List<String>): RankByTextBM25Array =
+            RankByTextBM25Array(attr, value)
     }
 }
 
