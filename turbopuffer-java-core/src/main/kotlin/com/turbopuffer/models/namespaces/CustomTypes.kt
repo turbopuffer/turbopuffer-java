@@ -27,6 +27,22 @@ class AggregateByCount private constructor(attr: String) : AggregateBy() {
     }
 }
 
+sealed class Expr() {
+    companion object {
+        @JvmStatic public fun refNew(refNew: String): ExprRefNew = ExprRefNew.create(refNew)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonPropertyOrder("refNew")
+class ExprRefNew private constructor(refNew: String) : Expr() {
+    @JsonProperty("\$ref_new") private val refNew: String = refNew
+
+    companion object {
+        @JvmSynthetic internal fun create(refNew: String): ExprRefNew = ExprRefNew(refNew)
+    }
+}
+
 sealed class Filter() {
     companion object {
         @JvmStatic public fun eq(attr: String, value: Any): FilterEq = FilterEq.create(attr, value)

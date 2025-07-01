@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-<a href="https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.17"><img src="https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java" alt="Go Reference" align="right"></a>
-<a href="https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.17"><img src="https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.17/javadoc.svg" alt="Go Reference" align="right"></a>
+<a href="https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0"><img src="https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java" alt="Go Reference" align="right"></a>
+<a href="https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0"><img src="https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0/javadoc.svg" alt="Go Reference" align="right"></a>
 
 <!-- x-release-please-end -->
 
@@ -13,14 +13,9 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs/auth). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.17).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs/auth). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0).
 
 <!-- x-release-please-end -->
-
-> [!IMPORTANT]
-> **The turbopuffer Java client is in beta.**
->
-> Please let us know about any bugs or performance issues.
 
 ## Installation
 
@@ -29,7 +24,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.17")
+implementation("com.turbopuffer:turbopuffer-java:0.1.0")
 ```
 
 ### Maven
@@ -38,7 +33,7 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.17")
 <dependency>
   <groupId>com.turbopuffer</groupId>
   <artifactId>turbopuffer-java</artifactId>
-  <version>0.1.0-beta.17</version>
+  <version>0.1.0</version>
 </dependency>
 ```
 
@@ -53,26 +48,43 @@ This library requires Java 8 or later.
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.models.namespaces.DistanceMetric;
-import com.turbopuffer.models.namespaces.NamespaceWriteParams;
-import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
-import com.turbopuffer.models.namespaces.Row;
+import com.turbopuffer.models.namespaces.*;
 import java.util.List;
 
-// Configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
-TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
-
-NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
-    .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-    .addUpsertRow(Row.builder()
-        .id("2108ed60-6851-49a0-9016-8325434f3845")
-        .vectorOfNumber(List.of(
-          0.1, 0.2
-        ))
-        .build())
+TurbopufferClient tpuf = TurbopufferOkHttpClient.builder()
+    .fromEnv()
+    // when using fromEnv(), this is the default and can be omitted
+    .apiKey(System.getenv("TURBOPUFFER_API_KEY"))
+    // when using fromEnv(), this defaults to `TURBOPUFFER_REGION`
+    .region("gcp-us-central1")
     .build();
-NamespaceWriteResponse response = client.namespaces().write(params);
+
+var ns = tpuf.namespace("example");
+
+// Query nearest neighbors with filter.
+var queryResult = ns.query(
+    NamespaceQueryParams.builder()
+    .rankBy(RankBy.vector("vector", List.of(0.1f, 0.2f)))
+    .topK(10)
+    .filters(Filter.and(Filter.eq("name", "foo"), Filter.eq("public", 1)))
+    .includeAttributes("name")
+    .build()
+);
+System.out.println(queryResult.rows().get());
+// [{id=1, $dist=0.009067952632904053, name=foo}]
+
+// Full-text search on an attribute.
+var ftsResult = ns.query(
+    NamespaceQueryParams.builder()
+    .topK(10)
+    .filters(Filter.eq("name", "foo"))
+    .rankBy(RankByText.bm25("text", "quick walrus"))
+    .build()
+);
+System.out.println(ftsResult.rows().get());
+// [{id=1, $dist=0.19856808}, {id=2, $dist=0.16853257}]
+
+// See https://turbopuffer.com/docs/quickstart for more.
 ```
 
 ## Client configuration
@@ -143,7 +155,7 @@ The `withOptions()` method does not affect the original client or service.
 
 To send a request to the Turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
 
-For example, `client.namespaces().write(...)` should be called with an instance of `NamespaceWriteParams`, and it will return an instance of `NamespaceWriteResponse`.
+For example, `namespace.write(...)` should be called with an instance of `NamespaceWriteParams`, and it will return an instance of `NamespaceWriteResponse`.
 
 ## Immutability
 
@@ -171,7 +183,6 @@ import java.util.concurrent.CompletableFuture;
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
     .addUpsertRow(Row.builder()
         .id("2108ed60-6851-49a0-9016-8325434f3845")
@@ -180,7 +191,7 @@ NamespaceWriteParams params = NamespaceWriteParams.builder()
         ))
         .build())
     .build();
-CompletableFuture<NamespaceWriteResponse> response = client.async().namespaces().write(params);
+CompletableFuture<NamespaceWriteResponse> response = client.async().namespace("ns").write(params);
 ```
 
 Or create an asynchronous client from the beginning:
@@ -199,7 +210,6 @@ import java.util.concurrent.CompletableFuture;
 TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
     .addUpsertRow(Row.builder()
         .id("2108ed60-6851-49a0-9016-8325434f3845")
@@ -208,7 +218,7 @@ NamespaceWriteParams params = NamespaceWriteParams.builder()
         ))
         .build())
     .build();
-CompletableFuture<NamespaceWriteResponse> response = client.namespaces().write(params);
+CompletableFuture<NamespaceWriteResponse> response = client.namespace("ns").write(params);
 ```
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
@@ -429,7 +439,7 @@ To set a custom timeout, configure the method call using the `timeout` method:
 ```java
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceWriteResponse response = client.namespaces().write(RequestOptions.builder().timeout(Duration.ofSeconds(30)).build());
+NamespaceWriteResponse response = client.namespace("ns").write(RequestOptions.builder().timeout(Duration.ofSeconds(30)).build());
 ```
 
 Or configure the default for all method calls at the client level:
@@ -546,7 +556,6 @@ import com.turbopuffer.models.namespaces.Row;
 import java.util.List;
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
     .distanceMetric(JsonValue.from(42))
     .addUpsertRow(Row.builder()
         .id("2108ed60-6851-49a0-9016-8325434f3845")
@@ -605,7 +614,7 @@ import com.turbopuffer.core.JsonMissing;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace(JsonMissing.of())
+    .deletes(JsonMissing.of())
     .build();
 ```
 
@@ -647,7 +656,7 @@ To access a property's raw JSON value, which may be undocumented, call its `_` p
 import com.turbopuffer.core.JsonField;
 import java.util.Optional;
 
-JsonField<String> copyFromNamespace = client.namespaces().write(params)._copyFromNamespace();
+JsonField<String> copyFromNamespace = client.namespace("ns").write(params)._copyFromNamespace();
 
 if (copyFromNamespace.isMissing()) {
   // The property is absent from the JSON response
@@ -674,7 +683,7 @@ If you would prefer to check that the response is completely well-typed upfront,
 ```java
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceWriteResponse response = client.namespaces().write(params).validate();
+NamespaceWriteResponse response = client.namespace("ns").write(params).validate();
 ```
 
 Or configure the method call to validate the response using the `responseValidation` method:
@@ -682,7 +691,7 @@ Or configure the method call to validate the response using the `responseValidat
 ```java
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceWriteResponse response = client.namespaces().write(RequestOptions.builder().responseValidation(true).build());
+NamespaceWriteResponse response = client.namespace("ns").write(RequestOptions.builder().responseValidation(true).build());
 ```
 
 Or configure the default for all method calls at the client level:

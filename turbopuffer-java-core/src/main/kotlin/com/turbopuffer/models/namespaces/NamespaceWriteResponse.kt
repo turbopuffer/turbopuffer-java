@@ -15,6 +15,7 @@ import com.turbopuffer.core.checkRequired
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** The response to a successful write request. */
@@ -24,6 +25,9 @@ private constructor(
     private val message: JsonField<String>,
     private val rowsAffected: JsonField<Long>,
     private val status: JsonField<Status>,
+    private val rowsDeleted: JsonField<Long>,
+    private val rowsPatched: JsonField<Long>,
+    private val rowsUpserted: JsonField<Long>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -37,7 +41,25 @@ private constructor(
         @ExcludeMissing
         rowsAffected: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-    ) : this(billing, message, rowsAffected, status, mutableMapOf())
+        @JsonProperty("rows_deleted")
+        @ExcludeMissing
+        rowsDeleted: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("rows_patched")
+        @ExcludeMissing
+        rowsPatched: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("rows_upserted")
+        @ExcludeMissing
+        rowsUpserted: JsonField<Long> = JsonMissing.of(),
+    ) : this(
+        billing,
+        message,
+        rowsAffected,
+        status,
+        rowsDeleted,
+        rowsPatched,
+        rowsUpserted,
+        mutableMapOf(),
+    )
 
     /**
      * The billing information for a write request.
@@ -72,6 +94,30 @@ private constructor(
     fun status(): Status = status.getRequired("status")
 
     /**
+     * The number of rows deleted by the write request.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun rowsDeleted(): Optional<Long> = rowsDeleted.getOptional("rows_deleted")
+
+    /**
+     * The number of rows patched by the write request.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun rowsPatched(): Optional<Long> = rowsPatched.getOptional("rows_patched")
+
+    /**
+     * The number of rows upserted by the write request.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun rowsUpserted(): Optional<Long> = rowsUpserted.getOptional("rows_upserted")
+
+    /**
      * Returns the raw JSON value of [billing].
      *
      * Unlike [billing], this method doesn't throw if the JSON field has an unexpected type.
@@ -100,6 +146,29 @@ private constructor(
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+    /**
+     * Returns the raw JSON value of [rowsDeleted].
+     *
+     * Unlike [rowsDeleted], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("rows_deleted") @ExcludeMissing fun _rowsDeleted(): JsonField<Long> = rowsDeleted
+
+    /**
+     * Returns the raw JSON value of [rowsPatched].
+     *
+     * Unlike [rowsPatched], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("rows_patched") @ExcludeMissing fun _rowsPatched(): JsonField<Long> = rowsPatched
+
+    /**
+     * Returns the raw JSON value of [rowsUpserted].
+     *
+     * Unlike [rowsUpserted], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("rows_upserted")
+    @ExcludeMissing
+    fun _rowsUpserted(): JsonField<Long> = rowsUpserted
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -136,6 +205,9 @@ private constructor(
         private var message: JsonField<String>? = null
         private var rowsAffected: JsonField<Long>? = null
         private var status: JsonField<Status>? = null
+        private var rowsDeleted: JsonField<Long> = JsonMissing.of()
+        private var rowsPatched: JsonField<Long> = JsonMissing.of()
+        private var rowsUpserted: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -144,6 +216,9 @@ private constructor(
             message = namespaceWriteResponse.message
             rowsAffected = namespaceWriteResponse.rowsAffected
             status = namespaceWriteResponse.status
+            rowsDeleted = namespaceWriteResponse.rowsDeleted
+            rowsPatched = namespaceWriteResponse.rowsPatched
+            rowsUpserted = namespaceWriteResponse.rowsUpserted
             additionalProperties = namespaceWriteResponse.additionalProperties.toMutableMap()
         }
 
@@ -193,6 +268,42 @@ private constructor(
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
+        /** The number of rows deleted by the write request. */
+        fun rowsDeleted(rowsDeleted: Long) = rowsDeleted(JsonField.of(rowsDeleted))
+
+        /**
+         * Sets [Builder.rowsDeleted] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.rowsDeleted] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun rowsDeleted(rowsDeleted: JsonField<Long>) = apply { this.rowsDeleted = rowsDeleted }
+
+        /** The number of rows patched by the write request. */
+        fun rowsPatched(rowsPatched: Long) = rowsPatched(JsonField.of(rowsPatched))
+
+        /**
+         * Sets [Builder.rowsPatched] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.rowsPatched] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun rowsPatched(rowsPatched: JsonField<Long>) = apply { this.rowsPatched = rowsPatched }
+
+        /** The number of rows upserted by the write request. */
+        fun rowsUpserted(rowsUpserted: Long) = rowsUpserted(JsonField.of(rowsUpserted))
+
+        /**
+         * Sets [Builder.rowsUpserted] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.rowsUpserted] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun rowsUpserted(rowsUpserted: JsonField<Long>) = apply { this.rowsUpserted = rowsUpserted }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -233,6 +344,9 @@ private constructor(
                 checkRequired("message", message),
                 checkRequired("rowsAffected", rowsAffected),
                 checkRequired("status", status),
+                rowsDeleted,
+                rowsPatched,
+                rowsUpserted,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -248,6 +362,9 @@ private constructor(
         message()
         rowsAffected()
         status().validate()
+        rowsDeleted()
+        rowsPatched()
+        rowsUpserted()
         validated = true
     }
 
@@ -269,7 +386,10 @@ private constructor(
         (billing.asKnown().getOrNull()?.validity() ?: 0) +
             (if (message.asKnown().isPresent) 1 else 0) +
             (if (rowsAffected.asKnown().isPresent) 1 else 0) +
-            (status.asKnown().getOrNull()?.validity() ?: 0)
+            (status.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (rowsDeleted.asKnown().isPresent) 1 else 0) +
+            (if (rowsPatched.asKnown().isPresent) 1 else 0) +
+            (if (rowsUpserted.asKnown().isPresent) 1 else 0)
 
     /** The status of the request. */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -398,15 +518,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceWriteResponse && billing == other.billing && message == other.message && rowsAffected == other.rowsAffected && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is NamespaceWriteResponse && billing == other.billing && message == other.message && rowsAffected == other.rowsAffected && status == other.status && rowsDeleted == other.rowsDeleted && rowsPatched == other.rowsPatched && rowsUpserted == other.rowsUpserted && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(billing, message, rowsAffected, status, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(billing, message, rowsAffected, status, rowsDeleted, rowsPatched, rowsUpserted, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceWriteResponse{billing=$billing, message=$message, rowsAffected=$rowsAffected, status=$status, additionalProperties=$additionalProperties}"
+        "NamespaceWriteResponse{billing=$billing, message=$message, rowsAffected=$rowsAffected, status=$status, rowsDeleted=$rowsDeleted, rowsPatched=$rowsPatched, rowsUpserted=$rowsUpserted, additionalProperties=$additionalProperties}"
 }
