@@ -245,7 +245,9 @@ private constructor(
         /** The filter specifying which documents to delete. */
         fun deleteByFilter(deleteByFilter: Filter) = apply { body.deleteByFilter(deleteByFilter) }
 
-        fun deletes(deletes: List<Id>) = apply { body.deletes(deletes) }
+        fun deletes(deletes: List<Any>) = apply {
+            deletes.forEach { body.addDelete(JsonValue.from(it)) }
+        }
 
         /**
          * Sets [Builder.deletes] to an arbitrary JSON value.

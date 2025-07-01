@@ -129,6 +129,10 @@ private constructor(
 
         /** Include exactly the specified attributes in the response. */
         @JvmStatic fun ofStrings(strings: List<String>) = IncludeAttributes(strings = strings)
+
+        /** Include exactly the specified attributes in the response. */
+        @JvmStatic
+        fun select(vararg strings: String) = IncludeAttributes(strings = strings.toList())
     }
 
     /**

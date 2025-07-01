@@ -172,6 +172,9 @@ private constructor(
 
         /** Returns a mutable builder for constructing an instance of [FullTextSearchConfig]. */
         @JvmStatic fun builder() = Builder()
+
+        /** Returns an instance of [FullTextSearchConfig] with default values. */
+        @JvmStatic fun default() = Builder().build()
     }
 
     /** A builder for [FullTextSearchConfig]. */
