@@ -160,7 +160,7 @@ The `withOptions()` method does not affect the original client or service.
 
 To send a request to the Turbopuffer API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.
 
-For example, `client.namespaces().write(...)` should be called with an instance of `NamespaceWriteParams`, and it will return an instance of `NamespaceWriteResponse`.
+For example, `namespace.write(...)` should be called with an instance of `NamespaceWriteParams`, and it will return an instance of `NamespaceWriteResponse`.
 
 ## Immutability
 
@@ -188,7 +188,6 @@ import java.util.concurrent.CompletableFuture;
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
     .addUpsertRow(Row.builder()
         .id("2108ed60-6851-49a0-9016-8325434f3845")
@@ -197,7 +196,7 @@ NamespaceWriteParams params = NamespaceWriteParams.builder()
         ))
         .build())
     .build();
-CompletableFuture<NamespaceWriteResponse> response = client.async().namespaces().write(params);
+CompletableFuture<NamespaceWriteResponse> response = client.async().namespace("ns").write(params);
 ```
 
 Or create an asynchronous client from the beginning:
@@ -216,7 +215,6 @@ import java.util.concurrent.CompletableFuture;
 TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
     .addUpsertRow(Row.builder()
         .id("2108ed60-6851-49a0-9016-8325434f3845")
@@ -225,7 +223,7 @@ NamespaceWriteParams params = NamespaceWriteParams.builder()
         ))
         .build())
     .build();
-CompletableFuture<NamespaceWriteResponse> response = client.namespaces().write(params);
+CompletableFuture<NamespaceWriteResponse> response = client.namespace("ns").write(params);
 ```
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
@@ -446,7 +444,7 @@ To set a custom timeout, configure the method call using the `timeout` method:
 ```java
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceWriteResponse response = client.namespaces().write(RequestOptions.builder().timeout(Duration.ofSeconds(30)).build());
+NamespaceWriteResponse response = client.namespace("ns").write(RequestOptions.builder().timeout(Duration.ofSeconds(30)).build());
 ```
 
 Or configure the default for all method calls at the client level:
@@ -563,7 +561,6 @@ import com.turbopuffer.models.namespaces.Row;
 import java.util.List;
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
     .distanceMetric(JsonValue.from(42))
     .addUpsertRow(Row.builder()
         .id("2108ed60-6851-49a0-9016-8325434f3845")
@@ -622,7 +619,7 @@ import com.turbopuffer.core.JsonMissing;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace(JsonMissing.of())
+    .deletes(JsonMissing.of())
     .build();
 ```
 
@@ -664,7 +661,7 @@ To access a property's raw JSON value, which may be undocumented, call its `_` p
 import com.turbopuffer.core.JsonField;
 import java.util.Optional;
 
-JsonField<String> copyFromNamespace = client.namespaces().write(params)._copyFromNamespace();
+JsonField<String> copyFromNamespace = client.namespace("ns").write(params)._copyFromNamespace();
 
 if (copyFromNamespace.isMissing()) {
   // The property is absent from the JSON response
@@ -691,7 +688,7 @@ If you would prefer to check that the response is completely well-typed upfront,
 ```java
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceWriteResponse response = client.namespaces().write(params).validate();
+NamespaceWriteResponse response = client.namespace("ns").write(params).validate();
 ```
 
 Or configure the method call to validate the response using the `responseValidation` method:
@@ -699,7 +696,7 @@ Or configure the method call to validate the response using the `responseValidat
 ```java
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 
-NamespaceWriteResponse response = client.namespaces().write(RequestOptions.builder().responseValidation(true).build());
+NamespaceWriteResponse response = client.namespace("ns").write(RequestOptions.builder().responseValidation(true).build());
 ```
 
 Or configure the default for all method calls at the client level:
