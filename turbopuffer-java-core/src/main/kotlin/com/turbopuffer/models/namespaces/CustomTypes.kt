@@ -396,21 +396,6 @@ class RankByTextBM25 private constructor(attr: String, value: String) : RankByTe
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
-@JsonPropertyOrder("attr", "f0", "value")
-class RankByTextBM25Array private constructor(attr: String, value: List<String>) : RankByText() {
-    private val attr: String = attr
-    private val f0: String = "BM25"
-    private val value: List<String> = value
-
-    companion object {
-        @JvmSynthetic
-        internal fun create(attr: String, value: List<String>): RankByTextBM25Array =
-            RankByTextBM25Array(attr, value)
-    }
-}
-
-@JsonAutoDetect(fieldVisibility = Visibility.ANY)
-@JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("f0", "subqueries")
 class RankByTextMax private constructor(subqueries: List<RankByText>) : RankByText() {
     private val f0: String = "Max"
