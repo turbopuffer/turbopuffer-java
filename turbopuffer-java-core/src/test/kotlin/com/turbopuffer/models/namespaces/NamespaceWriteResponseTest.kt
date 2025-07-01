@@ -29,6 +29,9 @@ internal class NamespaceWriteResponseTest {
                 .message("message")
                 .rowsAffected(0L)
                 .status(NamespaceWriteResponse.Status.OK)
+                .rowsDeleted(0L)
+                .rowsPatched(0L)
+                .rowsUpserted(0L)
                 .build()
 
         assertThat(namespaceWriteResponse.billing())
@@ -46,6 +49,9 @@ internal class NamespaceWriteResponseTest {
         assertThat(namespaceWriteResponse.message()).isEqualTo("message")
         assertThat(namespaceWriteResponse.rowsAffected()).isEqualTo(0L)
         assertThat(namespaceWriteResponse.status()).isEqualTo(NamespaceWriteResponse.Status.OK)
+        assertThat(namespaceWriteResponse.rowsDeleted()).contains(0L)
+        assertThat(namespaceWriteResponse.rowsPatched()).contains(0L)
+        assertThat(namespaceWriteResponse.rowsUpserted()).contains(0L)
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -68,6 +74,9 @@ internal class NamespaceWriteResponseTest {
                 .message("message")
                 .rowsAffected(0L)
                 .status(NamespaceWriteResponse.Status.OK)
+                .rowsDeleted(0L)
+                .rowsPatched(0L)
+                .rowsUpserted(0L)
                 .build()
 
         val roundtrippedNamespaceWriteResponse =
