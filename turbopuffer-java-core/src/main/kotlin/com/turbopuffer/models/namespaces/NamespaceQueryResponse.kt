@@ -24,7 +24,7 @@ class NamespaceQueryResponse
 private constructor(
     private val billing: JsonField<QueryBilling>,
     private val performance: JsonField<QueryPerformance>,
-    private val aggregations: JsonField<Aggregations>,
+    private val aggregations: JsonField<MutableMap<String, JsonValue>>,
     private val rows: JsonField<List<Row>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -39,7 +39,7 @@ private constructor(
         performance: JsonField<QueryPerformance> = JsonMissing.of(),
         @JsonProperty("aggregations")
         @ExcludeMissing
-        aggregations: JsonField<Aggregations> = JsonMissing.of(),
+        aggregations: JsonField<MutableMap<String, JsonValue>> = JsonMissing.of(),
         @JsonProperty("rows") @ExcludeMissing rows: JsonField<List<Row>> = JsonMissing.of(),
     ) : this(billing, performance, aggregations, rows, mutableMapOf())
 
@@ -63,7 +63,8 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun aggregations(): Optional<Aggregations> = aggregations.getOptional("aggregations")
+    fun aggregations(): Optional<MutableMap<String, JsonValue>> =
+        aggregations.getOptional("aggregations")
 
     /**
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -94,7 +95,7 @@ private constructor(
      */
     @JsonProperty("aggregations")
     @ExcludeMissing
-    fun _aggregations(): JsonField<Aggregations> = aggregations
+    fun _aggregations(): JsonField<MutableMap<String, JsonValue>> = aggregations
 
     /**
      * Returns the raw JSON value of [rows].
@@ -134,7 +135,7 @@ private constructor(
 
         private var billing: JsonField<QueryBilling>? = null
         private var performance: JsonField<QueryPerformance>? = null
-        private var aggregations: JsonField<Aggregations> = JsonMissing.of()
+        private var aggregations: JsonField<MutableMap<String, JsonValue>> = JsonMissing.of()
         private var rows: JsonField<MutableList<Row>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -173,16 +174,17 @@ private constructor(
             this.performance = performance
         }
 
-        fun aggregations(aggregations: Aggregations) = aggregations(JsonField.of(aggregations))
+        fun aggregations(aggregations: MutableMap<String, JsonValue>) =
+            aggregations(JsonField.of(aggregations))
 
         /**
          * Sets [Builder.aggregations] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.aggregations] with a well-typed [Aggregations] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.aggregations] with a well-typed
+         * [MutableMap<String, JsonValue>] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
          */
-        fun aggregations(aggregations: JsonField<Aggregations>) = apply {
+        fun aggregations(aggregations: JsonField<MutableMap<String, JsonValue>>) = apply {
             this.aggregations = aggregations
         }
 
@@ -256,7 +258,7 @@ private constructor(
 
         billing().validate()
         performance().validate()
-        aggregations().ifPresent { it.validate() }
+        aggregations()
         rows()
         validated = true
     }
@@ -278,109 +280,8 @@ private constructor(
     internal fun validity(): Int =
         (billing.asKnown().getOrNull()?.validity() ?: 0) +
             (performance.asKnown().getOrNull()?.validity() ?: 0) +
-            (aggregations.asKnown().getOrNull()?.validity() ?: 0) +
+            (aggregations.asKnown().getOrNull()?.size ?: 0) +
             (rows.asKnown().getOrNull()?.size ?: 0)
-
-    class Aggregations
-    @JsonCreator
-    private constructor(
-        @com.fasterxml.jackson.annotation.JsonValue
-        private val additionalProperties: Map<String, JsonValue>
-    ) {
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Aggregations]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Aggregations]. */
-        class Builder internal constructor() {
-
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(aggregations: Aggregations) = apply {
-                additionalProperties = aggregations.additionalProperties.toMutableMap()
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Aggregations].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Aggregations = Aggregations(additionalProperties.toImmutable())
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): Aggregations = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: TurbopufferInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Aggregations && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() = "Aggregations{additionalProperties=$additionalProperties}"
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
