@@ -288,7 +288,18 @@ private constructor(
          * A condition evaluated against the current value of each document targeted by a delete
          * write. Only documents that pass the condition are deleted.
          */
-        fun deleteCondition(deleteCondition: JsonValue) = apply {
+        fun deleteCondition(deleteCondition: Filter) = apply {
+            body.deleteCondition(deleteCondition)
+        }
+
+        /**
+         * Sets [Builder.deleteCondition] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deleteCondition] with a well-typed [Filter] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun deleteCondition(deleteCondition: JsonField<Filter>) = apply {
             body.deleteCondition(deleteCondition)
         }
 
@@ -367,7 +378,16 @@ private constructor(
          * A condition evaluated against the current value of each document targeted by a patch
          * write. Only documents that pass the condition are patched.
          */
-        fun patchCondition(patchCondition: JsonValue) = apply {
+        fun patchCondition(patchCondition: Filter) = apply { body.patchCondition(patchCondition) }
+
+        /**
+         * Sets [Builder.patchCondition] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.patchCondition] with a well-typed [Filter] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun patchCondition(patchCondition: JsonField<Filter>) = apply {
             body.patchCondition(patchCondition)
         }
 
@@ -421,7 +441,18 @@ private constructor(
          * A condition evaluated against the current value of each document targeted by an upsert
          * write. Only documents that pass the condition are upserted.
          */
-        fun upsertCondition(upsertCondition: JsonValue) = apply {
+        fun upsertCondition(upsertCondition: Filter) = apply {
+            body.upsertCondition(upsertCondition)
+        }
+
+        /**
+         * Sets [Builder.upsertCondition] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.upsertCondition] with a well-typed [Filter] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun upsertCondition(upsertCondition: JsonField<Filter>) = apply {
             body.upsertCondition(upsertCondition)
         }
 
@@ -722,6 +753,9 @@ private constructor(
         /**
          * A condition evaluated against the current value of each document targeted by a patch
          * write. Only documents that pass the condition are patched.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun patchCondition(): Optional<Filter> = patchCondition.getOptional("patch_condition")
 
@@ -751,6 +785,9 @@ private constructor(
         /**
          * A condition evaluated against the current value of each document targeted by an upsert
          * write. Only documents that pass the condition are upserted.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
         fun upsertCondition(): Optional<Filter> = upsertCondition.getOptional("upsert_condition")
 
@@ -964,7 +1001,17 @@ private constructor(
              * A condition evaluated against the current value of each document targeted by a delete
              * write. Only documents that pass the condition are deleted.
              */
-            fun deleteCondition(deleteCondition: JsonValue) = apply {
+            fun deleteCondition(deleteCondition: Filter) =
+                deleteCondition(JsonField.of(deleteCondition))
+
+            /**
+             * Sets [Builder.deleteCondition] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.deleteCondition] with a well-typed [Filter] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun deleteCondition(deleteCondition: JsonField<Filter>) = apply {
                 this.deleteCondition = deleteCondition
             }
 
@@ -1049,7 +1096,17 @@ private constructor(
              * A condition evaluated against the current value of each document targeted by a patch
              * write. Only documents that pass the condition are patched.
              */
-            fun patchCondition(patchCondition: JsonValue) = apply {
+            fun patchCondition(patchCondition: Filter) =
+                patchCondition(JsonField.of(patchCondition))
+
+            /**
+             * Sets [Builder.patchCondition] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.patchCondition] with a well-typed [Filter] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun patchCondition(patchCondition: JsonField<Filter>) = apply {
                 this.patchCondition = patchCondition
             }
 
@@ -1111,7 +1168,17 @@ private constructor(
              * A condition evaluated against the current value of each document targeted by an
              * upsert write. Only documents that pass the condition are upserted.
              */
-            fun upsertCondition(upsertCondition: JsonValue) = apply {
+            fun upsertCondition(upsertCondition: Filter) =
+                upsertCondition(JsonField.of(upsertCondition))
+
+            /**
+             * Sets [Builder.upsertCondition] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.upsertCondition] with a well-typed [Filter] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun upsertCondition(upsertCondition: JsonField<Filter>) = apply {
                 this.upsertCondition = upsertCondition
             }
 
