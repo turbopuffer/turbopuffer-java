@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-<a href="https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.16"><img src="https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java" alt="Go Reference" align="right"></a>
-<a href="https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.16"><img src="https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.16/javadoc.svg" alt="Go Reference" align="right"></a>
+<a href="https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0-beta.17"><img src="https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java" alt="Go Reference" align="right"></a>
+<a href="https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.17"><img src="https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0-beta.17/javadoc.svg" alt="Go Reference" align="right"></a>
 
 <!-- x-release-please-end -->
 
@@ -13,7 +13,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs/auth). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.16).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs/auth). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0-beta.17).
 
 <!-- x-release-please-end -->
 
@@ -29,7 +29,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.16")
+implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.17")
 ```
 
 ### Maven
@@ -38,7 +38,7 @@ implementation("com.turbopuffer:turbopuffer-java:0.1.0-beta.16")
 <dependency>
   <groupId>com.turbopuffer</groupId>
   <artifactId>turbopuffer-java</artifactId>
-  <version>0.1.0-beta.16</version>
+  <version>0.1.0-beta.17</version>
 </dependency>
 ```
 
