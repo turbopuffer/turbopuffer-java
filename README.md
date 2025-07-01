@@ -53,26 +53,43 @@ This library requires Java 8 or later.
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
-import com.turbopuffer.models.namespaces.DistanceMetric;
-import com.turbopuffer.models.namespaces.NamespaceWriteParams;
-import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
-import com.turbopuffer.models.namespaces.Row;
+import com.turbopuffer.models.namespaces.*;
 import java.util.List;
 
-// Configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
-TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
-
-NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
-    .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-    .addUpsertRow(Row.builder()
-        .id("2108ed60-6851-49a0-9016-8325434f3845")
-        .vectorOfNumber(List.of(
-          0.1, 0.2
-        ))
-        .build())
+TurbopufferClient tpuf = TurbopufferOkHttpClient.builder()
+    .fromEnv()
+    // when using fromEnv(), this is the default and can be omitted
+    .apiKey(System.getenv("TURBOPUFFER_API_KEY"))
+    // when using fromEnv(), this defaults to `TURBOPUFFER_REGION`
+    .region("gcp-us-central1")
     .build();
-NamespaceWriteResponse response = client.namespaces().write(params);
+
+var ns = tpuf.namespace("example");
+
+// Query nearest neighbors with filter.
+var queryResult = ns.query(
+    NamespaceQueryParams.builder()
+    .rankBy(RankBy.vector("vector", List.of(0.1f, 0.2f)))
+    .topK(10)
+    .filters(Filter.and(Filter.eq("name", "foo"), Filter.eq("public", 1)))
+    .includeAttributes("name")
+    .build()
+);
+System.out.println(queryResult.rows().get());
+// [{id=1, $dist=0.009067952632904053, name=foo}]
+
+// Full-text search on an attribute.
+var ftsResult = ns.query(
+    NamespaceQueryParams.builder()
+    .topK(10)
+    .filters(Filter.eq("name", "foo"))
+    .rankBy(RankByText.bm25("text", "quick walrus"))
+    .build()
+);
+System.out.println(ftsResult.rows().get());
+// [{id=1, $dist=0.19856808}, {id=2, $dist=0.16853257}]
+
+// See https://turbopuffer.com/docs/quickstart for more.
 ```
 
 ## Client configuration
