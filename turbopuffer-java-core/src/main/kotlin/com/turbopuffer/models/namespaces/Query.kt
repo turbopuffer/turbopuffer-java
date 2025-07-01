@@ -217,6 +217,14 @@ private constructor(
          * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
          * clause.
          */
+        fun filters(filters: Filter) = filters(JsonField.of(filters))
+
+        /**
+         * Sets [Builder.filters] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filters] with a well-typed [Filter] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun filters(filters: JsonField<Filter>) = apply { this.filters = filters }
 
         /** Whether to include attributes in the response. */
@@ -242,6 +250,14 @@ private constructor(
             includeAttributes(IncludeAttributes.ofStrings(strings))
 
         /** How to rank the documents in the namespace. */
+        fun rankBy(rankBy: RankBy) = rankBy(JsonField.of(rankBy))
+
+        /**
+         * Sets [Builder.rankBy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.rankBy] with a well-typed [RankBy] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun rankBy(rankBy: JsonField<RankBy>) = apply { this.rankBy = rankBy }
 
         /** The number of results to return. */
