@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.0-beta.17 (2025-07-01)
+
+Full Changelog: [v0.1.0-beta.16...v0.1.0-beta.17](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.16...v0.1.0-beta.17)
+
+### Bug Fixes
+
+* add shortcut construction methods for some API structs ([603459e](https://github.com/turbopuffer/turbopuffer-java/commit/603459e3a6e35fdf5ecc5d4e3964b9b14ed783d0))
+* add strict type overloads to Query builder ([a835e4e](https://github.com/turbopuffer/turbopuffer-java/commit/a835e4eecefc70313f38aa60bcb42ea3a3d8ae65))
+* **api:** api update ([a9bedfe](https://github.com/turbopuffer/turbopuffer-java/commit/a9bedfe7ad20760f87b310bd99d0b005b17c5b26))
+* expose namespace IDs ([3a791fc](https://github.com/turbopuffer/turbopuffer-java/commit/3a791fc784d23553647d99ea6e44647f2e08ca42))
+* further strengthen conditional write types ([7ffe09d](https://github.com/turbopuffer/turbopuffer-java/commit/7ffe09dfd057ef09861f621bdfca5bce96b6a4a2))
+* strict types for conditional writes ([9ad50fb](https://github.com/turbopuffer/turbopuffer-java/commit/9ad50fb8cf30b081510b29143a0f2bb4bfc00124))
+* use overloads in Filter and RankBy whenever possible ([3c8da00](https://github.com/turbopuffer/turbopuffer-java/commit/3c8da009f578b80cbcdc0c2423126ca3e268a7fe))
+* use raw map for aggregations ([5f1ea31](https://github.com/turbopuffer/turbopuffer-java/commit/5f1ea31700aab3b2fa6756e3f9939288dd433170))
+
+
+### Chores
+
+* **internal:** version bump ([012e36c](https://github.com/turbopuffer/turbopuffer-java/commit/012e36c726fefe285c2634ddec370691225457a7))
+
+
+### Refactors
+
+* **internal:** minor `ClientOptionsTest` change ([dc9c347](https://github.com/turbopuffer/turbopuffer-java/commit/dc9c3471091656af8d34032391e5d7766b466ffd))
+
 ## 0.1.0-beta.16 (2025-06-30)
 
 Full Changelog: [v0.1.0-beta.15...v0.1.0-beta.16](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.15...v0.1.0-beta.16)
