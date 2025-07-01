@@ -48,6 +48,8 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): NamespaceService =
         NamespaceServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun id(): String = withRawResponse.id()
+
     override fun deleteAll(
         params: NamespaceDeleteAllParams,
         requestOptions: RequestOptions,
@@ -115,6 +117,11 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             NamespaceServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun id(): String =
+            clientOptions.defaultNamespace().orElseThrow {
+                IllegalArgumentException("clientOptions missing namespace ID")
+            }
 
         private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
             jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
