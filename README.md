@@ -17,11 +17,6 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 
 <!-- x-release-please-end -->
 
-> [!IMPORTANT]
-> **The turbopuffer Java client is in beta.**
->
-> Please let us know about any bugs or performance issues.
-
 ## Installation
 
 <!-- x-release-please-start-version -->
