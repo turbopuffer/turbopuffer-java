@@ -234,6 +234,7 @@ internal class NamespaceServiceAsyncTest {
                             .put("vector", listOf(JsonValue.from(listOf(0.0))))
                             .build()
                     )
+                    .patchCondition(JsonValue.from(mapOf<String, Any>()))
                     .addPatchRow(
                         Row.builder()
                             .put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -257,6 +258,7 @@ internal class NamespaceServiceAsyncTest {
                             .put("vector", listOf(listOf(0.0)))
                             .build()
                     )
+                    .upsertCondition(JsonValue.from(mapOf<String, Any>()))
                     .addUpsertRow(
                         Row.builder()
                             .put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
