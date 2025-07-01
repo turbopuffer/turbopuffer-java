@@ -17,6 +17,7 @@ internal class NamespaceWriteParamsTest {
             .namespace("namespace")
             .copyFromNamespace("copy_from_namespace")
             .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+            .deleteCondition(JsonValue.from(mapOf<String, Any>()))
             .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
             .encryption(
@@ -32,6 +33,7 @@ internal class NamespaceWriteParamsTest {
                     .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                     .build()
             )
+            .patchCondition(JsonValue.from(mapOf<String, Any>()))
             .addPatchRow(
                 Row.builder()
                     .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -49,6 +51,7 @@ internal class NamespaceWriteParamsTest {
                     .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                     .build()
             )
+            .upsertCondition(JsonValue.from(mapOf<String, Any>()))
             .addUpsertRow(
                 Row.builder()
                     .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -76,6 +79,7 @@ internal class NamespaceWriteParamsTest {
                 .namespace("namespace")
                 .copyFromNamespace("copy_from_namespace")
                 .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+                .deleteCondition(JsonValue.from(mapOf<String, Any>()))
                 .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .encryption(
@@ -93,6 +97,7 @@ internal class NamespaceWriteParamsTest {
                         .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
+                .patchCondition(JsonValue.from(mapOf<String, Any>()))
                 .addPatchRow(
                     Row.builder()
                         .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -110,6 +115,7 @@ internal class NamespaceWriteParamsTest {
                         .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
+                .upsertCondition(JsonValue.from(mapOf<String, Any>()))
                 .addUpsertRow(
                     Row.builder()
                         .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -122,6 +128,7 @@ internal class NamespaceWriteParamsTest {
 
         assertThat(body.copyFromNamespace()).contains("copy_from_namespace")
         assertThat(body._deleteByFilter()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body._deleteCondition()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.deletes().getOrNull())
             .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
         assertThat(body.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)
@@ -140,6 +147,7 @@ internal class NamespaceWriteParamsTest {
                     .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                     .build()
             )
+        assertThat(body._patchCondition()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.patchRows().getOrNull())
             .containsExactly(
                 Row.builder()
@@ -160,6 +168,7 @@ internal class NamespaceWriteParamsTest {
                     .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                     .build()
             )
+        assertThat(body._upsertCondition()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.upsertRows().getOrNull())
             .containsExactly(
                 Row.builder()
