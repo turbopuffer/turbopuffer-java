@@ -38,6 +38,9 @@ interface NamespaceService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): NamespaceService
 
+    /** Returns the ID of the namespace. */
+    fun id(): String
+
     /** Delete namespace. */
     fun deleteAll(): NamespaceDeleteAllResponse = deleteAll(NamespaceDeleteAllParams.none())
 
@@ -183,6 +186,9 @@ interface NamespaceService {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): NamespaceService.WithRawResponse
+
+        /** Returns the ID of the namespace. */
+        fun id(): String
 
         /**
          * Returns a raw HTTP response for `delete /v2/namespaces/{namespace}`, but is otherwise the

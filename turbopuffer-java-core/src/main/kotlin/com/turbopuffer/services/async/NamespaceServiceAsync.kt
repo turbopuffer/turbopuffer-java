@@ -38,6 +38,9 @@ interface NamespaceServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): NamespaceServiceAsync
 
+    /** Returns the ID of the namespace. */
+    fun id(): String
+
     /** Delete namespace. */
     fun deleteAll(): CompletableFuture<NamespaceDeleteAllResponse> =
         deleteAll(NamespaceDeleteAllParams.none())
@@ -197,6 +200,9 @@ interface NamespaceServiceAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): NamespaceServiceAsync.WithRawResponse
+
+        /** Returns the ID of the namespace. */
+        fun id(): String
 
         /**
          * Returns a raw HTTP response for `delete /v2/namespaces/{namespace}`, but is otherwise the
