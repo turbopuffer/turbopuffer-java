@@ -27,21 +27,6 @@ class AggregateByCount private constructor(attr: String) : AggregateBy() {
     }
 }
 
-@JsonAutoDetect(fieldVisibility = Visibility.ANY)
-@JsonFormat(shape = JsonFormat.Shape.ARRAY)
-@JsonPropertyOrder("attr", "f0", "value")
-class ContainsAllTokensArray private constructor(attr: String, value: List<String>) : Filter() {
-    private val attr: String = attr
-    private val f0: String = "ContainsAllTokens"
-    private val value: List<String> = value
-
-    companion object {
-        @JvmSynthetic
-        internal fun create(attr: String, value: List<String>): ContainsAllTokensArray =
-            ContainsAllTokensArray(attr, value)
-    }
-}
-
 sealed class Filter() {
     companion object {
         @JvmStatic public fun eq(attr: String, value: Any): FilterEq = FilterEq.create(attr, value)
@@ -84,10 +69,10 @@ sealed class Filter() {
             FilterContainsAllTokens.create(attr, value)
 
         @JvmStatic
-        public fun containsAllTokensArray(
+        public fun containsAllTokens(
             attr: String,
             value: List<String>,
-        ): ContainsAllTokensArray = ContainsAllTokensArray.create(attr, value)
+        ): FilterContainsAllTokensArray = FilterContainsAllTokensArray.create(attr, value)
 
         @JvmStatic public fun not(filter: Filter): FilterNot = FilterNot.create(filter)
 
@@ -123,6 +108,22 @@ class FilterContainsAllTokens private constructor(attr: String, value: String) :
         @JvmSynthetic
         internal fun create(attr: String, value: String): FilterContainsAllTokens =
             FilterContainsAllTokens(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterContainsAllTokensArray private constructor(attr: String, value: List<String>) :
+    Filter() {
+    private val attr: String = attr
+    private val f0: String = "ContainsAllTokens"
+    private val value: List<String> = value
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: List<String>): FilterContainsAllTokensArray =
+            FilterContainsAllTokensArray(attr, value)
     }
 }
 
@@ -357,7 +358,7 @@ sealed class RankByText() : RankBy() {
             RankByTextBM25.create(attr, value)
 
         @JvmStatic
-        public fun bm25Array(attr: String, value: List<String>): RankByTextBM25Array =
+        public fun bm25(attr: String, value: List<String>): RankByTextBM25Array =
             RankByTextBM25Array.create(attr, value)
 
         @JvmStatic
@@ -371,6 +372,10 @@ sealed class RankByText() : RankBy() {
         @JvmStatic
         public fun product(weight: Double, subquery: RankByText): RankByTextProduct =
             RankByTextProduct.create(weight, subquery)
+
+        @JvmStatic
+        public fun product(subquery: RankByText, weight: Double): RankByTextProduct2 =
+            RankByTextProduct2.create(subquery, weight)
     }
 }
 
@@ -428,6 +433,20 @@ class RankByTextProduct private constructor(weight: Double, subquery: RankByText
         @JvmSynthetic
         internal fun create(weight: Double, subquery: RankByText): RankByTextProduct =
             RankByTextProduct(weight, subquery)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "f1")
+class RankByTextProduct2 private constructor(subquery: RankByText, weight: Double) : RankByText() {
+    private val f0: String = "Product"
+    private val f1: List<JsonValue> = listOf(JsonValue.from(subquery), JsonValue.from(weight))
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(subquery: RankByText, weight: Double): RankByTextProduct2 =
+            RankByTextProduct2(subquery, weight)
     }
 }
 
