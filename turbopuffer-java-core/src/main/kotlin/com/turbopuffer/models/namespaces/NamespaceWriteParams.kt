@@ -292,7 +292,9 @@ private constructor(
             body.deleteCondition(deleteCondition)
         }
 
-        fun deletes(deletes: List<Id>) = apply { body.deletes(deletes) }
+        fun deletes(deletes: List<Any>) = apply {
+            deletes.forEach { body.addDelete(JsonValue.from(it)) }
+        }
 
         /**
          * Sets [Builder.deletes] to an arbitrary JSON value.
