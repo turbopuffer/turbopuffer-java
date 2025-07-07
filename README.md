@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-<a href="https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0"><img src="https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java" alt="Go Reference" align="right"></a>
-<a href="https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0"><img src="https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0/javadoc.svg" alt="Go Reference" align="right"></a>
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/0.1.0)
+[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/0.1.0/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/0.1.0)
 
 <!-- x-release-please-end -->
 
