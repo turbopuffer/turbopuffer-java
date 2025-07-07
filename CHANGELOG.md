@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.1 (2025-07-07)
+
+Full Changelog: [v0.1.0...v0.1.1](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0...v0.1.1)
+
+### Bug Fixes
+
+* **api:** add support for [Not]Contains[Any] operators ([#165](https://github.com/turbopuffer/turbopuffer-java/issues/165)) ([a2cb185](https://github.com/turbopuffer/turbopuffer-java/commit/a2cb185cd2678b14c99c88720de42dc00918c954))
+
+
+### Chores
+
+* **internal:** version bump ([0a742f1](https://github.com/turbopuffer/turbopuffer-java/commit/0a742f1abc4991c0c7db200f75486a8d1ff2f8f4))
+
 ## 0.1.0 (2025-07-01)
 
 Full Changelog: [v0.1.0-beta.17...v0.1.0](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0-beta.17...v0.1.0)
