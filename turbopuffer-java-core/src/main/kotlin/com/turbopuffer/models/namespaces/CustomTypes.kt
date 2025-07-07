@@ -56,6 +56,22 @@ sealed class Filter() {
         @JvmStatic
         public fun notIn(attr: String, value: Any): FilterNotIn = FilterNotIn.create(attr, value)
 
+        @JvmStatic
+        public fun contains(attr: String, value: Any): FilterContains =
+            FilterContains.create(attr, value)
+
+        @JvmStatic
+        public fun notContains(attr: String, value: Any): FilterNotContains =
+            FilterNotContains.create(attr, value)
+
+        @JvmStatic
+        public fun containsAny(attr: String, value: Any): FilterContainsAny =
+            FilterContainsAny.create(attr, value)
+
+        @JvmStatic
+        public fun notContainsAny(attr: String, value: Any): FilterNotContainsAny =
+            FilterNotContainsAny.create(attr, value)
+
         @JvmStatic public fun lt(attr: String, value: Any): FilterLt = FilterLt.create(attr, value)
 
         @JvmStatic
@@ -115,6 +131,20 @@ class FilterAnd private constructor(filters: List<Filter>) : Filter() {
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
+class FilterContains private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "Contains"
+    private val value: JsonValue = JsonValue.from(value)
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: Any): FilterContains = FilterContains(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
 class FilterContainsAllTokens private constructor(attr: String, value: String) : Filter() {
     private val attr: String = attr
     private val f0: String = "ContainsAllTokens"
@@ -140,6 +170,21 @@ class FilterContainsAllTokensArray private constructor(attr: String, value: List
         @JvmSynthetic
         internal fun create(attr: String, value: List<String>): FilterContainsAllTokensArray =
             FilterContainsAllTokensArray(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterContainsAny private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "ContainsAny"
+    private val value: JsonValue = JsonValue.from(value)
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: Any): FilterContainsAny =
+            FilterContainsAny(attr, value)
     }
 }
 
@@ -264,6 +309,36 @@ class FilterNot private constructor(filter: Filter) : Filter() {
 
     companion object {
         @JvmSynthetic internal fun create(filter: Filter): FilterNot = FilterNot(filter)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterNotContains private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "NotContains"
+    private val value: JsonValue = JsonValue.from(value)
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: Any): FilterNotContains =
+            FilterNotContains(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterNotContainsAny private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "NotContainsAny"
+    private val value: JsonValue = JsonValue.from(value)
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: Any): FilterNotContainsAny =
+            FilterNotContainsAny(attr, value)
     }
 }
 
