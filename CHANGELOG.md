@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2 (2025-07-08)
+
+Full Changelog: [v0.1.1...v0.1.2](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.1...v0.1.2)
+
+### Bug Fixes
+
+* add toString() method to AggregateBy, Filter, and RankBy types ([#166](https://github.com/turbopuffer/turbopuffer-java/issues/166)) ([a19970d](https://github.com/turbopuffer/turbopuffer-java/commit/a19970de6897e58d6e9a6efae6fbd84951d74433))
+
 ## 0.1.1 (2025-07-07)
 
 Full Changelog: [v0.1.0...v0.1.1](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.0...v0.1.1)
