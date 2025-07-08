@@ -23,6 +23,7 @@ import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Row
+import com.turbopuffer.models.namespaces.Schema
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -97,15 +98,14 @@ internal class ServiceParamsTest {
                         .build()
                 )
                 .schema(
-                    mapOf(
-                        "id" to AttributeSchemaConfig.builder().type("uuid").build(),
-                        "name" to
-                            AttributeSchemaConfig.builder()
-                                .type("string")
-                                .filterable(false)
-                                .build(),
-                        "age" to AttributeSchemaConfig.builder().type("uint").build(),
-                    )
+                    Schema.builder()
+                        .put("id", AttributeSchemaConfig.builder().type("uuid").build())
+                        .put(
+                            "name",
+                            AttributeSchemaConfig.builder().type("string").filterable(false).build(),
+                        )
+                        .put("age", AttributeSchemaConfig.builder().type("uint").build())
+                        .build()
                 )
                 .upsertColumns(
                     Columns.builder()

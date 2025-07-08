@@ -17,9 +17,9 @@ import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import com.turbopuffer.models.namespaces.RankBy;
 import com.turbopuffer.models.namespaces.RankByAttributeOrder;
 import com.turbopuffer.models.namespaces.Row;
+import com.turbopuffer.models.namespaces.Schema;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -78,16 +78,24 @@ public class WriteAndQueryAsync {
                                 .put("age", 28)
                                 .build())
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                        .schema(Map.of(
-                                "id",
-                                AttributeSchemaConfig.builder().type("uuid").build(),
-                                "name",
-                                AttributeSchemaConfig.builder()
-                                        .type("string")
-                                        .filterable(false)
-                                        .build(),
-                                "age",
-                                AttributeSchemaConfig.builder().type("uint").build()))
+                        .schema(Schema.builder()
+                                .put(
+                                        "id",
+                                        AttributeSchemaConfig.builder()
+                                                .type("uuid")
+                                                .build())
+                                .put(
+                                        "name",
+                                        AttributeSchemaConfig.builder()
+                                                .type("string")
+                                                .filterable(false)
+                                                .build())
+                                .put(
+                                        "age",
+                                        AttributeSchemaConfig.builder()
+                                                .type("uint")
+                                                .build())
+                                .build())
                         .build())
                 .join();
         System.out.printf("Upsert status: %s\n", upsert.status());
