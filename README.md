@@ -90,7 +90,6 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
     .apiKey("tpuf_A1...")
-    .region("gcp-us-central1")
     .build();
 ```
 
@@ -112,7 +111,7 @@ See this table for the available options:
 | Setter    | Environment variable   | Required | Default value                        |
 | --------- | ---------------------- | -------- | ------------------------------------ |
 | `apiKey`  | `TURBOPUFFER_API_KEY`  | true     | -                                    |
-| `region`  | `TURBOPUFFER_REGION`   | true     | -                                    |
+| `region`  | `TURBOPUFFER_REGION`   | false    | -                                    |
 | `baseUrl` | `TURBOPUFFER_BASE_URL` | true     | `"https://{region}.turbopuffer.com"` |
 
 > [!TIP]

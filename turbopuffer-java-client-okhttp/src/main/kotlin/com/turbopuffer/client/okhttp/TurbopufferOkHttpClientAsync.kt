@@ -160,7 +160,10 @@ class TurbopufferOkHttpClientAsync private constructor() {
 
         fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
 
-        fun region(region: String) = apply { clientOptions.region(region) }
+        fun region(region: String?) = apply { clientOptions.region(region) }
+
+        /** Alias for calling [Builder.region] with `region.orElse(null)`. */
+        fun region(region: Optional<String>) = region(region.getOrNull())
 
         fun defaultNamespace(defaultNamespace: String?) = apply {
             clientOptions.defaultNamespace(defaultNamespace)
