@@ -41,8 +41,14 @@ private constructor(
         }
     }
 
-    fun baseUrl(): String =
-        (baseUrl ?: PRODUCTION_URL).replace("{region}", region.getOrNull().toString())
+    fun baseUrl(): String {
+        var url = baseUrl ?: PRODUCTION_URL
+        if (url.contains("{region}")) {
+            // Builder ensures that region is not null if baseUrl contains {region}.
+            url = url.replace("{region}", region!!)
+        }
+        return url
+    }
 
     fun region(): Optional<String> = Optional.ofNullable(region)
 
@@ -61,6 +67,7 @@ private constructor(
          * ```java
          * .httpClient()
          * .apiKey()
+         * .region() (unless baseUrl is overridden)
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -243,6 +250,7 @@ private constructor(
          * ```java
          * .httpClient()
          * .apiKey()
+         * .region() (unless baseUrl is overridden)
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -250,6 +258,20 @@ private constructor(
         fun build(): ClientOptions {
             val httpClient = checkRequired("httpClient", httpClient)
             val apiKey = checkRequired("apiKey", apiKey)
+
+            // Check if region is required based on baseUrl.
+            val finalBaseUrl = baseUrl ?: PRODUCTION_URL
+            val hasRegionPlaceholder = finalBaseUrl.contains("{region}")
+            if (hasRegionPlaceholder && region == null) {
+                throw IllegalStateException(
+                    "region is required, but not set (baseUrl has a {region} placeholder: ${finalBaseUrl})"
+                )
+            }
+            if (!hasRegionPlaceholder && region != null) {
+                throw IllegalStateException(
+                    "region is set, but would be ignored (baseUrl does not contain {region} placeholder: ${finalBaseUrl})"
+                )
+            }
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
