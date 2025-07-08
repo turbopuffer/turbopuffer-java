@@ -33,7 +33,6 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceServiceAsync = client.namespace("ns")
 
@@ -53,7 +52,6 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceServiceAsync = client.namespace("ns")
 
@@ -73,7 +71,6 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceServiceAsync = client.namespace("ns")
 
@@ -108,7 +105,6 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceServiceAsync = client.namespace("ns")
 
@@ -139,7 +135,6 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceServiceAsync = client.namespace("ns")
 
@@ -164,7 +159,6 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceServiceAsync = client.namespace("ns")
 
@@ -183,7 +177,6 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceServiceAsync = client.namespace("ns")
 
@@ -205,7 +198,6 @@ internal class NamespaceServiceAsyncTest {
             TurbopufferOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceServiceAsync = client.namespace("ns")
 

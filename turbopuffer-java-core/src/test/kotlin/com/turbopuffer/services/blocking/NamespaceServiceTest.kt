@@ -33,7 +33,6 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespace("ns")
 
@@ -52,7 +51,6 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespace("ns")
 
@@ -71,7 +69,6 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespace("ns")
 
@@ -105,7 +102,6 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespace("ns")
 
@@ -135,7 +131,6 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespace("ns")
 
@@ -160,7 +155,6 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespace("ns")
 
@@ -175,7 +169,6 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespace("ns")
 
@@ -195,7 +188,6 @@ internal class NamespaceServiceTest {
             TurbopufferOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
                 .build()
         val namespaceService = client.namespace("ns")
 
