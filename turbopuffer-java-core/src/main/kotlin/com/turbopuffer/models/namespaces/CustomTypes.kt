@@ -7,7 +7,11 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.core.jsonMapper
+
+val jsonMapper: JsonMapper = jsonMapper()
 
 sealed class AggregateBy() {
     companion object {
@@ -21,6 +25,10 @@ sealed class AggregateBy() {
 class AggregateByCount private constructor(attr: String) : AggregateBy() {
     private val f0: String = "Count"
     private val attr: String = attr
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic internal fun create(attr: String): AggregateByCount = AggregateByCount(attr)
@@ -37,6 +45,10 @@ sealed class Expr() {
 @JsonPropertyOrder("refNew")
 class ExprRefNew private constructor(refNew: String) : Expr() {
     @JsonProperty("\$ref_new") private val refNew: String = refNew
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic internal fun create(refNew: String): ExprRefNew = ExprRefNew(refNew)
@@ -123,6 +135,10 @@ class FilterAnd private constructor(filters: List<Filter>) : Filter() {
     private val f0: String = "And"
     private val filters: List<Filter> = filters
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic internal fun create(filters: List<Filter>): FilterAnd = FilterAnd(filters)
     }
@@ -135,6 +151,10 @@ class FilterContains private constructor(attr: String, value: Any) : Filter() {
     private val attr: String = attr
     private val f0: String = "Contains"
     private val value: JsonValue = JsonValue.from(value)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
@@ -149,6 +169,10 @@ class FilterContainsAllTokens private constructor(attr: String, value: String) :
     private val attr: String = attr
     private val f0: String = "ContainsAllTokens"
     private val value: String = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
@@ -166,6 +190,10 @@ class FilterContainsAllTokensArray private constructor(attr: String, value: List
     private val f0: String = "ContainsAllTokens"
     private val value: List<String> = value
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: List<String>): FilterContainsAllTokensArray =
@@ -180,6 +208,10 @@ class FilterContainsAny private constructor(attr: String, value: Any) : Filter()
     private val attr: String = attr
     private val f0: String = "ContainsAny"
     private val value: JsonValue = JsonValue.from(value)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
@@ -196,6 +228,10 @@ class FilterEq private constructor(attr: String, value: Any) : Filter() {
     private val f0: String = "Eq"
     private val value: JsonValue = JsonValue.from(value)
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterEq = FilterEq(attr, value)
@@ -209,6 +245,10 @@ class FilterGlob private constructor(attr: String, value: String) : Filter() {
     private val attr: String = attr
     private val f0: String = "Glob"
     private val value: String = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
@@ -224,6 +264,10 @@ class FilterGt private constructor(attr: String, value: Any) : Filter() {
     private val f0: String = "Gt"
     private val value: JsonValue = JsonValue.from(value)
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterGt = FilterGt(attr, value)
@@ -237,6 +281,10 @@ class FilterGte private constructor(attr: String, value: Any) : Filter() {
     private val attr: String = attr
     private val f0: String = "Gte"
     private val value: JsonValue = JsonValue.from(value)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
@@ -252,6 +300,10 @@ class FilterIGlob private constructor(attr: String, value: String) : Filter() {
     private val f0: String = "IGlob"
     private val value: String = value
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: String): FilterIGlob = FilterIGlob(attr, value)
@@ -265,6 +317,10 @@ class FilterIn private constructor(attr: String, value: Any) : Filter() {
     private val attr: String = attr
     private val f0: String = "In"
     private val value: JsonValue = JsonValue.from(value)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
@@ -280,6 +336,10 @@ class FilterLt private constructor(attr: String, value: Any) : Filter() {
     private val f0: String = "Lt"
     private val value: JsonValue = JsonValue.from(value)
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterLt = FilterLt(attr, value)
@@ -294,6 +354,10 @@ class FilterLte private constructor(attr: String, value: Any) : Filter() {
     private val f0: String = "Lte"
     private val value: JsonValue = JsonValue.from(value)
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterLte = FilterLte(attr, value)
@@ -307,6 +371,10 @@ class FilterNot private constructor(filter: Filter) : Filter() {
     private val f0: String = "Not"
     private val filter: Filter = filter
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic internal fun create(filter: Filter): FilterNot = FilterNot(filter)
     }
@@ -319,6 +387,10 @@ class FilterNotContains private constructor(attr: String, value: Any) : Filter()
     private val attr: String = attr
     private val f0: String = "NotContains"
     private val value: JsonValue = JsonValue.from(value)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
@@ -335,6 +407,10 @@ class FilterNotContainsAny private constructor(attr: String, value: Any) : Filte
     private val f0: String = "NotContainsAny"
     private val value: JsonValue = JsonValue.from(value)
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterNotContainsAny =
@@ -350,6 +426,10 @@ class FilterNotEq private constructor(attr: String, value: Any) : Filter() {
     private val f0: String = "NotEq"
     private val value: JsonValue = JsonValue.from(value)
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterNotEq = FilterNotEq(attr, value)
@@ -364,6 +444,10 @@ class FilterNotGlob private constructor(attr: String, value: String) : Filter() 
     private val f0: String = "NotGlob"
     private val value: String = value
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: String): FilterNotGlob = FilterNotGlob(attr, value)
@@ -377,6 +461,10 @@ class FilterNotIGlob private constructor(attr: String, value: String) : Filter()
     private val attr: String = attr
     private val f0: String = "NotIGlob"
     private val value: String = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
@@ -393,6 +481,10 @@ class FilterNotIn private constructor(attr: String, value: Any) : Filter() {
     private val f0: String = "NotIn"
     private val value: JsonValue = JsonValue.from(value)
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterNotIn = FilterNotIn(attr, value)
@@ -405,6 +497,10 @@ class FilterNotIn private constructor(attr: String, value: Any) : Filter() {
 class FilterOr private constructor(filters: List<Filter>) : Filter() {
     private val f0: String = "Or"
     private val filters: List<Filter> = filters
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic internal fun create(filters: List<Filter>): FilterOr = FilterOr(filters)
@@ -429,6 +525,10 @@ sealed class RankBy() {
 class RankByAttribute private constructor(attr: String, order: RankByAttributeOrder) : RankBy() {
     private val attr: String = attr
     private val order: RankByAttributeOrder = order
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
@@ -478,6 +578,10 @@ class RankByTextBM25 private constructor(attr: String, value: String) : RankByTe
     private val f0: String = "BM25"
     private val value: String = value
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: String): RankByTextBM25 =
@@ -493,6 +597,10 @@ class RankByTextBM25Array private constructor(attr: String, value: List<String>)
     private val f0: String = "BM25"
     private val value: List<String> = value
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: List<String>): RankByTextBM25Array =
@@ -507,6 +615,10 @@ class RankByTextMax private constructor(subqueries: List<RankByText>) : RankByTe
     private val f0: String = "Max"
     private val subqueries: List<RankByText> = subqueries
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(subqueries: List<RankByText>): RankByTextMax = RankByTextMax(subqueries)
@@ -519,6 +631,10 @@ class RankByTextMax private constructor(subqueries: List<RankByText>) : RankByTe
 class RankByTextProduct private constructor(weight: Double, subquery: RankByText) : RankByText() {
     private val f0: String = "Product"
     private val f1: List<JsonValue> = listOf(JsonValue.from(weight), JsonValue.from(subquery))
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
@@ -534,6 +650,10 @@ class RankByTextProduct2 private constructor(subquery: RankByText, weight: Doubl
     private val f0: String = "Product"
     private val f1: List<JsonValue> = listOf(JsonValue.from(subquery), JsonValue.from(weight))
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(subquery: RankByText, weight: Double): RankByTextProduct2 =
@@ -548,6 +668,10 @@ class RankByTextSum private constructor(subqueries: List<RankByText>) : RankByTe
     private val f0: String = "Sum"
     private val subqueries: List<RankByText> = subqueries
 
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
     companion object {
         @JvmSynthetic
         internal fun create(subqueries: List<RankByText>): RankByTextSum = RankByTextSum(subqueries)
@@ -561,6 +685,10 @@ class RankByVector private constructor(attr: String, value: List<Float>) : RankB
     private val attr: String = attr
     private val f0: String = "ANN"
     private val value: List<Float> = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
 
     companion object {
         @JvmSynthetic
