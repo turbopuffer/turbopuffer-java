@@ -31,7 +31,7 @@ private constructor(
     @get:JvmName("timeout") val timeout: Timeout,
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("apiKey") val apiKey: String,
-    @get:JvmName("region") val region: String,
+    private val region: String?,
     private val defaultNamespace: String?,
 ) {
 
@@ -41,7 +41,10 @@ private constructor(
         }
     }
 
-    fun baseUrl(): String = (baseUrl ?: PRODUCTION_URL).replace("{region}", region)
+    fun baseUrl(): String =
+        (baseUrl ?: PRODUCTION_URL).replace("{region}", region.getOrNull().toString())
+
+    fun region(): Optional<String> = Optional.ofNullable(region)
 
     fun defaultNamespace(): Optional<String> = Optional.ofNullable(defaultNamespace)
 
@@ -58,7 +61,6 @@ private constructor(
          * ```java
          * .httpClient()
          * .apiKey()
-         * .region()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -133,7 +135,10 @@ private constructor(
 
         fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
 
-        fun region(region: String) = apply { this.region = region }
+        fun region(region: String?) = apply { this.region = region }
+
+        /** Alias for calling [Builder.region] with `region.orElse(null)`. */
+        fun region(region: Optional<String>) = region(region.getOrNull())
 
         fun defaultNamespace(defaultNamespace: String?) = apply {
             this.defaultNamespace = defaultNamespace
@@ -238,7 +243,6 @@ private constructor(
          * ```java
          * .httpClient()
          * .apiKey()
-         * .region()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -246,7 +250,6 @@ private constructor(
         fun build(): ClientOptions {
             val httpClient = checkRequired("httpClient", httpClient)
             val apiKey = checkRequired("apiKey", apiKey)
-            val region = checkRequired("region", region)
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()

@@ -19,11 +19,7 @@ internal class ClientOptionsTest {
     @Test
     fun baseUrl_production_substitutesTemplateVariables() {
         val clientOptions =
-            ClientOptions.builder()
-                .httpClient(httpClient)
-                .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
-                .build()
+            ClientOptions.builder().httpClient(httpClient).apiKey("tpuf_A1...").build()
 
         val baseUrl = clientOptions.baseUrl()
 
@@ -33,11 +29,7 @@ internal class ClientOptionsTest {
     @Test
     fun toBuilder_whenOriginalClientOptionsGarbageCollected_doesNotCloseOriginalClient() {
         var clientOptions =
-            ClientOptions.builder()
-                .httpClient(httpClient)
-                .apiKey("tpuf_A1...")
-                .region("gcp-us-central1")
-                .build()
+            ClientOptions.builder().httpClient(httpClient).apiKey("tpuf_A1...").build()
         verify(httpClient, never()).close()
 
         // Overwrite the `clientOptions` variable so that the original `ClientOptions` is GC'd.
