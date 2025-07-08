@@ -18,6 +18,7 @@ import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Query
 import com.turbopuffer.models.namespaces.Row
+import com.turbopuffer.models.namespaces.Schema
 import com.turbopuffer.models.namespaces.VectorEncoding
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -191,7 +192,11 @@ internal class NamespaceServiceAsyncTest {
             namespaceServiceAsync.updateSchema(
                 NamespaceUpdateSchemaParams.builder()
                     .namespace("namespace")
-                    .schema(mapOf("foo" to AttributeSchemaConfig.builder().type("string").build()))
+                    .schema(
+                        Schema.builder()
+                            .put("foo", AttributeSchemaConfig.builder().type("string").build())
+                            .build()
+                    )
                     .build()
             )
 
@@ -242,15 +247,17 @@ internal class NamespaceServiceAsyncTest {
                             .build()
                     )
                     .schema(
-                        mapOf(
-                            "id" to AttributeSchemaConfig.builder().type("uuid").build(),
-                            "name" to
+                        Schema.builder()
+                            .put("id", AttributeSchemaConfig.builder().type("uuid").build())
+                            .put(
+                                "name",
                                 AttributeSchemaConfig.builder()
                                     .type("string")
                                     .filterable(false)
                                     .build(),
-                            "age" to AttributeSchemaConfig.builder().type("uint").build(),
-                        )
+                            )
+                            .put("age", AttributeSchemaConfig.builder().type("uint").build())
+                            .build()
                     )
                     .upsertColumns(
                         Columns.builder()
