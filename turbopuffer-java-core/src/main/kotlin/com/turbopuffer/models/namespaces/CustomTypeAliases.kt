@@ -3,17 +3,58 @@ package com.turbopuffer.models.namespaces
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.turbopuffer.core.JsonValue
 
-typealias Schema = Map<String, AttributeSchemaConfig>
-
 typealias NamespaceSchemaResponse = Schema
 
 typealias NamespaceUpdateSchemaResponse = Schema
 
 typealias Id = JsonValue
 
-// Row and Columns are morally type aliases for Map<String, JsonValue> and
-// Map<String, List<JsonValue>>, respectively, but we implement them as
-// subclasses in order to provide a builder API for convenient construction.
+// Schema, Row, and Columns are morally type aliases for Map<String,
+// AttributeSchemaConfig>, Map<String, JsonValue>, and Map<String,
+// List<JsonValue>>, respectively, but we implement them as subclasses in order
+// to provide a builder API for convenient construction.
+
+/** A schema for a namespace. */
+class Schema : LinkedHashMap<String, AttributeSchemaConfig> {
+    constructor(initialCapacity: Int) : super(initialCapacity)
+
+    @JsonCreator constructor(original: Map<out String, AttributeSchemaConfig>) : super(original)
+
+    /** Turns this [Schema] into a [Builder]. */
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+        /**
+         * Returns a mutable builder for constructing a new [Schema], initialized with the same
+         * attributes as this [Schema].
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    class Builder {
+        private var attributes = LinkedHashMap<String, AttributeSchemaConfig>()
+
+        @JvmSynthetic
+        internal fun from(schema: Schema) = apply { attributes = LinkedHashMap(schema) }
+
+        /** Adds an attribute to the schema. */
+        fun put(key: String, value: AttributeSchemaConfig) = apply { attributes.put(key, value) }
+
+        /** Adds all attributes from the map to the schema. */
+        fun putAll(attributes: Map<String, AttributeSchemaConfig>) = apply {
+            attributes.forEach { put(it.key, it.value) }
+        }
+
+        /** Removes the given attribute from the schema. */
+        fun remove(key: String) = apply { attributes.remove(key) }
+
+        /** Removes the specified attributes from the schema. */
+        fun removeAll(keys: Set<String>) = apply { keys.forEach(::remove) }
+
+        /** Returns an instance of [Schema]. */
+        fun build() = Schema(attributes)
+    }
+}
 
 /** A single document, in a row-based format. */
 class Row : LinkedHashMap<String, JsonValue> {
