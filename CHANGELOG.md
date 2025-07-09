@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.0 (2025-07-09)
+
+Full Changelog: [v0.1.2...v0.2.0](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.2...v0.2.0)
+
+### Features
+
+* convert Schema to a typed builder ([c844755](https://github.com/turbopuffer/turbopuffer-java/commit/c844755fad9a9550efd0e0ffcc517f74dd61f433))
+
+
+### Bug Fixes
+
+* **api:** api update ([9f9bcf0](https://github.com/turbopuffer/turbopuffer-java/commit/9f9bcf06bfc9ba318ab672b94fecb9d51de49a83))
+* don't require region unless baseUrl contains {region} placeholder ([aa1425f](https://github.com/turbopuffer/turbopuffer-java/commit/aa1425fbaa9f9710ea05a1e15cdb2114fab3d163))
+
+
+### Chores
+
+* **ci:** ensure docs generation always succeeds ([2255e93](https://github.com/turbopuffer/turbopuffer-java/commit/2255e930c2c759dc3d44136fd79a006a8aa8c2f3))
+
 ## 0.1.2 (2025-07-08)
 
 Full Changelog: [v0.1.1...v0.1.2](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.1...v0.1.2)
