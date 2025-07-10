@@ -72,12 +72,9 @@ internal class NamespaceServiceTest {
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
-        val namespaceMetadata =
-            namespaceService.metadata(
-                NamespaceMetadataParams.builder().namespace("namespace").build()
-            )
+        val namespaceMetadata = namespaceService.metadata(NamespaceMetadataParams.builder().build())
 
         namespaceMetadata.validate()
     }
