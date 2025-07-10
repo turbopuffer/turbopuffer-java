@@ -74,12 +74,10 @@ internal class NamespaceServiceAsyncTest {
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
                 .build()
-        val namespaceServiceAsync = client.namespaces()
+        val namespaceServiceAsync = client.namespace("ns")
 
         val namespaceMetadataFuture =
-            namespaceServiceAsync.metadata(
-                NamespaceMetadataParams.builder().namespace("namespace").build()
-            )
+            namespaceServiceAsync.metadata(NamespaceMetadataParams.builder().build())
 
         val namespaceMetadata = namespaceMetadataFuture.get()
         namespaceMetadata.validate()
