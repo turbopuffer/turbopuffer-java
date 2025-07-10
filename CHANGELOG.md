@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.1 (2025-07-10)
+
+Full Changelog: [v0.2.0...v0.2.1](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.0...v0.2.1)
+
+### Bug Fixes
+
+* **api:** api update ([186ce05](https://github.com/turbopuffer/turbopuffer-java/commit/186ce05bbd880a6b518b7bdbb6e431d968e53c88))
+* **api:** api update ([31f8816](https://github.com/turbopuffer/turbopuffer-java/commit/31f8816648c2d260a558ca188522f3d0d8426d87))
+* update tests for new metadata endpoint ([384bf29](https://github.com/turbopuffer/turbopuffer-java/commit/384bf298455d327ec1101d116c64dda52d1ec249))
+
+
+### Chores
+
+* **internal:** codegen related update ([ec6e57a](https://github.com/turbopuffer/turbopuffer-java/commit/ec6e57acb16318475d56c695c1cacdc6c4f74848))
+* **internal:** version bump ([730f913](https://github.com/turbopuffer/turbopuffer-java/commit/730f913f04aa5fbdac74cfa5eece214ccd066fee))
+
 ## 0.2.0 (2025-07-09)
 
 Full Changelog: [v0.1.2...v0.2.0](https://github.com/turbopuffer/turbopuffer-java/compare/v0.1.2...v0.2.0)
