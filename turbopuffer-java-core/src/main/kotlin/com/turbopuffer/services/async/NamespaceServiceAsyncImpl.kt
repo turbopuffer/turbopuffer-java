@@ -20,6 +20,8 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
+import com.turbopuffer.models.namespaces.NamespaceMetadata
+import com.turbopuffer.models.namespaces.NamespaceMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
@@ -61,6 +63,13 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     ): CompletableFuture<NamespaceHintCacheWarmResponse> =
         // get /v1/namespaces/{namespace}/hint_cache_warm
         withRawResponse().hintCacheWarm(params, requestOptions).thenApply { it.parse() }
+
+    override fun metadata(
+        params: NamespaceMetadataParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceMetadata> =
+        // get /v1/namespaces/{namespace}/metadata
+        withRawResponse().metadata(params, requestOptions).thenApply { it.parse() }
 
     override fun multiQuery(
         params: NamespaceMultiQueryParams,
@@ -189,6 +198,46 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     response.parseable {
                         response
                             .use { hintCacheWarmHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val metadataHandler: Handler<NamespaceMetadata> =
+            jsonHandler<NamespaceMetadata>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun metadata(
+            params: NamespaceMetadataParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceMetadata>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "metadata",
+                    )
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { metadataHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

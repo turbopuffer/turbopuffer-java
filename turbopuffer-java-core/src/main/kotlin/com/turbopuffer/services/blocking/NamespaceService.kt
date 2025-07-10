@@ -10,6 +10,8 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
+import com.turbopuffer.models.namespaces.NamespaceMetadata
+import com.turbopuffer.models.namespaces.NamespaceMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
@@ -74,6 +76,24 @@ interface NamespaceService {
     /** @see [hintCacheWarm] */
     fun hintCacheWarm(requestOptions: RequestOptions): NamespaceHintCacheWarmResponse =
         hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
+
+    /** Get metadata about a namespace. */
+    fun metadata(): NamespaceMetadata = metadata(NamespaceMetadataParams.none())
+
+    /** @see [metadata] */
+    fun metadata(
+        params: NamespaceMetadataParams = NamespaceMetadataParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceMetadata
+
+    /** @see [metadata] */
+    fun metadata(
+        params: NamespaceMetadataParams = NamespaceMetadataParams.none()
+    ): NamespaceMetadata = metadata(params, RequestOptions.none())
+
+    /** @see [metadata] */
+    fun metadata(requestOptions: RequestOptions): NamespaceMetadata =
+        metadata(NamespaceMetadataParams.none(), requestOptions)
 
     /** Issue multiple concurrent queries filter or search documents. */
     fun multiQuery(params: NamespaceMultiQueryParams): NamespaceMultiQueryResponse =
@@ -238,6 +258,32 @@ interface NamespaceService {
             requestOptions: RequestOptions
         ): HttpResponseFor<NamespaceHintCacheWarmResponse> =
             hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/metadata`, but is
+         * otherwise the same as [NamespaceService.metadata].
+         */
+        @MustBeClosed
+        fun metadata(): HttpResponseFor<NamespaceMetadata> =
+            metadata(NamespaceMetadataParams.none())
+
+        /** @see [metadata] */
+        @MustBeClosed
+        fun metadata(
+            params: NamespaceMetadataParams = NamespaceMetadataParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceMetadata>
+
+        /** @see [metadata] */
+        @MustBeClosed
+        fun metadata(
+            params: NamespaceMetadataParams = NamespaceMetadataParams.none()
+        ): HttpResponseFor<NamespaceMetadata> = metadata(params, RequestOptions.none())
+
+        /** @see [metadata] */
+        @MustBeClosed
+        fun metadata(requestOptions: RequestOptions): HttpResponseFor<NamespaceMetadata> =
+            metadata(NamespaceMetadataParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post

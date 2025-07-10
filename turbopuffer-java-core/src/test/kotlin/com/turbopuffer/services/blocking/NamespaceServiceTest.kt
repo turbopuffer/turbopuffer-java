@@ -9,6 +9,7 @@ import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
+import com.turbopuffer.models.namespaces.NamespaceMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
@@ -60,6 +61,24 @@ internal class NamespaceServiceTest {
             )
 
         response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun metadata() {
+        val client =
+            TurbopufferOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("tpuf_A1...")
+                .build()
+        val namespaceService = client.namespaces()
+
+        val namespaceMetadata =
+            namespaceService.metadata(
+                NamespaceMetadataParams.builder().namespace("namespace").build()
+            )
+
+        namespaceMetadata.validate()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
