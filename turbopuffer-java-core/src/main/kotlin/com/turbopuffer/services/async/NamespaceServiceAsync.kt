@@ -9,6 +9,8 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
+import com.turbopuffer.models.namespaces.NamespaceMetadata
+import com.turbopuffer.models.namespaces.NamespaceMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
@@ -81,6 +83,24 @@ interface NamespaceServiceAsync {
         requestOptions: RequestOptions
     ): CompletableFuture<NamespaceHintCacheWarmResponse> =
         hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
+
+    /** Get metadata about a namespace. */
+    fun metadata(): CompletableFuture<NamespaceMetadata> = metadata(NamespaceMetadataParams.none())
+
+    /** @see [metadata] */
+    fun metadata(
+        params: NamespaceMetadataParams = NamespaceMetadataParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceMetadata>
+
+    /** @see [metadata] */
+    fun metadata(
+        params: NamespaceMetadataParams = NamespaceMetadataParams.none()
+    ): CompletableFuture<NamespaceMetadata> = metadata(params, RequestOptions.none())
+
+    /** @see [metadata] */
+    fun metadata(requestOptions: RequestOptions): CompletableFuture<NamespaceMetadata> =
+        metadata(NamespaceMetadataParams.none(), requestOptions)
 
     /** Issue multiple concurrent queries filter or search documents. */
     fun multiQuery(
@@ -253,6 +273,31 @@ interface NamespaceServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>> =
             hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/metadata`, but is
+         * otherwise the same as [NamespaceServiceAsync.metadata].
+         */
+        fun metadata(): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
+            metadata(NamespaceMetadataParams.none())
+
+        /** @see [metadata] */
+        fun metadata(
+            params: NamespaceMetadataParams = NamespaceMetadataParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceMetadata>>
+
+        /** @see [metadata] */
+        fun metadata(
+            params: NamespaceMetadataParams = NamespaceMetadataParams.none()
+        ): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
+            metadata(params, RequestOptions.none())
+
+        /** @see [metadata] */
+        fun metadata(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
+            metadata(NamespaceMetadataParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post
