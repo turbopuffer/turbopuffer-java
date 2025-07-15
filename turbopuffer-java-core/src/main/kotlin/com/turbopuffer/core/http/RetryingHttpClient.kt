@@ -214,7 +214,7 @@ private constructor(
                 // amount), just
                 // do what it says.
                 val retryAfter = Duration.ofNanos(retryAfterNanos.toLong())
-                if (retryAfter in Duration.ofNanos(0)..Duration.ofMinutes(RETRY_AFTER_LIMIT)) {
+                if (retryAfter in Duration.ofNanos(0)..Duration.ofMinutes(RETRY_AFTER_LIMIT_MINS)) {
                     return retryAfter
                 }
             }
