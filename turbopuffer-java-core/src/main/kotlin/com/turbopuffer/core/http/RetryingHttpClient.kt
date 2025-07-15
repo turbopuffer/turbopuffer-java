@@ -20,7 +20,7 @@ import java.util.function.Function
 import kotlin.math.min
 import kotlin.math.pow
 
-const val RETRY_AFTER_LIMIT_MINS = 30
+const val RETRY_AFTER_LIMIT_MINS: Long = 30
 
 class RetryingHttpClient
 private constructor(
