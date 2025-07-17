@@ -17,5 +17,12 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 application {
-    mainClass = "com.turbopuffer.example.Main"
+    // Use `./gradlew :turbopuffer-java-example:run` to run `Main`
+    // Use `./gradlew :turbopuffer-java-example:run -Dexample=Something` to run `SomethingExample`
+    mainClass = "com.turbopuffer.example.${
+        if (project.hasProperty("example"))
+            "${project.property("example")}Example"
+        else
+            "Main"
+    }"
 }
