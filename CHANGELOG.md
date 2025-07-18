@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2 (2025-07-18)
+
+Full Changelog: [v0.2.1...v0.2.2](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.1...v0.2.2)
+
+### Chores
+
+* **ci:** bump `actions/setup-java` to v4 ([fbf153b](https://github.com/turbopuffer/turbopuffer-java/commit/fbf153b810408f2daec513f550c2f293b7724715))
+
 ## 0.2.1 (2025-07-10)
 
 Full Changelog: [v0.2.0...v0.2.1](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.0...v0.2.1)
