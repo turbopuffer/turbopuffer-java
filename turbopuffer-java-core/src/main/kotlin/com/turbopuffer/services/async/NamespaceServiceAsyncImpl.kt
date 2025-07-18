@@ -3,14 +3,14 @@
 package com.turbopuffer.services.async
 
 import com.turbopuffer.core.ClientOptions
-import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.checkRequired
+import com.turbopuffer.core.handlers.errorBodyHandler
 import com.turbopuffer.core.handlers.errorHandler
 import com.turbopuffer.core.handlers.jsonHandler
-import com.turbopuffer.core.handlers.withErrorHandler
 import com.turbopuffer.core.http.HttpMethod
 import com.turbopuffer.core.http.HttpRequest
+import com.turbopuffer.core.http.HttpResponse
 import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.json
@@ -116,7 +116,8 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         NamespaceServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -127,7 +128,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
             jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun deleteAll(
             params: NamespaceDeleteAllParams,
@@ -154,7 +154,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { deleteAllHandler.handle(it) }
                             .also {
@@ -168,7 +168,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val hintCacheWarmHandler: Handler<NamespaceHintCacheWarmResponse> =
             jsonHandler<NamespaceHintCacheWarmResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun hintCacheWarm(
             params: NamespaceHintCacheWarmParams,
@@ -195,7 +194,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { hintCacheWarmHandler.handle(it) }
                             .also {
@@ -208,7 +207,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         }
 
         private val metadataHandler: Handler<NamespaceMetadata> =
-            jsonHandler<NamespaceMetadata>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<NamespaceMetadata>(clientOptions.jsonMapper)
 
         override fun metadata(
             params: NamespaceMetadataParams,
@@ -235,7 +234,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { metadataHandler.handle(it) }
                             .also {
@@ -249,7 +248,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val multiQueryHandler: Handler<NamespaceMultiQueryResponse> =
             jsonHandler<NamespaceMultiQueryResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun multiQuery(
             params: NamespaceMultiQueryParams,
@@ -278,7 +276,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { multiQueryHandler.handle(it) }
                             .also {
@@ -292,7 +290,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val queryHandler: Handler<NamespaceQueryResponse> =
             jsonHandler<NamespaceQueryResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun query(
             params: NamespaceQueryParams,
@@ -320,7 +317,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { queryHandler.handle(it) }
                             .also {
@@ -334,7 +331,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val recallHandler: Handler<NamespaceRecallResponse> =
             jsonHandler<NamespaceRecallResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun recall(
             params: NamespaceRecallParams,
@@ -363,7 +359,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { recallHandler.handle(it) }
                             .also {
@@ -377,7 +373,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val schemaHandler: Handler<NamespaceSchemaResponse> =
             jsonHandler<NamespaceSchemaResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun schema(
             params: NamespaceSchemaParams,
@@ -404,7 +399,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { schemaHandler.handle(it) }
                             .also {
@@ -418,7 +413,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val updateSchemaHandler: Handler<NamespaceUpdateSchemaResponse> =
             jsonHandler<NamespaceUpdateSchemaResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun updateSchema(
             params: NamespaceUpdateSchemaParams,
@@ -446,7 +440,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { updateSchemaHandler.handle(it) }
                             .also {
@@ -460,7 +454,6 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val writeHandler: Handler<NamespaceWriteResponse> =
             jsonHandler<NamespaceWriteResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun write(
             params: NamespaceWriteParams,
@@ -487,7 +480,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { writeHandler.handle(it) }
                             .also {

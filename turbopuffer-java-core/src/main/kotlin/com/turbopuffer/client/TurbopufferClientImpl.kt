@@ -3,14 +3,14 @@
 package com.turbopuffer.client
 
 import com.turbopuffer.core.ClientOptions
-import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.getPackageVersion
+import com.turbopuffer.core.handlers.errorBodyHandler
 import com.turbopuffer.core.handlers.errorHandler
 import com.turbopuffer.core.handlers.jsonHandler
-import com.turbopuffer.core.handlers.withErrorHandler
 import com.turbopuffer.core.http.HttpMethod
 import com.turbopuffer.core.http.HttpRequest
+import com.turbopuffer.core.http.HttpResponse
 import com.turbopuffer.core.http.HttpResponse.Handler
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.parseable
@@ -64,7 +64,8 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         TurbopufferClient.WithRawResponse {
 
-        private val errorHandler: Handler<JsonValue> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val namespaces: NamespaceService.WithRawResponse by lazy {
             NamespaceServiceImpl.WithRawResponseImpl(clientOptions)
@@ -81,7 +82,6 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
 
         private val namespacesHandler: Handler<ClientNamespacesPageResponse> =
             jsonHandler<ClientNamespacesPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun namespaces(
             params: ClientNamespacesParams,
@@ -96,7 +96,7 @@ class TurbopufferClientImpl(private val clientOptions: ClientOptions) : Turbopuf
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { namespacesHandler.handle(it) }
                     .also {
