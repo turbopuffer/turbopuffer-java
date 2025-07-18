@@ -20,6 +20,8 @@ import java.util.function.Function
 import kotlin.math.min
 import kotlin.math.pow
 
+const val RETRY_AFTER_LIMIT_MINS: Long = 30
+
 class RetryingHttpClient
 private constructor(
     private val httpClient: HttpClient,
@@ -212,7 +214,7 @@ private constructor(
                 // amount), just
                 // do what it says.
                 val retryAfter = Duration.ofNanos(retryAfterNanos.toLong())
-                if (retryAfter in Duration.ofNanos(0)..Duration.ofMinutes(1)) {
+                if (retryAfter in Duration.ofNanos(0)..Duration.ofMinutes(RETRY_AFTER_LIMIT_MINS)) {
                     return retryAfter
                 }
             }
