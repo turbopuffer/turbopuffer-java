@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.2 (2025-07-21)
+
+Full Changelog: [v0.2.1...v0.2.2](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.1...v0.2.2)
+
+### Bug Fixes
+
+* **client:** ensure error handling always occurs ([bd078a2](https://github.com/turbopuffer/turbopuffer-java/commit/bd078a2bc4f680568938309697d17c374f2a2c35))
+
+
+### Chores
+
+* **ci:** bump `actions/setup-java` to v4 ([fbf153b](https://github.com/turbopuffer/turbopuffer-java/commit/fbf153b810408f2daec513f550c2f293b7724715))
+* **internal:** allow running specific example from cli ([51cc413](https://github.com/turbopuffer/turbopuffer-java/commit/51cc41370c1c1ab576b696bba6a9abd49600f67a))
+
 ## 0.2.1 (2025-07-10)
 
 Full Changelog: [v0.2.0...v0.2.1](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.0...v0.2.1)
