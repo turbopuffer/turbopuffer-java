@@ -219,17 +219,6 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
         }
 
         fun build(): OkHttpClient {
-            val dispatcher = Dispatcher()
-            // The default maxRequestsPerHost limit (5) is much too low for
-            // turbopuffer workloads, which can involve many concurrent queries
-            // and writes.
-            //
-            // Also, we're almost certainly making all requests against the same
-            // host, so we keep things simple by setting `maxRequestsPerHost` to
-            // the same value as `maxRequests`.
-            dispatcher.maxRequests = maxRequests
-            dispatcher.maxRequestsPerHost = maxRequests
-
             return OkHttpClient(
                 okhttp3.OkHttpClient.Builder()
                     .connectTimeout(timeout.connect())
@@ -237,7 +226,7 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
                     .writeTimeout(timeout.write())
                     .callTimeout(timeout.request())
                     .proxy(proxy)
-                    .dispatcher {
+                    .apply {
                         val sslSocketFactory = sslSocketFactory
                         val trustManager = trustManager
                         if (sslSocketFactory != null && trustManager != null) {
@@ -250,8 +239,18 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
 
                         hostnameVerifier?.let(::hostnameVerifier)
                     }
-                    .build(dispatcher)
                     .build()
+                    .apply {
+                        // The default maxRequestsPerHost limit (5) is much too low for
+                        // turbopuffer workloads, which can involve many concurrent queries
+                        // and writes.
+                        //
+                        // Also, we're almost certainly making all requests against the same
+                        // host, so we keep things simple by setting `maxRequestsPerHost` to
+                        // the same value as `maxRequests`.
+                        dispatcher.maxRequests = maxRequests
+                        dispatcher.maxRequestsPerHost = maxRequests
+                    }
             )
         }
     }
