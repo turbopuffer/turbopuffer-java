@@ -54,7 +54,8 @@ import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 import com.turbopuffer.models.namespaces.Row;
 import java.util.List;
 
-// Configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+// Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+// Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
@@ -72,13 +73,14 @@ NamespaceWriteResponse response = client.namespaces().write(params);
 
 ## Client configuration
 
-Configure the client using environment variables:
+Configure the client using system properties or environment variables:
 
 ```java
 import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
-// Configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+// Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+// Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 ```
 
@@ -100,7 +102,8 @@ import com.turbopuffer.client.TurbopufferClient;
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
-    // Configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+    // Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+    Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
     .fromEnv()
     .defaultNamespace("My Default Namespace")
     .build();
@@ -108,11 +111,13 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
 
 See this table for the available options:
 
-| Setter    | Environment variable   | Required | Default value                        |
-| --------- | ---------------------- | -------- | ------------------------------------ |
-| `apiKey`  | `TURBOPUFFER_API_KEY`  | true     | -                                    |
-| `region`  | `TURBOPUFFER_REGION`   | false    | -                                    |
-| `baseUrl` | `TURBOPUFFER_BASE_URL` | true     | `"https://{region}.turbopuffer.com"` |
+| Setter    | System property       | Environment variable   | Required | Default value                        |
+| --------- | --------------------- | ---------------------- | -------- | ------------------------------------ |
+| `apiKey`  | `turbopuffer.apiKey`  | `TURBOPUFFER_API_KEY`  | true     | -                                    |
+| `region`  | `turbopuffer.region`  | `TURBOPUFFER_REGION`   | false    | -                                    |
+| `baseUrl` | `turbopuffer.baseUrl` | `TURBOPUFFER_BASE_URL` | true     | `"https://{region}.turbopuffer.com"` |
+
+System properties take precedence over environment variables.
 
 > [!TIP]
 > Don't create more than one client in the same application. Each client has a connection pool and
@@ -161,7 +166,8 @@ import com.turbopuffer.models.namespaces.Row;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+// Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+// Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
@@ -189,7 +195,8 @@ import com.turbopuffer.models.namespaces.Row;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+// Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+// Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
 TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
