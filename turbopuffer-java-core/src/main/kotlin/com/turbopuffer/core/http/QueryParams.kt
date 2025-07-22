@@ -2,6 +2,14 @@
 
 package com.turbopuffer.core.http
 
+import com.turbopuffer.core.JsonArray
+import com.turbopuffer.core.JsonBoolean
+import com.turbopuffer.core.JsonMissing
+import com.turbopuffer.core.JsonNull
+import com.turbopuffer.core.JsonNumber
+import com.turbopuffer.core.JsonObject
+import com.turbopuffer.core.JsonString
+import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.toImmutable
 
 class QueryParams
@@ -27,6 +35,39 @@ private constructor(
 
         private val map: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var size: Int = 0
+
+        fun put(key: String, value: JsonValue): Builder = apply {
+            when (value) {
+                is JsonMissing,
+                is JsonNull -> {}
+                is JsonBoolean -> put(key, value.value.toString())
+                is JsonNumber -> put(key, value.value.toString())
+                is JsonString -> put(key, value.value)
+                is JsonArray ->
+                    put(
+                        key,
+                        value.values
+                            .asSequence()
+                            .mapNotNull {
+                                when (it) {
+                                    is JsonMissing,
+                                    is JsonNull -> null
+                                    is JsonBoolean -> it.value.toString()
+                                    is JsonNumber -> it.value.toString()
+                                    is JsonString -> it.value
+                                    is JsonArray,
+                                    is JsonObject ->
+                                        throw IllegalArgumentException(
+                                            "Cannot comma separate non-primitives in query params"
+                                        )
+                                }
+                            }
+                            .joinToString(","),
+                    )
+                is JsonObject ->
+                    value.values.forEach { (nestedKey, value) -> put("$key[$nestedKey]", value) }
+            }
+        }
 
         fun put(key: String, value: String) = apply {
             map.getOrPut(key) { mutableListOf() }.add(value)
