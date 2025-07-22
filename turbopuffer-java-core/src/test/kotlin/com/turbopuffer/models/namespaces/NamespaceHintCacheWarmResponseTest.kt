@@ -14,13 +14,8 @@ internal class NamespaceHintCacheWarmResponseTest {
     @Test
     fun create() {
         val namespaceHintCacheWarmResponse =
-            NamespaceHintCacheWarmResponse.builder()
-                .status(NamespaceHintCacheWarmResponse.Status.OK)
-                .message("message")
-                .build()
+            NamespaceHintCacheWarmResponse.builder().message("message").build()
 
-        assertThat(namespaceHintCacheWarmResponse.status())
-            .isEqualTo(NamespaceHintCacheWarmResponse.Status.OK)
         assertThat(namespaceHintCacheWarmResponse.message()).contains("message")
     }
 
@@ -29,10 +24,7 @@ internal class NamespaceHintCacheWarmResponseTest {
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val namespaceHintCacheWarmResponse =
-            NamespaceHintCacheWarmResponse.builder()
-                .status(NamespaceHintCacheWarmResponse.Status.OK)
-                .message("message")
-                .build()
+            NamespaceHintCacheWarmResponse.builder().message("message").build()
 
         val roundtrippedNamespaceHintCacheWarmResponse =
             jsonMapper.readValue(

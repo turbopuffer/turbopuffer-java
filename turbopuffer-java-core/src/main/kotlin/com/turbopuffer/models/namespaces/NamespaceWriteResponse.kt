@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.turbopuffer.core.Enum
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
@@ -24,7 +23,7 @@ private constructor(
     private val billing: JsonField<WriteBilling>,
     private val message: JsonField<String>,
     private val rowsAffected: JsonField<Long>,
-    private val status: JsonField<Status>,
+    private val status: JsonValue,
     private val rowsDeleted: JsonField<Long>,
     private val rowsPatched: JsonField<Long>,
     private val rowsUpserted: JsonField<Long>,
@@ -40,7 +39,7 @@ private constructor(
         @JsonProperty("rows_affected")
         @ExcludeMissing
         rowsAffected: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonValue = JsonMissing.of(),
         @JsonProperty("rows_deleted")
         @ExcludeMissing
         rowsDeleted: JsonField<Long> = JsonMissing.of(),
@@ -88,10 +87,15 @@ private constructor(
     /**
      * The status of the request.
      *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("OK")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
      */
-    fun status(): Status = status.getRequired("status")
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonValue = status
 
     /**
      * The number of rows deleted by the write request.
@@ -141,13 +145,6 @@ private constructor(
     fun _rowsAffected(): JsonField<Long> = rowsAffected
 
     /**
-     * Returns the raw JSON value of [status].
-     *
-     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
-
-    /**
      * Returns the raw JSON value of [rowsDeleted].
      *
      * Unlike [rowsDeleted], this method doesn't throw if the JSON field has an unexpected type.
@@ -192,7 +189,6 @@ private constructor(
          * .billing()
          * .message()
          * .rowsAffected()
-         * .status()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -204,7 +200,7 @@ private constructor(
         private var billing: JsonField<WriteBilling>? = null
         private var message: JsonField<String>? = null
         private var rowsAffected: JsonField<Long>? = null
-        private var status: JsonField<Status>? = null
+        private var status: JsonValue = JsonValue.from("OK")
         private var rowsDeleted: JsonField<Long> = JsonMissing.of()
         private var rowsPatched: JsonField<Long> = JsonMissing.of()
         private var rowsUpserted: JsonField<Long> = JsonMissing.of()
@@ -257,16 +253,19 @@ private constructor(
          */
         fun rowsAffected(rowsAffected: JsonField<Long>) = apply { this.rowsAffected = rowsAffected }
 
-        /** The status of the request. */
-        fun status(status: Status) = status(JsonField.of(status))
-
         /**
-         * Sets [Builder.status] to an arbitrary JSON value.
+         * Sets the field to an arbitrary JSON value.
          *
-         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("OK")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun status(status: JsonField<Status>) = apply { this.status = status }
+        fun status(status: JsonValue) = apply { this.status = status }
 
         /** The number of rows deleted by the write request. */
         fun rowsDeleted(rowsDeleted: Long) = rowsDeleted(JsonField.of(rowsDeleted))
@@ -333,7 +332,6 @@ private constructor(
          * .billing()
          * .message()
          * .rowsAffected()
-         * .status()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -343,7 +341,7 @@ private constructor(
                 checkRequired("billing", billing),
                 checkRequired("message", message),
                 checkRequired("rowsAffected", rowsAffected),
-                checkRequired("status", status),
+                status,
                 rowsDeleted,
                 rowsPatched,
                 rowsUpserted,
@@ -361,7 +359,11 @@ private constructor(
         billing().validate()
         message()
         rowsAffected()
-        status().validate()
+        _status().let {
+            if (it != JsonValue.from("OK")) {
+                throw TurbopufferInvalidDataException("'status' is invalid, received $it")
+            }
+        }
         rowsDeleted()
         rowsPatched()
         rowsUpserted()
@@ -386,132 +388,10 @@ private constructor(
         (billing.asKnown().getOrNull()?.validity() ?: 0) +
             (if (message.asKnown().isPresent) 1 else 0) +
             (if (rowsAffected.asKnown().isPresent) 1 else 0) +
-            (status.asKnown().getOrNull()?.validity() ?: 0) +
+            status.let { if (it == JsonValue.from("OK")) 1 else 0 } +
             (if (rowsDeleted.asKnown().isPresent) 1 else 0) +
             (if (rowsPatched.asKnown().isPresent) 1 else 0) +
             (if (rowsUpserted.asKnown().isPresent) 1 else 0)
-
-    /** The status of the request. */
-    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val OK = of("OK")
-
-            @JvmStatic fun of(value: String) = Status(JsonField.of(value))
-        }
-
-        /** An enum containing [Status]'s known values. */
-        enum class Known {
-            OK
-        }
-
-        /**
-         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Status] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            OK,
-            /** An enum member indicating that [Status] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                OK -> Value.OK
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws TurbopufferInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                OK -> Known.OK
-                else -> throw TurbopufferInvalidDataException("Unknown Status: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws TurbopufferInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow {
-                TurbopufferInvalidDataException("Value is not a String")
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): Status = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: TurbopufferInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
