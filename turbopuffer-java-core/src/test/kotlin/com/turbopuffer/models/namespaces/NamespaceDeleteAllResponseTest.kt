@@ -13,23 +13,14 @@ internal class NamespaceDeleteAllResponseTest {
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
-        val namespaceDeleteAllResponse =
-            NamespaceDeleteAllResponse.builder()
-                .status(NamespaceDeleteAllResponse.Status.OK)
-                .build()
-
-        assertThat(namespaceDeleteAllResponse.status())
-            .isEqualTo(NamespaceDeleteAllResponse.Status.OK)
+        val namespaceDeleteAllResponse = NamespaceDeleteAllResponse.builder().build()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val namespaceDeleteAllResponse =
-            NamespaceDeleteAllResponse.builder()
-                .status(NamespaceDeleteAllResponse.Status.OK)
-                .build()
+        val namespaceDeleteAllResponse = NamespaceDeleteAllResponse.builder().build()
 
         val roundtrippedNamespaceDeleteAllResponse =
             jsonMapper.readValue(
