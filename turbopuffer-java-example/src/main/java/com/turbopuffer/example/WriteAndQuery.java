@@ -78,7 +78,7 @@ public class WriteAndQuery {
                                                 .build())
                                 .build())
                         .build());
-        System.out.printf("Upsert status: %s\n", upsert.status());
+        System.out.printf("Rows upserted: %d\n", upsert.rowsUpserted().get());
 
         // Do a vector query.
         var query = client.namespace(namespace)
@@ -108,7 +108,7 @@ public class WriteAndQuery {
                                 .build())
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .build());
-        System.out.printf("Patch status: %s\n", patch.status());
+        System.out.printf("Rows patched: %d\n", patch.rowsPatched().get());
 
         // Do a non-vector query to see the patched results.
         var query2 = client.namespace(namespace)

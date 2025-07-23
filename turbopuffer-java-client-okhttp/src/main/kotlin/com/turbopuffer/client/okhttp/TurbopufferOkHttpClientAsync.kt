@@ -135,8 +135,6 @@ class TurbopufferOkHttpClientAsync private constructor() {
         fun timeout(timeout: Duration) = apply { clientOptions.timeout(timeout) }
 
         fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
-        
-        fun maxRequests(maxRequests: Int) = apply { this.maxRequests = maxRequests }
 
         fun maxRequests(maxRequests: Int) = apply { this.maxRequests = maxRequests }
 
