@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.2.3 (2025-07-23)
+
+Full Changelog: [v0.2.2...v0.2.3](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.2...v0.2.3)
+
+### ⚠ BREAKING CHANGES
+
+* **client:** don't require setting constant fields
+
+### Features
+
+* **client:** add `{QueryParams,Headers}#put(String, JsonValue)` methods ([755849d](https://github.com/turbopuffer/turbopuffer-java/commit/755849d00c890272c124ee85b0c5d5dc9f8ab155))
+* **client:** add https config options ([d2e1d1d](https://github.com/turbopuffer/turbopuffer-java/commit/d2e1d1da20bccfdad692c45bcc33cc566901ce69))
+* **client:** add https config options ([7272cb6](https://github.com/turbopuffer/turbopuffer-java/commit/7272cb6d4f8021294bb9dbdb2ac34f1d5e8119a3))
+* **client:** allow configuring env via system properties ([ade0125](https://github.com/turbopuffer/turbopuffer-java/commit/ade0125404f032256555f5d135f239758ab30900))
+* **client:** don't require setting constant fields ([1dc1c0d](https://github.com/turbopuffer/turbopuffer-java/commit/1dc1c0d7ec11cf7df214278a47306af31c1b0587))
+
+
+### Bug Fixes
+
+* adjust dispatcher configuration for Stainless changes ([b853456](https://github.com/turbopuffer/turbopuffer-java/commit/b853456543b1a0afda486d7280b80412df8c5715))
+* formatting ([1ea9e2b](https://github.com/turbopuffer/turbopuffer-java/commit/1ea9e2b9748ce0bf3c370b82e49c0d257c000870))
+* formatting ([3602f2f](https://github.com/turbopuffer/turbopuffer-java/commit/3602f2f7e4badc403b75c32a49978a12227e1d21))
+
+
+### Chores
+
+* **internal:** refactor delegating from client to options ([c09140a](https://github.com/turbopuffer/turbopuffer-java/commit/c09140a5d8fd822987b2e7f2f34f0dbe0342ba08))
+
 ## 0.2.2 (2025-07-21)
 
 Full Changelog: [v0.2.1...v0.2.2](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.1...v0.2.2)
