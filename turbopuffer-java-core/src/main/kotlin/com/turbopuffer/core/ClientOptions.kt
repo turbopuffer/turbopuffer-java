@@ -262,9 +262,13 @@ private constructor(
         fun timeout(): Timeout = timeout
 
         fun fromEnv() = apply {
-            System.getenv("TURBOPUFFER_BASE_URL")?.let { baseUrl(it) }
-            System.getenv("TURBOPUFFER_API_KEY")?.let { apiKey(it) }
-            System.getenv("TURBOPUFFER_REGION")?.let { region(it) }
+            (System.getProperty("turbopuffer.baseUrl") ?: System.getenv("TURBOPUFFER_BASE_URL"))
+                ?.let { baseUrl(it) }
+            (System.getProperty("turbopuffer.apiKey") ?: System.getenv("TURBOPUFFER_API_KEY"))
+                ?.let { apiKey(it) }
+            (System.getProperty("turbopuffer.region") ?: System.getenv("TURBOPUFFER_REGION"))?.let {
+                region(it)
+            }
         }
 
         /**
