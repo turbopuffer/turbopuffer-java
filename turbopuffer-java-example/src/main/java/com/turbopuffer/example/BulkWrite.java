@@ -64,7 +64,8 @@ public class BulkWrite {
             var batchSeconds = (batchEndTime - batchStartTime) / 1000.0;
 
             System.out.printf(
-                    "Batch %d complete, status: %s, time: %.2f seconds\n", batch + 1, upsert.status(), batchSeconds);
+                    "Batch %d complete, rows upserted: %d, time: %.2f seconds\n",
+                    batch + 1, upsert.rowsUpserted().get(), batchSeconds);
         }
 
         long endTime = System.currentTimeMillis();
