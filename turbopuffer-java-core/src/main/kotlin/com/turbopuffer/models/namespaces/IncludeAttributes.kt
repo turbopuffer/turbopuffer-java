@@ -14,6 +14,7 @@ import com.turbopuffer.core.BaseSerializer
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.getOrThrow
+import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 import java.util.Optional
@@ -128,7 +129,8 @@ private constructor(
         @JvmStatic fun ofBool(bool: Boolean) = IncludeAttributes(bool = bool)
 
         /** Include exactly the specified attributes in the response. */
-        @JvmStatic fun ofStrings(strings: List<String>) = IncludeAttributes(strings = strings)
+        @JvmStatic
+        fun ofStrings(strings: List<String>) = IncludeAttributes(strings = strings.toImmutable())
     }
 
     /**
