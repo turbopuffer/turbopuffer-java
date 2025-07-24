@@ -349,10 +349,11 @@ private constructor(
         companion object {
 
             /** The vector embeddings of the documents. */
-            @JvmStatic fun ofVectors(vectors: List<Vector>) = Vector(vectors = vectors)
+            @JvmStatic
+            fun ofVectors(vectors: List<Vector>) = Vector(vectors = vectors.toImmutable())
 
             /** A dense vector encoded as an array of floats. */
-            @JvmStatic fun ofNumber(number: List<Double>) = Vector(number = number)
+            @JvmStatic fun ofNumber(number: List<Double>) = Vector(number = number.toImmutable())
 
             /** A dense vector encoded as a base64 string. */
             @JvmStatic fun ofString(string: String) = Vector(string = string)
