@@ -14,6 +14,7 @@ import com.turbopuffer.core.BaseSerializer
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.getOrThrow
+import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 import java.util.Optional
@@ -116,7 +117,7 @@ private constructor(
     companion object {
 
         /** A dense vector encoded as an array of floats. */
-        @JvmStatic fun ofNumber(number: List<Double>) = Vector(number = number)
+        @JvmStatic fun ofNumber(number: List<Double>) = Vector(number = number.toImmutable())
 
         /** A dense vector encoded as a base64 string. */
         @JvmStatic fun ofString(string: String) = Vector(string = string)
