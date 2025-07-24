@@ -103,7 +103,7 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 
 TurbopufferClient client = TurbopufferOkHttpClient.builder()
     // Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
-    Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+    // Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
     .fromEnv()
     .defaultNamespace("My Default Namespace")
     .build();
