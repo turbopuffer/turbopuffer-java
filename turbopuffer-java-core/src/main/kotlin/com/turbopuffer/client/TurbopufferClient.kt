@@ -52,18 +52,18 @@ interface TurbopufferClient {
     /** List namespaces. */
     fun namespaces(): ClientNamespacesPage = namespaces(ClientNamespacesParams.none())
 
-    /** @see [namespaces] */
+    /** @see namespaces */
     fun namespaces(
         params: ClientNamespacesParams = ClientNamespacesParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ClientNamespacesPage
 
-    /** @see [namespaces] */
+    /** @see namespaces */
     fun namespaces(
         params: ClientNamespacesParams = ClientNamespacesParams.none()
     ): ClientNamespacesPage = namespaces(params, RequestOptions.none())
 
-    /** @see [namespaces] */
+    /** @see namespaces */
     fun namespaces(requestOptions: RequestOptions): ClientNamespacesPage =
         namespaces(ClientNamespacesParams.none(), requestOptions)
 
@@ -102,20 +102,20 @@ interface TurbopufferClient {
         fun namespaces(): HttpResponseFor<ClientNamespacesPage> =
             namespaces(ClientNamespacesParams.none())
 
-        /** @see [namespaces] */
+        /** @see namespaces */
         @MustBeClosed
         fun namespaces(
             params: ClientNamespacesParams = ClientNamespacesParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ClientNamespacesPage>
 
-        /** @see [namespaces] */
+        /** @see namespaces */
         @MustBeClosed
         fun namespaces(
             params: ClientNamespacesParams = ClientNamespacesParams.none()
         ): HttpResponseFor<ClientNamespacesPage> = namespaces(params, RequestOptions.none())
 
-        /** @see [namespaces] */
+        /** @see namespaces */
         @MustBeClosed
         fun namespaces(requestOptions: RequestOptions): HttpResponseFor<ClientNamespacesPage> =
             namespaces(ClientNamespacesParams.none(), requestOptions)

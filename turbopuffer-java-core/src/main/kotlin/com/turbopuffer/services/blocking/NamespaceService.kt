@@ -43,18 +43,18 @@ interface NamespaceService {
     /** Delete namespace. */
     fun deleteAll(): NamespaceDeleteAllResponse = deleteAll(NamespaceDeleteAllParams.none())
 
-    /** @see [deleteAll] */
+    /** @see deleteAll */
     fun deleteAll(
         params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceDeleteAllResponse
 
-    /** @see [deleteAll] */
+    /** @see deleteAll */
     fun deleteAll(
         params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none()
     ): NamespaceDeleteAllResponse = deleteAll(params, RequestOptions.none())
 
-    /** @see [deleteAll] */
+    /** @see deleteAll */
     fun deleteAll(requestOptions: RequestOptions): NamespaceDeleteAllResponse =
         deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
 
@@ -62,36 +62,36 @@ interface NamespaceService {
     fun hintCacheWarm(): NamespaceHintCacheWarmResponse =
         hintCacheWarm(NamespaceHintCacheWarmParams.none())
 
-    /** @see [hintCacheWarm] */
+    /** @see hintCacheWarm */
     fun hintCacheWarm(
         params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceHintCacheWarmResponse
 
-    /** @see [hintCacheWarm] */
+    /** @see hintCacheWarm */
     fun hintCacheWarm(
         params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none()
     ): NamespaceHintCacheWarmResponse = hintCacheWarm(params, RequestOptions.none())
 
-    /** @see [hintCacheWarm] */
+    /** @see hintCacheWarm */
     fun hintCacheWarm(requestOptions: RequestOptions): NamespaceHintCacheWarmResponse =
         hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
 
     /** Get metadata about a namespace. */
     fun metadata(): NamespaceMetadata = metadata(NamespaceMetadataParams.none())
 
-    /** @see [metadata] */
+    /** @see metadata */
     fun metadata(
         params: NamespaceMetadataParams = NamespaceMetadataParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceMetadata
 
-    /** @see [metadata] */
+    /** @see metadata */
     fun metadata(
         params: NamespaceMetadataParams = NamespaceMetadataParams.none()
     ): NamespaceMetadata = metadata(params, RequestOptions.none())
 
-    /** @see [metadata] */
+    /** @see metadata */
     fun metadata(requestOptions: RequestOptions): NamespaceMetadata =
         metadata(NamespaceMetadataParams.none(), requestOptions)
 
@@ -99,7 +99,7 @@ interface NamespaceService {
     fun multiQuery(params: NamespaceMultiQueryParams): NamespaceMultiQueryResponse =
         multiQuery(params, RequestOptions.none())
 
-    /** @see [multiQuery] */
+    /** @see multiQuery */
     fun multiQuery(
         params: NamespaceMultiQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -108,53 +108,53 @@ interface NamespaceService {
     /** Query, filter, full-text search and vector search documents. */
     fun query(): NamespaceQueryResponse = query(NamespaceQueryParams.none())
 
-    /** @see [query] */
+    /** @see query */
     fun query(
         params: NamespaceQueryParams = NamespaceQueryParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceQueryResponse
 
-    /** @see [query] */
+    /** @see query */
     fun query(params: NamespaceQueryParams = NamespaceQueryParams.none()): NamespaceQueryResponse =
         query(params, RequestOptions.none())
 
-    /** @see [query] */
+    /** @see query */
     fun query(requestOptions: RequestOptions): NamespaceQueryResponse =
         query(NamespaceQueryParams.none(), requestOptions)
 
     /** Evaluate recall. */
     fun recall(): NamespaceRecallResponse = recall(NamespaceRecallParams.none())
 
-    /** @see [recall] */
+    /** @see recall */
     fun recall(
         params: NamespaceRecallParams = NamespaceRecallParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceRecallResponse
 
-    /** @see [recall] */
+    /** @see recall */
     fun recall(
         params: NamespaceRecallParams = NamespaceRecallParams.none()
     ): NamespaceRecallResponse = recall(params, RequestOptions.none())
 
-    /** @see [recall] */
+    /** @see recall */
     fun recall(requestOptions: RequestOptions): NamespaceRecallResponse =
         recall(NamespaceRecallParams.none(), requestOptions)
 
     /** Get namespace schema. */
     fun schema(): NamespaceSchemaResponse = schema(NamespaceSchemaParams.none())
 
-    /** @see [schema] */
+    /** @see schema */
     fun schema(
         params: NamespaceSchemaParams = NamespaceSchemaParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceSchemaResponse
 
-    /** @see [schema] */
+    /** @see schema */
     fun schema(
         params: NamespaceSchemaParams = NamespaceSchemaParams.none()
     ): NamespaceSchemaResponse = schema(params, RequestOptions.none())
 
-    /** @see [schema] */
+    /** @see schema */
     fun schema(requestOptions: RequestOptions): NamespaceSchemaResponse =
         schema(NamespaceSchemaParams.none(), requestOptions)
 
@@ -162,35 +162,35 @@ interface NamespaceService {
     fun updateSchema(): NamespaceUpdateSchemaResponse =
         updateSchema(NamespaceUpdateSchemaParams.none())
 
-    /** @see [updateSchema] */
+    /** @see updateSchema */
     fun updateSchema(
         params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceUpdateSchemaResponse
 
-    /** @see [updateSchema] */
+    /** @see updateSchema */
     fun updateSchema(
         params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
     ): NamespaceUpdateSchemaResponse = updateSchema(params, RequestOptions.none())
 
-    /** @see [updateSchema] */
+    /** @see updateSchema */
     fun updateSchema(requestOptions: RequestOptions): NamespaceUpdateSchemaResponse =
         updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
 
     /** Create, update, or delete documents. */
     fun write(): NamespaceWriteResponse = write(NamespaceWriteParams.none())
 
-    /** @see [write] */
+    /** @see write */
     fun write(
         params: NamespaceWriteParams = NamespaceWriteParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceWriteResponse
 
-    /** @see [write] */
+    /** @see write */
     fun write(params: NamespaceWriteParams = NamespaceWriteParams.none()): NamespaceWriteResponse =
         write(params, RequestOptions.none())
 
-    /** @see [write] */
+    /** @see write */
     fun write(requestOptions: RequestOptions): NamespaceWriteResponse =
         write(NamespaceWriteParams.none(), requestOptions)
 
@@ -212,20 +212,20 @@ interface NamespaceService {
         fun deleteAll(): HttpResponseFor<NamespaceDeleteAllResponse> =
             deleteAll(NamespaceDeleteAllParams.none())
 
-        /** @see [deleteAll] */
+        /** @see deleteAll */
         @MustBeClosed
         fun deleteAll(
             params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceDeleteAllResponse>
 
-        /** @see [deleteAll] */
+        /** @see deleteAll */
         @MustBeClosed
         fun deleteAll(
             params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none()
         ): HttpResponseFor<NamespaceDeleteAllResponse> = deleteAll(params, RequestOptions.none())
 
-        /** @see [deleteAll] */
+        /** @see deleteAll */
         @MustBeClosed
         fun deleteAll(requestOptions: RequestOptions): HttpResponseFor<NamespaceDeleteAllResponse> =
             deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
@@ -238,21 +238,21 @@ interface NamespaceService {
         fun hintCacheWarm(): HttpResponseFor<NamespaceHintCacheWarmResponse> =
             hintCacheWarm(NamespaceHintCacheWarmParams.none())
 
-        /** @see [hintCacheWarm] */
+        /** @see hintCacheWarm */
         @MustBeClosed
         fun hintCacheWarm(
             params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceHintCacheWarmResponse>
 
-        /** @see [hintCacheWarm] */
+        /** @see hintCacheWarm */
         @MustBeClosed
         fun hintCacheWarm(
             params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none()
         ): HttpResponseFor<NamespaceHintCacheWarmResponse> =
             hintCacheWarm(params, RequestOptions.none())
 
-        /** @see [hintCacheWarm] */
+        /** @see hintCacheWarm */
         @MustBeClosed
         fun hintCacheWarm(
             requestOptions: RequestOptions
@@ -267,20 +267,20 @@ interface NamespaceService {
         fun metadata(): HttpResponseFor<NamespaceMetadata> =
             metadata(NamespaceMetadataParams.none())
 
-        /** @see [metadata] */
+        /** @see metadata */
         @MustBeClosed
         fun metadata(
             params: NamespaceMetadataParams = NamespaceMetadataParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceMetadata>
 
-        /** @see [metadata] */
+        /** @see metadata */
         @MustBeClosed
         fun metadata(
             params: NamespaceMetadataParams = NamespaceMetadataParams.none()
         ): HttpResponseFor<NamespaceMetadata> = metadata(params, RequestOptions.none())
 
-        /** @see [metadata] */
+        /** @see metadata */
         @MustBeClosed
         fun metadata(requestOptions: RequestOptions): HttpResponseFor<NamespaceMetadata> =
             metadata(NamespaceMetadataParams.none(), requestOptions)
@@ -295,7 +295,7 @@ interface NamespaceService {
             params: NamespaceMultiQueryParams
         ): HttpResponseFor<NamespaceMultiQueryResponse> = multiQuery(params, RequestOptions.none())
 
-        /** @see [multiQuery] */
+        /** @see multiQuery */
         @MustBeClosed
         fun multiQuery(
             params: NamespaceMultiQueryParams,
@@ -309,20 +309,20 @@ interface NamespaceService {
         @MustBeClosed
         fun query(): HttpResponseFor<NamespaceQueryResponse> = query(NamespaceQueryParams.none())
 
-        /** @see [query] */
+        /** @see query */
         @MustBeClosed
         fun query(
             params: NamespaceQueryParams = NamespaceQueryParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceQueryResponse>
 
-        /** @see [query] */
+        /** @see query */
         @MustBeClosed
         fun query(
             params: NamespaceQueryParams = NamespaceQueryParams.none()
         ): HttpResponseFor<NamespaceQueryResponse> = query(params, RequestOptions.none())
 
-        /** @see [query] */
+        /** @see query */
         @MustBeClosed
         fun query(requestOptions: RequestOptions): HttpResponseFor<NamespaceQueryResponse> =
             query(NamespaceQueryParams.none(), requestOptions)
@@ -335,20 +335,20 @@ interface NamespaceService {
         fun recall(): HttpResponseFor<NamespaceRecallResponse> =
             recall(NamespaceRecallParams.none())
 
-        /** @see [recall] */
+        /** @see recall */
         @MustBeClosed
         fun recall(
             params: NamespaceRecallParams = NamespaceRecallParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceRecallResponse>
 
-        /** @see [recall] */
+        /** @see recall */
         @MustBeClosed
         fun recall(
             params: NamespaceRecallParams = NamespaceRecallParams.none()
         ): HttpResponseFor<NamespaceRecallResponse> = recall(params, RequestOptions.none())
 
-        /** @see [recall] */
+        /** @see recall */
         @MustBeClosed
         fun recall(requestOptions: RequestOptions): HttpResponseFor<NamespaceRecallResponse> =
             recall(NamespaceRecallParams.none(), requestOptions)
@@ -361,20 +361,20 @@ interface NamespaceService {
         fun schema(): HttpResponseFor<NamespaceSchemaResponse> =
             schema(NamespaceSchemaParams.none())
 
-        /** @see [schema] */
+        /** @see schema */
         @MustBeClosed
         fun schema(
             params: NamespaceSchemaParams = NamespaceSchemaParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceSchemaResponse>
 
-        /** @see [schema] */
+        /** @see schema */
         @MustBeClosed
         fun schema(
             params: NamespaceSchemaParams = NamespaceSchemaParams.none()
         ): HttpResponseFor<NamespaceSchemaResponse> = schema(params, RequestOptions.none())
 
-        /** @see [schema] */
+        /** @see schema */
         @MustBeClosed
         fun schema(requestOptions: RequestOptions): HttpResponseFor<NamespaceSchemaResponse> =
             schema(NamespaceSchemaParams.none(), requestOptions)
@@ -387,21 +387,21 @@ interface NamespaceService {
         fun updateSchema(): HttpResponseFor<NamespaceUpdateSchemaResponse> =
             updateSchema(NamespaceUpdateSchemaParams.none())
 
-        /** @see [updateSchema] */
+        /** @see updateSchema */
         @MustBeClosed
         fun updateSchema(
             params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceUpdateSchemaResponse>
 
-        /** @see [updateSchema] */
+        /** @see updateSchema */
         @MustBeClosed
         fun updateSchema(
             params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
         ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
             updateSchema(params, RequestOptions.none())
 
-        /** @see [updateSchema] */
+        /** @see updateSchema */
         @MustBeClosed
         fun updateSchema(
             requestOptions: RequestOptions
@@ -415,20 +415,20 @@ interface NamespaceService {
         @MustBeClosed
         fun write(): HttpResponseFor<NamespaceWriteResponse> = write(NamespaceWriteParams.none())
 
-        /** @see [write] */
+        /** @see write */
         @MustBeClosed
         fun write(
             params: NamespaceWriteParams = NamespaceWriteParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceWriteResponse>
 
-        /** @see [write] */
+        /** @see write */
         @MustBeClosed
         fun write(
             params: NamespaceWriteParams = NamespaceWriteParams.none()
         ): HttpResponseFor<NamespaceWriteResponse> = write(params, RequestOptions.none())
 
-        /** @see [write] */
+        /** @see write */
         @MustBeClosed
         fun write(requestOptions: RequestOptions): HttpResponseFor<NamespaceWriteResponse> =
             write(NamespaceWriteParams.none(), requestOptions)

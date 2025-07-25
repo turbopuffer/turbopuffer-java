@@ -53,18 +53,18 @@ interface TurbopufferClientAsync {
     fun namespaces(): CompletableFuture<ClientNamespacesPageAsync> =
         namespaces(ClientNamespacesParams.none())
 
-    /** @see [namespaces] */
+    /** @see namespaces */
     fun namespaces(
         params: ClientNamespacesParams = ClientNamespacesParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ClientNamespacesPageAsync>
 
-    /** @see [namespaces] */
+    /** @see namespaces */
     fun namespaces(
         params: ClientNamespacesParams = ClientNamespacesParams.none()
     ): CompletableFuture<ClientNamespacesPageAsync> = namespaces(params, RequestOptions.none())
 
-    /** @see [namespaces] */
+    /** @see namespaces */
     fun namespaces(requestOptions: RequestOptions): CompletableFuture<ClientNamespacesPageAsync> =
         namespaces(ClientNamespacesParams.none(), requestOptions)
 
@@ -105,19 +105,19 @@ interface TurbopufferClientAsync {
         fun namespaces(): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>> =
             namespaces(ClientNamespacesParams.none())
 
-        /** @see [namespaces] */
+        /** @see namespaces */
         fun namespaces(
             params: ClientNamespacesParams = ClientNamespacesParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>>
 
-        /** @see [namespaces] */
+        /** @see namespaces */
         fun namespaces(
             params: ClientNamespacesParams = ClientNamespacesParams.none()
         ): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>> =
             namespaces(params, RequestOptions.none())
 
-        /** @see [namespaces] */
+        /** @see namespaces */
         fun namespaces(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ClientNamespacesPageAsync>> =
