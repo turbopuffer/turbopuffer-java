@@ -3,6 +3,7 @@
 package com.turbopuffer.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.turbopuffer.core.http.AsyncStreamResponse
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.HttpClient
 import com.turbopuffer.core.http.PhantomReachableClosingHttpClient
@@ -17,9 +18,15 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.jvm.optionals.getOrNull
 
+/** A class representing the SDK client configuration. */
 class ClientOptions
 private constructor(
     private val originalHttpClient: HttpClient,
+    /**
+     * The HTTP client to use in the SDK.
+     *
+     * Use the one published in `turbopuffer-java-client-okhttp` or implement your own.
+     */
     @get:JvmName("httpClient") val httpClient: HttpClient,
     /**
      * Whether to throw an exception if any of the Jackson versions detected at runtime are
@@ -29,15 +36,63 @@ private constructor(
      * the SDK will work correctly when using an incompatible Jackson version.
      */
     @get:JvmName("checkJacksonVersionCompatibility") val checkJacksonVersionCompatibility: Boolean,
+    /**
+     * The Jackson JSON mapper to use for serializing and deserializing JSON.
+     *
+     * Defaults to [com.turbopuffer.core.jsonMapper]. The default is usually sufficient and rarely
+     * needs to be overridden.
+     */
     @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
+    /**
+     * The executor to use for running [AsyncStreamResponse.Handler] callbacks.
+     *
+     * Defaults to a dedicated cached thread pool.
+     */
     @get:JvmName("streamHandlerExecutor") val streamHandlerExecutor: Executor,
+    /**
+     * The clock to use for operations that require timing, like retries.
+     *
+     * This is primarily useful for using a fake clock in tests.
+     *
+     * Defaults to [Clock.systemUTC].
+     */
     @get:JvmName("clock") val clock: Clock,
     private val baseUrl: String?,
+    /** Headers to send with the request. */
     @get:JvmName("headers") val headers: Headers,
+    /** Query params to send with the request. */
     @get:JvmName("queryParams") val queryParams: QueryParams,
+    /**
+     * Whether to call `validate` on every response before returning it.
+     *
+     * Defaults to false, which means the shape of the response will not be validated upfront.
+     * Instead, validation will only occur for the parts of the response that are accessed.
+     */
     @get:JvmName("responseValidation") val responseValidation: Boolean,
+    /**
+     * Sets the maximum time allowed for various parts of an HTTP call's lifecycle, excluding
+     * retries.
+     *
+     * Defaults to [Timeout.default].
+     */
     @get:JvmName("timeout") val timeout: Timeout,
+    /**
+     * The maximum number of times to retry failed requests, with a short exponential backoff
+     * between requests.
+     *
+     * Only the following error types are retried:
+     * - Connection errors (for example, due to a network connectivity problem)
+     * - 408 Request Timeout
+     * - 409 Conflict
+     * - 429 Rate Limit
+     * - 5xx Internal
+     *
+     * The API may also explicitly instruct the SDK to retry or not retry a request.
+     *
+     * Defaults to 2.
+     */
     @get:JvmName("maxRetries") val maxRetries: Int,
+    /** API key used for authentication */
     @get:JvmName("apiKey") val apiKey: String,
     private val region: String?,
     private val defaultNamespace: String?,
@@ -49,9 +104,15 @@ private constructor(
         }
     }
 
+    /**
+     * The base URL to use for every request.
+     *
+     * Defaults to the production environment: `https://{region}.turbopuffer.com`.
+     */
     fun baseUrl(): String =
         (baseUrl ?: PRODUCTION_URL).replace("{region}", region.getOrNull().toString())
 
+    /** The turbopuffer region to use. */
     fun region(): Optional<String> = Optional.ofNullable(region)
 
     fun defaultNamespace(): Optional<String> = Optional.ofNullable(defaultNamespace)
@@ -73,6 +134,11 @@ private constructor(
          */
         @JvmStatic fun builder() = Builder()
 
+        /**
+         * Returns options configured using system properties and environment variables.
+         *
+         * @see Builder.fromEnv
+         */
         @JvmStatic fun fromEnv(): ClientOptions = builder().fromEnv().build()
     }
 
@@ -112,6 +178,11 @@ private constructor(
             defaultNamespace = clientOptions.defaultNamespace
         }
 
+        /**
+         * The HTTP client to use in the SDK.
+         *
+         * Use the one published in `turbopuffer-java-client-okhttp` or implement your own.
+         */
         fun httpClient(httpClient: HttpClient) = apply {
             this.httpClient = PhantomReachableClosingHttpClient(httpClient)
         }
@@ -127,23 +198,58 @@ private constructor(
             this.checkJacksonVersionCompatibility = checkJacksonVersionCompatibility
         }
 
+        /**
+         * The Jackson JSON mapper to use for serializing and deserializing JSON.
+         *
+         * Defaults to [com.turbopuffer.core.jsonMapper]. The default is usually sufficient and
+         * rarely needs to be overridden.
+         */
         fun jsonMapper(jsonMapper: JsonMapper) = apply { this.jsonMapper = jsonMapper }
 
+        /**
+         * The executor to use for running [AsyncStreamResponse.Handler] callbacks.
+         *
+         * Defaults to a dedicated cached thread pool.
+         */
         fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
             this.streamHandlerExecutor = streamHandlerExecutor
         }
 
+        /**
+         * The clock to use for operations that require timing, like retries.
+         *
+         * This is primarily useful for using a fake clock in tests.
+         *
+         * Defaults to [Clock.systemUTC].
+         */
         fun clock(clock: Clock) = apply { this.clock = clock }
 
+        /**
+         * The base URL to use for every request.
+         *
+         * Defaults to the production environment: `https://{region}.turbopuffer.com`.
+         */
         fun baseUrl(baseUrl: String?) = apply { this.baseUrl = baseUrl }
 
         /** Alias for calling [Builder.baseUrl] with `baseUrl.orElse(null)`. */
         fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
 
+        /**
+         * Whether to call `validate` on every response before returning it.
+         *
+         * Defaults to false, which means the shape of the response will not be validated upfront.
+         * Instead, validation will only occur for the parts of the response that are accessed.
+         */
         fun responseValidation(responseValidation: Boolean) = apply {
             this.responseValidation = responseValidation
         }
 
+        /**
+         * Sets the maximum time allowed for various parts of an HTTP call's lifecycle, excluding
+         * retries.
+         *
+         * Defaults to [Timeout.default].
+         */
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
 
         /**
@@ -155,10 +261,27 @@ private constructor(
          */
         fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
 
+        /**
+         * The maximum number of times to retry failed requests, with a short exponential backoff
+         * between requests.
+         *
+         * Only the following error types are retried:
+         * - Connection errors (for example, due to a network connectivity problem)
+         * - 408 Request Timeout
+         * - 409 Conflict
+         * - 429 Rate Limit
+         * - 5xx Internal
+         *
+         * The API may also explicitly instruct the SDK to retry or not retry a request.
+         *
+         * Defaults to 2.
+         */
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
+        /** API key used for authentication */
         fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
 
+        /** The turbopuffer region to use. */
         fun region(region: String?) = apply { this.region = region }
 
         /** Alias for calling [Builder.region] with `region.orElse(null)`. */
@@ -254,6 +377,19 @@ private constructor(
 
         fun timeout(): Timeout = timeout
 
+        /**
+         * Updates configuration using system properties and environment variables.
+         *
+         * See this table for the available options:
+         *
+         * |Setter   |System property      |Environment variable  |Required|Default value                       |
+         * |---------|---------------------|----------------------|--------|------------------------------------|
+         * |`apiKey` |`turbopuffer.apiKey` |`TURBOPUFFER_API_KEY` |true    |-                                   |
+         * |`region` |`turbopuffer.region` |`TURBOPUFFER_REGION`  |false   |-                                   |
+         * |`baseUrl`|`turbopuffer.baseUrl`|`TURBOPUFFER_BASE_URL`|true    |`"https://{region}.turbopuffer.com"`|
+         *
+         * System properties take precedence over environment variables.
+         */
         fun fromEnv() = apply {
             (System.getProperty("turbopuffer.baseUrl") ?: System.getenv("TURBOPUFFER_BASE_URL"))
                 ?.let { baseUrl(it) }
