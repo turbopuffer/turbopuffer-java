@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [TurbopufferClient.namespaces] */
+/** @see TurbopufferClient.namespaces */
 class ClientNamespacesPage
 private constructor(
     private val service: TurbopufferClient,
@@ -21,7 +21,7 @@ private constructor(
     /**
      * Delegates to [ClientNamespacesPageResponse], but gracefully handles missing data.
      *
-     * @see [ClientNamespacesPageResponse.namespaces]
+     * @see ClientNamespacesPageResponse.namespaces
      */
     fun namespaces(): List<NamespaceSummary> =
         response._namespaces().getOptional("namespaces").getOrNull() ?: emptyList()
@@ -29,7 +29,7 @@ private constructor(
     /**
      * Delegates to [ClientNamespacesPageResponse], but gracefully handles missing data.
      *
-     * @see [ClientNamespacesPageResponse.nextCursor]
+     * @see ClientNamespacesPageResponse.nextCursor
      */
     fun nextCursor(): Optional<String> = response._nextCursor().getOptional("next_cursor")
 

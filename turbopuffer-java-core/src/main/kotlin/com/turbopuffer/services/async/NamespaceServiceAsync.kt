@@ -47,18 +47,18 @@ interface NamespaceServiceAsync {
     fun deleteAll(): CompletableFuture<NamespaceDeleteAllResponse> =
         deleteAll(NamespaceDeleteAllParams.none())
 
-    /** @see [deleteAll] */
+    /** @see deleteAll */
     fun deleteAll(
         params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceDeleteAllResponse>
 
-    /** @see [deleteAll] */
+    /** @see deleteAll */
     fun deleteAll(
         params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none()
     ): CompletableFuture<NamespaceDeleteAllResponse> = deleteAll(params, RequestOptions.none())
 
-    /** @see [deleteAll] */
+    /** @see deleteAll */
     fun deleteAll(requestOptions: RequestOptions): CompletableFuture<NamespaceDeleteAllResponse> =
         deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
 
@@ -66,19 +66,19 @@ interface NamespaceServiceAsync {
     fun hintCacheWarm(): CompletableFuture<NamespaceHintCacheWarmResponse> =
         hintCacheWarm(NamespaceHintCacheWarmParams.none())
 
-    /** @see [hintCacheWarm] */
+    /** @see hintCacheWarm */
     fun hintCacheWarm(
         params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceHintCacheWarmResponse>
 
-    /** @see [hintCacheWarm] */
+    /** @see hintCacheWarm */
     fun hintCacheWarm(
         params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none()
     ): CompletableFuture<NamespaceHintCacheWarmResponse> =
         hintCacheWarm(params, RequestOptions.none())
 
-    /** @see [hintCacheWarm] */
+    /** @see hintCacheWarm */
     fun hintCacheWarm(
         requestOptions: RequestOptions
     ): CompletableFuture<NamespaceHintCacheWarmResponse> =
@@ -87,18 +87,18 @@ interface NamespaceServiceAsync {
     /** Get metadata about a namespace. */
     fun metadata(): CompletableFuture<NamespaceMetadata> = metadata(NamespaceMetadataParams.none())
 
-    /** @see [metadata] */
+    /** @see metadata */
     fun metadata(
         params: NamespaceMetadataParams = NamespaceMetadataParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceMetadata>
 
-    /** @see [metadata] */
+    /** @see metadata */
     fun metadata(
         params: NamespaceMetadataParams = NamespaceMetadataParams.none()
     ): CompletableFuture<NamespaceMetadata> = metadata(params, RequestOptions.none())
 
-    /** @see [metadata] */
+    /** @see metadata */
     fun metadata(requestOptions: RequestOptions): CompletableFuture<NamespaceMetadata> =
         metadata(NamespaceMetadataParams.none(), requestOptions)
 
@@ -107,7 +107,7 @@ interface NamespaceServiceAsync {
         params: NamespaceMultiQueryParams
     ): CompletableFuture<NamespaceMultiQueryResponse> = multiQuery(params, RequestOptions.none())
 
-    /** @see [multiQuery] */
+    /** @see multiQuery */
     fun multiQuery(
         params: NamespaceMultiQueryParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -116,54 +116,54 @@ interface NamespaceServiceAsync {
     /** Query, filter, full-text search and vector search documents. */
     fun query(): CompletableFuture<NamespaceQueryResponse> = query(NamespaceQueryParams.none())
 
-    /** @see [query] */
+    /** @see query */
     fun query(
         params: NamespaceQueryParams = NamespaceQueryParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceQueryResponse>
 
-    /** @see [query] */
+    /** @see query */
     fun query(
         params: NamespaceQueryParams = NamespaceQueryParams.none()
     ): CompletableFuture<NamespaceQueryResponse> = query(params, RequestOptions.none())
 
-    /** @see [query] */
+    /** @see query */
     fun query(requestOptions: RequestOptions): CompletableFuture<NamespaceQueryResponse> =
         query(NamespaceQueryParams.none(), requestOptions)
 
     /** Evaluate recall. */
     fun recall(): CompletableFuture<NamespaceRecallResponse> = recall(NamespaceRecallParams.none())
 
-    /** @see [recall] */
+    /** @see recall */
     fun recall(
         params: NamespaceRecallParams = NamespaceRecallParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceRecallResponse>
 
-    /** @see [recall] */
+    /** @see recall */
     fun recall(
         params: NamespaceRecallParams = NamespaceRecallParams.none()
     ): CompletableFuture<NamespaceRecallResponse> = recall(params, RequestOptions.none())
 
-    /** @see [recall] */
+    /** @see recall */
     fun recall(requestOptions: RequestOptions): CompletableFuture<NamespaceRecallResponse> =
         recall(NamespaceRecallParams.none(), requestOptions)
 
     /** Get namespace schema. */
     fun schema(): CompletableFuture<NamespaceSchemaResponse> = schema(NamespaceSchemaParams.none())
 
-    /** @see [schema] */
+    /** @see schema */
     fun schema(
         params: NamespaceSchemaParams = NamespaceSchemaParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceSchemaResponse>
 
-    /** @see [schema] */
+    /** @see schema */
     fun schema(
         params: NamespaceSchemaParams = NamespaceSchemaParams.none()
     ): CompletableFuture<NamespaceSchemaResponse> = schema(params, RequestOptions.none())
 
-    /** @see [schema] */
+    /** @see schema */
     fun schema(requestOptions: RequestOptions): CompletableFuture<NamespaceSchemaResponse> =
         schema(NamespaceSchemaParams.none(), requestOptions)
 
@@ -171,19 +171,19 @@ interface NamespaceServiceAsync {
     fun updateSchema(): CompletableFuture<NamespaceUpdateSchemaResponse> =
         updateSchema(NamespaceUpdateSchemaParams.none())
 
-    /** @see [updateSchema] */
+    /** @see updateSchema */
     fun updateSchema(
         params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceUpdateSchemaResponse>
 
-    /** @see [updateSchema] */
+    /** @see updateSchema */
     fun updateSchema(
         params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
     ): CompletableFuture<NamespaceUpdateSchemaResponse> =
         updateSchema(params, RequestOptions.none())
 
-    /** @see [updateSchema] */
+    /** @see updateSchema */
     fun updateSchema(
         requestOptions: RequestOptions
     ): CompletableFuture<NamespaceUpdateSchemaResponse> =
@@ -192,18 +192,18 @@ interface NamespaceServiceAsync {
     /** Create, update, or delete documents. */
     fun write(): CompletableFuture<NamespaceWriteResponse> = write(NamespaceWriteParams.none())
 
-    /** @see [write] */
+    /** @see write */
     fun write(
         params: NamespaceWriteParams = NamespaceWriteParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceWriteResponse>
 
-    /** @see [write] */
+    /** @see write */
     fun write(
         params: NamespaceWriteParams = NamespaceWriteParams.none()
     ): CompletableFuture<NamespaceWriteResponse> = write(params, RequestOptions.none())
 
-    /** @see [write] */
+    /** @see write */
     fun write(requestOptions: RequestOptions): CompletableFuture<NamespaceWriteResponse> =
         write(NamespaceWriteParams.none(), requestOptions)
 
@@ -231,19 +231,19 @@ interface NamespaceServiceAsync {
         fun deleteAll(): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>> =
             deleteAll(NamespaceDeleteAllParams.none())
 
-        /** @see [deleteAll] */
+        /** @see deleteAll */
         fun deleteAll(
             params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>>
 
-        /** @see [deleteAll] */
+        /** @see deleteAll */
         fun deleteAll(
             params: NamespaceDeleteAllParams = NamespaceDeleteAllParams.none()
         ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>> =
             deleteAll(params, RequestOptions.none())
 
-        /** @see [deleteAll] */
+        /** @see deleteAll */
         fun deleteAll(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>> =
@@ -256,19 +256,19 @@ interface NamespaceServiceAsync {
         fun hintCacheWarm(): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>> =
             hintCacheWarm(NamespaceHintCacheWarmParams.none())
 
-        /** @see [hintCacheWarm] */
+        /** @see hintCacheWarm */
         fun hintCacheWarm(
             params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>>
 
-        /** @see [hintCacheWarm] */
+        /** @see hintCacheWarm */
         fun hintCacheWarm(
             params: NamespaceHintCacheWarmParams = NamespaceHintCacheWarmParams.none()
         ): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>> =
             hintCacheWarm(params, RequestOptions.none())
 
-        /** @see [hintCacheWarm] */
+        /** @see hintCacheWarm */
         fun hintCacheWarm(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceHintCacheWarmResponse>> =
@@ -281,19 +281,19 @@ interface NamespaceServiceAsync {
         fun metadata(): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
             metadata(NamespaceMetadataParams.none())
 
-        /** @see [metadata] */
+        /** @see metadata */
         fun metadata(
             params: NamespaceMetadataParams = NamespaceMetadataParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<NamespaceMetadata>>
 
-        /** @see [metadata] */
+        /** @see metadata */
         fun metadata(
             params: NamespaceMetadataParams = NamespaceMetadataParams.none()
         ): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
             metadata(params, RequestOptions.none())
 
-        /** @see [metadata] */
+        /** @see metadata */
         fun metadata(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
@@ -309,7 +309,7 @@ interface NamespaceServiceAsync {
         ): CompletableFuture<HttpResponseFor<NamespaceMultiQueryResponse>> =
             multiQuery(params, RequestOptions.none())
 
-        /** @see [multiQuery] */
+        /** @see multiQuery */
         fun multiQuery(
             params: NamespaceMultiQueryParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -322,19 +322,19 @@ interface NamespaceServiceAsync {
         fun query(): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>> =
             query(NamespaceQueryParams.none())
 
-        /** @see [query] */
+        /** @see query */
         fun query(
             params: NamespaceQueryParams = NamespaceQueryParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>>
 
-        /** @see [query] */
+        /** @see query */
         fun query(
             params: NamespaceQueryParams = NamespaceQueryParams.none()
         ): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>> =
             query(params, RequestOptions.none())
 
-        /** @see [query] */
+        /** @see query */
         fun query(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceQueryResponse>> =
@@ -347,19 +347,19 @@ interface NamespaceServiceAsync {
         fun recall(): CompletableFuture<HttpResponseFor<NamespaceRecallResponse>> =
             recall(NamespaceRecallParams.none())
 
-        /** @see [recall] */
+        /** @see recall */
         fun recall(
             params: NamespaceRecallParams = NamespaceRecallParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<NamespaceRecallResponse>>
 
-        /** @see [recall] */
+        /** @see recall */
         fun recall(
             params: NamespaceRecallParams = NamespaceRecallParams.none()
         ): CompletableFuture<HttpResponseFor<NamespaceRecallResponse>> =
             recall(params, RequestOptions.none())
 
-        /** @see [recall] */
+        /** @see recall */
         fun recall(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceRecallResponse>> =
@@ -372,19 +372,19 @@ interface NamespaceServiceAsync {
         fun schema(): CompletableFuture<HttpResponseFor<NamespaceSchemaResponse>> =
             schema(NamespaceSchemaParams.none())
 
-        /** @see [schema] */
+        /** @see schema */
         fun schema(
             params: NamespaceSchemaParams = NamespaceSchemaParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<NamespaceSchemaResponse>>
 
-        /** @see [schema] */
+        /** @see schema */
         fun schema(
             params: NamespaceSchemaParams = NamespaceSchemaParams.none()
         ): CompletableFuture<HttpResponseFor<NamespaceSchemaResponse>> =
             schema(params, RequestOptions.none())
 
-        /** @see [schema] */
+        /** @see schema */
         fun schema(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceSchemaResponse>> =
@@ -397,19 +397,19 @@ interface NamespaceServiceAsync {
         fun updateSchema(): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
             updateSchema(NamespaceUpdateSchemaParams.none())
 
-        /** @see [updateSchema] */
+        /** @see updateSchema */
         fun updateSchema(
             params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>>
 
-        /** @see [updateSchema] */
+        /** @see updateSchema */
         fun updateSchema(
             params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
         ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
             updateSchema(params, RequestOptions.none())
 
-        /** @see [updateSchema] */
+        /** @see updateSchema */
         fun updateSchema(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
@@ -422,19 +422,19 @@ interface NamespaceServiceAsync {
         fun write(): CompletableFuture<HttpResponseFor<NamespaceWriteResponse>> =
             write(NamespaceWriteParams.none())
 
-        /** @see [write] */
+        /** @see write */
         fun write(
             params: NamespaceWriteParams = NamespaceWriteParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<NamespaceWriteResponse>>
 
-        /** @see [write] */
+        /** @see write */
         fun write(
             params: NamespaceWriteParams = NamespaceWriteParams.none()
         ): CompletableFuture<HttpResponseFor<NamespaceWriteResponse>> =
             write(params, RequestOptions.none())
 
-        /** @see [write] */
+        /** @see write */
         fun write(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceWriteResponse>> =

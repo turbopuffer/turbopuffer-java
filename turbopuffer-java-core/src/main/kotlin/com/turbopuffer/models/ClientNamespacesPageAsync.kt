@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [TurbopufferClientAsync.namespaces] */
+/** @see TurbopufferClientAsync.namespaces */
 class ClientNamespacesPageAsync
 private constructor(
     private val service: TurbopufferClientAsync,
@@ -24,7 +24,7 @@ private constructor(
     /**
      * Delegates to [ClientNamespacesPageResponse], but gracefully handles missing data.
      *
-     * @see [ClientNamespacesPageResponse.namespaces]
+     * @see ClientNamespacesPageResponse.namespaces
      */
     fun namespaces(): List<NamespaceSummary> =
         response._namespaces().getOptional("namespaces").getOrNull() ?: emptyList()
@@ -32,7 +32,7 @@ private constructor(
     /**
      * Delegates to [ClientNamespacesPageResponse], but gracefully handles missing data.
      *
-     * @see [ClientNamespacesPageResponse.nextCursor]
+     * @see ClientNamespacesPageResponse.nextCursor
      */
     fun nextCursor(): Optional<String> = response._nextCursor().getOptional("next_cursor")
 
