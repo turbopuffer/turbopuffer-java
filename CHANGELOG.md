@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.2.4 (2025-07-28)
+
+Full Changelog: [v0.2.3...v0.2.4](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.3...v0.2.4)
+
+### Bug Fixes
+
+* **client:** accidental mutability of some classes ([96665c1](https://github.com/turbopuffer/turbopuffer-java/commit/96665c1a4076b41d90f30950aeb4b19804cc8eef))
+* more precise types for filters that take arrays ([40337f7](https://github.com/turbopuffer/turbopuffer-java/commit/40337f75cbf0a0b1a7fa6978051be9272c2fb420))
+
+
+### Chores
+
+* **internal:** remove unnecessary `[...]` in `[@see](https://github.com/see)` ([68add22](https://github.com/turbopuffer/turbopuffer-java/commit/68add22b9e2be2db73b74a4fd6a585fadc0e7cf1))
+
+
+### Documentation
+
+* fix missing readme comment ([cf55dcb](https://github.com/turbopuffer/turbopuffer-java/commit/cf55dcb5771d1dd1236b99583a6014a7ea4178c6))
+* more code comments ([add7529](https://github.com/turbopuffer/turbopuffer-java/commit/add75291976c6e4191ae97ea16c0b934b46ef5a9))
+
 ## 0.2.3 (2025-07-23)
 
 Full Changelog: [v0.2.2...v0.2.3](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.2...v0.2.3)
