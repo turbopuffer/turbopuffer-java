@@ -10,6 +10,7 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
@@ -22,6 +23,7 @@ class Query
 private constructor(
     private val aggregateBy: JsonField<AggregateBy>,
     private val distanceMetric: JsonField<DistanceMetric>,
+    private val excludeAttributes: JsonField<List<String>>,
     private val filters: JsonValue,
     private val includeAttributes: JsonField<IncludeAttributes>,
     private val rankBy: JsonValue,
@@ -37,13 +39,25 @@ private constructor(
         @JsonProperty("distance_metric")
         @ExcludeMissing
         distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
+        @JsonProperty("exclude_attributes")
+        @ExcludeMissing
+        excludeAttributes: JsonField<List<String>> = JsonMissing.of(),
         @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
         @JsonProperty("include_attributes")
         @ExcludeMissing
         includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
         @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
         @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
-    ) : this(aggregateBy, distanceMetric, filters, includeAttributes, rankBy, topK, mutableMapOf())
+    ) : this(
+        aggregateBy,
+        distanceMetric,
+        excludeAttributes,
+        filters,
+        includeAttributes,
+        rankBy,
+        topK,
+        mutableMapOf(),
+    )
 
     /**
      * Aggregations to compute over all documents in the namespace that match the filters.
@@ -60,6 +74,16 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun distanceMetric(): Optional<DistanceMetric> = distanceMetric.getOptional("distance_metric")
+
+    /**
+     * List of attribute names to exclude from the response. All other attributes will be included
+     * in the response.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun excludeAttributes(): Optional<List<String>> =
+        excludeAttributes.getOptional("exclude_attributes")
 
     /**
      * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
@@ -105,6 +129,16 @@ private constructor(
     fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
 
     /**
+     * Returns the raw JSON value of [excludeAttributes].
+     *
+     * Unlike [excludeAttributes], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("exclude_attributes")
+    @ExcludeMissing
+    fun _excludeAttributes(): JsonField<List<String>> = excludeAttributes
+
+    /**
      * Returns the raw JSON value of [includeAttributes].
      *
      * Unlike [includeAttributes], this method doesn't throw if the JSON field has an unexpected
@@ -144,6 +178,7 @@ private constructor(
 
         private var aggregateBy: JsonField<AggregateBy> = JsonMissing.of()
         private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
+        private var excludeAttributes: JsonField<MutableList<String>>? = null
         private var filters: JsonValue = JsonMissing.of()
         private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
         private var rankBy: JsonValue = JsonMissing.of()
@@ -154,6 +189,7 @@ private constructor(
         internal fun from(query: Query) = apply {
             aggregateBy = query.aggregateBy
             distanceMetric = query.distanceMetric
+            excludeAttributes = query.excludeAttributes.map { it.toMutableList() }
             filters = query.filters
             includeAttributes = query.includeAttributes
             rankBy = query.rankBy
@@ -188,6 +224,36 @@ private constructor(
          */
         fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
             this.distanceMetric = distanceMetric
+        }
+
+        /**
+         * List of attribute names to exclude from the response. All other attributes will be
+         * included in the response.
+         */
+        fun excludeAttributes(excludeAttributes: List<String>) =
+            excludeAttributes(JsonField.of(excludeAttributes))
+
+        /**
+         * Sets [Builder.excludeAttributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.excludeAttributes] with a well-typed `List<String>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun excludeAttributes(excludeAttributes: JsonField<List<String>>) = apply {
+            this.excludeAttributes = excludeAttributes.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [String] to [excludeAttributes].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addExcludeAttribute(excludeAttribute: String) = apply {
+            excludeAttributes =
+                (excludeAttributes ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("excludeAttributes", it).add(excludeAttribute)
+                }
         }
 
         /**
@@ -260,6 +326,7 @@ private constructor(
             Query(
                 aggregateBy,
                 distanceMetric,
+                (excludeAttributes ?: JsonMissing.of()).map { it.toImmutable() },
                 filters,
                 includeAttributes,
                 rankBy,
@@ -277,6 +344,7 @@ private constructor(
 
         aggregateBy().ifPresent { it.validate() }
         distanceMetric().ifPresent { it.validate() }
+        excludeAttributes()
         includeAttributes().ifPresent { it.validate() }
         topK()
         validated = true
@@ -299,6 +367,7 @@ private constructor(
     internal fun validity(): Int =
         (aggregateBy.asKnown().getOrNull()?.validity() ?: 0) +
             (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
+            (excludeAttributes.asKnown().getOrNull()?.size ?: 0) +
             (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
             (if (topK.asKnown().isPresent) 1 else 0)
 
@@ -409,15 +478,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Query && aggregateBy == other.aggregateBy && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Query && aggregateBy == other.aggregateBy && distanceMetric == other.distanceMetric && excludeAttributes == other.excludeAttributes && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(aggregateBy, distanceMetric, filters, includeAttributes, rankBy, topK, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(aggregateBy, distanceMetric, excludeAttributes, filters, includeAttributes, rankBy, topK, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Query{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
+        "Query{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
 }
