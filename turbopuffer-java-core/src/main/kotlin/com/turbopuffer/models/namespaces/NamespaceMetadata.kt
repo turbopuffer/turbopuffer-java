@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 class NamespaceMetadata
 private constructor(
     private val approxLogicalBytes: JsonField<Long>,
+    private val approxRowCount: JsonField<Long>,
     private val createdAt: JsonField<OffsetDateTime>,
     private val schema: JsonField<Schema>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -32,11 +33,14 @@ private constructor(
         @JsonProperty("approx_logical_bytes")
         @ExcludeMissing
         approxLogicalBytes: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("approx_row_count")
+        @ExcludeMissing
+        approxRowCount: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("created_at")
         @ExcludeMissing
         createdAt: JsonField<OffsetDateTime> = JsonMissing.of(),
         @JsonProperty("schema") @ExcludeMissing schema: JsonField<Schema> = JsonMissing.of(),
-    ) : this(approxLogicalBytes, createdAt, schema, mutableMapOf())
+    ) : this(approxLogicalBytes, approxRowCount, createdAt, schema, mutableMapOf())
 
     /**
      * The approximate number of logical bytes in the namespace.
@@ -45,6 +49,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun approxLogicalBytes(): Long = approxLogicalBytes.getRequired("approx_logical_bytes")
+
+    /**
+     * The approximate number of rows in the namespace.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun approxRowCount(): Long = approxRowCount.getRequired("approx_row_count")
 
     /**
      * The timestamp when the namespace was created.
@@ -71,6 +83,15 @@ private constructor(
     @JsonProperty("approx_logical_bytes")
     @ExcludeMissing
     fun _approxLogicalBytes(): JsonField<Long> = approxLogicalBytes
+
+    /**
+     * Returns the raw JSON value of [approxRowCount].
+     *
+     * Unlike [approxRowCount], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("approx_row_count")
+    @ExcludeMissing
+    fun _approxRowCount(): JsonField<Long> = approxRowCount
 
     /**
      * Returns the raw JSON value of [createdAt].
@@ -108,6 +129,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .approxLogicalBytes()
+         * .approxRowCount()
          * .createdAt()
          * .schema()
          * ```
@@ -119,6 +141,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var approxLogicalBytes: JsonField<Long>? = null
+        private var approxRowCount: JsonField<Long>? = null
         private var createdAt: JsonField<OffsetDateTime>? = null
         private var schema: JsonField<Schema>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -126,6 +149,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(namespaceMetadata: NamespaceMetadata) = apply {
             approxLogicalBytes = namespaceMetadata.approxLogicalBytes
+            approxRowCount = namespaceMetadata.approxRowCount
             createdAt = namespaceMetadata.createdAt
             schema = namespaceMetadata.schema
             additionalProperties = namespaceMetadata.additionalProperties.toMutableMap()
@@ -144,6 +168,20 @@ private constructor(
          */
         fun approxLogicalBytes(approxLogicalBytes: JsonField<Long>) = apply {
             this.approxLogicalBytes = approxLogicalBytes
+        }
+
+        /** The approximate number of rows in the namespace. */
+        fun approxRowCount(approxRowCount: Long) = approxRowCount(JsonField.of(approxRowCount))
+
+        /**
+         * Sets [Builder.approxRowCount] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.approxRowCount] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun approxRowCount(approxRowCount: JsonField<Long>) = apply {
+            this.approxRowCount = approxRowCount
         }
 
         /** The timestamp when the namespace was created. */
@@ -196,6 +234,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .approxLogicalBytes()
+         * .approxRowCount()
          * .createdAt()
          * .schema()
          * ```
@@ -205,6 +244,7 @@ private constructor(
         fun build(): NamespaceMetadata =
             NamespaceMetadata(
                 checkRequired("approxLogicalBytes", approxLogicalBytes),
+                checkRequired("approxRowCount", approxRowCount),
                 checkRequired("createdAt", createdAt),
                 checkRequired("schema", schema),
                 additionalProperties.toMutableMap(),
@@ -219,6 +259,7 @@ private constructor(
         }
 
         approxLogicalBytes()
+        approxRowCount()
         createdAt()
         schema().validate()
         validated = true
@@ -240,6 +281,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (approxLogicalBytes.asKnown().isPresent) 1 else 0) +
+            (if (approxRowCount.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (schema.asKnown().getOrNull()?.validity() ?: 0)
 
@@ -350,15 +392,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceMetadata && approxLogicalBytes == other.approxLogicalBytes && createdAt == other.createdAt && schema == other.schema && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is NamespaceMetadata && approxLogicalBytes == other.approxLogicalBytes && approxRowCount == other.approxRowCount && createdAt == other.createdAt && schema == other.schema && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(approxLogicalBytes, createdAt, schema, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(approxLogicalBytes, approxRowCount, createdAt, schema, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, createdAt=$createdAt, schema=$schema, additionalProperties=$additionalProperties}"
+        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, schema=$schema, additionalProperties=$additionalProperties}"
 }

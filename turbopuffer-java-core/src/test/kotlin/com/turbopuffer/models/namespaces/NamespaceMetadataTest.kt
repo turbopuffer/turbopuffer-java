@@ -18,6 +18,7 @@ internal class NamespaceMetadataTest {
         val namespaceMetadata =
             NamespaceMetadata.builder()
                 .approxLogicalBytes(0L)
+                .approxRowCount(0L)
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .schema(
                     NamespaceMetadata.Schema.builder()
@@ -37,6 +38,7 @@ internal class NamespaceMetadataTest {
                 .build()
 
         assertThat(namespaceMetadata.approxLogicalBytes()).isEqualTo(0L)
+        assertThat(namespaceMetadata.approxRowCount()).isEqualTo(0L)
         assertThat(namespaceMetadata.createdAt())
             .isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(namespaceMetadata.schema())
@@ -64,6 +66,7 @@ internal class NamespaceMetadataTest {
         val namespaceMetadata =
             NamespaceMetadata.builder()
                 .approxLogicalBytes(0L)
+                .approxRowCount(0L)
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .schema(
                     NamespaceMetadata.Schema.builder()
