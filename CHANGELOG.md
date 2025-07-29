@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.5 (2025-07-29)
+
+Full Changelog: [v0.2.4...v0.2.5](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.4...v0.2.5)
+
+### Features
+
+* **client:** ensure compat with proguard ([ac622df](https://github.com/turbopuffer/turbopuffer-java/commit/ac622df72b33eb1f3b51d579506195b22d9b2f35))
+
+
+### Bug Fixes
+
+* add support for regex filter ([971d981](https://github.com/turbopuffer/turbopuffer-java/commit/971d981f213c9449c5de2165fe3c8a581c216f1c))
+* **api:** api update ([7bebead](https://github.com/turbopuffer/turbopuffer-java/commit/7bebeadadda2ee5056497b5ed65c1175f5ff0f04))
+* **api:** api update ([61aed7b](https://github.com/turbopuffer/turbopuffer-java/commit/61aed7b8ff5ba2a2043e01caf2e889e29a87f5ea))
+
 ## 0.2.4 (2025-07-28)
 
 Full Changelog: [v0.2.3...v0.2.4](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.3...v0.2.4)
