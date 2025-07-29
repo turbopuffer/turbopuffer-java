@@ -7,13 +7,11 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 internal class VectorTest {
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofNumber() {
         val number = listOf(0.0)
@@ -24,7 +22,6 @@ internal class VectorTest {
         assertThat(vector.string()).isEmpty
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofNumberRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -36,7 +33,6 @@ internal class VectorTest {
         assertThat(roundtrippedVector).isEqualTo(vector)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofString() {
         val string = "string"
@@ -47,7 +43,6 @@ internal class VectorTest {
         assertThat(vector.string()).contains(string)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofStringRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -59,7 +54,6 @@ internal class VectorTest {
         assertThat(roundtrippedVector).isEqualTo(vector)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun incompatibleJsonShapeDeserializesToUnknown() {
         val value = JsonValue.from(mapOf("invalid" to "object"))

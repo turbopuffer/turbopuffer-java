@@ -5,12 +5,10 @@ package com.turbopuffer.models.namespaces
 import com.turbopuffer.core.JsonValue
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class NamespaceRecallParamsTest {
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
         NamespaceRecallParams.builder()
@@ -22,7 +20,6 @@ internal class NamespaceRecallParamsTest {
             .build()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun pathParams() {
         val params = NamespaceRecallParams.builder().build()
@@ -32,7 +29,6 @@ internal class NamespaceRecallParamsTest {
         assertThat(params._pathParam(1)).isEqualTo("")
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun body() {
         val params =
@@ -52,7 +48,6 @@ internal class NamespaceRecallParamsTest {
         assertThat(body.topK()).contains(0L)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun bodyWithoutOptionalFields() {
         val params = NamespaceRecallParams.builder().build()

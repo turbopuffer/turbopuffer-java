@@ -7,7 +7,6 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -15,7 +14,6 @@ import org.junit.jupiter.params.provider.EnumSource
 
 internal class FullTextSearchTest {
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofBool() {
         val bool = true
@@ -26,7 +24,6 @@ internal class FullTextSearchTest {
         assertThat(fullTextSearch.config()).isEmpty
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofBoolRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -41,7 +38,6 @@ internal class FullTextSearchTest {
         assertThat(roundtrippedFullTextSearch).isEqualTo(fullTextSearch)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofConfig() {
         val config =
@@ -61,7 +57,6 @@ internal class FullTextSearchTest {
         assertThat(fullTextSearch.config()).contains(config)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofConfigRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -94,7 +89,6 @@ internal class FullTextSearchTest {
         ARRAY(JsonValue.from(listOf("invalid", "array"))),
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @ParameterizedTest
     @EnumSource
     fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {

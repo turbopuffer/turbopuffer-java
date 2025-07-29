@@ -5,12 +5,10 @@ package com.turbopuffer.models.namespaces
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class QueryBillingTest {
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun create() {
         val queryBilling =
@@ -23,7 +21,6 @@ internal class QueryBillingTest {
         assertThat(queryBilling.billableLogicalBytesReturned()).isEqualTo(0L)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()

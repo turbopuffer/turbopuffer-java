@@ -7,7 +7,6 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -15,7 +14,6 @@ import org.junit.jupiter.params.provider.EnumSource
 
 internal class IncludeAttributesTest {
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofBool() {
         val bool = true
@@ -26,7 +24,6 @@ internal class IncludeAttributesTest {
         assertThat(includeAttributes.strings()).isEmpty
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofBoolRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -41,7 +38,6 @@ internal class IncludeAttributesTest {
         assertThat(roundtrippedIncludeAttributes).isEqualTo(includeAttributes)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofStrings() {
         val strings = listOf("string")
@@ -52,7 +48,6 @@ internal class IncludeAttributesTest {
         assertThat(includeAttributes.strings()).contains(strings)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofStringsRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -74,7 +69,6 @@ internal class IncludeAttributesTest {
         OBJECT(JsonValue.from(mapOf("invalid" to "object"))),
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @ParameterizedTest
     @EnumSource
     fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
