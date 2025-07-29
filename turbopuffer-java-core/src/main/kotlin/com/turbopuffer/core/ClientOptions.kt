@@ -89,7 +89,7 @@ private constructor(
      *
      * The API may also explicitly instruct the SDK to retry or not retry a request.
      *
-     * Defaults to 2.
+     * Defaults to 4.
      */
     @get:JvmName("maxRetries") val maxRetries: Int,
     /** API key used for authentication */
@@ -155,7 +155,7 @@ private constructor(
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var responseValidation: Boolean = false
         private var timeout: Timeout = Timeout.default()
-        private var maxRetries: Int = 2
+        private var maxRetries: Int = 4
         private var apiKey: String? = null
         private var region: String? = null
         private var defaultNamespace: String? = null
@@ -274,7 +274,7 @@ private constructor(
          *
          * The API may also explicitly instruct the SDK to retry or not retry a request.
          *
-         * Defaults to 2.
+         * Defaults to 4.
          */
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
