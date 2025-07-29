@@ -18,6 +18,8 @@ import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
+import com.turbopuffer.models.namespaces.NamespaceExplainQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
 import com.turbopuffer.models.namespaces.NamespaceMetadata
@@ -55,6 +57,13 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     ): NamespaceDeleteAllResponse =
         // delete /v2/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).parse()
+
+    override fun explainQuery(
+        params: NamespaceExplainQueryParams,
+        requestOptions: RequestOptions,
+    ): NamespaceExplainQueryResponse =
+        // post /v2/namespaces/{namespace}/explain_query
+        withRawResponse().explainQuery(params, requestOptions).parse()
 
     override fun hintCacheWarm(
         params: NamespaceHintCacheWarmParams,
@@ -154,6 +163,44 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             return errorHandler.handle(response).parseable {
                 response
                     .use { deleteAllHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val explainQueryHandler: Handler<NamespaceExplainQueryResponse> =
+            jsonHandler<NamespaceExplainQueryResponse>(clientOptions.jsonMapper)
+
+        override fun explainQuery(
+            params: NamespaceExplainQueryParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceExplainQueryResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "explain_query",
+                    )
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { explainQueryHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
