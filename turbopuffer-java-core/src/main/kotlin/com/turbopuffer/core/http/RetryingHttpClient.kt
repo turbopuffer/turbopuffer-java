@@ -3,6 +3,7 @@ package com.turbopuffer.core.http
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.errors.TurbopufferIoException
+import com.turbopuffer.errors.TurbopufferRetryableException
 import java.io.IOException
 import java.time.Clock
 import java.time.Duration
@@ -176,10 +177,10 @@ private constructor(
     }
 
     private fun shouldRetry(throwable: Throwable): Boolean =
-        // Only retry IOException and TurbopufferIoException, other exceptions are not intended to
-        // be
-        // retried.
-        throwable is IOException || throwable is TurbopufferIoException
+        // Only retry known retryable exceptions, other exceptions are not intended to be retried.
+        throwable is IOException ||
+            throwable is TurbopufferIoException ||
+            throwable is TurbopufferRetryableException
 
     private fun getRetryBackoffDuration(retries: Int, response: HttpResponse?): Duration {
         // About the Retry-After header:
