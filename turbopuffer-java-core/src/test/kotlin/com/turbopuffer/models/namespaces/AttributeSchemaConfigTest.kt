@@ -16,12 +16,14 @@ internal class AttributeSchemaConfigTest {
                 .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
+                .regex(true)
                 .type("string")
                 .build()
 
         assertThat(attributeSchemaConfig.ann()).contains(true)
         assertThat(attributeSchemaConfig.filterable()).contains(true)
         assertThat(attributeSchemaConfig.fullTextSearch()).contains(FullTextSearch.ofBool(true))
+        assertThat(attributeSchemaConfig.regex()).contains(true)
         assertThat(attributeSchemaConfig.type()).contains("string")
     }
 
@@ -33,6 +35,7 @@ internal class AttributeSchemaConfigTest {
                 .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
+                .regex(true)
                 .type("string")
                 .build()
 
