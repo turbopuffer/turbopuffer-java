@@ -221,7 +221,7 @@ private constructor(
             }
 
         // Apply exponential backoff, but not more than the max.
-        val backoffSeconds = min(0.5 * 2.0.pow(retries - 1), 8.0)
+        val backoffSeconds = min(0.3 * 2.0.pow(retries - 1), 8.0)
 
         // Apply some jitter
         val jitter = 1.0 - 0.25 * ThreadLocalRandom.current().nextDouble()
@@ -258,7 +258,7 @@ private constructor(
                 }
             }
         private var clock: Clock = Clock.systemUTC()
-        private var maxRetries: Int = 2
+        private var maxRetries: Int = 4
         private var idempotencyHeader: String? = null
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
