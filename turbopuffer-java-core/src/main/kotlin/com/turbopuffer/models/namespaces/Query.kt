@@ -10,6 +10,8 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.core.checkKnown
+import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
