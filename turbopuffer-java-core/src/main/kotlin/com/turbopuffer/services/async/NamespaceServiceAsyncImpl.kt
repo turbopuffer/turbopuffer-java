@@ -19,6 +19,8 @@ import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepareAsync
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
+import com.turbopuffer.models.namespaces.NamespaceExplainQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
 import com.turbopuffer.models.namespaces.NamespaceMetadata
@@ -59,6 +61,13 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     ): CompletableFuture<NamespaceDeleteAllResponse> =
         // delete /v2/namespaces/{namespace}
         withRawResponse().deleteAll(params, requestOptions).thenApply { it.parse() }
+
+    override fun explainQuery(
+        params: NamespaceExplainQueryParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceExplainQueryResponse> =
+        // post /v2/namespaces/{namespace}/explain_query
+        withRawResponse().explainQuery(params, requestOptions).thenApply { it.parse() }
 
     override fun hintCacheWarm(
         params: NamespaceHintCacheWarmParams,
@@ -165,6 +174,47 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteAllHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val explainQueryHandler: Handler<NamespaceExplainQueryResponse> =
+            jsonHandler<NamespaceExplainQueryResponse>(clientOptions.jsonMapper)
+
+        override fun explainQuery(
+            params: NamespaceExplainQueryParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceExplainQueryResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "explain_query",
+                    )
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { explainQueryHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
