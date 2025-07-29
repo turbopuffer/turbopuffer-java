@@ -10,7 +10,6 @@ import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.DistanceMetric
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class ProGuardCompatibilityTest {
@@ -43,7 +42,6 @@ internal class ProGuardCompatibilityTest {
         assertThat(client.namespace("test")).isNotNull()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun namespaceSummaryRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -58,7 +56,6 @@ internal class ProGuardCompatibilityTest {
         assertThat(roundtrippedNamespaceSummary).isEqualTo(namespaceSummary)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun attributeSchemaRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -73,7 +70,6 @@ internal class ProGuardCompatibilityTest {
         assertThat(roundtrippedAttributeSchema).isEqualTo(attributeSchema)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun distanceMetricRoundtrip() {
         val jsonMapper = jsonMapper()
