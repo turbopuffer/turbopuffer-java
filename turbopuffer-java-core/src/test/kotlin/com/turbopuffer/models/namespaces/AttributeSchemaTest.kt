@@ -7,13 +7,11 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 internal class AttributeSchemaTest {
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofType() {
         val type = "string"
@@ -24,7 +22,6 @@ internal class AttributeSchemaTest {
         assertThat(attributeSchema.config()).isEmpty
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofTypeRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -39,7 +36,6 @@ internal class AttributeSchemaTest {
         assertThat(roundtrippedAttributeSchema).isEqualTo(attributeSchema)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofConfig() {
         val config =
@@ -56,7 +52,6 @@ internal class AttributeSchemaTest {
         assertThat(attributeSchema.config()).contains(config)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun ofConfigRoundtrip() {
         val jsonMapper = jsonMapper()
@@ -79,7 +74,6 @@ internal class AttributeSchemaTest {
         assertThat(roundtrippedAttributeSchema).isEqualTo(attributeSchema)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun incompatibleJsonShapeDeserializesToUnknown() {
         val value = JsonValue.from(listOf("invalid", "array"))

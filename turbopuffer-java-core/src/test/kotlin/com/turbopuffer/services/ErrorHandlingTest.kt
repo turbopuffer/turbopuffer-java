@@ -25,7 +25,6 @@ import com.turbopuffer.errors.UnprocessableEntityException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -58,7 +57,6 @@ internal class ErrorHandlingTest {
                 .build()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces400() {
         val turbopufferClient = client
@@ -76,7 +74,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces400WithRawResponse() {
         val turbopufferClient = client.withRawResponse()
@@ -94,7 +91,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces401() {
         val turbopufferClient = client
@@ -112,7 +108,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces401WithRawResponse() {
         val turbopufferClient = client.withRawResponse()
@@ -130,7 +125,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces403() {
         val turbopufferClient = client
@@ -148,7 +142,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces403WithRawResponse() {
         val turbopufferClient = client.withRawResponse()
@@ -166,7 +159,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces404() {
         val turbopufferClient = client
@@ -184,7 +176,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces404WithRawResponse() {
         val turbopufferClient = client.withRawResponse()
@@ -202,7 +193,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces422() {
         val turbopufferClient = client
@@ -220,7 +210,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces422WithRawResponse() {
         val turbopufferClient = client.withRawResponse()
@@ -238,7 +227,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces429() {
         val turbopufferClient = client
@@ -256,7 +244,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces429WithRawResponse() {
         val turbopufferClient = client.withRawResponse()
@@ -274,7 +261,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces500() {
         val turbopufferClient = client
@@ -292,7 +278,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces500WithRawResponse() {
         val turbopufferClient = client.withRawResponse()
@@ -310,7 +295,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces999() {
         val turbopufferClient = client
@@ -328,7 +312,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespaces999WithRawResponse() {
         val turbopufferClient = client.withRawResponse()
@@ -346,7 +329,6 @@ internal class ErrorHandlingTest {
         assertThat(e.body()).isEqualTo(ERROR_JSON)
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
     @Test
     fun clientNamespacesInvalidJsonBody() {
         val turbopufferClient = client
