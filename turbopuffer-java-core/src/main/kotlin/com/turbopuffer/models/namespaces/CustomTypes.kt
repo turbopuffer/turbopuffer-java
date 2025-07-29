@@ -110,6 +110,9 @@ sealed class Filter() {
             FilterNotIGlob.create(attr, value)
 
         @JvmStatic
+        public fun regex(attr: String, value: String): FilterRegex = FilterRegex.create(attr, value)
+
+        @JvmStatic
         public fun containsAllTokens(attr: String, value: String): FilterContainsAllTokens =
             FilterContainsAllTokens.create(attr, value)
 
@@ -505,6 +508,24 @@ class FilterOr private constructor(filters: List<Filter>) : Filter() {
 
     companion object {
         @JvmSynthetic internal fun create(filters: List<Filter>): FilterOr = FilterOr(filters)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterRegex private constructor(attr: String, value: String) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "Regex"
+    private val value: String = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: String): FilterRegex = FilterRegex(attr, value)
     }
 }
 
