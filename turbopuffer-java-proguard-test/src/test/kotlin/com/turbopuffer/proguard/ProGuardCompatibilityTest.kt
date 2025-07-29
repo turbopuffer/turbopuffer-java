@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.jsonMapper
 import com.turbopuffer.models.NamespaceSummary
-import com.turbopuffer.models.namespaces.AttributeSchema
+import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.DistanceMetric
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
@@ -36,10 +36,10 @@ internal class ProGuardCompatibilityTest {
 
     @Test
     fun client() {
-        val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
+        val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").region("gcp-us-central1").build()
 
         assertThat(client).isNotNull()
-        assertThat(client.namespaces()).isNotNull()
+        assertThat(client.namespace("test")).isNotNull()
     }
 
     @Disabled("skipped: tests are disabled for the time being")
@@ -61,12 +61,12 @@ internal class ProGuardCompatibilityTest {
     @Test
     fun attributeSchemaRoundtrip() {
         val jsonMapper = jsonMapper()
-        val attributeSchema = AttributeSchema.ofType("string")
+        val attributeSchema = AttributeSchemaConfig.builder().type("string").build()
 
         val roundtrippedAttributeSchema =
             jsonMapper.readValue(
                 jsonMapper.writeValueAsString(attributeSchema),
-                jacksonTypeRef<AttributeSchema>(),
+                jacksonTypeRef<AttributeSchemaConfig>(),
             )
 
         assertThat(roundtrippedAttributeSchema).isEqualTo(attributeSchema)
