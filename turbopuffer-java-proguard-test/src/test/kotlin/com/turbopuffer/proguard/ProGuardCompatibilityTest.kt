@@ -36,7 +36,8 @@ internal class ProGuardCompatibilityTest {
 
     @Test
     fun client() {
-        val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").region("gcp-us-central1").build()
+        val client =
+            TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").region("gcp-us-central1").build()
 
         assertThat(client).isNotNull()
         assertThat(client.namespace("test")).isNotNull()
