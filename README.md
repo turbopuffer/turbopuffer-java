@@ -276,6 +276,8 @@ The SDK throws custom unchecked exception types:
 
 - [`TurbopufferIoException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/TurbopufferIoException.kt): I/O networking errors.
 
+- [`TurbopufferRetryableException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/TurbopufferRetryableException.kt): Generic error indicating a failure that could be retried by the client.
+
 - [`TurbopufferInvalidDataException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/TurbopufferInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
 - [`TurbopufferException`](turbopuffer-java-core/src/main/kotlin/com/turbopuffer/errors/TurbopufferException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
