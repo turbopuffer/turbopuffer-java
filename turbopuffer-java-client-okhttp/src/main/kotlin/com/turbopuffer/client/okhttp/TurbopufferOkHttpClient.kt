@@ -190,7 +190,7 @@ class TurbopufferOkHttpClient private constructor() {
          *
          * The API may also explicitly instruct the SDK to retry or not retry a request.
          *
-         * Defaults to 2.
+         * Defaults to 4.
          */
         fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
 

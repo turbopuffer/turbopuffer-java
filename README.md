@@ -419,7 +419,7 @@ If the SDK threw an exception, but you're _certain_ the version is compatible, t
 
 ### Retries
 
-The SDK automatically retries 2 times by default, with a short exponential backoff between requests.
+The SDK automatically retries 4 times by default, with a short exponential backoff between requests.
 
 Only the following error types are retried:
 
