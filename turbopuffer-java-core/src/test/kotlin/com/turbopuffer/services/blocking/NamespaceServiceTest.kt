@@ -96,6 +96,7 @@ internal class NamespaceServiceTest {
                     .addQuery(
                         Query.builder()
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                            .addExcludeAttribute("string")
                             .includeAttributes(true)
                             .topK(0L)
                             .build()
@@ -127,6 +128,7 @@ internal class NamespaceServiceTest {
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                    .addExcludeAttribute("string")
                     .includeAttributes(true)
                     .topK(0L)
                     .consistency(

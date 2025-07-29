@@ -100,6 +100,7 @@ internal class NamespaceServiceAsyncTest {
                     .addQuery(
                         Query.builder()
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                            .addExcludeAttribute("string")
                             .includeAttributes(true)
                             .topK(0L)
                             .build()
@@ -132,6 +133,7 @@ internal class NamespaceServiceAsyncTest {
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                    .addExcludeAttribute("string")
                     .includeAttributes(true)
                     .topK(0L)
                     .consistency(

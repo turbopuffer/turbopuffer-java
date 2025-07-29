@@ -5,6 +5,7 @@ package com.turbopuffer.models.namespaces
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -22,6 +23,7 @@ internal class QueryTest {
                         .build()
                 )
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                .addExcludeAttribute("string")
                 .filters(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(true)
                 .rankBy(JsonValue.from(mapOf<String, Any>()))
@@ -35,6 +37,7 @@ internal class QueryTest {
                     .build()
             )
         assertThat(query.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)
+        assertThat(query.excludeAttributes().getOrNull()).containsExactly("string")
         assertThat(query._filters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(query.includeAttributes()).contains(IncludeAttributes.ofBool(true))
         assertThat(query._rankBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
@@ -53,6 +56,7 @@ internal class QueryTest {
                         .build()
                 )
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                .addExcludeAttribute("string")
                 .filters(JsonValue.from(mapOf<String, Any>()))
                 .includeAttributes(true)
                 .rankBy(JsonValue.from(mapOf<String, Any>()))

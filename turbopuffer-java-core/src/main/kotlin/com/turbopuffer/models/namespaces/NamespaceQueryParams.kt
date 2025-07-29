@@ -12,8 +12,10 @@ import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
+import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -46,6 +48,15 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun distanceMetric(): Optional<DistanceMetric> = body.distanceMetric()
+
+    /**
+     * List of attribute names to exclude from the response. All other attributes will be included
+     * in the response.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun excludeAttributes(): Optional<List<String>> = body.excludeAttributes()
 
     /**
      * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
@@ -124,6 +135,14 @@ private constructor(
     fun _distanceMetric(): JsonField<DistanceMetric> = body._distanceMetric()
 
     /**
+     * Returns the raw JSON value of [excludeAttributes].
+     *
+     * Unlike [excludeAttributes], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _excludeAttributes(): JsonField<List<String>> = body._excludeAttributes()
+
+    /**
      * Returns the raw JSON value of [includeAttributes].
      *
      * Unlike [includeAttributes], this method doesn't throw if the JSON field has an unexpected
@@ -198,9 +217,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [aggregateBy]
          * - [distanceMetric]
+         * - [excludeAttributes]
          * - [filters]
          * - [includeAttributes]
-         * - [rankBy]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -235,6 +254,34 @@ private constructor(
          */
         fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
             body.distanceMetric(distanceMetric)
+        }
+
+        /**
+         * List of attribute names to exclude from the response. All other attributes will be
+         * included in the response.
+         */
+        fun excludeAttributes(excludeAttributes: List<String>) = apply {
+            body.excludeAttributes(excludeAttributes)
+        }
+
+        /**
+         * Sets [Builder.excludeAttributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.excludeAttributes] with a well-typed `List<String>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun excludeAttributes(excludeAttributes: JsonField<List<String>>) = apply {
+            body.excludeAttributes(excludeAttributes)
+        }
+
+        /**
+         * Adds a single [String] to [excludeAttributes].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addExcludeAttribute(excludeAttribute: String) = apply {
+            body.addExcludeAttribute(excludeAttribute)
         }
 
         /**
@@ -462,6 +509,7 @@ private constructor(
     private constructor(
         private val aggregateBy: JsonField<MutableMap<String, AggregateBy>>,
         private val distanceMetric: JsonField<DistanceMetric>,
+        private val excludeAttributes: JsonField<List<String>>,
         private val filters: JsonField<Filter>,
         private val includeAttributes: JsonField<IncludeAttributes>,
         private val rankBy: JsonField<RankBy>,
@@ -479,6 +527,9 @@ private constructor(
             @JsonProperty("distance_metric")
             @ExcludeMissing
             distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
+            @JsonProperty("exclude_attributes")
+            @ExcludeMissing
+            excludeAttributes: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filter> = JsonMissing.of(),
             @JsonProperty("include_attributes")
             @ExcludeMissing
@@ -494,6 +545,7 @@ private constructor(
         ) : this(
             aggregateBy,
             distanceMetric,
+            excludeAttributes,
             filters,
             includeAttributes,
             rankBy,
@@ -507,6 +559,7 @@ private constructor(
             Query.builder()
                 .aggregateBy(aggregateBy)
                 .distanceMetric(distanceMetric)
+                .excludeAttributes(excludeAttributes)
                 .filters(filters)
                 .includeAttributes(includeAttributes)
                 .rankBy(rankBy)
@@ -530,6 +583,16 @@ private constructor(
          */
         fun distanceMetric(): Optional<DistanceMetric> =
             distanceMetric.getOptional("distance_metric")
+
+        /**
+         * List of attribute names to exclude from the response. All other attributes will be
+         * included in the response.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun excludeAttributes(): Optional<List<String>> =
+            excludeAttributes.getOptional("exclude_attributes")
 
         /**
          * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
@@ -618,6 +681,16 @@ private constructor(
         fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
 
         /**
+         * Returns the raw JSON value of [excludeAttributes].
+         *
+         * Unlike [excludeAttributes], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("exclude_attributes")
+        @ExcludeMissing
+        fun _excludeAttributes(): JsonField<List<String>> = excludeAttributes
+
+        /**
          * Returns the raw JSON value of [includeAttributes].
          *
          * Unlike [includeAttributes], this method doesn't throw if the JSON field has an unexpected
@@ -676,6 +749,7 @@ private constructor(
 
             private var aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
+            private var excludeAttributes: JsonField<MutableList<String>>? = null
             private var filters: JsonField<Filter> = JsonMissing.of()
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
             private var rankBy: JsonField<RankBy> = JsonMissing.of()
@@ -688,6 +762,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 aggregateBy = body.aggregateBy
                 distanceMetric = body.distanceMetric
+                excludeAttributes = body.excludeAttributes.map { it.toMutableList() }
                 filters = body.filters
                 includeAttributes = body.includeAttributes
                 rankBy = body.rankBy
@@ -727,6 +802,36 @@ private constructor(
              */
             fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
                 this.distanceMetric = distanceMetric
+            }
+
+            /**
+             * List of attribute names to exclude from the response. All other attributes will be
+             * included in the response.
+             */
+            fun excludeAttributes(excludeAttributes: List<String>) =
+                excludeAttributes(JsonField.of(excludeAttributes))
+
+            /**
+             * Sets [Builder.excludeAttributes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.excludeAttributes] with a well-typed `List<String>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun excludeAttributes(excludeAttributes: JsonField<List<String>>) = apply {
+                this.excludeAttributes = excludeAttributes.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [excludeAttributes].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addExcludeAttribute(excludeAttribute: String) = apply {
+                excludeAttributes =
+                    (excludeAttributes ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("excludeAttributes", it).add(excludeAttribute)
+                    }
             }
 
             /**
@@ -849,6 +954,7 @@ private constructor(
                 Body(
                     aggregateBy,
                     distanceMetric,
+                    (excludeAttributes ?: JsonMissing.of()).map { it.toImmutable() },
                     filters,
                     includeAttributes,
                     rankBy,
@@ -868,6 +974,7 @@ private constructor(
 
             aggregateBy()
             distanceMetric().ifPresent { it.validate() }
+            excludeAttributes()
             filters()
             rankBy()
             includeAttributes().ifPresent { it.validate() }
@@ -895,6 +1002,7 @@ private constructor(
         internal fun validity(): Int =
             (if (aggregateBy.asKnown().isPresent()) 1 else 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
+                (excludeAttributes.asKnown().getOrNull()?.size ?: 0) +
                 (if (filters.asKnown().isPresent()) 1 else 0) +
                 (if (rankBy.asKnown().isPresent()) 1 else 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
@@ -907,17 +1015,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && aggregateBy == other.aggregateBy && distanceMetric == other.distanceMetric && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && consistency == other.consistency && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && aggregateBy == other.aggregateBy && distanceMetric == other.distanceMetric && excludeAttributes == other.excludeAttributes && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && consistency == other.consistency && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(aggregateBy, distanceMetric, filters, includeAttributes, rankBy, topK, consistency, vectorEncoding, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(aggregateBy, distanceMetric, excludeAttributes, filters, includeAttributes, rankBy, topK, consistency, vectorEncoding, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, consistency=$consistency, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, consistency=$consistency, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
