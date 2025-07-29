@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.6 (2025-07-29)
+
+Full Changelog: [v0.2.5...v0.2.6](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.5...v0.2.6)
+
+### Features
+
+* add retryable exception ([0246ca3](https://github.com/turbopuffer/turbopuffer-java/commit/0246ca3cb94103e9cc5f54d55748d6e0db32bb67))
+
+
+### Bug Fixes
+
+* **api:** api update ([876f857](https://github.com/turbopuffer/turbopuffer-java/commit/876f85729ab6347c3c7ccc454e787d4a5a6c71fb))
+* **api:** api update ([b646edd](https://github.com/turbopuffer/turbopuffer-java/commit/b646edd727512482e5050a9345895cfc5de9f85b))
+
+
+### Chores
+
+* **internal:** unskip some tests ([b482adc](https://github.com/turbopuffer/turbopuffer-java/commit/b482adcf41405681ed742aecbc4657405da86928))
+
 ## 0.2.5 (2025-07-29)
 
 Full Changelog: [v0.2.4...v0.2.5](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.4...v0.2.5)
