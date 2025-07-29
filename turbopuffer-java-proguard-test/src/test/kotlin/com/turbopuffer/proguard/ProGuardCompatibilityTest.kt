@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.jsonMapper
 import com.turbopuffer.models.NamespaceSummary
-import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.DistanceMetric
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
@@ -54,20 +53,6 @@ internal class ProGuardCompatibilityTest {
             )
 
         assertThat(roundtrippedNamespaceSummary).isEqualTo(namespaceSummary)
-    }
-
-    @Test
-    fun attributeSchemaRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val attributeSchema = AttributeSchemaConfig.builder().type("string").build()
-
-        val roundtrippedAttributeSchema =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(attributeSchema),
-                jacksonTypeRef<AttributeSchemaConfig>(),
-            )
-
-        assertThat(roundtrippedAttributeSchema).isEqualTo(attributeSchema)
     }
 
     @Test
