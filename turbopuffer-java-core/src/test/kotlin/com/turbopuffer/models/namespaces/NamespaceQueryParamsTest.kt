@@ -3,6 +3,7 @@
 package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.JsonValue
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -67,6 +68,18 @@ internal class NamespaceQueryParamsTest {
 
         val body = params._body()
 
+        assertThat(body.aggregateBy())
+            .contains(
+                Query.AggregateBy.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
+        assertThat(body.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)
+        assertThat(body.excludeAttributes().getOrNull()).containsExactly("string")
+        assertThat(body._filters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.includeAttributes()).contains(IncludeAttributes.ofBool(true))
+        assertThat(body._rankBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.topK()).contains(0L)
         assertThat(body.consistency())
             .contains(
                 NamespaceQueryParams.Consistency.builder()
