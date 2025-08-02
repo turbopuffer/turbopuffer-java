@@ -7,6 +7,8 @@ import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
+import com.turbopuffer.models.namespaces.NamespaceExplainQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
 import com.turbopuffer.models.namespaces.NamespaceMetadata
@@ -61,6 +63,28 @@ interface NamespaceServiceAsync {
     /** @see deleteAll */
     fun deleteAll(requestOptions: RequestOptions): CompletableFuture<NamespaceDeleteAllResponse> =
         deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
+
+    /** Explain a query plan. */
+    fun explainQuery(): CompletableFuture<NamespaceExplainQueryResponse> =
+        explainQuery(NamespaceExplainQueryParams.none())
+
+    /** @see explainQuery */
+    fun explainQuery(
+        params: NamespaceExplainQueryParams = NamespaceExplainQueryParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceExplainQueryResponse>
+
+    /** @see explainQuery */
+    fun explainQuery(
+        params: NamespaceExplainQueryParams = NamespaceExplainQueryParams.none()
+    ): CompletableFuture<NamespaceExplainQueryResponse> =
+        explainQuery(params, RequestOptions.none())
+
+    /** @see explainQuery */
+    fun explainQuery(
+        requestOptions: RequestOptions
+    ): CompletableFuture<NamespaceExplainQueryResponse> =
+        explainQuery(NamespaceExplainQueryParams.none(), requestOptions)
 
     /** Warm the cache for a namespace. */
     fun hintCacheWarm(): CompletableFuture<NamespaceHintCacheWarmResponse> =
@@ -248,6 +272,31 @@ interface NamespaceServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceDeleteAllResponse>> =
             deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /v2/namespaces/{namespace}/explain_query`, but is
+         * otherwise the same as [NamespaceServiceAsync.explainQuery].
+         */
+        fun explainQuery(): CompletableFuture<HttpResponseFor<NamespaceExplainQueryResponse>> =
+            explainQuery(NamespaceExplainQueryParams.none())
+
+        /** @see explainQuery */
+        fun explainQuery(
+            params: NamespaceExplainQueryParams = NamespaceExplainQueryParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceExplainQueryResponse>>
+
+        /** @see explainQuery */
+        fun explainQuery(
+            params: NamespaceExplainQueryParams = NamespaceExplainQueryParams.none()
+        ): CompletableFuture<HttpResponseFor<NamespaceExplainQueryResponse>> =
+            explainQuery(params, RequestOptions.none())
+
+        /** @see explainQuery */
+        fun explainQuery(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<NamespaceExplainQueryResponse>> =
+            explainQuery(NamespaceExplainQueryParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/hint_cache_warm`, but is

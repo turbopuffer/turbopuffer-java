@@ -23,6 +23,7 @@ private constructor(
     private val caseSensitive: JsonField<Boolean>,
     private val k1: JsonField<Double>,
     private val language: JsonField<Language>,
+    private val maxTokenLength: JsonField<Long>,
     private val removeStopwords: JsonField<Boolean>,
     private val stemming: JsonField<Boolean>,
     private val tokenizer: JsonField<Tokenizer>,
@@ -37,6 +38,9 @@ private constructor(
         caseSensitive: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("k1") @ExcludeMissing k1: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("language") @ExcludeMissing language: JsonField<Language> = JsonMissing.of(),
+        @JsonProperty("max_token_length")
+        @ExcludeMissing
+        maxTokenLength: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("remove_stopwords")
         @ExcludeMissing
         removeStopwords: JsonField<Boolean> = JsonMissing.of(),
@@ -44,7 +48,17 @@ private constructor(
         @JsonProperty("tokenizer")
         @ExcludeMissing
         tokenizer: JsonField<Tokenizer> = JsonMissing.of(),
-    ) : this(b, caseSensitive, k1, language, removeStopwords, stemming, tokenizer, mutableMapOf())
+    ) : this(
+        b,
+        caseSensitive,
+        k1,
+        language,
+        maxTokenLength,
+        removeStopwords,
+        stemming,
+        tokenizer,
+        mutableMapOf(),
+    )
 
     /**
      * The `b` document length normalization parameter for BM25. Defaults to `0.75`.
@@ -77,6 +91,15 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun language(): Optional<Language> = language.getOptional("language")
+
+    /**
+     * Maximum length of a token in bytes. Tokens larger than this value during tokenization will be
+     * filtered out. Has to be between `1` and `254` (inclusive). Defaults to `39`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun maxTokenLength(): Optional<Long> = maxTokenLength.getOptional("max_token_length")
 
     /**
      * Removes common words from the text based on language. Defaults to `true` (i.e. remove common
@@ -134,6 +157,15 @@ private constructor(
     @JsonProperty("language") @ExcludeMissing fun _language(): JsonField<Language> = language
 
     /**
+     * Returns the raw JSON value of [maxTokenLength].
+     *
+     * Unlike [maxTokenLength], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("max_token_length")
+    @ExcludeMissing
+    fun _maxTokenLength(): JsonField<Long> = maxTokenLength
+
+    /**
      * Returns the raw JSON value of [removeStopwords].
      *
      * Unlike [removeStopwords], this method doesn't throw if the JSON field has an unexpected type.
@@ -184,6 +216,7 @@ private constructor(
         private var caseSensitive: JsonField<Boolean> = JsonMissing.of()
         private var k1: JsonField<Double> = JsonMissing.of()
         private var language: JsonField<Language> = JsonMissing.of()
+        private var maxTokenLength: JsonField<Long> = JsonMissing.of()
         private var removeStopwords: JsonField<Boolean> = JsonMissing.of()
         private var stemming: JsonField<Boolean> = JsonMissing.of()
         private var tokenizer: JsonField<Tokenizer> = JsonMissing.of()
@@ -195,6 +228,7 @@ private constructor(
             caseSensitive = fullTextSearchConfig.caseSensitive
             k1 = fullTextSearchConfig.k1
             language = fullTextSearchConfig.language
+            maxTokenLength = fullTextSearchConfig.maxTokenLength
             removeStopwords = fullTextSearchConfig.removeStopwords
             stemming = fullTextSearchConfig.stemming
             tokenizer = fullTextSearchConfig.tokenizer
@@ -248,6 +282,23 @@ private constructor(
          * value.
          */
         fun language(language: JsonField<Language>) = apply { this.language = language }
+
+        /**
+         * Maximum length of a token in bytes. Tokens larger than this value during tokenization
+         * will be filtered out. Has to be between `1` and `254` (inclusive). Defaults to `39`.
+         */
+        fun maxTokenLength(maxTokenLength: Long) = maxTokenLength(JsonField.of(maxTokenLength))
+
+        /**
+         * Sets [Builder.maxTokenLength] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxTokenLength] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun maxTokenLength(maxTokenLength: JsonField<Long>) = apply {
+            this.maxTokenLength = maxTokenLength
+        }
 
         /**
          * Removes common words from the text based on language. Defaults to `true` (i.e. remove
@@ -321,6 +372,7 @@ private constructor(
                 caseSensitive,
                 k1,
                 language,
+                maxTokenLength,
                 removeStopwords,
                 stemming,
                 tokenizer,
@@ -339,6 +391,7 @@ private constructor(
         caseSensitive()
         k1()
         language().ifPresent { it.validate() }
+        maxTokenLength()
         removeStopwords()
         stemming()
         tokenizer().ifPresent { it.validate() }
@@ -364,6 +417,7 @@ private constructor(
             (if (caseSensitive.asKnown().isPresent) 1 else 0) +
             (if (k1.asKnown().isPresent) 1 else 0) +
             (language.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (maxTokenLength.asKnown().isPresent) 1 else 0) +
             (if (removeStopwords.asKnown().isPresent) 1 else 0) +
             (if (stemming.asKnown().isPresent) 1 else 0) +
             (tokenizer.asKnown().getOrNull()?.validity() ?: 0)
@@ -373,15 +427,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FullTextSearchConfig && b == other.b && caseSensitive == other.caseSensitive && k1 == other.k1 && language == other.language && removeStopwords == other.removeStopwords && stemming == other.stemming && tokenizer == other.tokenizer && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FullTextSearchConfig && b == other.b && caseSensitive == other.caseSensitive && k1 == other.k1 && language == other.language && maxTokenLength == other.maxTokenLength && removeStopwords == other.removeStopwords && stemming == other.stemming && tokenizer == other.tokenizer && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(b, caseSensitive, k1, language, removeStopwords, stemming, tokenizer, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(b, caseSensitive, k1, language, maxTokenLength, removeStopwords, stemming, tokenizer, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FullTextSearchConfig{b=$b, caseSensitive=$caseSensitive, k1=$k1, language=$language, removeStopwords=$removeStopwords, stemming=$stemming, tokenizer=$tokenizer, additionalProperties=$additionalProperties}"
+        "FullTextSearchConfig{b=$b, caseSensitive=$caseSensitive, k1=$k1, language=$language, maxTokenLength=$maxTokenLength, removeStopwords=$removeStopwords, stemming=$stemming, tokenizer=$tokenizer, additionalProperties=$additionalProperties}"
 }

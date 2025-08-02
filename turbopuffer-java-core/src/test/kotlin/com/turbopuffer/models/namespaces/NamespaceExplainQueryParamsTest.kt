@@ -7,11 +7,11 @@ import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-internal class NamespaceQueryParamsTest {
+internal class NamespaceExplainQueryParamsTest {
 
     @Test
     fun create() {
-        NamespaceQueryParams.builder()
+        NamespaceExplainQueryParams.builder()
             .namespace("namespace")
             .aggregateBy(
                 Query.AggregateBy.builder()
@@ -25,8 +25,8 @@ internal class NamespaceQueryParamsTest {
             .rankBy(JsonValue.from(mapOf<String, Any>()))
             .topK(0L)
             .consistency(
-                NamespaceQueryParams.Consistency.builder()
-                    .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                NamespaceExplainQueryParams.Consistency.builder()
+                    .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
                     .build()
             )
             .vectorEncoding(VectorEncoding.FLOAT)
@@ -35,7 +35,7 @@ internal class NamespaceQueryParamsTest {
 
     @Test
     fun pathParams() {
-        val params = NamespaceQueryParams.builder().build()
+        val params = NamespaceExplainQueryParams.builder().build()
 
         assertThat(params._pathParam(0)).isEqualTo("")
         // out-of-bound path param
@@ -45,7 +45,7 @@ internal class NamespaceQueryParamsTest {
     @Test
     fun body() {
         val params =
-            NamespaceQueryParams.builder()
+            NamespaceExplainQueryParams.builder()
                 .namespace("namespace")
                 .aggregateBy(
                     Query.AggregateBy.builder()
@@ -59,8 +59,8 @@ internal class NamespaceQueryParamsTest {
                 .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)
                 .consistency(
-                    NamespaceQueryParams.Consistency.builder()
-                        .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                    NamespaceExplainQueryParams.Consistency.builder()
+                        .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
                 .vectorEncoding(VectorEncoding.FLOAT)
@@ -82,8 +82,8 @@ internal class NamespaceQueryParamsTest {
         assertThat(body.topK()).contains(0L)
         assertThat(body.consistency())
             .contains(
-                NamespaceQueryParams.Consistency.builder()
-                    .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                NamespaceExplainQueryParams.Consistency.builder()
+                    .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
                     .build()
             )
         assertThat(body.vectorEncoding()).contains(VectorEncoding.FLOAT)
@@ -91,7 +91,7 @@ internal class NamespaceQueryParamsTest {
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = NamespaceQueryParams.builder().build()
+        val params = NamespaceExplainQueryParams.builder().build()
 
         val body = params._body()
     }

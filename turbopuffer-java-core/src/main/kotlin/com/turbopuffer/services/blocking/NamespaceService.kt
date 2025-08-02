@@ -8,6 +8,8 @@ import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
+import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
+import com.turbopuffer.models.namespaces.NamespaceExplainQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
 import com.turbopuffer.models.namespaces.NamespaceMetadata
@@ -60,6 +62,25 @@ interface NamespaceService {
     /** @see deleteAll */
     fun deleteAll(requestOptions: RequestOptions): NamespaceDeleteAllResponse =
         deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
+
+    /** Explain a query plan. */
+    fun explainQuery(): NamespaceExplainQueryResponse =
+        explainQuery(NamespaceExplainQueryParams.none())
+
+    /** @see explainQuery */
+    fun explainQuery(
+        params: NamespaceExplainQueryParams = NamespaceExplainQueryParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceExplainQueryResponse
+
+    /** @see explainQuery */
+    fun explainQuery(
+        params: NamespaceExplainQueryParams = NamespaceExplainQueryParams.none()
+    ): NamespaceExplainQueryResponse = explainQuery(params, RequestOptions.none())
+
+    /** @see explainQuery */
+    fun explainQuery(requestOptions: RequestOptions): NamespaceExplainQueryResponse =
+        explainQuery(NamespaceExplainQueryParams.none(), requestOptions)
 
     /** Warm the cache for a namespace. */
     fun hintCacheWarm(): NamespaceHintCacheWarmResponse =
@@ -235,6 +256,35 @@ interface NamespaceService {
         @MustBeClosed
         fun deleteAll(requestOptions: RequestOptions): HttpResponseFor<NamespaceDeleteAllResponse> =
             deleteAll(NamespaceDeleteAllParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /v2/namespaces/{namespace}/explain_query`, but is
+         * otherwise the same as [NamespaceService.explainQuery].
+         */
+        @MustBeClosed
+        fun explainQuery(): HttpResponseFor<NamespaceExplainQueryResponse> =
+            explainQuery(NamespaceExplainQueryParams.none())
+
+        /** @see explainQuery */
+        @MustBeClosed
+        fun explainQuery(
+            params: NamespaceExplainQueryParams = NamespaceExplainQueryParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceExplainQueryResponse>
+
+        /** @see explainQuery */
+        @MustBeClosed
+        fun explainQuery(
+            params: NamespaceExplainQueryParams = NamespaceExplainQueryParams.none()
+        ): HttpResponseFor<NamespaceExplainQueryResponse> =
+            explainQuery(params, RequestOptions.none())
+
+        /** @see explainQuery */
+        @MustBeClosed
+        fun explainQuery(
+            requestOptions: RequestOptions
+        ): HttpResponseFor<NamespaceExplainQueryResponse> =
+            explainQuery(NamespaceExplainQueryParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/hint_cache_warm`, but is

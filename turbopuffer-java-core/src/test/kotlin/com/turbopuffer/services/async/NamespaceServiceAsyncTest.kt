@@ -9,6 +9,7 @@ import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
+import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
@@ -41,6 +42,44 @@ internal class NamespaceServiceAsyncTest {
         val responseFuture =
             namespaceServiceAsync.deleteAll(
                 NamespaceDeleteAllParams.builder().namespace("namespace").build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("skipped: tests are disabled for the time being")
+    @Test
+    fun explainQuery() {
+        val client =
+            TurbopufferOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("tpuf_A1...")
+                .build()
+        val namespaceServiceAsync = client.namespaces()
+
+        val responseFuture =
+            namespaceServiceAsync.explainQuery(
+                NamespaceExplainQueryParams.builder()
+                    .namespace("namespace")
+                    .aggregateBy(
+                        Query.AggregateBy.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+                    .addExcludeAttribute("string")
+                    .filters(JsonValue.from(mapOf<String, Any>()))
+                    .includeAttributes(true)
+                    .rankBy(JsonValue.from(mapOf<String, Any>()))
+                    .topK(0L)
+                    .consistency(
+                        NamespaceExplainQueryParams.Consistency.builder()
+                            .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
+                            .build()
+                    )
+                    .vectorEncoding(VectorEncoding.FLOAT)
+                    .build()
             )
 
         val response = responseFuture.get()
