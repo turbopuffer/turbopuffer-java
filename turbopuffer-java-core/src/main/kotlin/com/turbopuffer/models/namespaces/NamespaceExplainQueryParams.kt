@@ -39,7 +39,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun aggregateBy(): Optional<Query.AggregateBy> = body.aggregateBy()
+    fun aggregateBy(): Optional<MutableMap<String, AggregateBy>> = body.aggregateBy()
 
     /**
      * A function used to calculate vector similarity.
@@ -61,7 +61,14 @@ private constructor(
     /**
      * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
      */
-    fun _filters(): JsonValue = body._filters()
+    fun filters(): Optional<Filter> = body.filters()
+
+    /**
+     * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
+     *
+     * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _filters(): JsonField<Filter> = body._filters()
 
     /**
      * Whether to include attributes in the response.
@@ -71,8 +78,20 @@ private constructor(
      */
     fun includeAttributes(): Optional<IncludeAttributes> = body.includeAttributes()
 
-    /** How to rank the documents in the namespace. */
-    fun _rankBy(): JsonValue = body._rankBy()
+    /**
+     * How to rank the documents in the namespace.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun rankBy(): Optional<RankBy> = body.rankBy()
+
+    /**
+     * How to rank the documents in the namespace.
+     *
+     * Unlike [rankBy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _rankBy(): JsonField<RankBy> = body._rankBy()
 
     /**
      * The number of results to return.
@@ -103,7 +122,7 @@ private constructor(
      *
      * Unlike [aggregateBy], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _aggregateBy(): JsonField<Query.AggregateBy> = body._aggregateBy()
+    fun _aggregateBy(): JsonField<MutableMap<String, AggregateBy>> = body._aggregateBy()
 
     /**
      * Returns the raw JSON value of [distanceMetric].
@@ -205,16 +224,18 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** Aggregations to compute over all documents in the namespace that match the filters. */
-        fun aggregateBy(aggregateBy: Query.AggregateBy) = apply { body.aggregateBy(aggregateBy) }
+        fun aggregateBy(aggregateBy: MutableMap<String, AggregateBy>) = apply {
+            body.aggregateBy(aggregateBy)
+        }
 
         /**
          * Sets [Builder.aggregateBy] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.aggregateBy] with a well-typed [Query.AggregateBy] value
+         * You should usually call [Builder.aggregateBy] with a well-typed [AggregateBy] value
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
-        fun aggregateBy(aggregateBy: JsonField<Query.AggregateBy>) = apply {
+        fun aggregateBy(aggregateBy: JsonField<MutableMap<String, AggregateBy>>) = apply {
             body.aggregateBy(aggregateBy)
         }
 
@@ -266,7 +287,7 @@ private constructor(
          * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
          * clause.
          */
-        fun filters(filters: JsonValue) = apply { body.filters(filters) }
+        fun filters(filters: Filter) = apply { body.filters(filters) }
 
         /** Whether to include attributes in the response. */
         fun includeAttributes(includeAttributes: IncludeAttributes) = apply {
@@ -293,7 +314,7 @@ private constructor(
         }
 
         /** How to rank the documents in the namespace. */
-        fun rankBy(rankBy: JsonValue) = apply { body.rankBy(rankBy) }
+        fun rankBy(rankBy: RankBy) = apply { body.rankBy(rankBy) }
 
         /** The number of results to return. */
         fun topK(topK: Long) = apply { body.topK(topK) }
@@ -482,12 +503,12 @@ private constructor(
     /** Query, filter, full-text search and vector search documents. */
     class Body
     private constructor(
-        private val aggregateBy: JsonField<Query.AggregateBy>,
+        private val aggregateBy: JsonField<MutableMap<String, AggregateBy>>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val excludeAttributes: JsonField<List<String>>,
-        private val filters: JsonValue,
+        private val filters: JsonField<Filter>,
         private val includeAttributes: JsonField<IncludeAttributes>,
-        private val rankBy: JsonValue,
+        private val rankBy: JsonField<RankBy>,
         private val topK: JsonField<Long>,
         private val consistency: JsonField<Consistency>,
         private val vectorEncoding: JsonField<VectorEncoding>,
@@ -498,18 +519,18 @@ private constructor(
         private constructor(
             @JsonProperty("aggregate_by")
             @ExcludeMissing
-            aggregateBy: JsonField<Query.AggregateBy> = JsonMissing.of(),
+            aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of(),
             @JsonProperty("distance_metric")
             @ExcludeMissing
             distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
             @JsonProperty("exclude_attributes")
             @ExcludeMissing
             excludeAttributes: JsonField<List<String>> = JsonMissing.of(),
-            @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
+            @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filter> = JsonMissing.of(),
             @JsonProperty("include_attributes")
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
-            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
+            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonField<RankBy> = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("consistency")
             @ExcludeMissing
@@ -547,7 +568,8 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun aggregateBy(): Optional<Query.AggregateBy> = aggregateBy.getOptional("aggregate_by")
+        fun aggregateBy(): Optional<MutableMap<String, AggregateBy>> =
+            aggregateBy.getOptional("aggregate_by")
 
         /**
          * A function used to calculate vector similarity.
@@ -571,8 +593,19 @@ private constructor(
         /**
          * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
          * clause.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
+        fun filters(): Optional<Filter> = filters.getOptional("filters")
+
+        /**
+         * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
+         * clause.
+         *
+         * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<Filter> = filters
 
         /**
          * Whether to include attributes in the response.
@@ -583,8 +616,21 @@ private constructor(
         fun includeAttributes(): Optional<IncludeAttributes> =
             includeAttributes.getOptional("include_attributes")
 
-        /** How to rank the documents in the namespace. */
-        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
+        /**
+         * How to rank the documents in the namespace.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun rankBy(): Optional<RankBy> = rankBy.getOptional("rank_by")
+
+        /**
+         * How to rank the documents in the namespace.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonField<RankBy> = rankBy
 
         /**
          * The number of results to return.
@@ -618,7 +664,7 @@ private constructor(
          */
         @JsonProperty("aggregate_by")
         @ExcludeMissing
-        fun _aggregateBy(): JsonField<Query.AggregateBy> = aggregateBy
+        fun _aggregateBy(): JsonField<MutableMap<String, AggregateBy>> = aggregateBy
 
         /**
          * Returns the raw JSON value of [distanceMetric].
@@ -697,12 +743,12 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var aggregateBy: JsonField<Query.AggregateBy> = JsonMissing.of()
+            private var aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var excludeAttributes: JsonField<MutableList<String>>? = null
-            private var filters: JsonValue = JsonMissing.of()
+            private var filters: JsonField<Filter> = JsonMissing.of()
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
-            private var rankBy: JsonValue = JsonMissing.of()
+            private var rankBy: JsonField<RankBy> = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
             private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
@@ -725,16 +771,17 @@ private constructor(
             /**
              * Aggregations to compute over all documents in the namespace that match the filters.
              */
-            fun aggregateBy(aggregateBy: Query.AggregateBy) = aggregateBy(JsonField.of(aggregateBy))
+            fun aggregateBy(aggregateBy: MutableMap<String, AggregateBy>) =
+                aggregateBy(JsonField.of(aggregateBy))
 
             /**
              * Sets [Builder.aggregateBy] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.aggregateBy] with a well-typed [Query.AggregateBy]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
+             * You should usually call [Builder.aggregateBy] with a well-typed [AggregateBy] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun aggregateBy(aggregateBy: JsonField<Query.AggregateBy>) = apply {
+            fun aggregateBy(aggregateBy: JsonField<MutableMap<String, AggregateBy>>) = apply {
                 this.aggregateBy = aggregateBy
             }
 
@@ -787,7 +834,16 @@ private constructor(
              * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
              * clause.
              */
-            fun filters(filters: JsonValue) = apply { this.filters = filters }
+            fun filters(filters: Filter) = filters(JsonField.of(filters))
+
+            /**
+             * Sets [Builder.filters] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.filters] with a well-typed [Filter] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun filters(filters: JsonField<Filter>) = apply { this.filters = filters }
 
             /** Whether to include attributes in the response. */
             fun includeAttributes(includeAttributes: IncludeAttributes) =
@@ -813,8 +869,23 @@ private constructor(
             fun includeAttributesOfStrings(strings: List<String>) =
                 includeAttributes(IncludeAttributes.ofStrings(strings))
 
-            /** How to rank the documents in the namespace. */
-            fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
+            /**
+             * Sets [Builder.rankBy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rankBy] with a well-typed [RankBy] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun rankBy(rankBy: RankBy) = rankBy(JsonField.of(rankBy))
+
+            /**
+             * Sets [Builder.rankBy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rankBy] with a well-typed [RankBy] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun rankBy(rankBy: JsonField<RankBy>) = apply { this.rankBy = rankBy }
 
             /** The number of results to return. */
             fun topK(topK: Long) = topK(JsonField.of(topK))
@@ -903,9 +974,11 @@ private constructor(
                 return@apply
             }
 
-            aggregateBy().ifPresent { it.validate() }
+            aggregateBy()
             distanceMetric().ifPresent { it.validate() }
             excludeAttributes()
+            filters()
+            rankBy()
             includeAttributes().ifPresent { it.validate() }
             topK()
             consistency().ifPresent { it.validate() }
@@ -929,9 +1002,11 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (aggregateBy.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (aggregateBy.asKnown().isPresent()) 1 else 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (excludeAttributes.asKnown().getOrNull()?.size ?: 0) +
+                (if (filters.asKnown().isPresent()) 1 else 0) +
+                (if (rankBy.asKnown().isPresent()) 1 else 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0) +
                 (consistency.asKnown().getOrNull()?.validity() ?: 0) +
