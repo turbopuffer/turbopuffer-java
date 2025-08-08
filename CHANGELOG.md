@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.2.7 (2025-08-08)
+
+Full Changelog: [v0.2.6...v0.2.7](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.6...v0.2.7)
+
+### Bug Fixes
+
+* **api:** api update ([6b0ad35](https://github.com/turbopuffer/turbopuffer-java/commit/6b0ad35d4bee197d0f56efa8b5bc278fdad54a76))
+* **api:** api update ([509f051](https://github.com/turbopuffer/turbopuffer-java/commit/509f051d9808578bad5314ee56067f68bf83d8f1))
+* **client:** r8 support ([1c8820a](https://github.com/turbopuffer/turbopuffer-java/commit/1c8820a73eb6e8fe7d706a6b21f3eb48dd0ee8e0))
+
+
+### Chores
+
+* **example:** fix run example comment ([f5c1e7f](https://github.com/turbopuffer/turbopuffer-java/commit/f5c1e7fc6868b953192c9bdaa0025861f249306a))
+* increase max gradle JVM heap to 8GB ([7837387](https://github.com/turbopuffer/turbopuffer-java/commit/7837387f3a6d6486f38b38b62638f4ecdde878bd))
+* **internal:** add async lock helper ([a55b5ed](https://github.com/turbopuffer/turbopuffer-java/commit/a55b5ed95022dfbbfc51ee6baed84e842aa11bfb))
+* **internal:** bump ci test timeout ([74fe18d](https://github.com/turbopuffer/turbopuffer-java/commit/74fe18df0abd760e1e10cce63d1bd1cbeb3c2aa9))
+* **internal:** improve test assertions ([632aca8](https://github.com/turbopuffer/turbopuffer-java/commit/632aca88575e458b6f305705bd963f5a2d7d91e6))
+* **internal:** reduce proguard ci logging ([b8bd838](https://github.com/turbopuffer/turbopuffer-java/commit/b8bd8386a4d1cd80d9fbc2eef83d13c4016784f1))
+
 ## 0.2.6 (2025-07-29)
 
 Full Changelog: [v0.2.5...v0.2.6](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.5...v0.2.6)
