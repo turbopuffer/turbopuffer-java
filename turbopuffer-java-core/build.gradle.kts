@@ -39,6 +39,8 @@ kotlin {
                 exclude("com/turbopuffer/models/namespaces/IdTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceMultiQueryParamsTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceMultiQueryResponseTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceExplainQueryParamsTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceExplainQueryResponseTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceQueryParamsTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceQueryResponseTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceSchemaResponseTest.kt")

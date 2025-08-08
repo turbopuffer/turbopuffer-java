@@ -55,22 +55,15 @@ internal class NamespaceServiceTest {
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("tpuf_A1...")
                 .build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.explainQuery(
                 NamespaceExplainQueryParams.builder()
                     .namespace("namespace")
-                    .aggregateBy(
-                        Query.AggregateBy.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("bar"))
-                            .build()
-                    )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .addExcludeAttribute("string")
-                    .filters(JsonValue.from(mapOf<String, Any>()))
                     .includeAttributes(true)
-                    .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
                     .consistency(
                         NamespaceExplainQueryParams.Consistency.builder()
