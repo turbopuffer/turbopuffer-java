@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.8 (2025-08-11)
+
+Full Changelog: [v0.2.7...v0.2.8](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.7...v0.2.8)
+
+### Chores
+
+* **internal:** update comment in script ([cfa20b9](https://github.com/turbopuffer/turbopuffer-java/commit/cfa20b91f2272181cef8b98c3ead549804bea32a))
+* update @stainless-api/prism-cli to v5.15.0 ([3121d0e](https://github.com/turbopuffer/turbopuffer-java/commit/3121d0e8de3830bbc99be1004007fdf8784e740a))
+
 ## 0.2.7 (2025-08-08)
 
 Full Changelog: [v0.2.6...v0.2.7](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.6...v0.2.7)
