@@ -15,14 +15,33 @@ val jsonMapper: JsonMapper = jsonMapper()
 
 sealed class AggregateBy() {
     companion object {
-        @JvmStatic public fun count(attr: String): AggregateByCount = AggregateByCount.create(attr)
+        @JvmStatic public fun count(): AggregateByCount = AggregateByCount.create()
+
+        @JvmStatic
+        public fun count(attr: String): AggregateByCountDeprecated =
+            AggregateByCountDeprecated.create(attr)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0")
+class AggregateByCount private constructor() : AggregateBy() {
+    private val f0: String = "Count"
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic internal fun create(): AggregateByCount = AggregateByCount()
     }
 }
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("f0", "attr")
-class AggregateByCount private constructor(attr: String) : AggregateBy() {
+class AggregateByCountDeprecated private constructor(attr: String) : AggregateBy() {
     private val f0: String = "Count"
     private val attr: String = attr
 
@@ -31,7 +50,9 @@ class AggregateByCount private constructor(attr: String) : AggregateBy() {
     }
 
     companion object {
-        @JvmSynthetic internal fun create(attr: String): AggregateByCount = AggregateByCount(attr)
+        @JvmSynthetic
+        internal fun create(attr: String): AggregateByCountDeprecated =
+            AggregateByCountDeprecated(attr)
     }
 }
 
