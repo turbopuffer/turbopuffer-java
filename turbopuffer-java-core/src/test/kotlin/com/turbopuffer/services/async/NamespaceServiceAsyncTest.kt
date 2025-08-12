@@ -28,7 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(TestServerExtension::class)
 internal class NamespaceServiceAsyncTest {
 
-    @Disabled("skipped: tests are disabled for the time being")
+    @Disabled("Prism tests are disabled")
     @Test
     fun deleteAll() {
         val client =
@@ -47,7 +47,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
+    @Disabled("Prism tests are disabled")
     @Test
     fun explainQuery() {
         val client =
@@ -85,7 +85,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
+    @Disabled("Prism tests are disabled")
     @Test
     fun hintCacheWarm() {
         val client =
@@ -104,7 +104,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
+    @Disabled("Prism tests are disabled")
     @Test
     fun metadata() {
         val client =
@@ -123,7 +123,7 @@ internal class NamespaceServiceAsyncTest {
         namespaceMetadata.validate()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
+    @Disabled("Prism tests are disabled")
     @Test
     fun multiQuery() {
         val client =
@@ -165,7 +165,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
+    @Disabled("Prism tests are disabled")
     @Test
     fun query() {
         val client =
@@ -203,7 +203,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
+    @Disabled("Prism tests are disabled")
     @Test
     fun recall() {
         val client =
@@ -228,7 +228,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
+    @Disabled("Prism tests are disabled")
     @Test
     fun schema() {
         val client =
@@ -247,7 +247,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
+    @Disabled("Prism tests are disabled")
     @Test
     fun updateSchema() {
         val client =
@@ -273,7 +273,7 @@ internal class NamespaceServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("skipped: tests are disabled for the time being")
+    @Disabled("Prism tests are disabled")
     @Test
     fun write() {
         val client =
