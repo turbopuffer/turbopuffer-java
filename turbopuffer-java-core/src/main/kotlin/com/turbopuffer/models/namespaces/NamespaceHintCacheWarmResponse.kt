@@ -34,7 +34,7 @@ private constructor(
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("OK")
+     * JsonValue.from("ACCEPTED")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -79,7 +79,7 @@ private constructor(
     /** A builder for [NamespaceHintCacheWarmResponse]. */
     class Builder internal constructor() {
 
-        private var status: JsonValue = JsonValue.from("OK")
+        private var status: JsonValue = JsonValue.from("ACCEPTED")
         private var message: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -97,7 +97,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("OK")
+         * JsonValue.from("ACCEPTED")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -151,7 +151,7 @@ private constructor(
         }
 
         _status().let {
-            if (it != JsonValue.from("OK")) {
+            if (it != JsonValue.from("ACCEPTED")) {
                 throw TurbopufferInvalidDataException("'status' is invalid, received $it")
             }
         }
@@ -174,7 +174,7 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        status.let { if (it == JsonValue.from("OK")) 1 else 0 } +
+        status.let { if (it == JsonValue.from("ACCEPTED")) 1 else 0 } +
             (if (message.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
