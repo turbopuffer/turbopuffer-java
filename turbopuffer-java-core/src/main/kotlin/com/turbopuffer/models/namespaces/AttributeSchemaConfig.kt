@@ -308,12 +308,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AttributeSchemaConfig && ann == other.ann && filterable == other.filterable && fullTextSearch == other.fullTextSearch && regex == other.regex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is AttributeSchemaConfig &&
+            ann == other.ann &&
+            filterable == other.filterable &&
+            fullTextSearch == other.fullTextSearch &&
+            regex == other.regex &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(ann, filterable, fullTextSearch, regex, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(ann, filterable, fullTextSearch, regex, type, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

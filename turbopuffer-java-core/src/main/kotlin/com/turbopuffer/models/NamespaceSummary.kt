@@ -156,12 +156,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceSummary && id == other.id && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is NamespaceSummary &&
+            id == other.id &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(id, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

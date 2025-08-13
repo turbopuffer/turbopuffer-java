@@ -203,12 +203,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Row && id == other.id && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is Row &&
+            id == other.id &&
+            vector == other.vector &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(id, vector, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

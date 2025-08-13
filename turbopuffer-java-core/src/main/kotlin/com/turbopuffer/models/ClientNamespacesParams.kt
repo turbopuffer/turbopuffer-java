@@ -217,10 +217,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ClientNamespacesParams && cursor == other.cursor && pageSize == other.pageSize && prefix == other.prefix && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is ClientNamespacesParams &&
+            cursor == other.cursor &&
+            pageSize == other.pageSize &&
+            prefix == other.prefix &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(cursor, pageSize, prefix, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(cursor, pageSize, prefix, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "ClientNamespacesParams{cursor=$cursor, pageSize=$pageSize, prefix=$prefix, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

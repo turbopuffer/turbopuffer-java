@@ -108,10 +108,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AttributeSchema && type == other.type && config == other.config /* spotless:on */
+        return other is AttributeSchema && type == other.type && config == other.config
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(type, config) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(type, config)
 
     override fun toString(): String =
         when {

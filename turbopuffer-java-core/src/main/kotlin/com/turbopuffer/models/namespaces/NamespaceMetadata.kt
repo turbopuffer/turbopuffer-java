@@ -375,12 +375,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Schema && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -392,12 +390,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceMetadata && approxLogicalBytes == other.approxLogicalBytes && approxRowCount == other.approxRowCount && createdAt == other.createdAt && schema == other.schema && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is NamespaceMetadata &&
+            approxLogicalBytes == other.approxLogicalBytes &&
+            approxRowCount == other.approxRowCount &&
+            createdAt == other.createdAt &&
+            schema == other.schema &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(approxLogicalBytes, approxRowCount, createdAt, schema, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(approxLogicalBytes, approxRowCount, createdAt, schema, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

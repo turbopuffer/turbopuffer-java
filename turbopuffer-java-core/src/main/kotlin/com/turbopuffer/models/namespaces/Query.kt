@@ -461,12 +461,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is AggregateBy && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is AggregateBy && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -478,12 +476,29 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Query && aggregateBy == other.aggregateBy && distanceMetric == other.distanceMetric && excludeAttributes == other.excludeAttributes && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is Query &&
+            aggregateBy == other.aggregateBy &&
+            distanceMetric == other.distanceMetric &&
+            excludeAttributes == other.excludeAttributes &&
+            filters == other.filters &&
+            includeAttributes == other.includeAttributes &&
+            rankBy == other.rankBy &&
+            topK == other.topK &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(aggregateBy, distanceMetric, excludeAttributes, filters, includeAttributes, rankBy, topK, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            aggregateBy,
+            distanceMetric,
+            excludeAttributes,
+            filters,
+            includeAttributes,
+            rankBy,
+            topK,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

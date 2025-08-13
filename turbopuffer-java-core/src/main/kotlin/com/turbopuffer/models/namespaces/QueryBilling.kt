@@ -216,12 +216,19 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is QueryBilling && billableLogicalBytesQueried == other.billableLogicalBytesQueried && billableLogicalBytesReturned == other.billableLogicalBytesReturned && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is QueryBilling &&
+            billableLogicalBytesQueried == other.billableLogicalBytesQueried &&
+            billableLogicalBytesReturned == other.billableLogicalBytesReturned &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(billableLogicalBytesQueried, billableLogicalBytesReturned, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            billableLogicalBytesQueried,
+            billableLogicalBytesReturned,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

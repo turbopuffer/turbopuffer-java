@@ -370,12 +370,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Aggregations && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Aggregations && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -387,12 +385,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceQueryResponse && billing == other.billing && performance == other.performance && aggregations == other.aggregations && rows == other.rows && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is NamespaceQueryResponse &&
+            billing == other.billing &&
+            performance == other.performance &&
+            aggregations == other.aggregations &&
+            rows == other.rows &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(billing, performance, aggregations, rows, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(billing, performance, aggregations, rows, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 
