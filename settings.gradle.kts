@@ -1,7 +1,14 @@
 rootProject.name = "turbopuffer-java-root"
 
-include("turbopuffer-java")
-include("turbopuffer-java-client-okhttp")
-include("turbopuffer-java-core")
-include("turbopuffer-java-proguard-test")
-include("turbopuffer-java-example")
+val projectNames = rootDir.listFiles()
+    ?.asSequence()
+    .orEmpty()
+    .filter { file ->
+        file.isDirectory &&
+        file.name.startsWith("turbopuffer-java") &&
+        file.listFiles()?.asSequence().orEmpty().any { it.name == "build.gradle.kts" }
+    }
+    .map { it.name }
+    .toList()
+println("projects: $projectNames")
+projectNames.forEach { include(it) }
