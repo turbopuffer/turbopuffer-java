@@ -254,6 +254,7 @@ private constructor(
 
     class Result
     private constructor(
+        private val aggregationGroups: JsonField<List<Row>>,
         private val aggregations: JsonField<Aggregations>,
         private val rows: JsonField<List<Row>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -261,11 +262,21 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("aggregation_groups")
+            @ExcludeMissing
+            aggregationGroups: JsonField<List<Row>> = JsonMissing.of(),
             @JsonProperty("aggregations")
             @ExcludeMissing
             aggregations: JsonField<Aggregations> = JsonMissing.of(),
             @JsonProperty("rows") @ExcludeMissing rows: JsonField<List<Row>> = JsonMissing.of(),
-        ) : this(aggregations, rows, mutableMapOf())
+        ) : this(aggregationGroups, aggregations, rows, mutableMapOf())
+
+        /**
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun aggregationGroups(): Optional<List<Row>> =
+            aggregationGroups.getOptional("aggregation_groups")
 
         /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -278,6 +289,16 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun rows(): Optional<List<Row>> = rows.getOptional("rows")
+
+        /**
+         * Returns the raw JSON value of [aggregationGroups].
+         *
+         * Unlike [aggregationGroups], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("aggregation_groups")
+        @ExcludeMissing
+        fun _aggregationGroups(): JsonField<List<Row>> = aggregationGroups
 
         /**
          * Returns the raw JSON value of [aggregations].
@@ -317,15 +338,43 @@ private constructor(
         /** A builder for [Result]. */
         class Builder internal constructor() {
 
+            private var aggregationGroups: JsonField<MutableList<Row>>? = null
             private var aggregations: JsonField<Aggregations> = JsonMissing.of()
             private var rows: JsonField<MutableList<Row>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(result: Result) = apply {
+                aggregationGroups = result.aggregationGroups.map { it.toMutableList() }
                 aggregations = result.aggregations
                 rows = result.rows.map { it.toMutableList() }
                 additionalProperties = result.additionalProperties.toMutableMap()
+            }
+
+            fun aggregationGroups(aggregationGroups: List<Row>) =
+                aggregationGroups(JsonField.of(aggregationGroups))
+
+            /**
+             * Sets [Builder.aggregationGroups] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.aggregationGroups] with a well-typed `List<Row>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun aggregationGroups(aggregationGroups: JsonField<List<Row>>) = apply {
+                this.aggregationGroups = aggregationGroups.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [Row] to [aggregationGroups].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addAggregationGroup(aggregationGroup: Row) = apply {
+                aggregationGroups =
+                    (aggregationGroups ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("aggregationGroups", it).add(aggregationGroup)
+                    }
             }
 
             fun aggregations(aggregations: Aggregations) = aggregations(JsonField.of(aggregations))
@@ -390,6 +439,7 @@ private constructor(
              */
             fun build(): Result =
                 Result(
+                    (aggregationGroups ?: JsonMissing.of()).map { it.toImmutable() },
                     aggregations,
                     (rows ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
@@ -403,6 +453,7 @@ private constructor(
                 return@apply
             }
 
+            aggregationGroups().ifPresent { it.forEach { it.validate() } }
             aggregations().ifPresent { it.validate() }
             rows().ifPresent { it.forEach { it.validate() } }
             validated = true
@@ -424,7 +475,8 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (aggregations.asKnown().getOrNull()?.validity() ?: 0) +
+            (aggregationGroups.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (aggregations.asKnown().getOrNull()?.validity() ?: 0) +
                 (rows.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
         class Aggregations
@@ -535,17 +587,20 @@ private constructor(
             }
 
             return other is Result &&
+                aggregationGroups == other.aggregationGroups &&
                 aggregations == other.aggregations &&
                 rows == other.rows &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(aggregations, rows, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(aggregationGroups, aggregations, rows, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Result{aggregations=$aggregations, rows=$rows, additionalProperties=$additionalProperties}"
+            "Result{aggregationGroups=$aggregationGroups, aggregations=$aggregations, rows=$rows, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
