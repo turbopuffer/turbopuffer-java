@@ -24,6 +24,7 @@ class NamespaceQueryResponse
 private constructor(
     private val billing: JsonField<QueryBilling>,
     private val performance: JsonField<QueryPerformance>,
+    private val aggregationGroups: JsonField<List<Row>>,
     private val aggregations: JsonField<MutableMap<String, JsonValue>>,
     private val rows: JsonField<List<Row>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -37,11 +38,14 @@ private constructor(
         @JsonProperty("performance")
         @ExcludeMissing
         performance: JsonField<QueryPerformance> = JsonMissing.of(),
+        @JsonProperty("aggregation_groups")
+        @ExcludeMissing
+        aggregationGroups: JsonField<List<Row>> = JsonMissing.of(),
         @JsonProperty("aggregations")
         @ExcludeMissing
         aggregations: JsonField<MutableMap<String, JsonValue>> = JsonMissing.of(),
         @JsonProperty("rows") @ExcludeMissing rows: JsonField<List<Row>> = JsonMissing.of(),
-    ) : this(billing, performance, aggregations, rows, mutableMapOf())
+    ) : this(billing, performance, aggregationGroups, aggregations, rows, mutableMapOf())
 
     /**
      * The billing information for a query.
@@ -58,6 +62,13 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun performance(): QueryPerformance = performance.getRequired("performance")
+
+    /**
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun aggregationGroups(): Optional<List<Row>> =
+        aggregationGroups.getOptional("aggregation_groups")
 
     /**
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -87,6 +98,16 @@ private constructor(
     @JsonProperty("performance")
     @ExcludeMissing
     fun _performance(): JsonField<QueryPerformance> = performance
+
+    /**
+     * Returns the raw JSON value of [aggregationGroups].
+     *
+     * Unlike [aggregationGroups], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("aggregation_groups")
+    @ExcludeMissing
+    fun _aggregationGroups(): JsonField<List<Row>> = aggregationGroups
 
     /**
      * Returns the raw JSON value of [aggregations].
@@ -135,6 +156,7 @@ private constructor(
 
         private var billing: JsonField<QueryBilling>? = null
         private var performance: JsonField<QueryPerformance>? = null
+        private var aggregationGroups: JsonField<MutableList<Row>>? = null
         private var aggregations: JsonField<MutableMap<String, JsonValue>> = JsonMissing.of()
         private var rows: JsonField<MutableList<Row>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -143,6 +165,7 @@ private constructor(
         internal fun from(namespaceQueryResponse: NamespaceQueryResponse) = apply {
             billing = namespaceQueryResponse.billing
             performance = namespaceQueryResponse.performance
+            aggregationGroups = namespaceQueryResponse.aggregationGroups.map { it.toMutableList() }
             aggregations = namespaceQueryResponse.aggregations
             rows = namespaceQueryResponse.rows.map { it.toMutableList() }
             additionalProperties = namespaceQueryResponse.additionalProperties.toMutableMap()
@@ -172,6 +195,32 @@ private constructor(
          */
         fun performance(performance: JsonField<QueryPerformance>) = apply {
             this.performance = performance
+        }
+
+        fun aggregationGroups(aggregationGroups: List<Row>) =
+            aggregationGroups(JsonField.of(aggregationGroups))
+
+        /**
+         * Sets [Builder.aggregationGroups] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.aggregationGroups] with a well-typed `List<Row>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun aggregationGroups(aggregationGroups: JsonField<List<Row>>) = apply {
+            this.aggregationGroups = aggregationGroups.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Row] to [aggregationGroups].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addAggregationGroup(aggregationGroup: Row) = apply {
+            aggregationGroups =
+                (aggregationGroups ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("aggregationGroups", it).add(aggregationGroup)
+                }
         }
 
         fun aggregations(aggregations: MutableMap<String, JsonValue>) =
@@ -243,6 +292,7 @@ private constructor(
             NamespaceQueryResponse(
                 checkRequired("billing", billing),
                 checkRequired("performance", performance),
+                (aggregationGroups ?: JsonMissing.of()).map { it.toImmutable() },
                 aggregations,
                 (rows ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
@@ -258,6 +308,7 @@ private constructor(
 
         billing().validate()
         performance().validate()
+        aggregationGroups()
         aggregations()
         rows()
         validated = true
@@ -280,6 +331,7 @@ private constructor(
     internal fun validity(): Int =
         (billing.asKnown().getOrNull()?.validity() ?: 0) +
             (performance.asKnown().getOrNull()?.validity() ?: 0) +
+            (aggregationGroups.asKnown().getOrNull()?.size ?: 0) +
             (aggregations.asKnown().getOrNull()?.size ?: 0) +
             (rows.asKnown().getOrNull()?.size ?: 0)
 
@@ -291,17 +343,25 @@ private constructor(
         return other is NamespaceQueryResponse &&
             billing == other.billing &&
             performance == other.performance &&
+            aggregationGroups == other.aggregationGroups &&
             aggregations == other.aggregations &&
             rows == other.rows &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(billing, performance, aggregations, rows, additionalProperties)
+        Objects.hash(
+            billing,
+            performance,
+            aggregationGroups,
+            aggregations,
+            rows,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceQueryResponse{billing=$billing, performance=$performance, aggregations=$aggregations, rows=$rows, additionalProperties=$additionalProperties}"
+        "NamespaceQueryResponse{billing=$billing, performance=$performance, aggregationGroups=$aggregationGroups, aggregations=$aggregations, rows=$rows, additionalProperties=$additionalProperties}"
 }

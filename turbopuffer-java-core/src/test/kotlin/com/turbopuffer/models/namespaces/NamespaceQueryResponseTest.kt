@@ -31,6 +31,12 @@ internal class NamespaceQueryResponseTest {
                         .serverTotalMs(0L)
                         .build()
                 )
+                .addAggregationGroup(
+                    Row.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfNumber(listOf(0.0))
+                        .build()
+                )
                 .aggregations(
                     NamespaceQueryResponse.Aggregations.builder()
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
@@ -60,6 +66,13 @@ internal class NamespaceQueryResponseTest {
                     .exhaustiveSearchCount(0L)
                     .queryExecutionMs(0L)
                     .serverTotalMs(0L)
+                    .build()
+            )
+        assertThat(namespaceQueryResponse.aggregationGroups().getOrNull())
+            .containsExactly(
+                Row.builder()
+                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .vectorOfNumber(listOf(0.0))
                     .build()
             )
         assertThat(namespaceQueryResponse.aggregations())
@@ -96,6 +109,12 @@ internal class NamespaceQueryResponseTest {
                         .exhaustiveSearchCount(0L)
                         .queryExecutionMs(0L)
                         .serverTotalMs(0L)
+                        .build()
+                )
+                .addAggregationGroup(
+                    Row.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfNumber(listOf(0.0))
                         .build()
                 )
                 .aggregations(
