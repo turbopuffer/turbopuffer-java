@@ -237,33 +237,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
-        private var sleeper: Sleeper =
-            object : Sleeper {
-
-                private val timer = Timer("RetryingHttpClient", true)
-
-                override fun sleep(duration: Duration) = Thread.sleep(duration.toMillis())
-
-                override fun sleepAsync(duration: Duration): CompletableFuture<Void> {
-                    val future = CompletableFuture<Void>()
-                    timer.schedule(
-                        object : TimerTask() {
-                            override fun run() {
-                                future.complete(null)
-                            }
-                        },
-                        duration.toMillis(),
-                    )
-                    return future
-                }
-            }
+        private var sleeper: Sleeper? = null
         private var clock: Clock = Clock.systemUTC()
         private var maxRetries: Int = 4
         private var idempotencyHeader: String? = null
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
 
-        @JvmSynthetic internal fun sleeper(sleeper: Sleeper) = apply { this.sleeper = sleeper }
+        fun sleeper(sleeper: Sleeper) = apply { this.sleeper = sleeper }
 
         fun clock(clock: Clock) = apply { this.clock = clock }
 
@@ -274,17 +255,36 @@ private constructor(
         fun build(): HttpClient =
             RetryingHttpClient(
                 checkRequired("httpClient", httpClient),
-                sleeper,
+                checkRequired("sleeper", sleeper),
                 clock,
                 maxRetries,
                 idempotencyHeader,
             )
     }
 
-    internal interface Sleeper {
+    interface Sleeper {
 
         fun sleep(duration: Duration)
 
         fun sleepAsync(duration: Duration): CompletableFuture<Void>
+    }
+
+    class DefaultSleeper : Sleeper {
+        private val timer = Timer("RetryingHttpClient", true)
+
+        override fun sleep(duration: Duration) = Thread.sleep(duration.toMillis())
+
+        override fun sleepAsync(duration: Duration): CompletableFuture<Void> {
+            val future = CompletableFuture<Void>()
+            timer.schedule(
+                object : TimerTask() {
+                    override fun run() {
+                        future.complete(null)
+                    }
+                },
+                duration.toMillis(),
+            )
+            return future
+        }
     }
 }
