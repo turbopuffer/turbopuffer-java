@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.2.10 (2025-08-18)
+
+Full Changelog: [v0.2.9...v0.2.10](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.9...v0.2.10)
+
+### Bug Fixes
+
+* **api:** add support for `group_by` query parameter ([4737e4e](https://github.com/turbopuffer/turbopuffer-java/commit/4737e4e3767cb6070d9e1b8057d6b5daefcdad91))
+
+
+### Performance Improvements
+
+* **internal:** make formatting faster ([a269981](https://github.com/turbopuffer/turbopuffer-java/commit/a2699813cc2f67a021cb665e6275b6a11d027214))
+
+
+### Chores
+
+* **ci:** add build job ([acab5a2](https://github.com/turbopuffer/turbopuffer-java/commit/acab5a2d191ddb6a3f3ba49fb3d39b91f9004a68))
+* **internal:** codegen related update ([95c0102](https://github.com/turbopuffer/turbopuffer-java/commit/95c01023624e01ea6bc69bac481640f2232d78e9))
+* **internal:** dynamically determine included projects ([b526054](https://github.com/turbopuffer/turbopuffer-java/commit/b526054200f987d921241cc4967a4f4422504c61))
+* **internal:** support passing arguments to test script ([e1ac8da](https://github.com/turbopuffer/turbopuffer-java/commit/e1ac8da7c4f8f1f1a3abd09a4cf3215d763bd0cb))
+
 ## 0.2.9 (2025-08-18)
 
 Full Changelog: [v0.2.8...v0.2.9](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.8...v0.2.9)
