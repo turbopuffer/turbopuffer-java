@@ -402,12 +402,27 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is QueryPerformance && approxNamespaceSize == other.approxNamespaceSize && cacheHitRatio == other.cacheHitRatio && cacheTemperature == other.cacheTemperature && exhaustiveSearchCount == other.exhaustiveSearchCount && queryExecutionMs == other.queryExecutionMs && serverTotalMs == other.serverTotalMs && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is QueryPerformance &&
+            approxNamespaceSize == other.approxNamespaceSize &&
+            cacheHitRatio == other.cacheHitRatio &&
+            cacheTemperature == other.cacheTemperature &&
+            exhaustiveSearchCount == other.exhaustiveSearchCount &&
+            queryExecutionMs == other.queryExecutionMs &&
+            serverTotalMs == other.serverTotalMs &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(approxNamespaceSize, cacheHitRatio, cacheTemperature, exhaustiveSearchCount, queryExecutionMs, serverTotalMs, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            approxNamespaceSize,
+            cacheHitRatio,
+            cacheTemperature,
+            exhaustiveSearchCount,
+            queryExecutionMs,
+            serverTotalMs,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

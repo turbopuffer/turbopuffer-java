@@ -125,7 +125,7 @@ class VectorEncoding @JsonCreator private constructor(private val value: JsonFie
             return true
         }
 
-        return /* spotless:off */ other is VectorEncoding && value == other.value /* spotless:on */
+        return other is VectorEncoding && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

@@ -332,10 +332,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Vector && vectors == other.vectors && number == other.number && string == other.string /* spotless:on */
+            return other is Vector &&
+                vectors == other.vectors &&
+                number == other.number &&
+                string == other.string
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(vectors, number, string) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(vectors, number, string)
 
         override fun toString(): String =
             when {
@@ -442,12 +445,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Columns && id == other.id && vector == other.vector && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is Columns &&
+            id == other.id &&
+            vector == other.vector &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(id, vector, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

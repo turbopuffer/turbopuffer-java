@@ -1302,12 +1302,41 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && copyFromNamespace == other.copyFromNamespace && deleteByFilter == other.deleteByFilter && deleteCondition == other.deleteCondition && deletes == other.deletes && distanceMetric == other.distanceMetric && encryption == other.encryption && patchColumns == other.patchColumns && patchCondition == other.patchCondition && patchRows == other.patchRows && schema == other.schema && upsertColumns == other.upsertColumns && upsertCondition == other.upsertCondition && upsertRows == other.upsertRows && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                copyFromNamespace == other.copyFromNamespace &&
+                deleteByFilter == other.deleteByFilter &&
+                deleteCondition == other.deleteCondition &&
+                deletes == other.deletes &&
+                distanceMetric == other.distanceMetric &&
+                encryption == other.encryption &&
+                patchColumns == other.patchColumns &&
+                patchCondition == other.patchCondition &&
+                patchRows == other.patchRows &&
+                schema == other.schema &&
+                upsertColumns == other.upsertColumns &&
+                upsertCondition == other.upsertCondition &&
+                upsertRows == other.upsertRows &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(copyFromNamespace, deleteByFilter, deleteCondition, deletes, distanceMetric, encryption, patchColumns, patchCondition, patchRows, schema, upsertColumns, upsertCondition, upsertRows, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                copyFromNamespace,
+                deleteByFilter,
+                deleteCondition,
+                deletes,
+                distanceMetric,
+                encryption,
+                patchColumns,
+                patchCondition,
+                patchRows,
+                schema,
+                upsertColumns,
+                upsertCondition,
+                upsertRows,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1587,12 +1616,12 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Cmek && keyName == other.keyName && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Cmek &&
+                    keyName == other.keyName &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(keyName, additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -1605,12 +1634,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Encryption && cmek == other.cmek && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Encryption &&
+                cmek == other.cmek &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(cmek, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1623,10 +1652,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceWriteParams && namespace == other.namespace && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is NamespaceWriteParams &&
+            namespace == other.namespace &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(namespace, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "NamespaceWriteParams{namespace=$namespace, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

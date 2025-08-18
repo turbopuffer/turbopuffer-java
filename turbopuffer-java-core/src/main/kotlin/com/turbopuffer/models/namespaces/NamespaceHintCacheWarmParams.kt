@@ -182,10 +182,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceHintCacheWarmParams && namespace == other.namespace && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is NamespaceHintCacheWarmParams &&
+            namespace == other.namespace &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(namespace, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "NamespaceHintCacheWarmParams{namespace=$namespace, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

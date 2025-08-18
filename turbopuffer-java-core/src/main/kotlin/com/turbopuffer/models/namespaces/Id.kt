@@ -100,10 +100,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Id && string == other.string && integer == other.integer /* spotless:on */
+        return other is Id && string == other.string && integer == other.integer
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, integer) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(string, integer)
 
     override fun toString(): String =
         when {

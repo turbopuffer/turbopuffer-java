@@ -398,12 +398,29 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceWriteResponse && billing == other.billing && message == other.message && rowsAffected == other.rowsAffected && status == other.status && rowsDeleted == other.rowsDeleted && rowsPatched == other.rowsPatched && rowsUpserted == other.rowsUpserted && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is NamespaceWriteResponse &&
+            billing == other.billing &&
+            message == other.message &&
+            rowsAffected == other.rowsAffected &&
+            status == other.status &&
+            rowsDeleted == other.rowsDeleted &&
+            rowsPatched == other.rowsPatched &&
+            rowsUpserted == other.rowsUpserted &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(billing, message, rowsAffected, status, rowsDeleted, rowsPatched, rowsUpserted, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            billing,
+            message,
+            rowsAffected,
+            status,
+            rowsDeleted,
+            rowsPatched,
+            rowsUpserted,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 
