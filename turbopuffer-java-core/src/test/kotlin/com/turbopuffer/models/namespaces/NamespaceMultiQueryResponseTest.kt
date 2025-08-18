@@ -32,6 +32,12 @@ internal class NamespaceMultiQueryResponseTest {
                 )
                 .addResult(
                     NamespaceMultiQueryResponse.Result.builder()
+                        .addAggregationGroup(
+                            Row.builder()
+                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                .vectorOfNumber(listOf(0.0))
+                                .build()
+                        )
                         .aggregations(
                             NamespaceMultiQueryResponse.Result.Aggregations.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
@@ -68,6 +74,12 @@ internal class NamespaceMultiQueryResponseTest {
         assertThat(namespaceMultiQueryResponse.results())
             .containsExactly(
                 NamespaceMultiQueryResponse.Result.builder()
+                    .addAggregationGroup(
+                        Row.builder()
+                            .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .vectorOfNumber(listOf(0.0))
+                            .build()
+                    )
                     .aggregations(
                         NamespaceMultiQueryResponse.Result.Aggregations.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
@@ -106,6 +118,12 @@ internal class NamespaceMultiQueryResponseTest {
                 )
                 .addResult(
                     NamespaceMultiQueryResponse.Result.builder()
+                        .addAggregationGroup(
+                            Row.builder()
+                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                                .vectorOfNumber(listOf(0.0))
+                                .build()
+                        )
                         .aggregations(
                             NamespaceMultiQueryResponse.Result.Aggregations.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("bar"))

@@ -74,6 +74,15 @@ private constructor(
     fun _filters(): JsonField<Filter> = body._filters()
 
     /**
+     * Groups documents by the specified attributes (the "group key") before computing aggregates.
+     * Aggregates are computed separately for each group.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun groupBy(): Optional<List<String>> = body.groupBy()
+
+    /**
      * Whether to include attributes in the response.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -141,6 +150,13 @@ private constructor(
      * type.
      */
     fun _excludeAttributes(): JsonField<List<String>> = body._excludeAttributes()
+
+    /**
+     * Returns the raw JSON value of [groupBy].
+     *
+     * Unlike [groupBy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _groupBy(): JsonField<List<String>> = body._groupBy()
 
     /**
      * Returns the raw JSON value of [includeAttributes].
@@ -219,7 +235,7 @@ private constructor(
          * - [distanceMetric]
          * - [excludeAttributes]
          * - [filters]
-         * - [includeAttributes]
+         * - [groupBy]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -289,6 +305,28 @@ private constructor(
          * clause.
          */
         fun filters(filters: Filter) = apply { body.filters(filters) }
+
+        /**
+         * Groups documents by the specified attributes (the "group key") before computing
+         * aggregates. Aggregates are computed separately for each group.
+         */
+        fun groupBy(groupBy: List<String>) = apply { body.groupBy(groupBy) }
+
+        /**
+         * Sets [Builder.groupBy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.groupBy] with a well-typed `List<String>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun groupBy(groupBy: JsonField<List<String>>) = apply { body.groupBy(groupBy) }
+
+        /**
+         * Adds a single [String] to [Builder.groupBy].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addGroupBy(groupBy: String) = apply { body.addGroupBy(groupBy) }
 
         /** Whether to include attributes in the response. */
         fun includeAttributes(includeAttributes: IncludeAttributes) = apply {
@@ -511,6 +549,7 @@ private constructor(
         private val distanceMetric: JsonField<DistanceMetric>,
         private val excludeAttributes: JsonField<List<String>>,
         private val filters: JsonField<Filter>,
+        private val groupBy: JsonField<List<String>>,
         private val includeAttributes: JsonField<IncludeAttributes>,
         private val rankBy: JsonField<RankBy>,
         private val topK: JsonField<Long>,
@@ -531,6 +570,9 @@ private constructor(
             @ExcludeMissing
             excludeAttributes: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filter> = JsonMissing.of(),
+            @JsonProperty("group_by")
+            @ExcludeMissing
+            groupBy: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("include_attributes")
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
@@ -547,6 +589,7 @@ private constructor(
             distanceMetric,
             excludeAttributes,
             filters,
+            groupBy,
             includeAttributes,
             rankBy,
             topK,
@@ -561,6 +604,7 @@ private constructor(
                 .distanceMetric(distanceMetric)
                 .excludeAttributes(excludeAttributes)
                 .filters(filters)
+                .groupBy(groupBy)
                 .includeAttributes(includeAttributes)
                 .rankBy(rankBy)
                 .topK(topK)
@@ -610,6 +654,15 @@ private constructor(
          * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<Filter> = filters
+
+        /**
+         * Groups documents by the specified attributes (the "group key") before computing
+         * aggregates. Aggregates are computed separately for each group.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun groupBy(): Optional<List<String>> = groupBy.getOptional("group_by")
 
         /**
          * Whether to include attributes in the response.
@@ -691,6 +744,13 @@ private constructor(
         fun _excludeAttributes(): JsonField<List<String>> = excludeAttributes
 
         /**
+         * Returns the raw JSON value of [groupBy].
+         *
+         * Unlike [groupBy], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("group_by") @ExcludeMissing fun _groupBy(): JsonField<List<String>> = groupBy
+
+        /**
          * Returns the raw JSON value of [includeAttributes].
          *
          * Unlike [includeAttributes], this method doesn't throw if the JSON field has an unexpected
@@ -751,6 +811,7 @@ private constructor(
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var excludeAttributes: JsonField<MutableList<String>>? = null
             private var filters: JsonField<Filter> = JsonMissing.of()
+            private var groupBy: JsonField<MutableList<String>>? = null
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
             private var rankBy: JsonField<RankBy> = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
@@ -764,6 +825,7 @@ private constructor(
                 distanceMetric = body.distanceMetric
                 excludeAttributes = body.excludeAttributes.map { it.toMutableList() }
                 filters = body.filters
+                groupBy = body.groupBy.map { it.toMutableList() }
                 includeAttributes = body.includeAttributes
                 rankBy = body.rankBy
                 topK = body.topK
@@ -848,6 +910,35 @@ private constructor(
              * supported value.
              */
             fun filters(filters: JsonField<Filter>) = apply { this.filters = filters }
+
+            /**
+             * Groups documents by the specified attributes (the "group key") before computing
+             * aggregates. Aggregates are computed separately for each group.
+             */
+            fun groupBy(groupBy: List<String>) = groupBy(JsonField.of(groupBy))
+
+            /**
+             * Sets [Builder.groupBy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.groupBy] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun groupBy(groupBy: JsonField<List<String>>) = apply {
+                this.groupBy = groupBy.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [Builder.groupBy].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addGroupBy(groupBy: String) = apply {
+                this.groupBy =
+                    (this.groupBy ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("groupBy", it).add(groupBy)
+                    }
+            }
 
             /** Whether to include attributes in the response. */
             fun includeAttributes(includeAttributes: IncludeAttributes) =
@@ -956,6 +1047,7 @@ private constructor(
                     distanceMetric,
                     (excludeAttributes ?: JsonMissing.of()).map { it.toImmutable() },
                     filters,
+                    (groupBy ?: JsonMissing.of()).map { it.toImmutable() },
                     includeAttributes,
                     rankBy,
                     topK,
@@ -975,8 +1067,7 @@ private constructor(
             aggregateBy()
             distanceMetric().ifPresent { it.validate() }
             excludeAttributes()
-            filters()
-            rankBy()
+
             includeAttributes().ifPresent { it.validate() }
             topK()
             consistency().ifPresent { it.validate() }
@@ -1003,8 +1094,6 @@ private constructor(
             (if (aggregateBy.asKnown().isPresent()) 1 else 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (excludeAttributes.asKnown().getOrNull()?.size ?: 0) +
-                (if (filters.asKnown().isPresent()) 1 else 0) +
-                (if (rankBy.asKnown().isPresent()) 1 else 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0) +
                 (consistency.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1020,6 +1109,7 @@ private constructor(
                 distanceMetric == other.distanceMetric &&
                 excludeAttributes == other.excludeAttributes &&
                 filters == other.filters &&
+                groupBy == other.groupBy &&
                 includeAttributes == other.includeAttributes &&
                 rankBy == other.rankBy &&
                 topK == other.topK &&
@@ -1034,6 +1124,7 @@ private constructor(
                 distanceMetric,
                 excludeAttributes,
                 filters,
+                groupBy,
                 includeAttributes,
                 rankBy,
                 topK,
@@ -1046,7 +1137,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, consistency=$consistency, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, consistency=$consistency, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
