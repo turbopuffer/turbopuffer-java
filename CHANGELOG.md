@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.9 (2025-08-18)
+
+Full Changelog: [v0.2.8...v0.2.9](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.8...v0.2.9)
+
+### Bug Fixes
+
+* remove 200 error code for hint_cache_warm API call (always 202 now) ([86dcbb7](https://github.com/turbopuffer/turbopuffer-java/commit/86dcbb71c8812954d52a18b362bbc8f664cb75d6))
+* share timer threads between clients ([ebb4a18](https://github.com/turbopuffer/turbopuffer-java/commit/ebb4a18b3fae47ba6c6bd25f7f599e24ac3a3d1f))
+
+
+### Chores
+
+* **internal:** codegen related update ([f2efa6f](https://github.com/turbopuffer/turbopuffer-java/commit/f2efa6fe18b9d012c73b69179db448f7184f10ee))
+
 ## 0.2.8 (2025-08-11)
 
 Full Changelog: [v0.2.7...v0.2.8](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.7...v0.2.8)
