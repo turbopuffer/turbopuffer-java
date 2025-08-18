@@ -427,12 +427,31 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FullTextSearchConfig && b == other.b && caseSensitive == other.caseSensitive && k1 == other.k1 && language == other.language && maxTokenLength == other.maxTokenLength && removeStopwords == other.removeStopwords && stemming == other.stemming && tokenizer == other.tokenizer && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FullTextSearchConfig &&
+            b == other.b &&
+            caseSensitive == other.caseSensitive &&
+            k1 == other.k1 &&
+            language == other.language &&
+            maxTokenLength == other.maxTokenLength &&
+            removeStopwords == other.removeStopwords &&
+            stemming == other.stemming &&
+            tokenizer == other.tokenizer &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(b, caseSensitive, k1, language, maxTokenLength, removeStopwords, stemming, tokenizer, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            b,
+            caseSensitive,
+            k1,
+            language,
+            maxTokenLength,
+            removeStopwords,
+            stemming,
+            tokenizer,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

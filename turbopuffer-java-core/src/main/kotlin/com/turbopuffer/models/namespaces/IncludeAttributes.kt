@@ -107,10 +107,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is IncludeAttributes && bool == other.bool && strings == other.strings /* spotless:on */
+        return other is IncludeAttributes && bool == other.bool && strings == other.strings
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(bool, strings) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(bool, strings)
 
     override fun toString(): String =
         when {

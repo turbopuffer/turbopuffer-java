@@ -219,7 +219,7 @@ class Language @JsonCreator private constructor(private val value: JsonField<Str
             return true
         }
 
-        return /* spotless:off */ other is Language && value == other.value /* spotless:on */
+        return other is Language && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

@@ -519,12 +519,10 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Aggregations && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Aggregations && additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -536,12 +534,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Result && aggregations == other.aggregations && rows == other.rows && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Result &&
+                aggregations == other.aggregations &&
+                rows == other.rows &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(aggregations, rows, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -554,12 +553,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceMultiQueryResponse && billing == other.billing && performance == other.performance && results == other.results && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is NamespaceMultiQueryResponse &&
+            billing == other.billing &&
+            performance == other.performance &&
+            results == other.results &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(billing, performance, results, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(billing, performance, results, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

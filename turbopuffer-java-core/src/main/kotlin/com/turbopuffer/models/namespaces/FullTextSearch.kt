@@ -104,10 +104,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FullTextSearch && bool == other.bool && config == other.config /* spotless:on */
+        return other is FullTextSearch && bool == other.bool && config == other.config
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(bool, config) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(bool, config)
 
     override fun toString(): String =
         when {

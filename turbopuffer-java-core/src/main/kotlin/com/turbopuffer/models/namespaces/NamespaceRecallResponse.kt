@@ -248,12 +248,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceRecallResponse && avgAnnCount == other.avgAnnCount && avgExhaustiveCount == other.avgExhaustiveCount && avgRecall == other.avgRecall && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is NamespaceRecallResponse &&
+            avgAnnCount == other.avgAnnCount &&
+            avgExhaustiveCount == other.avgExhaustiveCount &&
+            avgRecall == other.avgRecall &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(avgAnnCount, avgExhaustiveCount, avgRecall, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(avgAnnCount, avgExhaustiveCount, avgRecall, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

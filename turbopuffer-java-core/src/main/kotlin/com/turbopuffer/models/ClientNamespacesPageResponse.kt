@@ -206,12 +206,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ClientNamespacesPageResponse && namespaces == other.namespaces && nextCursor == other.nextCursor && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ClientNamespacesPageResponse &&
+            namespaces == other.namespaces &&
+            nextCursor == other.nextCursor &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(namespaces, nextCursor, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

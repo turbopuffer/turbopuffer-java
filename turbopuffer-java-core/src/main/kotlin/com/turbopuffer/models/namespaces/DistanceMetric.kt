@@ -131,7 +131,7 @@ class DistanceMetric @JsonCreator private constructor(private val value: JsonFie
             return true
         }
 
-        return /* spotless:off */ other is DistanceMetric && value == other.value /* spotless:on */
+        return other is DistanceMetric && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

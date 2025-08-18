@@ -101,10 +101,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Vector && number == other.number && string == other.string /* spotless:on */
+        return other is Vector && number == other.number && string == other.string
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(number, string) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(number, string)
 
     override fun toString(): String =
         when {

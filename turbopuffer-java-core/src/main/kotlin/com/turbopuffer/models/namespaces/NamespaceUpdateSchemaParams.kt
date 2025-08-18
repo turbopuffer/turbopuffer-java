@@ -201,10 +201,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceUpdateSchemaParams && namespace == other.namespace && schema == other.schema && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is NamespaceUpdateSchemaParams &&
+            namespace == other.namespace &&
+            schema == other.schema &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, schema, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(namespace, schema, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "NamespaceUpdateSchemaParams{namespace=$namespace, schema=$schema, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

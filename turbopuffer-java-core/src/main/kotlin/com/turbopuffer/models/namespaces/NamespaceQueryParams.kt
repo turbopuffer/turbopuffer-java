@@ -1015,12 +1015,33 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && aggregateBy == other.aggregateBy && distanceMetric == other.distanceMetric && excludeAttributes == other.excludeAttributes && filters == other.filters && includeAttributes == other.includeAttributes && rankBy == other.rankBy && topK == other.topK && consistency == other.consistency && vectorEncoding == other.vectorEncoding && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                aggregateBy == other.aggregateBy &&
+                distanceMetric == other.distanceMetric &&
+                excludeAttributes == other.excludeAttributes &&
+                filters == other.filters &&
+                includeAttributes == other.includeAttributes &&
+                rankBy == other.rankBy &&
+                topK == other.topK &&
+                consistency == other.consistency &&
+                vectorEncoding == other.vectorEncoding &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(aggregateBy, distanceMetric, excludeAttributes, filters, includeAttributes, rankBy, topK, consistency, vectorEncoding, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                aggregateBy,
+                distanceMetric,
+                excludeAttributes,
+                filters,
+                includeAttributes,
+                rankBy,
+                topK,
+                consistency,
+                vectorEncoding,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1297,7 +1318,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Level && value == other.value /* spotless:on */
+                return other is Level && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -1310,12 +1331,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Consistency && level == other.level && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Consistency &&
+                level == other.level &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(level, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1328,10 +1349,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is NamespaceQueryParams && namespace == other.namespace && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is NamespaceQueryParams &&
+            namespace == other.namespace &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(namespace, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(namespace, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "NamespaceQueryParams{namespace=$namespace, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
