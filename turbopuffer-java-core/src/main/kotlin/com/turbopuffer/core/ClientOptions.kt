@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 class ClientOptions
 private constructor(
     private val originalHttpClient: HttpClient,
+    private val sleeper: RetryingHttpClient.Sleeper,
     /**
      * The HTTP client to use in the SDK.
      *
@@ -153,6 +154,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
+        private var sleeper: RetryingHttpClient.Sleeper? = null
         private var checkJacksonVersionCompatibility: Boolean = true
         private var jsonMapper: JsonMapper = jsonMapper()
         private var streamHandlerExecutor: Executor? = null
@@ -170,6 +172,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
             httpClient = clientOptions.originalHttpClient
+            sleeper = clientOptions.sleeper
             checkJacksonVersionCompatibility = clientOptions.checkJacksonVersionCompatibility
             jsonMapper = clientOptions.jsonMapper
             streamHandlerExecutor = clientOptions.streamHandlerExecutor
@@ -423,6 +426,7 @@ private constructor(
          */
         fun build(): ClientOptions {
             val httpClient = checkRequired("httpClient", httpClient)
+            var sleeper = sleeper ?: RetryingHttpClient.DefaultSleeper()
             val apiKey = checkRequired("apiKey", apiKey)
 
             // Check if region is required based on baseUrl.
@@ -458,8 +462,10 @@ private constructor(
 
             return ClientOptions(
                 httpClient,
+                sleeper,
                 RetryingHttpClient.builder()
                     .httpClient(httpClient)
+                    .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
                     .build(),
