@@ -60,7 +60,7 @@ class TurbopufferClientAsyncImpl(private val clientOptions: ClientOptions) :
         // get /v1/namespaces
         withRawResponse().namespaces(params, requestOptions).thenApply { it.parse() }
 
-    override fun close() = clientOptions.httpClient.close()
+    override fun close() = clientOptions.close()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         TurbopufferClientAsync.WithRawResponse {
