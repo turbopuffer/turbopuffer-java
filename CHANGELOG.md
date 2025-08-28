@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.0.0 (2025-08-28)
+
+Full Changelog: [v0.2.10...v1.0.0](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.10...v1.0.0)
+
+### Features
+
+* Make word_v2 the default FTS tokenizer ([cb31243](https://github.com/turbopuffer/turbopuffer-java/commit/cb31243be554862b376d74ed1966f296dd804184))
+
+
+### Chores
+
+* **ci:** reduce log noise ([7928946](https://github.com/turbopuffer/turbopuffer-java/commit/79289464904adcbcdae0f2f0acd5a64b40d0e6ea))
+* **client:** refactor closing / shutdown ([5aaf786](https://github.com/turbopuffer/turbopuffer-java/commit/5aaf78606e6932e261af940ed63d91b4b21d16e9))
+* **internal:** support running formatters directly ([d5e9f6a](https://github.com/turbopuffer/turbopuffer-java/commit/d5e9f6aff30e367edfab54df960eb89ba72ba002))
+* remove memory upper bound from publishing step ([d1a2f9e](https://github.com/turbopuffer/turbopuffer-java/commit/d1a2f9e28a559ee1536bc72cf71eb627055041b8))
+
 ## 0.2.10 (2025-08-18)
 
 Full Changelog: [v0.2.9...v0.2.10](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.9...v0.2.10)
