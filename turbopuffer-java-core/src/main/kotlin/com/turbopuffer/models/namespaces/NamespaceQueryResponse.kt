@@ -24,7 +24,7 @@ class NamespaceQueryResponse
 private constructor(
     private val billing: JsonField<QueryBilling>,
     private val performance: JsonField<QueryPerformance>,
-    private val aggregationGroups: JsonField<List<Row>>,
+    private val aggregationGroups: JsonField<List<AggregationGroup>>,
     private val aggregations: JsonField<Aggregations>,
     private val rows: JsonField<List<Row>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -40,7 +40,7 @@ private constructor(
         performance: JsonField<QueryPerformance> = JsonMissing.of(),
         @JsonProperty("aggregation_groups")
         @ExcludeMissing
-        aggregationGroups: JsonField<List<Row>> = JsonMissing.of(),
+        aggregationGroups: JsonField<List<AggregationGroup>> = JsonMissing.of(),
         @JsonProperty("aggregations")
         @ExcludeMissing
         aggregations: JsonField<Aggregations> = JsonMissing.of(),
@@ -67,7 +67,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun aggregationGroups(): Optional<List<Row>> =
+    fun aggregationGroups(): Optional<List<AggregationGroup>> =
         aggregationGroups.getOptional("aggregation_groups")
 
     /**
@@ -106,7 +106,7 @@ private constructor(
      */
     @JsonProperty("aggregation_groups")
     @ExcludeMissing
-    fun _aggregationGroups(): JsonField<List<Row>> = aggregationGroups
+    fun _aggregationGroups(): JsonField<List<AggregationGroup>> = aggregationGroups
 
     /**
      * Returns the raw JSON value of [aggregations].
@@ -155,7 +155,7 @@ private constructor(
 
         private var billing: JsonField<QueryBilling>? = null
         private var performance: JsonField<QueryPerformance>? = null
-        private var aggregationGroups: JsonField<MutableList<Row>>? = null
+        private var aggregationGroups: JsonField<MutableList<AggregationGroup>>? = null
         private var aggregations: JsonField<Aggregations> = JsonMissing.of()
         private var rows: JsonField<MutableList<Row>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -196,26 +196,26 @@ private constructor(
             this.performance = performance
         }
 
-        fun aggregationGroups(aggregationGroups: List<Row>) =
+        fun aggregationGroups(aggregationGroups: List<AggregationGroup>) =
             aggregationGroups(JsonField.of(aggregationGroups))
 
         /**
          * Sets [Builder.aggregationGroups] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.aggregationGroups] with a well-typed `List<Row>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.aggregationGroups] with a well-typed
+         * `List<AggregationGroup>` value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
          */
-        fun aggregationGroups(aggregationGroups: JsonField<List<Row>>) = apply {
+        fun aggregationGroups(aggregationGroups: JsonField<List<AggregationGroup>>) = apply {
             this.aggregationGroups = aggregationGroups.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [Row] to [aggregationGroups].
+         * Adds a single [AggregationGroup] to [aggregationGroups].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addAggregationGroup(aggregationGroup: Row) = apply {
+        fun addAggregationGroup(aggregationGroup: AggregationGroup) = apply {
             aggregationGroups =
                 (aggregationGroups ?: JsonField.of(mutableListOf())).also {
                     checkKnown("aggregationGroups", it).add(aggregationGroup)

@@ -32,9 +32,8 @@ internal class NamespaceQueryResponseTest {
                         .build()
                 )
                 .addAggregationGroup(
-                    Row.builder()
-                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .vectorOfNumber(listOf(0.0))
+                    AggregationGroup.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
                 .aggregations(
@@ -70,9 +69,8 @@ internal class NamespaceQueryResponseTest {
             )
         assertThat(namespaceQueryResponse.aggregationGroups().getOrNull())
             .containsExactly(
-                Row.builder()
-                    .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                    .vectorOfNumber(listOf(0.0))
+                AggregationGroup.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
         assertThat(namespaceQueryResponse.aggregations())
@@ -112,9 +110,8 @@ internal class NamespaceQueryResponseTest {
                         .build()
                 )
                 .addAggregationGroup(
-                    Row.builder()
-                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .vectorOfNumber(listOf(0.0))
+                    AggregationGroup.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
                 .aggregations(
