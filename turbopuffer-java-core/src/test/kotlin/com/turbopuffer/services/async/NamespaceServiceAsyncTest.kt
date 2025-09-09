@@ -196,8 +196,10 @@ internal class NamespaceServiceAsyncTest {
                 NamespaceRecallParams.builder()
                     .namespace("namespace")
                     .num(0L)
+                    .includeGroundTruth(true)
                     .addQuery(0.0)
                     .topK(0L)
+                    .addQuery(0L)
                     .build()
             )
 
