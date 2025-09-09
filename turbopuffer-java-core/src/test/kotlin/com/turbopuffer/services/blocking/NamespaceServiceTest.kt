@@ -215,6 +215,7 @@ internal class NamespaceServiceTest {
                 NamespaceRecallParams.builder()
                     .namespace("namespace")
                     .filters(JsonValue.from(mapOf<String, Any>()))
+                    .includeGroundTruth(true)
                     .num(0L)
                     .addQuery(0.0)
                     .topK(0L)
