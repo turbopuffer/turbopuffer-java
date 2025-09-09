@@ -14,6 +14,7 @@ internal class NamespaceRecallParamsTest {
         NamespaceRecallParams.builder()
             .namespace("namespace")
             .filters(JsonValue.from(mapOf<String, Any>()))
+            .includeGroundTruth(true)
             .num(0L)
             .addQuery(0.0)
             .topK(0L)
@@ -35,6 +36,7 @@ internal class NamespaceRecallParamsTest {
             NamespaceRecallParams.builder()
                 .namespace("namespace")
                 .filters(JsonValue.from(mapOf<String, Any>()))
+                .includeGroundTruth(true)
                 .num(0L)
                 .addQuery(0.0)
                 .topK(0L)
@@ -43,6 +45,7 @@ internal class NamespaceRecallParamsTest {
         val body = params._body()
 
         assertThat(body._filters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.includeGroundTruth()).contains(true)
         assertThat(body.num()).contains(0L)
         assertThat(body.queries().getOrNull()).containsExactly(0.0)
         assertThat(body.topK()).contains(0L)

@@ -36,6 +36,14 @@ private constructor(
     fun _filters(): JsonValue = body._filters()
 
     /**
+     * Include ground truth data (query vectors and true nearest neighbors) in the response.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun includeGroundTruth(): Optional<Boolean> = body.includeGroundTruth()
+
+    /**
      * The number of searches to run.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -58,6 +66,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun topK(): Optional<Long> = body.topK()
+
+    /**
+     * Returns the raw JSON value of [includeGroundTruth].
+     *
+     * Unlike [includeGroundTruth], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _includeGroundTruth(): JsonField<Boolean> = body._includeGroundTruth()
 
     /**
      * Returns the raw JSON value of [num].
@@ -125,14 +141,32 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [filters]
+         * - [includeGroundTruth]
          * - [num]
          * - [queries]
          * - [topK]
+         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** Filter by attributes. Same syntax as the query endpoint. */
         fun filters(filters: JsonValue) = apply { body.filters(filters) }
+
+        /** Include ground truth data (query vectors and true nearest neighbors) in the response. */
+        fun includeGroundTruth(includeGroundTruth: Boolean) = apply {
+            body.includeGroundTruth(includeGroundTruth)
+        }
+
+        /**
+         * Sets [Builder.includeGroundTruth] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.includeGroundTruth] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun includeGroundTruth(includeGroundTruth: JsonField<Boolean>) = apply {
+            body.includeGroundTruth(includeGroundTruth)
+        }
 
         /** The number of searches to run. */
         fun num(num: Long) = apply { body.num(num) }
@@ -321,6 +355,7 @@ private constructor(
     class Body
     private constructor(
         private val filters: JsonValue,
+        private val includeGroundTruth: JsonField<Boolean>,
         private val num: JsonField<Long>,
         private val queries: JsonField<List<Double>>,
         private val topK: JsonField<Long>,
@@ -330,15 +365,27 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
+            @JsonProperty("include_ground_truth")
+            @ExcludeMissing
+            includeGroundTruth: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("num") @ExcludeMissing num: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("queries")
             @ExcludeMissing
             queries: JsonField<List<Double>> = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
-        ) : this(filters, num, queries, topK, mutableMapOf())
+        ) : this(filters, includeGroundTruth, num, queries, topK, mutableMapOf())
 
         /** Filter by attributes. Same syntax as the query endpoint. */
         @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
+
+        /**
+         * Include ground truth data (query vectors and true nearest neighbors) in the response.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun includeGroundTruth(): Optional<Boolean> =
+            includeGroundTruth.getOptional("include_ground_truth")
 
         /**
          * The number of searches to run.
@@ -363,6 +410,16 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun topK(): Optional<Long> = topK.getOptional("top_k")
+
+        /**
+         * Returns the raw JSON value of [includeGroundTruth].
+         *
+         * Unlike [includeGroundTruth], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("include_ground_truth")
+        @ExcludeMissing
+        fun _includeGroundTruth(): JsonField<Boolean> = includeGroundTruth
 
         /**
          * Returns the raw JSON value of [num].
@@ -407,6 +464,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var filters: JsonValue = JsonMissing.of()
+            private var includeGroundTruth: JsonField<Boolean> = JsonMissing.of()
             private var num: JsonField<Long> = JsonMissing.of()
             private var queries: JsonField<MutableList<Double>>? = null
             private var topK: JsonField<Long> = JsonMissing.of()
@@ -415,6 +473,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 filters = body.filters
+                includeGroundTruth = body.includeGroundTruth
                 num = body.num
                 queries = body.queries.map { it.toMutableList() }
                 topK = body.topK
@@ -423,6 +482,23 @@ private constructor(
 
             /** Filter by attributes. Same syntax as the query endpoint. */
             fun filters(filters: JsonValue) = apply { this.filters = filters }
+
+            /**
+             * Include ground truth data (query vectors and true nearest neighbors) in the response.
+             */
+            fun includeGroundTruth(includeGroundTruth: Boolean) =
+                includeGroundTruth(JsonField.of(includeGroundTruth))
+
+            /**
+             * Sets [Builder.includeGroundTruth] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.includeGroundTruth] with a well-typed [Boolean]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun includeGroundTruth(includeGroundTruth: JsonField<Boolean>) = apply {
+                this.includeGroundTruth = includeGroundTruth
+            }
 
             /** The number of searches to run. */
             fun num(num: Long) = num(JsonField.of(num))
@@ -503,6 +579,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     filters,
+                    includeGroundTruth,
                     num,
                     (queries ?: JsonMissing.of()).map { it.toImmutable() },
                     topK,
@@ -517,6 +594,7 @@ private constructor(
                 return@apply
             }
 
+            includeGroundTruth()
             num()
             queries()
             topK()
@@ -539,7 +617,8 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (num.asKnown().isPresent) 1 else 0) +
+            (if (includeGroundTruth.asKnown().isPresent) 1 else 0) +
+                (if (num.asKnown().isPresent) 1 else 0) +
                 (queries.asKnown().getOrNull()?.size ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0)
 
@@ -550,6 +629,7 @@ private constructor(
 
             return other is Body &&
                 filters == other.filters &&
+                includeGroundTruth == other.includeGroundTruth &&
                 num == other.num &&
                 queries == other.queries &&
                 topK == other.topK &&
@@ -557,13 +637,13 @@ private constructor(
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(filters, num, queries, topK, additionalProperties)
+            Objects.hash(filters, includeGroundTruth, num, queries, topK, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{filters=$filters, num=$num, queries=$queries, topK=$topK, additionalProperties=$additionalProperties}"
+            "Body{filters=$filters, includeGroundTruth=$includeGroundTruth, num=$num, queries=$queries, topK=$topK, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
