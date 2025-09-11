@@ -117,6 +117,18 @@ sealed class Filter() {
         public fun gte(attr: String, value: Any): FilterGte = FilterGte.create(attr, value)
 
         @JvmStatic
+        public fun anyLt(attr: String, value: Any): FilterAnyLt = FilterAnyLt.create(attr, value)
+
+        @JvmStatic
+        public fun anyLte(attr: String, value: Any): FilterAnyLte = FilterAnyLte.create(attr, value)
+
+        @JvmStatic
+        public fun anyGt(attr: String, value: Any): FilterAnyGt = FilterAnyGt.create(attr, value)
+
+        @JvmStatic
+        public fun anyGte(attr: String, value: Any): FilterAnyGte = FilterAnyGte.create(attr, value)
+
+        @JvmStatic
         public fun glob(attr: String, value: String): FilterGlob = FilterGlob.create(attr, value)
 
         @JvmStatic
@@ -166,6 +178,78 @@ class FilterAnd private constructor(filters: List<Filter>) : Filter() {
 
     companion object {
         @JvmSynthetic internal fun create(filters: List<Filter>): FilterAnd = FilterAnd(filters)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterAnyGt private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "AnyGt"
+    private val value: JsonValue = JsonValue.from(value)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: Any): FilterAnyGt = FilterAnyGt(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterAnyGte private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "AnyGte"
+    private val value: JsonValue = JsonValue.from(value)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: Any): FilterAnyGte = FilterAnyGte(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterAnyLt private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "AnyLt"
+    private val value: JsonValue = JsonValue.from(value)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: Any): FilterAnyLt = FilterAnyLt(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterAnyLte private constructor(attr: String, value: Any) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "AnyLte"
+    private val value: JsonValue = JsonValue.from(value)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: Any): FilterAnyLte = FilterAnyLte(attr, value)
     }
 }
 
