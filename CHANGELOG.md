@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.1.0 (2025-09-11)
+
+Full Changelog: [v1.0.0...v1.1.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.0.0...v1.1.0)
+
+### Features
+
+* spec: add dedicated type for AggregationGroup response ([fb87b15](https://github.com/turbopuffer/turbopuffer-java/commit/fb87b15b8321e49210df9206b22931b5dc5482cf))
+* tpuf: add include_ground_truth option to recall endpoint ([13ea9a0](https://github.com/turbopuffer/turbopuffer-java/commit/13ea9a0b61eefd677f9cd6616229752e15dfcb28))
+
+
+### Bug Fixes
+
+* **ci:** use java-version 21 for publish step ([b1b36d5](https://github.com/turbopuffer/turbopuffer-java/commit/b1b36d5f5f70bf3bb07fb2dedbbb6e4f046a3476))
+
+
+### Chores
+
+* improve formatter performance ([0751bbd](https://github.com/turbopuffer/turbopuffer-java/commit/0751bbd2d6eef077514ae288d3655486ba8ec197))
+
 ## 1.0.0 (2025-08-28)
 
 Full Changelog: [v0.2.10...v1.0.0](https://github.com/turbopuffer/turbopuffer-java/compare/v0.2.10...v1.0.0)
