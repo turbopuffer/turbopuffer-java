@@ -100,9 +100,8 @@ class Row : LinkedHashMap<String, JsonValue> {
 /**
  * An aggregation group is just a Row without an ID field.
  *
- * In other languages we need a separate type for that, but in Java, we don't
- * enforce that Rows have an ID field, so we can just reuse the Row type
- * directly for simplicity.
+ * In other languages we need a separate type for that, but in Java, we don't enforce that Rows have
+ * an ID field, so we can just reuse the Row type directly for simplicity.
  */
 typealias AggregationGroup = Row
 
