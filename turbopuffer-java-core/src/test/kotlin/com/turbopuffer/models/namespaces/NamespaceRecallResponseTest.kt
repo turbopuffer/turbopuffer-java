@@ -20,10 +20,7 @@ internal class NamespaceRecallResponseTest {
                 .addGroundTruth(
                     NamespaceRecallResponse.GroundTruth.builder()
                         .addNearestNeighbor(
-                            Row.builder()
-                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .vectorOfNumber(listOf(0.0))
-                                .build()
+                            Row.builder().put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
                         )
                         .addQueryVector(0.0)
                         .build()
@@ -37,10 +34,7 @@ internal class NamespaceRecallResponseTest {
             .containsExactly(
                 NamespaceRecallResponse.GroundTruth.builder()
                     .addNearestNeighbor(
-                        Row.builder()
-                            .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                            .vectorOfNumber(listOf(0.0))
-                            .build()
+                        Row.builder().put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
                     )
                     .addQueryVector(0.0)
                     .build()
@@ -58,10 +52,7 @@ internal class NamespaceRecallResponseTest {
                 .addGroundTruth(
                     NamespaceRecallResponse.GroundTruth.builder()
                         .addNearestNeighbor(
-                            Row.builder()
-                                .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                                .vectorOfNumber(listOf(0.0))
-                                .build()
+                            Row.builder().put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
                         )
                         .addQueryVector(0.0)
                         .build()
