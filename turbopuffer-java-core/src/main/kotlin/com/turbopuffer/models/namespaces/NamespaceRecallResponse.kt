@@ -495,7 +495,7 @@ private constructor(
                 return@apply
             }
 
-            nearestNeighbors().forEach { it.validate() }
+            nearestNeighbors()
             queryVector()
             validated = true
         }
@@ -516,7 +516,7 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (nearestNeighbors.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (nearestNeighbors.asKnown().getOrNull()?.size ?: 0) +
                 (queryVector.asKnown().getOrNull()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {

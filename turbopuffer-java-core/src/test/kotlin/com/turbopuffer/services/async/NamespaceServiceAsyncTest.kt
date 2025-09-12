@@ -199,7 +199,6 @@ internal class NamespaceServiceAsyncTest {
                     .includeGroundTruth(true)
                     .addQuery(0.0)
                     .topK(0L)
-                    .addQuery(0L)
                     .build()
             )
 
