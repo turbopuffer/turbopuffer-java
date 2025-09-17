@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.1.1 (2025-09-17)
+
+Full Changelog: [v1.1.0...v1.1.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.1.0...v1.1.1)
+
+### Bug Fixes
+
+* **client:** incorrect `getPackageVersion` impl ([8561391](https://github.com/turbopuffer/turbopuffer-java/commit/85613919e27c621bc21c23f9dd1b3e630bf213f4))
+
+
+### Chores
+
+* **internal:** codegen related update ([79b523b](https://github.com/turbopuffer/turbopuffer-java/commit/79b523b6159762e84a741444ebefe4b4451c9b5d))
+* **internal:** codegen related update ([1ce5fbc](https://github.com/turbopuffer/turbopuffer-java/commit/1ce5fbcb850ea665c0b953e587eb772387f41272))
+
 ## 1.1.0 (2025-09-11)
 
 Full Changelog: [v1.0.0...v1.1.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.0.0...v1.1.0)
