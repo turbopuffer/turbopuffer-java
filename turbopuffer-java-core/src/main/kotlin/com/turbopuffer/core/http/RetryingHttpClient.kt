@@ -1,6 +1,8 @@
 package com.turbopuffer.core.http
 
+import com.turbopuffer.core.DefaultSleeper
 import com.turbopuffer.core.RequestOptions
+import com.turbopuffer.core.Sleeper
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.errors.TurbopufferIoException
 import com.turbopuffer.errors.TurbopufferRetryableException
@@ -11,8 +13,6 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
-import java.util.Timer
-import java.util.TimerTask
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
@@ -132,7 +132,10 @@ private constructor(
         return executeWithRetries(modifiedRequest, requestOptions)
     }
 
-    override fun close() = httpClient.close()
+    override fun close() {
+        httpClient.close()
+        sleeper.close()
+    }
 
     private fun isRetryable(request: HttpRequest): Boolean =
         // Some requests, such as when a request body is being streamed, cannot be retried because
@@ -255,36 +258,10 @@ private constructor(
         fun build(): HttpClient =
             RetryingHttpClient(
                 checkRequired("httpClient", httpClient),
-                checkRequired("sleeper", sleeper),
+                sleeper ?: DefaultSleeper(),
                 clock,
                 maxRetries,
                 idempotencyHeader,
             )
-    }
-
-    interface Sleeper {
-
-        fun sleep(duration: Duration)
-
-        fun sleepAsync(duration: Duration): CompletableFuture<Void>
-    }
-
-    class DefaultSleeper : Sleeper {
-        private val timer = Timer("RetryingHttpClient", true)
-
-        override fun sleep(duration: Duration) = Thread.sleep(duration.toMillis())
-
-        override fun sleepAsync(duration: Duration): CompletableFuture<Void> {
-            val future = CompletableFuture<Void>()
-            timer.schedule(
-                object : TimerTask() {
-                    override fun run() {
-                        future.complete(null)
-                    }
-                },
-                duration.toMillis(),
-            )
-            return future
-        }
     }
 }

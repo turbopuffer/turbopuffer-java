@@ -23,7 +23,6 @@ import kotlin.jvm.optionals.getOrNull
 class ClientOptions
 private constructor(
     private val originalHttpClient: HttpClient,
-    private val sleeper: RetryingHttpClient.Sleeper,
     /**
      * The HTTP client to use in the SDK.
      *
@@ -55,6 +54,16 @@ private constructor(
      * This class takes ownership of the executor and shuts it down, if possible, when closed.
      */
     @get:JvmName("streamHandlerExecutor") val streamHandlerExecutor: Executor,
+    /**
+     * The interface to use for delaying execution, like during retries.
+     *
+     * This is primarily useful for using fake delays in tests.
+     *
+     * Defaults to real execution delays.
+     *
+     * This class takes ownership of the sleeper and closes it when closed.
+     */
+    @get:JvmName("sleeper") val sleeper: Sleeper,
     /**
      * The clock to use for operations that require timing, like retries.
      *
@@ -159,10 +168,10 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
-        private var sleeper: RetryingHttpClient.Sleeper? = null
         private var checkJacksonVersionCompatibility: Boolean = true
         private var jsonMapper: JsonMapper = jsonMapper()
         private var streamHandlerExecutor: Executor? = null
+        private var sleeper: Sleeper? = null
         private var clock: Clock = Clock.systemUTC()
         private var baseUrl: String? = null
         private var headers: Headers.Builder = Headers.builder()
@@ -177,10 +186,10 @@ private constructor(
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
             httpClient = clientOptions.originalHttpClient
-            sleeper = clientOptions.sleeper
             checkJacksonVersionCompatibility = clientOptions.checkJacksonVersionCompatibility
             jsonMapper = clientOptions.jsonMapper
             streamHandlerExecutor = clientOptions.streamHandlerExecutor
+            sleeper = clientOptions.sleeper
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
             headers = clientOptions.headers.toBuilder()
@@ -236,6 +245,17 @@ private constructor(
                     PhantomReachableExecutorService(streamHandlerExecutor)
                 else streamHandlerExecutor
         }
+
+        /**
+         * The interface to use for delaying execution, like during retries.
+         *
+         * This is primarily useful for using fake delays in tests.
+         *
+         * Defaults to real execution delays.
+         *
+         * This class takes ownership of the sleeper and closes it when closed.
+         */
+        fun sleeper(sleeper: Sleeper) = apply { this.sleeper = PhantomReachableSleeper(sleeper) }
 
         /**
          * The clock to use for operations that require timing, like retries.
@@ -438,7 +458,25 @@ private constructor(
          */
         fun build(): ClientOptions {
             val httpClient = checkRequired("httpClient", httpClient)
-            var sleeper = sleeper ?: RetryingHttpClient.DefaultSleeper()
+            val streamHandlerExecutor =
+                streamHandlerExecutor
+                    ?: PhantomReachableExecutorService(
+                        Executors.newCachedThreadPool(
+                            object : ThreadFactory {
+
+                                private val threadFactory: ThreadFactory =
+                                    Executors.defaultThreadFactory()
+                                private val count = AtomicLong(0)
+
+                                override fun newThread(runnable: Runnable): Thread =
+                                    threadFactory.newThread(runnable).also {
+                                        it.name =
+                                            "turbopuffer-stream-handler-thread-${count.getAndIncrement()}"
+                                    }
+                            }
+                        )
+                    )
+            val sleeper = sleeper ?: PhantomReachableSleeper(DefaultSleeper())
             val apiKey = checkRequired("apiKey", apiKey)
 
             // Check if region is required based on baseUrl.
@@ -474,7 +512,6 @@ private constructor(
 
             return ClientOptions(
                 httpClient,
-                sleeper,
                 RetryingHttpClient.builder()
                     .httpClient(httpClient)
                     .sleeper(sleeper)
@@ -483,21 +520,8 @@ private constructor(
                     .build(),
                 checkJacksonVersionCompatibility,
                 jsonMapper,
-                streamHandlerExecutor
-                    ?: Executors.newCachedThreadPool(
-                        object : ThreadFactory {
-
-                            private val threadFactory: ThreadFactory =
-                                Executors.defaultThreadFactory()
-                            private val count = AtomicLong(0)
-
-                            override fun newThread(runnable: Runnable): Thread =
-                                threadFactory.newThread(runnable).also {
-                                    it.name =
-                                        "turbopuffer-stream-handler-thread-${count.getAndIncrement()}"
-                                }
-                        }
-                    ),
+                streamHandlerExecutor,
+                sleeper,
                 clock,
                 baseUrl,
                 headers.build(),
@@ -525,5 +549,6 @@ private constructor(
     fun close() {
         httpClient.close()
         (streamHandlerExecutor as? ExecutorService)?.shutdown()
+        sleeper.close()
     }
 }
