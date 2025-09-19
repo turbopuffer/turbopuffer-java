@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.turbopuffer.client.TurbopufferClientAsync
 import com.turbopuffer.client.TurbopufferClientAsyncImpl
 import com.turbopuffer.core.ClientOptions
+import com.turbopuffer.core.Sleeper
 import com.turbopuffer.core.Timeout
 import com.turbopuffer.core.http.AsyncStreamResponse
 import com.turbopuffer.core.http.Headers
@@ -133,6 +134,17 @@ class TurbopufferOkHttpClientAsync private constructor() {
         fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
             clientOptions.streamHandlerExecutor(streamHandlerExecutor)
         }
+
+        /**
+         * The interface to use for delaying execution, like during retries.
+         *
+         * This is primarily useful for using fake delays in tests.
+         *
+         * Defaults to real execution delays.
+         *
+         * This class takes ownership of the sleeper and closes it when closed.
+         */
+        fun sleeper(sleeper: Sleeper) = apply { clientOptions.sleeper(sleeper) }
 
         /**
          * The clock to use for operations that require timing, like retries.
