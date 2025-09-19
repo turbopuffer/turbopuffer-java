@@ -155,6 +155,22 @@ sealed class Filter() {
             value: List<String>,
         ): FilterContainsAllTokensArray = FilterContainsAllTokensArray.create(attr, value)
 
+        @JvmStatic
+        public fun containsAllTokens(
+            attr: String,
+            value: String,
+            params: ContainsAllTokensFilterParams,
+        ): FilterContainsAllTokensWithParams =
+            FilterContainsAllTokensWithParams.create(attr, value, params)
+
+        @JvmStatic
+        public fun containsAllTokens(
+            attr: String,
+            value: List<String>,
+            params: ContainsAllTokensFilterParams,
+        ): FilterContainsAllTokensArrayWithParams =
+            FilterContainsAllTokensArrayWithParams.create(attr, value, params)
+
         @JvmStatic public fun not(filter: Filter): FilterNot = FilterNot.create(filter)
 
         @JvmStatic
@@ -307,6 +323,57 @@ class FilterContainsAllTokensArray private constructor(attr: String, value: List
         @JvmSynthetic
         internal fun create(attr: String, value: List<String>): FilterContainsAllTokensArray =
             FilterContainsAllTokensArray(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value", "params")
+class FilterContainsAllTokensArrayWithParams
+private constructor(attr: String, value: List<String>, params: ContainsAllTokensFilterParams) :
+    Filter() {
+    private val attr: String = attr
+    private val f0: String = "ContainsAllTokens"
+    private val value: List<String> = value
+    private val params: ContainsAllTokensFilterParams = params
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(
+            attr: String,
+            value: List<String>,
+            params: ContainsAllTokensFilterParams,
+        ): FilterContainsAllTokensArrayWithParams =
+            FilterContainsAllTokensArrayWithParams(attr, value, params)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value", "params")
+class FilterContainsAllTokensWithParams
+private constructor(attr: String, value: String, params: ContainsAllTokensFilterParams) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "ContainsAllTokens"
+    private val value: String = value
+    private val params: ContainsAllTokensFilterParams = params
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(
+            attr: String,
+            value: String,
+            params: ContainsAllTokensFilterParams,
+        ): FilterContainsAllTokensWithParams =
+            FilterContainsAllTokensWithParams(attr, value, params)
     }
 }
 
@@ -680,6 +747,20 @@ sealed class RankByText() : RankBy() {
             RankByTextBM25Array.create(attr, value)
 
         @JvmStatic
+        public fun bm25(
+            attr: String,
+            value: String,
+            params: Bm25ClauseParams,
+        ): RankByTextBM25WithParams = RankByTextBM25WithParams.create(attr, value, params)
+
+        @JvmStatic
+        public fun bm25(
+            attr: String,
+            value: List<String>,
+            params: Bm25ClauseParams,
+        ): RankByTextBM25ArrayWithParams = RankByTextBM25ArrayWithParams.create(attr, value, params)
+
+        @JvmStatic
         public fun sum(vararg subqueries: RankByText): RankByTextSum =
             RankByTextSum.create(subqueries.asList())
 
@@ -732,6 +813,54 @@ class RankByTextBM25Array private constructor(attr: String, value: List<String>)
         @JvmSynthetic
         internal fun create(attr: String, value: List<String>): RankByTextBM25Array =
             RankByTextBM25Array(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value", "params")
+class RankByTextBM25ArrayWithParams
+private constructor(attr: String, value: List<String>, params: Bm25ClauseParams) : RankByText() {
+    private val attr: String = attr
+    private val f0: String = "BM25"
+    private val value: List<String> = value
+    private val params: Bm25ClauseParams = params
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(
+            attr: String,
+            value: List<String>,
+            params: Bm25ClauseParams,
+        ): RankByTextBM25ArrayWithParams = RankByTextBM25ArrayWithParams(attr, value, params)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value", "params")
+class RankByTextBM25WithParams
+private constructor(attr: String, value: String, params: Bm25ClauseParams) : RankByText() {
+    private val attr: String = attr
+    private val f0: String = "BM25"
+    private val value: String = value
+    private val params: Bm25ClauseParams = params
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(
+            attr: String,
+            value: String,
+            params: Bm25ClauseParams,
+        ): RankByTextBM25WithParams = RankByTextBM25WithParams(attr, value, params)
     }
 }
 
