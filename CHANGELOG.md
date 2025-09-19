@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.2.0 (2025-09-19)
+
+Full Changelog: [v1.1.1...v1.2.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.1.1...v1.2.0)
+
+### Features
+
+* add WithParams variant to BM25 and ContainsAllTokens ([ef92e9a](https://github.com/turbopuffer/turbopuffer-java/commit/ef92e9ab2f2ea10707ee175106f8401498aa91f1))
+* **client:** expose sleeper option ([7dd800e](https://github.com/turbopuffer/turbopuffer-java/commit/7dd800e2927bf0399e16dc8bebca46e139217046))
+
+
+### Bug Fixes
+
+* **client:** ensure single timer is created per client ([7dd800e](https://github.com/turbopuffer/turbopuffer-java/commit/7dd800e2927bf0399e16dc8bebca46e139217046))
+
+
+### Chores
+
+* improve formatter performance ([a61e0de](https://github.com/turbopuffer/turbopuffer-java/commit/a61e0debf0be701395bf817c1734e56f4f1e1caa))
+
 ## 1.1.1 (2025-09-17)
 
 Full Changelog: [v1.1.0...v1.1.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.1.0...v1.1.1)
