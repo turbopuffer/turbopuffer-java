@@ -17,6 +17,7 @@ import java.util.Optional
 
 /** Additional (optional) parameters for the ContainsAllTokens filter. */
 class ContainsAllTokensFilterParams
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val lastAsPrefix: JsonField<Boolean>,
     private val additionalProperties: MutableMap<String, JsonValue>,

@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A single document, in a row-based format. */
 class Row
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<Id>,
     private val vector: JsonField<Vector>,

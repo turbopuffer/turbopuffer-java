@@ -17,6 +17,7 @@ import java.util.Optional
 
 /** The response to a successful query explain. */
 class NamespaceExplainQueryResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val planText: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,

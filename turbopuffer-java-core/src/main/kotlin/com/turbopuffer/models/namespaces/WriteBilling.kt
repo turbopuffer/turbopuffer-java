@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The billing information for a write request. */
 class WriteBilling
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val billableLogicalBytesWritten: JsonField<Long>,
     private val query: JsonField<QueryBilling>,

@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** The billing information for a query. */
 class QueryBilling
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val billableLogicalBytesQueried: JsonField<Long>,
     private val billableLogicalBytesReturned: JsonField<Long>,

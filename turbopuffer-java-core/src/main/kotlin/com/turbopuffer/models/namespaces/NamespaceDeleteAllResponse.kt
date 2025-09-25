@@ -15,6 +15,7 @@ import java.util.Objects
 
 /** The response to a successful namespace deletion request. */
 class NamespaceDeleteAllResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val status: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,

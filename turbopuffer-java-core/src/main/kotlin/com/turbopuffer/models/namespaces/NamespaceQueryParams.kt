@@ -517,6 +517,7 @@ private constructor(
 
     /** Query, filter, full-text search and vector search documents. */
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val aggregateBy: JsonField<Query.AggregateBy>,
         private val distanceMetric: JsonField<DistanceMetric>,
@@ -1072,6 +1073,7 @@ private constructor(
 
     /** The consistency level for a query. */
     class Consistency
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val level: JsonField<Level>,
         private val additionalProperties: MutableMap<String, JsonValue>,

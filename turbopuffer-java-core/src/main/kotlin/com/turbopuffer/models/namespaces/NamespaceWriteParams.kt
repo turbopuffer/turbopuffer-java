@@ -562,6 +562,7 @@ private constructor(
 
     /** Create, update, or delete documents. */
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val copyFromNamespace: JsonField<String>,
         private val deleteByFilter: JsonValue,
@@ -1206,6 +1207,7 @@ private constructor(
 
     /** The encryption configuration for a namespace. */
     class Encryption
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val cmek: JsonField<Cmek>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1325,6 +1327,7 @@ private constructor(
         @JvmSynthetic internal fun validity(): Int = (cmek.asKnown().getOrNull()?.validity() ?: 0)
 
         class Cmek
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val keyName: JsonField<String>,
             private val additionalProperties: MutableMap<String, JsonValue>,

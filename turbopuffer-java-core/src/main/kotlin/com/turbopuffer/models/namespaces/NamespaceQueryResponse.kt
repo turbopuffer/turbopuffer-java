@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The result of a query. */
 class NamespaceQueryResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val billing: JsonField<QueryBilling>,
     private val performance: JsonField<QueryPerformance>,
