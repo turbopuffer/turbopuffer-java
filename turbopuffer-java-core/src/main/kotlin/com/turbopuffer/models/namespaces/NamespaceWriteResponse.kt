@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The response to a successful write request. */
 class NamespaceWriteResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val billing: JsonField<WriteBilling>,
     private val message: JsonField<String>,

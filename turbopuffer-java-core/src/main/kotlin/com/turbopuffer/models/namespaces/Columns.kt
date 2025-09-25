@@ -35,6 +35,7 @@ import kotlin.jvm.optionals.getOrNull
  * for that column.
  */
 class Columns
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<List<Id>>,
     private val vector: JsonField<Vector>,

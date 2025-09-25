@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Detailed configuration for an attribute attached to a document. */
 class AttributeSchemaConfig
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val ann: JsonField<Boolean>,
     private val filterable: JsonField<Boolean>,

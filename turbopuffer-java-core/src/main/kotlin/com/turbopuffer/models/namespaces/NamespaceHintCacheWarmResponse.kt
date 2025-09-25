@@ -17,6 +17,7 @@ import java.util.Optional
 
 /** The response to a successful cache warm request. */
 class NamespaceHintCacheWarmResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val status: JsonValue,
     private val message: JsonField<String>,

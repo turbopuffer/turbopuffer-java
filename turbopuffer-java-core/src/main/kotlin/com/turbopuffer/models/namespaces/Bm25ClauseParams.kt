@@ -17,6 +17,7 @@ import java.util.Optional
 
 /** Additional (optional) parameters for a single BM25 query clause. */
 class Bm25ClauseParams
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val lastAsPrefix: JsonField<Boolean>,
     private val additionalProperties: MutableMap<String, JsonValue>,

@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Metadata about a namespace. */
 class NamespaceMetadata
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val approxLogicalBytes: JsonField<Long>,
     private val approxRowCount: JsonField<Long>,

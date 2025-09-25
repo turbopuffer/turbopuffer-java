@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Query, filter, full-text search and vector search documents. */
 class Query
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val aggregateBy: JsonField<MutableMap<String, AggregateBy>>,
     private val distanceMetric: JsonField<DistanceMetric>,

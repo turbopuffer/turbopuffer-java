@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** A summary of a namespace. */
 class NamespaceSummary
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
