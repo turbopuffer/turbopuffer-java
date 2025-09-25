@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The result of a multi-query. */
 class NamespaceMultiQueryResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val billing: JsonField<QueryBilling>,
     private val performance: JsonField<QueryPerformance>,
@@ -253,6 +254,7 @@ private constructor(
             (results.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     class Result
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val aggregationGroups: JsonField<List<AggregationGroup>>,
         private val aggregations: JsonField<Aggregations>,

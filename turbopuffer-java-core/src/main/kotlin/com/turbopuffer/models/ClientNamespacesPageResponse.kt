@@ -19,6 +19,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class ClientNamespacesPageResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val namespaces: JsonField<List<NamespaceSummary>>,
     private val nextCursor: JsonField<String>,

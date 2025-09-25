@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Configuration options for full-text search. */
 class FullTextSearchConfig
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val b: JsonField<Double>,
     private val caseSensitive: JsonField<Boolean>,

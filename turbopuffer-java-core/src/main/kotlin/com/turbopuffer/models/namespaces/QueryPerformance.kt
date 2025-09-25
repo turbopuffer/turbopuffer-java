@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** The performance information for a query. */
 class QueryPerformance
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val approxNamespaceSize: JsonField<Long>,
     private val cacheHitRatio: JsonField<Double>,

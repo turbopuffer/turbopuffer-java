@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The response to a successful cache warm request. */
 class NamespaceRecallResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val avgAnnCount: JsonField<Double>,
     private val avgExhaustiveCount: JsonField<Double>,
@@ -304,6 +305,7 @@ private constructor(
             (groundTruth.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     class GroundTruth
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val nearestNeighbors: JsonField<List<Row>>,
         private val queryVector: JsonField<List<Double>>,

@@ -331,6 +331,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val queries: JsonField<List<Query>>,
         private val consistency: JsonField<Consistency>,
@@ -592,6 +593,7 @@ private constructor(
 
     /** The consistency level for a query. */
     class Consistency
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val level: JsonField<Level>,
         private val additionalProperties: MutableMap<String, JsonValue>,
