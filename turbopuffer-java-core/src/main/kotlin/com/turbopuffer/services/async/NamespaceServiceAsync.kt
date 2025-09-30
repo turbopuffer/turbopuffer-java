@@ -83,7 +83,7 @@ interface NamespaceServiceAsync {
     ): CompletableFuture<NamespaceExplainQueryResponse> =
         explainQuery(NamespaceExplainQueryParams.none(), requestOptions)
 
-    /** Warm the cache for a namespace. */
+    /** Signal turbopuffer to prepare for low-latency requests. */
     fun hintCacheWarm(): CompletableFuture<NamespaceHintCacheWarmResponse> =
         hintCacheWarm(NamespaceHintCacheWarmParams.none())
 
