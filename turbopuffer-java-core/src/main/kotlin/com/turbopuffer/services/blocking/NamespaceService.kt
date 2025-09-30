@@ -82,7 +82,7 @@ interface NamespaceService {
     fun explainQuery(requestOptions: RequestOptions): NamespaceExplainQueryResponse =
         explainQuery(NamespaceExplainQueryParams.none(), requestOptions)
 
-    /** Warm the cache for a namespace. */
+    /** Signal turbopuffer to prepare for low-latency requests. */
     fun hintCacheWarm(): NamespaceHintCacheWarmResponse =
         hintCacheWarm(NamespaceHintCacheWarmParams.none())
 

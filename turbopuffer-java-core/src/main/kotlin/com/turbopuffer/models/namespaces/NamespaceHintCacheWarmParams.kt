@@ -9,7 +9,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Warm the cache for a namespace. */
+/** Signal turbopuffer to prepare for low-latency requests. */
 class NamespaceHintCacheWarmParams
 private constructor(
     private val namespace: String?,
