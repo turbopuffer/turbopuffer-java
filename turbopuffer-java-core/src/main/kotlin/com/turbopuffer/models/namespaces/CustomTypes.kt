@@ -883,10 +883,11 @@ class RankByTextMax private constructor(subqueries: List<RankByText>) : RankByTe
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
-@JsonPropertyOrder("f0", "f1")
+@JsonPropertyOrder("f0", "weight", "subquery")
 class RankByTextProduct private constructor(weight: Double, subquery: RankByText) : RankByText() {
     private val f0: String = "Product"
-    private val f1: List<JsonValue> = listOf(JsonValue.from(weight), JsonValue.from(subquery))
+    private val weight: Double = weight
+    private val subquery: RankByText = subquery
 
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
@@ -901,10 +902,11 @@ class RankByTextProduct private constructor(weight: Double, subquery: RankByText
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
-@JsonPropertyOrder("f0", "f1")
+@JsonPropertyOrder("f0", "subquery", "weight")
 class RankByTextProduct2 private constructor(subquery: RankByText, weight: Double) : RankByText() {
     private val f0: String = "Product"
-    private val f1: List<JsonValue> = listOf(JsonValue.from(subquery), JsonValue.from(weight))
+    private val subquery: RankByText = subquery
+    private val weight: Double = weight
 
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)

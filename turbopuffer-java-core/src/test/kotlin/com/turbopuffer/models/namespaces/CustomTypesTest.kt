@@ -23,7 +23,7 @@ internal class CustomTypesTest {
     fun rankByToString() {
         val rankBy = RankByText.product(2.0, RankByText.bm25("attr1", "quick brown fox"))
         assertThat(rankBy.toString())
-            .isEqualTo("""["Product",[2.0,["attr1","BM25","quick brown fox"]]]""")
+            .isEqualTo("""["Product",2.0,["attr1","BM25","quick brown fox"]]""")
     }
 
     // Basic sanity check of the custom schema builder.
