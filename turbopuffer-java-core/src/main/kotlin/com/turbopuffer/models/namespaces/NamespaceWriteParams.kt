@@ -57,6 +57,14 @@ private constructor(
     fun deletes(): Optional<List<Id>> = body.deletes()
 
     /**
+     * Disables write throttling (HTTP 429 responses) during high-volume ingestion.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun disableBackpressure(): Optional<Boolean> = body.disableBackpressure()
+
+    /**
      * A function used to calculate vector similarity.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -136,6 +144,14 @@ private constructor(
      * Unlike [deletes], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _deletes(): JsonField<List<Id>> = body._deletes()
+
+    /**
+     * Returns the raw JSON value of [disableBackpressure].
+     *
+     * Unlike [disableBackpressure], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _disableBackpressure(): JsonField<Boolean> = body._disableBackpressure()
 
     /**
      * Returns the raw JSON value of [distanceMetric].
@@ -234,7 +250,7 @@ private constructor(
          * - [deleteByFilter]
          * - [deleteCondition]
          * - [deletes]
-         * - [distanceMetric]
+         * - [disableBackpressure]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -291,6 +307,22 @@ private constructor(
 
         /** Alias for calling [addDelete] with `Id.ofInteger(integer)`. */
         fun addDelete(integer: Long) = apply { body.addDelete(integer) }
+
+        /** Disables write throttling (HTTP 429 responses) during high-volume ingestion. */
+        fun disableBackpressure(disableBackpressure: Boolean) = apply {
+            body.disableBackpressure(disableBackpressure)
+        }
+
+        /**
+         * Sets [Builder.disableBackpressure] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.disableBackpressure] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun disableBackpressure(disableBackpressure: JsonField<Boolean>) = apply {
+            body.disableBackpressure(disableBackpressure)
+        }
 
         /** A function used to calculate vector similarity. */
         fun distanceMetric(distanceMetric: DistanceMetric) = apply {
@@ -568,6 +600,7 @@ private constructor(
         private val deleteByFilter: JsonValue,
         private val deleteCondition: JsonValue,
         private val deletes: JsonField<List<Id>>,
+        private val disableBackpressure: JsonField<Boolean>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val encryption: JsonField<Encryption>,
         private val patchColumns: JsonField<Columns>,
@@ -594,6 +627,9 @@ private constructor(
             @JsonProperty("deletes")
             @ExcludeMissing
             deletes: JsonField<List<Id>> = JsonMissing.of(),
+            @JsonProperty("disable_backpressure")
+            @ExcludeMissing
+            disableBackpressure: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("distance_metric")
             @ExcludeMissing
             distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
@@ -624,6 +660,7 @@ private constructor(
             deleteByFilter,
             deleteCondition,
             deletes,
+            disableBackpressure,
             distanceMetric,
             encryption,
             patchColumns,
@@ -663,6 +700,15 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun deletes(): Optional<List<Id>> = deletes.getOptional("deletes")
+
+        /**
+         * Disables write throttling (HTTP 429 responses) during high-volume ingestion.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun disableBackpressure(): Optional<Boolean> =
+            disableBackpressure.getOptional("disable_backpressure")
 
         /**
          * A function used to calculate vector similarity.
@@ -753,6 +799,16 @@ private constructor(
         @JsonProperty("deletes") @ExcludeMissing fun _deletes(): JsonField<List<Id>> = deletes
 
         /**
+         * Returns the raw JSON value of [disableBackpressure].
+         *
+         * Unlike [disableBackpressure], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("disable_backpressure")
+        @ExcludeMissing
+        fun _disableBackpressure(): JsonField<Boolean> = disableBackpressure
+
+        /**
          * Returns the raw JSON value of [distanceMetric].
          *
          * Unlike [distanceMetric], this method doesn't throw if the JSON field has an unexpected
@@ -841,6 +897,7 @@ private constructor(
             private var deleteByFilter: JsonValue = JsonMissing.of()
             private var deleteCondition: JsonValue = JsonMissing.of()
             private var deletes: JsonField<MutableList<Id>>? = null
+            private var disableBackpressure: JsonField<Boolean> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var encryption: JsonField<Encryption> = JsonMissing.of()
             private var patchColumns: JsonField<Columns> = JsonMissing.of()
@@ -858,6 +915,7 @@ private constructor(
                 deleteByFilter = body.deleteByFilter
                 deleteCondition = body.deleteCondition
                 deletes = body.deletes.map { it.toMutableList() }
+                disableBackpressure = body.disableBackpressure
                 distanceMetric = body.distanceMetric
                 encryption = body.encryption
                 patchColumns = body.patchColumns
@@ -928,6 +986,21 @@ private constructor(
 
             /** Alias for calling [addDelete] with `Id.ofInteger(integer)`. */
             fun addDelete(integer: Long) = addDelete(Id.ofInteger(integer))
+
+            /** Disables write throttling (HTTP 429 responses) during high-volume ingestion. */
+            fun disableBackpressure(disableBackpressure: Boolean) =
+                disableBackpressure(JsonField.of(disableBackpressure))
+
+            /**
+             * Sets [Builder.disableBackpressure] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.disableBackpressure] with a well-typed [Boolean]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun disableBackpressure(disableBackpressure: JsonField<Boolean>) = apply {
+                this.disableBackpressure = disableBackpressure
+            }
 
             /** A function used to calculate vector similarity. */
             fun distanceMetric(distanceMetric: DistanceMetric) =
@@ -1100,6 +1173,7 @@ private constructor(
                     deleteByFilter,
                     deleteCondition,
                     (deletes ?: JsonMissing.of()).map { it.toImmutable() },
+                    disableBackpressure,
                     distanceMetric,
                     encryption,
                     patchColumns,
@@ -1122,6 +1196,7 @@ private constructor(
 
             copyFromNamespace()
             deletes().ifPresent { it.forEach { it.validate() } }
+            disableBackpressure()
             distanceMetric().ifPresent { it.validate() }
             encryption().ifPresent { it.validate() }
             patchColumns().ifPresent { it.validate() }
@@ -1150,6 +1225,7 @@ private constructor(
         internal fun validity(): Int =
             (if (copyFromNamespace.asKnown().isPresent) 1 else 0) +
                 (deletes.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (if (disableBackpressure.asKnown().isPresent) 1 else 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (encryption.asKnown().getOrNull()?.validity() ?: 0) +
                 (patchColumns.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1168,6 +1244,7 @@ private constructor(
                 deleteByFilter == other.deleteByFilter &&
                 deleteCondition == other.deleteCondition &&
                 deletes == other.deletes &&
+                disableBackpressure == other.disableBackpressure &&
                 distanceMetric == other.distanceMetric &&
                 encryption == other.encryption &&
                 patchColumns == other.patchColumns &&
@@ -1186,6 +1263,7 @@ private constructor(
                 deleteByFilter,
                 deleteCondition,
                 deletes,
+                disableBackpressure,
                 distanceMetric,
                 encryption,
                 patchColumns,
@@ -1202,7 +1280,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteCondition=$deleteCondition, deletes=$deletes, distanceMetric=$distanceMetric, encryption=$encryption, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
     }
 
     /** The encryption configuration for a namespace. */
