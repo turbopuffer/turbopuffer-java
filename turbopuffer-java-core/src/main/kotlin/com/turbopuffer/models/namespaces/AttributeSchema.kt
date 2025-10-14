@@ -29,8 +29,8 @@ private constructor(
 ) {
 
     /**
-     * The data type of the attribute. Valid values: string, int, uint, uuid, datetime, bool,
-     * []string, []int, []uint, []uuid, []datetime, [DIMS]f16, [DIMS]f32.
+     * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
+     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
      */
     fun type(): Optional<String> = Optional.ofNullable(type)
 
@@ -42,8 +42,8 @@ private constructor(
     fun isConfig(): Boolean = config != null
 
     /**
-     * The data type of the attribute. Valid values: string, int, uint, uuid, datetime, bool,
-     * []string, []int, []uint, []uuid, []datetime, [DIMS]f16, [DIMS]f32.
+     * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
+     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
      */
     fun asType(): String = type.getOrThrow("type")
 
@@ -124,8 +124,8 @@ private constructor(
     companion object {
 
         /**
-         * The data type of the attribute. Valid values: string, int, uint, uuid, datetime, bool,
-         * []string, []int, []uint, []uuid, []datetime, [DIMS]f16, [DIMS]f32.
+         * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime,
+         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
          */
         @JvmStatic fun ofType(type: String) = AttributeSchema(type = type)
 
@@ -140,8 +140,8 @@ private constructor(
     interface Visitor<out T> {
 
         /**
-         * The data type of the attribute. Valid values: string, int, uint, uuid, datetime, bool,
-         * []string, []int, []uint, []uuid, []datetime, [DIMS]f16, [DIMS]f32.
+         * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime,
+         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
          */
         fun visitType(type: String): T
 
