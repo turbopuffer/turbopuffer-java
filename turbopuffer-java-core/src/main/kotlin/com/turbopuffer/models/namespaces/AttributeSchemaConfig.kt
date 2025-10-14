@@ -76,8 +76,8 @@ private constructor(
     fun regex(): Optional<Boolean> = regex.getOptional("regex")
 
     /**
-     * The data type of the attribute. Valid values: string, int, uint, uuid, datetime, bool,
-     * []string, []int, []uint, []uuid, []datetime, [DIMS]f16, [DIMS]f32.
+     * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
+     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -220,8 +220,8 @@ private constructor(
         fun regex(regex: JsonField<Boolean>) = apply { this.regex = regex }
 
         /**
-         * The data type of the attribute. Valid values: string, int, uint, uuid, datetime, bool,
-         * []string, []int, []uint, []uuid, []datetime, [DIMS]f16, [DIMS]f32.
+         * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime,
+         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
          */
         fun type(type: String) = type(JsonField.of(type))
 
