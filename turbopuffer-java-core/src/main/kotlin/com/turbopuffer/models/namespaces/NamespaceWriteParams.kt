@@ -885,8 +885,8 @@ private constructor(
          */
         @JsonProperty("disable_backpressure")
         @ExcludeMissing
-        fun _disableBackpressure(): JsonField<Boolean> = disableBackpressure      
-      
+        fun _disableBackpressure(): JsonField<Boolean> = disableBackpressure
+
         /**
          * Returns the raw JSON value of [distanceMetric].
          *

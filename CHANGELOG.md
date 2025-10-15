@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.3.0 (2025-10-15)
+
+Full Changelog: [v1.2.0...v1.3.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.2.0...v1.3.0)
+
+### Features
+
+* Add float, []float and []bool to the list of valid types in the OpenAPI spec. ([6d0eb95](https://github.com/turbopuffer/turbopuffer-java/commit/6d0eb958628f1e1adbefe2314993094f57db71a5))
+* Promote disable_backpressure to first-class Write property ([e7c8d14](https://github.com/turbopuffer/turbopuffer-java/commit/e7c8d14505e1d19915f2b802aadc7a30bf1dc5a5))
+
+
+### Bug Fixes
+
+* **client:** deserialization of empty objects ([e003d57](https://github.com/turbopuffer/turbopuffer-java/commit/e003d578791f071928b983db1a7101ce14abf99e))
+
+
+### Documentation
+
+* hint_cache_warm also update header and openapi ([1fffcaf](https://github.com/turbopuffer/turbopuffer-java/commit/1fffcaf05c0a920069f9a91495338fd150b9fa71))
+
 ## 1.2.0 (2025-09-19)
 
 Full Changelog: [v1.1.1...v1.2.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.1.1...v1.2.0)
