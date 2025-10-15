@@ -17,6 +17,7 @@ internal class NamespaceWriteParamsTest {
             .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
             .deleteCondition(JsonValue.from(mapOf<String, Any>()))
             .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .disableBackpressure(true)
             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
             .encryption(
                 NamespaceWriteParams.Encryption.builder()
@@ -77,6 +78,7 @@ internal class NamespaceWriteParamsTest {
                 .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
                 .deleteCondition(JsonValue.from(mapOf<String, Any>()))
                 .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .disableBackpressure(true)
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .encryption(
                     NamespaceWriteParams.Encryption.builder()
@@ -127,6 +129,7 @@ internal class NamespaceWriteParamsTest {
         assertThat(body._deleteCondition()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.deletes().getOrNull())
             .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+        assertThat(body.disableBackpressure()).contains(true)
         assertThat(body.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)
         assertThat(body.encryption())
             .contains(
