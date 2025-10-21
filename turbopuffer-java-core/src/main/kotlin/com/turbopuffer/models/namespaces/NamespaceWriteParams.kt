@@ -81,6 +81,14 @@ private constructor(
     fun encryption(): Optional<Encryption> = body.encryption()
 
     /**
+     * The patch and filter specifying which documents to patch.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun patchByFilter(): Optional<PatchByFilter> = body.patchByFilter()
+
+    /**
      * A list of documents in columnar format. Each key is a column name, mapped to an array of
      * values for that column.
      *
@@ -180,6 +188,13 @@ private constructor(
      * Unlike [encryption], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _encryption(): JsonField<Encryption> = body._encryption()
+
+    /**
+     * Returns the raw JSON value of [patchByFilter].
+     *
+     * Unlike [patchByFilter], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _patchByFilter(): JsonField<PatchByFilter> = body._patchByFilter()
 
     /**
      * Returns the raw JSON value of [patchColumns].
@@ -390,6 +405,22 @@ private constructor(
          * supported value.
          */
         fun encryption(encryption: JsonField<Encryption>) = apply { body.encryption(encryption) }
+
+        /** The patch and filter specifying which documents to patch. */
+        fun patchByFilter(patchByFilter: PatchByFilter) = apply {
+            body.patchByFilter(patchByFilter)
+        }
+
+        /**
+         * Sets [Builder.patchByFilter] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.patchByFilter] with a well-typed [PatchByFilter] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun patchByFilter(patchByFilter: JsonField<PatchByFilter>) = apply {
+            body.patchByFilter(patchByFilter)
+        }
 
         /**
          * A list of documents in columnar format. Each key is a column name, mapped to an array of
@@ -662,6 +693,7 @@ private constructor(
         private val disableBackpressure: JsonField<Boolean>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val encryption: JsonField<Encryption>,
+        private val patchByFilter: JsonField<PatchByFilter>,
         private val patchColumns: JsonField<Columns>,
         private val patchCondition: JsonField<Filter>,
         private val patchRows: JsonField<List<Row>>,
@@ -695,6 +727,9 @@ private constructor(
             @JsonProperty("encryption")
             @ExcludeMissing
             encryption: JsonField<Encryption> = JsonMissing.of(),
+            @JsonProperty("patch_by_filter")
+            @ExcludeMissing
+            patchByFilter: JsonField<PatchByFilter> = JsonMissing.of(),
             @JsonProperty("patch_columns")
             @ExcludeMissing
             patchColumns: JsonField<Columns> = JsonMissing.of(),
@@ -722,6 +757,7 @@ private constructor(
             disableBackpressure,
             distanceMetric,
             encryption,
+            patchByFilter,
             patchColumns,
             patchCondition,
             patchRows,
@@ -789,6 +825,14 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun encryption(): Optional<Encryption> = encryption.getOptional("encryption")
+
+        /**
+         * The patch and filter specifying which documents to patch.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun patchByFilter(): Optional<PatchByFilter> = patchByFilter.getOptional("patch_by_filter")
 
         /**
          * A list of documents in columnar format. Each key is a column name, mapped to an array of
@@ -907,6 +951,16 @@ private constructor(
         fun _encryption(): JsonField<Encryption> = encryption
 
         /**
+         * Returns the raw JSON value of [patchByFilter].
+         *
+         * Unlike [patchByFilter], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("patch_by_filter")
+        @ExcludeMissing
+        fun _patchByFilter(): JsonField<PatchByFilter> = patchByFilter
+
+        /**
          * Returns the raw JSON value of [patchColumns].
          *
          * Unlike [patchColumns], this method doesn't throw if the JSON field has an unexpected
@@ -999,6 +1053,7 @@ private constructor(
             private var disableBackpressure: JsonField<Boolean> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var encryption: JsonField<Encryption> = JsonMissing.of()
+            private var patchByFilter: JsonField<PatchByFilter> = JsonMissing.of()
             private var patchColumns: JsonField<Columns> = JsonMissing.of()
             private var patchCondition: JsonField<Filter> = JsonMissing.of()
             private var patchRows: JsonField<MutableList<Row>>? = null
@@ -1017,6 +1072,7 @@ private constructor(
                 disableBackpressure = body.disableBackpressure
                 distanceMetric = body.distanceMetric
                 encryption = body.encryption
+                patchByFilter = body.patchByFilter
                 patchColumns = body.patchColumns
                 patchCondition = body.patchCondition
                 patchRows = body.patchRows.map { it.toMutableList() }
@@ -1149,6 +1205,21 @@ private constructor(
              */
             fun encryption(encryption: JsonField<Encryption>) = apply {
                 this.encryption = encryption
+            }
+
+            /** The patch and filter specifying which documents to patch. */
+            fun patchByFilter(patchByFilter: PatchByFilter) =
+                patchByFilter(JsonField.of(patchByFilter))
+
+            /**
+             * Sets [Builder.patchByFilter] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.patchByFilter] with a well-typed [PatchByFilter]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun patchByFilter(patchByFilter: JsonField<PatchByFilter>) = apply {
+                this.patchByFilter = patchByFilter
             }
 
             /**
@@ -1316,6 +1387,7 @@ private constructor(
                     disableBackpressure,
                     distanceMetric,
                     encryption,
+                    patchByFilter,
                     patchColumns,
                     patchCondition,
                     (patchRows ?: JsonMissing.of()).map { it.toImmutable() },
@@ -1339,6 +1411,7 @@ private constructor(
             disableBackpressure()
             distanceMetric().ifPresent { it.validate() }
             encryption().ifPresent { it.validate() }
+            patchByFilter().ifPresent { it.validate() }
             patchColumns()
             patchRows()
             schema().ifPresent { it.values.forEach { it.validate() } }
@@ -1368,6 +1441,7 @@ private constructor(
                 (if (disableBackpressure.asKnown().isPresent) 1 else 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (encryption.asKnown().getOrNull()?.validity() ?: 0) +
+                (patchByFilter.asKnown().getOrNull()?.validity() ?: 0) +
                 (patchColumns.asKnown().getOrNull()?.values?.sumOf { it.size } ?: 0) +
                 (patchRows.asKnown().getOrNull()?.size ?: 0) +
                 (schema.asKnown().getOrNull()?.values?.sumOf { it.validity() } ?: 0) +
@@ -1387,6 +1461,7 @@ private constructor(
                 disableBackpressure == other.disableBackpressure &&
                 distanceMetric == other.distanceMetric &&
                 encryption == other.encryption &&
+                patchByFilter == other.patchByFilter &&
                 patchColumns == other.patchColumns &&
                 patchCondition == other.patchCondition &&
                 patchRows == other.patchRows &&
@@ -1406,6 +1481,7 @@ private constructor(
                 disableBackpressure,
                 distanceMetric,
                 encryption,
+                patchByFilter,
                 patchColumns,
                 patchCondition,
                 patchRows,
@@ -1420,7 +1496,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
     }
 
     /** The encryption configuration for a namespace. */
@@ -1726,6 +1802,259 @@ private constructor(
 
         override fun toString() =
             "Encryption{cmek=$cmek, additionalProperties=$additionalProperties}"
+    }
+
+    /** The patch and filter specifying which documents to patch. */
+    class PatchByFilter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val filters: JsonValue,
+        private val patch: JsonField<Patch>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
+            @JsonProperty("patch") @ExcludeMissing patch: JsonField<Patch> = JsonMissing.of(),
+        ) : this(filters, patch, mutableMapOf())
+
+        /** Filter by attributes. Same syntax as the query endpoint. */
+        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
+
+        /**
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun patch(): Optional<Patch> = patch.getOptional("patch")
+
+        /**
+         * Returns the raw JSON value of [patch].
+         *
+         * Unlike [patch], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("patch") @ExcludeMissing fun _patch(): JsonField<Patch> = patch
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [PatchByFilter]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [PatchByFilter]. */
+        class Builder internal constructor() {
+
+            private var filters: JsonValue = JsonMissing.of()
+            private var patch: JsonField<Patch> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(patchByFilter: PatchByFilter) = apply {
+                filters = patchByFilter.filters
+                patch = patchByFilter.patch
+                additionalProperties = patchByFilter.additionalProperties.toMutableMap()
+            }
+
+            /** Filter by attributes. Same syntax as the query endpoint. */
+            fun filters(filters: JsonValue) = apply { this.filters = filters }
+
+            fun patch(patch: Patch) = patch(JsonField.of(patch))
+
+            /**
+             * Sets [Builder.patch] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.patch] with a well-typed [Patch] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun patch(patch: JsonField<Patch>) = apply { this.patch = patch }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [PatchByFilter].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): PatchByFilter =
+                PatchByFilter(filters, patch, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): PatchByFilter = apply {
+            if (validated) {
+                return@apply
+            }
+
+            patch().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (patch.asKnown().getOrNull()?.validity() ?: 0)
+
+        class Patch
+        @JsonCreator
+        private constructor(
+            @com.fasterxml.jackson.annotation.JsonValue
+            private val additionalProperties: Map<String, JsonValue>
+        ) {
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Patch]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Patch]. */
+            class Builder internal constructor() {
+
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(patch: Patch) = apply {
+                    additionalProperties = patch.additionalProperties.toMutableMap()
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Patch].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Patch = Patch(additionalProperties.toImmutable())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Patch = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Patch && additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() = "Patch{additionalProperties=$additionalProperties}"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PatchByFilter &&
+                filters == other.filters &&
+                patch == other.patch &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(filters, patch, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "PatchByFilter{filters=$filters, patch=$patch, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

@@ -263,6 +263,16 @@ internal class NamespaceServiceTest {
                             )
                             .build()
                     )
+                    .patchByFilter(
+                        NamespaceWriteParams.PatchByFilter.builder()
+                            .filters(JsonValue.from(mapOf<String, Any>()))
+                            .patch(
+                                NamespaceWriteParams.PatchByFilter.Patch.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .build()
+                    )
                     .patchColumns(
                         Columns.builder()
                             .put("id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
