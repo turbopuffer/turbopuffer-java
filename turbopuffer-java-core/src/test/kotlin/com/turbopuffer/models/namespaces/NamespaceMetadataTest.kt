@@ -34,6 +34,9 @@ internal class NamespaceMetadataTest {
                         )
                         .build()
                 )
+                .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .encryption(true)
+                .indexObject()
                 .build()
 
         assertThat(namespaceMetadata.approxLogicalBytes()).isEqualTo(0L)
@@ -57,6 +60,11 @@ internal class NamespaceMetadataTest {
                     )
                     .build()
             )
+        assertThat(namespaceMetadata.updatedAt())
+            .isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+        assertThat(namespaceMetadata.encryption())
+            .contains(NamespaceMetadata.Encryption.ofBool(true))
+        assertThat(namespaceMetadata.index()).contains(NamespaceMetadata.Index.ofObject())
     }
 
     @Test
@@ -83,6 +91,9 @@ internal class NamespaceMetadataTest {
                         )
                         .build()
                 )
+                .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .encryption(true)
+                .indexObject()
                 .build()
 
         val roundtrippedNamespaceMetadata =
