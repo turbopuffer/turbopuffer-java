@@ -276,6 +276,16 @@ internal class NamespaceServiceAsyncTest {
                             )
                             .build()
                     )
+                    .patchByFilter(
+                        NamespaceWriteParams.PatchByFilter.builder()
+                            .filters(JsonValue.from(mapOf<String, Any>()))
+                            .patch(
+                                NamespaceWriteParams.PatchByFilter.Patch.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .build()
+                    )
                     .patchColumns(
                         Columns.builder()
                             .put(
