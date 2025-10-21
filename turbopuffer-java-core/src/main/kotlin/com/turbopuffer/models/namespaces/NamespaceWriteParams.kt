@@ -1683,10 +1683,10 @@ private constructor(
         @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
 
         /**
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun patch(): Optional<Patch> = patch.getOptional("patch")
+        fun patch(): Patch = patch.getRequired("patch")
 
         /**
          * Returns the raw JSON value of [patch].
@@ -1709,15 +1709,23 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [PatchByFilter]. */
+            /**
+             * Returns a mutable builder for constructing an instance of [PatchByFilter].
+             *
+             * The following fields are required:
+             * ```java
+             * .filters()
+             * .patch()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [PatchByFilter]. */
         class Builder internal constructor() {
 
-            private var filters: JsonValue = JsonMissing.of()
-            private var patch: JsonField<Patch> = JsonMissing.of()
+            private var filters: JsonValue? = null
+            private var patch: JsonField<Patch>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1764,9 +1772,21 @@ private constructor(
              * Returns an immutable instance of [PatchByFilter].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .filters()
+             * .patch()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): PatchByFilter =
-                PatchByFilter(filters, patch, additionalProperties.toMutableMap())
+                PatchByFilter(
+                    checkRequired("filters", filters),
+                    checkRequired("patch", patch),
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -1776,7 +1796,7 @@ private constructor(
                 return@apply
             }
 
-            patch().ifPresent { it.validate() }
+            patch().validate()
             validated = true
         }
 
