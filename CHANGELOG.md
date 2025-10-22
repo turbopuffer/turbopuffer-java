@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.5.0 (2025-10-22)
+
+Full Changelog: [v1.3.0...v1.5.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.3.0...v1.5.0)
+
+### Features
+
+* Metadata endpoint updates (e.g. to track indexing progress) ([507640b](https://github.com/turbopuffer/turbopuffer-java/commit/507640b245a5ddf6583f00177fbf63fdba246d9c))
+* required for patch_by_filter :facepalm: ([7811100](https://github.com/turbopuffer/turbopuffer-java/commit/7811100d3ff1f3c5a81ce6b2e66fdf3eafeb0fcf))
+* stainless: add patch_by_filter ([f45535c](https://github.com/turbopuffer/turbopuffer-java/commit/f45535cb57ff0a55ab96c602830fe8e219258aa3))
+
+
+### Chores
+
+* adjust type of filter for patch_by_filter ([#190](https://github.com/turbopuffer/turbopuffer-java/issues/190)) ([dd3cccf](https://github.com/turbopuffer/turbopuffer-java/commit/dd3cccf5b8a886c26ab01a7312ba7054eb2b81d5))
+
 ## 1.3.0 (2025-10-15)
 
 Full Changelog: [v1.2.0...v1.3.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.2.0...v1.3.0)
