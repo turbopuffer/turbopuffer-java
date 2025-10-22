@@ -1808,19 +1808,31 @@ private constructor(
     class PatchByFilter
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val filters: JsonValue,
+        private val filters: JsonField<Filter>,
         private val patch: JsonField<Patch>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
+            @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filter> = JsonMissing.of(),
             @JsonProperty("patch") @ExcludeMissing patch: JsonField<Patch> = JsonMissing.of(),
         ) : this(filters, patch, mutableMapOf())
 
-        /** Filter by attributes. Same syntax as the query endpoint. */
-        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
+        /**
+         * Filter by attributes. Same syntax as the query endpoint.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun filters(): Optional<Filter> = filters.getOptional("filters")
+
+        /**
+         * Returns the raw JSON value of [filters].
+         *
+         * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<Filter> = filters
 
         /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
@@ -1864,7 +1876,7 @@ private constructor(
         /** A builder for [PatchByFilter]. */
         class Builder internal constructor() {
 
-            private var filters: JsonValue? = null
+            private var filters: JsonField<Filter>? = null
             private var patch: JsonField<Patch>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1876,7 +1888,16 @@ private constructor(
             }
 
             /** Filter by attributes. Same syntax as the query endpoint. */
-            fun filters(filters: JsonValue) = apply { this.filters = filters }
+            fun filters(filters: Filter) = filters(JsonField.of(filters))
+
+            /**
+             * Sets [Builder.filters] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.filters] with a well-typed [Filter] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun filters(filters: JsonField<Filter>) = apply { this.filters = filters }
 
             fun patch(patch: Patch) = patch(JsonField.of(patch))
 
@@ -1936,6 +1957,7 @@ private constructor(
                 return@apply
             }
 
+            filters()
             patch().validate()
             validated = true
         }
@@ -1954,7 +1976,10 @@ private constructor(
          *
          * Used for best match union deserialization.
          */
-        @JvmSynthetic internal fun validity(): Int = (patch.asKnown().getOrNull()?.validity() ?: 0)
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (filters.asKnown().isPresent) 1 else 0) +
+                (patch.asKnown().getOrNull()?.validity() ?: 0)
 
         class Patch
         @JsonCreator
