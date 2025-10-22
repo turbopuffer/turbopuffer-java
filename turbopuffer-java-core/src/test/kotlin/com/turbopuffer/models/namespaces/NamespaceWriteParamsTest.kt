@@ -28,7 +28,7 @@ internal class NamespaceWriteParamsTest {
             )
             .patchByFilter(
                 NamespaceWriteParams.PatchByFilter.builder()
-                    .filters(JsonValue.from(mapOf<String, Any>()))
+                    .filters(Filter.eq("attr", "value"))
                     .patch(
                         NamespaceWriteParams.PatchByFilter.Patch.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
@@ -101,7 +101,7 @@ internal class NamespaceWriteParamsTest {
                 )
                 .patchByFilter(
                     NamespaceWriteParams.PatchByFilter.builder()
-                        .filters(JsonValue.from(mapOf<String, Any>()))
+                        .filters(Filter.eq("attr", "value"))
                         .patch(
                             NamespaceWriteParams.PatchByFilter.Patch.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
@@ -162,7 +162,7 @@ internal class NamespaceWriteParamsTest {
         assertThat(body.patchByFilter())
             .contains(
                 NamespaceWriteParams.PatchByFilter.builder()
-                    .filters(JsonValue.from(mapOf<String, Any>()))
+                    .filters(Filter.eq("attr", "value"))
                     .patch(
                         NamespaceWriteParams.PatchByFilter.Patch.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
