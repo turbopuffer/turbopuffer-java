@@ -8,6 +8,7 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
+import com.turbopuffer.models.namespaces.Filter
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
@@ -265,7 +266,7 @@ internal class NamespaceServiceTest {
                     )
                     .patchByFilter(
                         NamespaceWriteParams.PatchByFilter.builder()
-                            .filters(JsonValue.from(mapOf<String, Any>()))
+                            .filters(Filter.eq("attr", "value"))
                             .patch(
                                 NamespaceWriteParams.PatchByFilter.Patch.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("bar"))
