@@ -20,7 +20,7 @@ internal class AttributeSchemaConfigTest {
                 .type("string")
                 .build()
 
-        assertThat(attributeSchemaConfig.ann()).contains(true)
+        assertThat(attributeSchemaConfig.ann()).contains(AttributeSchemaConfig.Ann.ofBool(true))
         assertThat(attributeSchemaConfig.filterable()).contains(true)
         assertThat(attributeSchemaConfig.fullTextSearch()).contains(FullTextSearch.ofBool(true))
         assertThat(attributeSchemaConfig.regex()).contains(true)
