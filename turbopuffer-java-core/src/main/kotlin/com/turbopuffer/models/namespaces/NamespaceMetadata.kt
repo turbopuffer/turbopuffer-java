@@ -37,10 +37,10 @@ private constructor(
     private val approxLogicalBytes: JsonField<Long>,
     private val approxRowCount: JsonField<Long>,
     private val createdAt: JsonField<OffsetDateTime>,
-    private val schema: JsonField<Schema>,
-    private val updatedAt: JsonField<OffsetDateTime>,
     private val encryption: JsonField<Encryption>,
     private val index: JsonField<Index>,
+    private val schema: JsonField<Schema>,
+    private val updatedAt: JsonField<OffsetDateTime>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -55,22 +55,22 @@ private constructor(
         @JsonProperty("created_at")
         @ExcludeMissing
         createdAt: JsonField<OffsetDateTime> = JsonMissing.of(),
-        @JsonProperty("schema") @ExcludeMissing schema: JsonField<Schema> = JsonMissing.of(),
-        @JsonProperty("updated_at")
-        @ExcludeMissing
-        updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
         @JsonProperty("encryption")
         @ExcludeMissing
         encryption: JsonField<Encryption> = JsonMissing.of(),
         @JsonProperty("index") @ExcludeMissing index: JsonField<Index> = JsonMissing.of(),
+        @JsonProperty("schema") @ExcludeMissing schema: JsonField<Schema> = JsonMissing.of(),
+        @JsonProperty("updated_at")
+        @ExcludeMissing
+        updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
     ) : this(
         approxLogicalBytes,
         approxRowCount,
         createdAt,
-        schema,
-        updatedAt,
         encryption,
         index,
+        schema,
+        updatedAt,
         mutableMapOf(),
     )
 
@@ -99,6 +99,20 @@ private constructor(
     fun createdAt(): OffsetDateTime = createdAt.getRequired("created_at")
 
     /**
+     * Indicates that the namespace is encrypted with a customer-managed encryption key (CMEK).
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun encryption(): Encryption = encryption.getRequired("encryption")
+
+    /**
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun index(): Index = index.getRequired("index")
+
+    /**
      * The schema of the namespace.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
@@ -113,20 +127,6 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun updatedAt(): OffsetDateTime = updatedAt.getRequired("updated_at")
-
-    /**
-     * Indicates that the namespace is encrypted with a customer-managed encryption key (CMEK).
-     *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun encryption(): Optional<Encryption> = encryption.getOptional("encryption")
-
-    /**
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun index(): Optional<Index> = index.getOptional("index")
 
     /**
      * Returns the raw JSON value of [approxLogicalBytes].
@@ -157,22 +157,6 @@ private constructor(
     fun _createdAt(): JsonField<OffsetDateTime> = createdAt
 
     /**
-     * Returns the raw JSON value of [schema].
-     *
-     * Unlike [schema], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
-
-    /**
-     * Returns the raw JSON value of [updatedAt].
-     *
-     * Unlike [updatedAt], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("updated_at")
-    @ExcludeMissing
-    fun _updatedAt(): JsonField<OffsetDateTime> = updatedAt
-
-    /**
      * Returns the raw JSON value of [encryption].
      *
      * Unlike [encryption], this method doesn't throw if the JSON field has an unexpected type.
@@ -187,6 +171,22 @@ private constructor(
      * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Index> = index
+
+    /**
+     * Returns the raw JSON value of [schema].
+     *
+     * Unlike [schema], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
+
+    /**
+     * Returns the raw JSON value of [updatedAt].
+     *
+     * Unlike [updatedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("updated_at")
+    @ExcludeMissing
+    fun _updatedAt(): JsonField<OffsetDateTime> = updatedAt
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -210,6 +210,8 @@ private constructor(
          * .approxLogicalBytes()
          * .approxRowCount()
          * .createdAt()
+         * .encryption()
+         * .index()
          * .schema()
          * .updatedAt()
          * ```
@@ -223,10 +225,10 @@ private constructor(
         private var approxLogicalBytes: JsonField<Long>? = null
         private var approxRowCount: JsonField<Long>? = null
         private var createdAt: JsonField<OffsetDateTime>? = null
+        private var encryption: JsonField<Encryption>? = null
+        private var index: JsonField<Index>? = null
         private var schema: JsonField<Schema>? = null
         private var updatedAt: JsonField<OffsetDateTime>? = null
-        private var encryption: JsonField<Encryption> = JsonMissing.of()
-        private var index: JsonField<Index> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -234,10 +236,10 @@ private constructor(
             approxLogicalBytes = namespaceMetadata.approxLogicalBytes
             approxRowCount = namespaceMetadata.approxRowCount
             createdAt = namespaceMetadata.createdAt
-            schema = namespaceMetadata.schema
-            updatedAt = namespaceMetadata.updatedAt
             encryption = namespaceMetadata.encryption
             index = namespaceMetadata.index
+            schema = namespaceMetadata.schema
+            updatedAt = namespaceMetadata.updatedAt
             additionalProperties = namespaceMetadata.additionalProperties.toMutableMap()
         }
 
@@ -282,6 +284,42 @@ private constructor(
          */
         fun createdAt(createdAt: JsonField<OffsetDateTime>) = apply { this.createdAt = createdAt }
 
+        /**
+         * Indicates that the namespace is encrypted with a customer-managed encryption key (CMEK).
+         */
+        fun encryption(encryption: Encryption) = encryption(JsonField.of(encryption))
+
+        /**
+         * Sets [Builder.encryption] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.encryption] with a well-typed [Encryption] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun encryption(encryption: JsonField<Encryption>) = apply { this.encryption = encryption }
+
+        /** Alias for calling [encryption] with `Encryption.ofSse(sse)`. */
+        fun encryption(sse: Encryption.Sse) = encryption(Encryption.ofSse(sse))
+
+        /** Alias for calling [encryption] with `Encryption.ofCmek(cmek)`. */
+        fun encryption(cmek: Encryption.Cmek) = encryption(Encryption.ofCmek(cmek))
+
+        fun index(index: Index) = index(JsonField.of(index))
+
+        /**
+         * Sets [Builder.index] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.index] with a well-typed [Index] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun index(index: JsonField<Index>) = apply { this.index = index }
+
+        /** Alias for calling [index] with `Index.ofObject()`. */
+        fun indexObject() = index(Index.ofObject())
+
+        /** Alias for calling [index] with `Index.ofUnionMember1(unionMember1)`. */
+        fun index(unionMember1: Index.UnionMember1) = index(Index.ofUnionMember1(unionMember1))
+
         /** The schema of the namespace. */
         fun schema(schema: Schema) = schema(JsonField.of(schema))
 
@@ -304,42 +342,6 @@ private constructor(
          * supported value.
          */
         fun updatedAt(updatedAt: JsonField<OffsetDateTime>) = apply { this.updatedAt = updatedAt }
-
-        /**
-         * Indicates that the namespace is encrypted with a customer-managed encryption key (CMEK).
-         */
-        fun encryption(encryption: Encryption) = encryption(JsonField.of(encryption))
-
-        /**
-         * Sets [Builder.encryption] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.encryption] with a well-typed [Encryption] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun encryption(encryption: JsonField<Encryption>) = apply { this.encryption = encryption }
-
-        /** Alias for calling [encryption] with `Encryption.ofBool(bool)`. */
-        fun encryption(bool: Boolean) = encryption(Encryption.ofBool(bool))
-
-        /** Alias for calling [encryption] with `Encryption.ofCmek(cmek)`. */
-        fun encryption(cmek: Encryption.Cmek) = encryption(Encryption.ofCmek(cmek))
-
-        fun index(index: Index) = index(JsonField.of(index))
-
-        /**
-         * Sets [Builder.index] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.index] with a well-typed [Index] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun index(index: JsonField<Index>) = apply { this.index = index }
-
-        /** Alias for calling [index] with `Index.ofObject()`. */
-        fun indexObject() = index(Index.ofObject())
-
-        /** Alias for calling [index] with `Index.ofUnionMember1(unionMember1)`. */
-        fun index(unionMember1: Index.UnionMember1) = index(Index.ofUnionMember1(unionMember1))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -370,6 +372,8 @@ private constructor(
          * .approxLogicalBytes()
          * .approxRowCount()
          * .createdAt()
+         * .encryption()
+         * .index()
          * .schema()
          * .updatedAt()
          * ```
@@ -381,10 +385,10 @@ private constructor(
                 checkRequired("approxLogicalBytes", approxLogicalBytes),
                 checkRequired("approxRowCount", approxRowCount),
                 checkRequired("createdAt", createdAt),
+                checkRequired("encryption", encryption),
+                checkRequired("index", index),
                 checkRequired("schema", schema),
                 checkRequired("updatedAt", updatedAt),
-                encryption,
-                index,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -399,10 +403,10 @@ private constructor(
         approxLogicalBytes()
         approxRowCount()
         createdAt()
+        encryption().validate()
+        index().validate()
         schema().validate()
         updatedAt()
-        encryption().ifPresent { it.validate() }
-        index().ifPresent { it.validate() }
         validated = true
     }
 
@@ -424,133 +428,33 @@ private constructor(
         (if (approxLogicalBytes.asKnown().isPresent) 1 else 0) +
             (if (approxRowCount.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
-            (schema.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (updatedAt.asKnown().isPresent) 1 else 0) +
             (encryption.asKnown().getOrNull()?.validity() ?: 0) +
-            (index.asKnown().getOrNull()?.validity() ?: 0)
-
-    /** The schema of the namespace. */
-    class Schema
-    @JsonCreator
-    private constructor(
-        @com.fasterxml.jackson.annotation.JsonValue
-        private val additionalProperties: Map<String, JsonValue>
-    ) {
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Schema]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Schema]. */
-        class Builder internal constructor() {
-
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(schema: Schema) = apply {
-                additionalProperties = schema.additionalProperties.toMutableMap()
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Schema].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Schema = Schema(additionalProperties.toImmutable())
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): Schema = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: TurbopufferInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Schema && additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() = "Schema{additionalProperties=$additionalProperties}"
-    }
+            (index.asKnown().getOrNull()?.validity() ?: 0) +
+            (schema.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (updatedAt.asKnown().isPresent) 1 else 0)
 
     /** Indicates that the namespace is encrypted with a customer-managed encryption key (CMEK). */
     @JsonDeserialize(using = Encryption.Deserializer::class)
     @JsonSerialize(using = Encryption.Serializer::class)
     class Encryption
     private constructor(
-        private val bool: Boolean? = null,
+        private val sse: Sse? = null,
         private val cmek: Cmek? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        fun bool(): Optional<Boolean> = Optional.ofNullable(bool)
+        fun sse(): Optional<Sse> = Optional.ofNullable(sse)
 
         /**
          * Indicates that the namespace is encrypted with a customer-managed encryption key (CMEK).
          */
         fun cmek(): Optional<Cmek> = Optional.ofNullable(cmek)
 
-        fun isBool(): Boolean = bool != null
+        fun isSse(): Boolean = sse != null
 
         fun isCmek(): Boolean = cmek != null
 
-        fun asBool(): Boolean = bool.getOrThrow("bool")
+        fun asSse(): Sse = sse.getOrThrow("sse")
 
         /**
          * Indicates that the namespace is encrypted with a customer-managed encryption key (CMEK).
@@ -561,7 +465,7 @@ private constructor(
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                bool != null -> visitor.visitBool(bool)
+                sse != null -> visitor.visitSse(sse)
                 cmek != null -> visitor.visitCmek(cmek)
                 else -> visitor.unknown(_json)
             }
@@ -575,7 +479,9 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitBool(bool: Boolean) {}
+                    override fun visitSse(sse: Sse) {
+                        sse.validate()
+                    }
 
                     override fun visitCmek(cmek: Cmek) {
                         cmek.validate()
@@ -603,7 +509,7 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitBool(bool: Boolean) = 1
+                    override fun visitSse(sse: Sse) = sse.validity()
 
                     override fun visitCmek(cmek: Cmek) = cmek.validity()
 
@@ -616,14 +522,14 @@ private constructor(
                 return true
             }
 
-            return other is Encryption && bool == other.bool && cmek == other.cmek
+            return other is Encryption && sse == other.sse && cmek == other.cmek
         }
 
-        override fun hashCode(): Int = Objects.hash(bool, cmek)
+        override fun hashCode(): Int = Objects.hash(sse, cmek)
 
         override fun toString(): String =
             when {
-                bool != null -> "Encryption{bool=$bool}"
+                sse != null -> "Encryption{sse=$sse}"
                 cmek != null -> "Encryption{cmek=$cmek}"
                 _json != null -> "Encryption{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Encryption")
@@ -631,7 +537,7 @@ private constructor(
 
         companion object {
 
-            @JvmStatic fun ofBool(bool: Boolean) = Encryption(bool = bool)
+            @JvmStatic fun ofSse(sse: Sse) = Encryption(sse = sse)
 
             /**
              * Indicates that the namespace is encrypted with a customer-managed encryption key
@@ -645,7 +551,7 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitBool(bool: Boolean): T
+            fun visitSse(sse: Sse): T
 
             /**
              * Indicates that the namespace is encrypted with a customer-managed encryption key
@@ -675,11 +581,11 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<Sse>())?.let {
+                                Encryption(sse = it, _json = json)
+                            },
                             tryDeserialize(node, jacksonTypeRef<Cmek>())?.let {
                                 Encryption(cmek = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<Boolean>())?.let {
-                                Encryption(bool = it, _json = json)
                             },
                         )
                         .filterNotNull()
@@ -687,7 +593,7 @@ private constructor(
                         .toList()
                 return when (bestMatches.size) {
                     // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from string).
+                    // all the possible variants (e.g. deserializing from boolean).
                     0 -> Encryption(_json = json)
                     1 -> bestMatches.single()
                     // If there's more than one match with the highest validity, then use the first
@@ -706,12 +612,171 @@ private constructor(
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.bool != null -> generator.writeObject(value.bool)
+                    value.sse != null -> generator.writeObject(value.sse)
                     value.cmek != null -> generator.writeObject(value.cmek)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Encryption")
                 }
             }
+        }
+
+        class Sse
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val sse: JsonField<Boolean>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("sse") @ExcludeMissing sse: JsonField<Boolean> = JsonMissing.of()
+            ) : this(sse, mutableMapOf())
+
+            /**
+             * Always true. Indicates that the namespace is encrypted with SSE.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun sse(): Boolean = sse.getRequired("sse")
+
+            /**
+             * Returns the raw JSON value of [sse].
+             *
+             * Unlike [sse], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("sse") @ExcludeMissing fun _sse(): JsonField<Boolean> = sse
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Sse].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .sse()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Sse]. */
+            class Builder internal constructor() {
+
+                private var sse: JsonField<Boolean>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(sse: Sse) = apply {
+                    this.sse = sse.sse
+                    additionalProperties = sse.additionalProperties.toMutableMap()
+                }
+
+                /** Always true. Indicates that the namespace is encrypted with SSE. */
+                fun sse(sse: Boolean) = sse(JsonField.of(sse))
+
+                /**
+                 * Sets [Builder.sse] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.sse] with a well-typed [Boolean] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun sse(sse: JsonField<Boolean>) = apply { this.sse = sse }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Sse].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .sse()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Sse =
+                    Sse(checkRequired("sse", sse), additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Sse = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                sse()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = (if (sse.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Sse &&
+                    sse == other.sse &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(sse, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() = "Sse{sse=$sse, additionalProperties=$additionalProperties}"
         }
 
         /**
@@ -730,10 +795,11 @@ private constructor(
             ) : this(cmek, mutableMapOf())
 
             /**
-             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
-             *   (e.g. if the server responded with an unexpected value).
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
-            fun cmek(): Optional<InnerCmek> = cmek.getOptional("cmek")
+            fun cmek(): InnerCmek = cmek.getRequired("cmek")
 
             /**
              * Returns the raw JSON value of [cmek].
@@ -756,14 +822,21 @@ private constructor(
 
             companion object {
 
-                /** Returns a mutable builder for constructing an instance of [Cmek]. */
+                /**
+                 * Returns a mutable builder for constructing an instance of [Cmek].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .cmek()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
             /** A builder for [Cmek]. */
             class Builder internal constructor() {
 
-                private var cmek: JsonField<InnerCmek> = JsonMissing.of()
+                private var cmek: JsonField<InnerCmek>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -809,8 +882,16 @@ private constructor(
                  * Returns an immutable instance of [Cmek].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .cmek()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
                  */
-                fun build(): Cmek = Cmek(cmek, additionalProperties.toMutableMap())
+                fun build(): Cmek =
+                    Cmek(checkRequired("cmek", cmek), additionalProperties.toMutableMap())
             }
 
             private var validated: Boolean = false
@@ -820,7 +901,7 @@ private constructor(
                     return@apply
                 }
 
-                cmek().ifPresent { it.validate() }
+                cmek().validate()
                 validated = true
             }
 
@@ -1427,6 +1508,106 @@ private constructor(
         }
     }
 
+    /** The schema of the namespace. */
+    class Schema
+    @JsonCreator
+    private constructor(
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
+    ) {
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Schema]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Schema]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(schema: Schema) = apply {
+                additionalProperties = schema.additionalProperties.toMutableMap()
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Schema].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Schema = Schema(additionalProperties.toImmutable())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Schema = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Schema && additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Schema{additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -1436,10 +1617,10 @@ private constructor(
             approxLogicalBytes == other.approxLogicalBytes &&
             approxRowCount == other.approxRowCount &&
             createdAt == other.createdAt &&
-            schema == other.schema &&
-            updatedAt == other.updatedAt &&
             encryption == other.encryption &&
             index == other.index &&
+            schema == other.schema &&
+            updatedAt == other.updatedAt &&
             additionalProperties == other.additionalProperties
     }
 
@@ -1448,10 +1629,10 @@ private constructor(
             approxLogicalBytes,
             approxRowCount,
             createdAt,
-            schema,
-            updatedAt,
             encryption,
             index,
+            schema,
+            updatedAt,
             additionalProperties,
         )
     }
@@ -1459,5 +1640,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, schema=$schema, updatedAt=$updatedAt, encryption=$encryption, index=$index, additionalProperties=$additionalProperties}"
+        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, encryption=$encryption, index=$index, schema=$schema, updatedAt=$updatedAt, additionalProperties=$additionalProperties}"
 }
