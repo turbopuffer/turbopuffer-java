@@ -26,11 +26,11 @@ internal class NamespaceMetadataTest {
                             "foo",
                             JsonValue.from(
                                 mapOf(
+                                    "type" to "string",
                                     "ann" to true,
                                     "filterable" to true,
                                     "full_text_search" to true,
                                     "regex" to true,
-                                    "type" to "string",
                                 )
                             ),
                         )
@@ -57,11 +57,11 @@ internal class NamespaceMetadataTest {
                         "foo",
                         JsonValue.from(
                             mapOf(
+                                "type" to "string",
                                 "ann" to true,
                                 "filterable" to true,
                                 "full_text_search" to true,
                                 "regex" to true,
-                                "type" to "string",
                             )
                         ),
                     )
@@ -87,11 +87,11 @@ internal class NamespaceMetadataTest {
                             "foo",
                             JsonValue.from(
                                 mapOf(
+                                    "type" to "string",
                                     "ann" to true,
                                     "filterable" to true,
                                     "full_text_search" to true,
                                     "regex" to true,
-                                    "type" to "string",
                                 )
                             ),
                         )

@@ -40,11 +40,11 @@ internal class AttributeSchemaTest {
     fun ofConfig() {
         val config =
             AttributeSchemaConfig.builder()
+                .type("string")
                 .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
                 .regex(true)
-                .type("string")
                 .build()
 
         val attributeSchema = AttributeSchema.ofConfig(config)
@@ -59,11 +59,11 @@ internal class AttributeSchemaTest {
         val attributeSchema =
             AttributeSchema.ofConfig(
                 AttributeSchemaConfig.builder()
+                    .type("string")
                     .ann(true)
                     .filterable(true)
                     .fullTextSearch(true)
                     .regex(true)
-                    .type("string")
                     .build()
             )
 
