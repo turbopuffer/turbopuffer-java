@@ -20,6 +20,7 @@ import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.allMaxBy
+import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
@@ -31,16 +32,17 @@ import kotlin.jvm.optionals.getOrNull
 class AttributeSchemaConfig
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
+    private val type: JsonField<String>,
     private val ann: JsonField<Ann>,
     private val filterable: JsonField<Boolean>,
     private val fullTextSearch: JsonField<FullTextSearch>,
     private val regex: JsonField<Boolean>,
-    private val type: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
+        @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
         @JsonProperty("ann") @ExcludeMissing ann: JsonField<Ann> = JsonMissing.of(),
         @JsonProperty("filterable")
         @ExcludeMissing
@@ -49,8 +51,16 @@ private constructor(
         @ExcludeMissing
         fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of(),
         @JsonProperty("regex") @ExcludeMissing regex: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
-    ) : this(ann, filterable, fullTextSearch, regex, type, mutableMapOf())
+    ) : this(type, ann, filterable, fullTextSearch, regex, mutableMapOf())
+
+    /**
+     * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
+     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun type(): String = type.getRequired("type")
 
     /**
      * Whether to create an approximate nearest neighbor index for the attribute. Can be a boolean
@@ -88,13 +98,11 @@ private constructor(
     fun regex(): Optional<Boolean> = regex.getOptional("regex")
 
     /**
-     * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
-     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
+     * Returns the raw JSON value of [type].
      *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun type(): Optional<String> = type.getOptional("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
 
     /**
      * Returns the raw JSON value of [ann].
@@ -126,13 +134,6 @@ private constructor(
      */
     @JsonProperty("regex") @ExcludeMissing fun _regex(): JsonField<Boolean> = regex
 
-    /**
-     * Returns the raw JSON value of [type].
-     *
-     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
-
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -147,29 +148,50 @@ private constructor(
 
     companion object {
 
-        /** Returns a mutable builder for constructing an instance of [AttributeSchemaConfig]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [AttributeSchemaConfig].
+         *
+         * The following fields are required:
+         * ```java
+         * .type()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
     /** A builder for [AttributeSchemaConfig]. */
     class Builder internal constructor() {
 
+        private var type: JsonField<String>? = null
         private var ann: JsonField<Ann> = JsonMissing.of()
         private var filterable: JsonField<Boolean> = JsonMissing.of()
         private var fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of()
         private var regex: JsonField<Boolean> = JsonMissing.of()
-        private var type: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(attributeSchemaConfig: AttributeSchemaConfig) = apply {
+            type = attributeSchemaConfig.type
             ann = attributeSchemaConfig.ann
             filterable = attributeSchemaConfig.filterable
             fullTextSearch = attributeSchemaConfig.fullTextSearch
             regex = attributeSchemaConfig.regex
-            type = attributeSchemaConfig.type
             additionalProperties = attributeSchemaConfig.additionalProperties.toMutableMap()
         }
+
+        /**
+         * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime,
+         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
+         */
+        fun type(type: String) = type(JsonField.of(type))
+
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun type(type: JsonField<String>) = apply { this.type = type }
 
         /**
          * Whether to create an approximate nearest neighbor index for the attribute. Can be a
@@ -240,20 +262,6 @@ private constructor(
          */
         fun regex(regex: JsonField<Boolean>) = apply { this.regex = regex }
 
-        /**
-         * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime,
-         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
-         */
-        fun type(type: String) = type(JsonField.of(type))
-
-        /**
-         * Sets [Builder.type] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.type] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun type(type: JsonField<String>) = apply { this.type = type }
-
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -277,14 +285,21 @@ private constructor(
          * Returns an immutable instance of [AttributeSchemaConfig].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): AttributeSchemaConfig =
             AttributeSchemaConfig(
+                checkRequired("type", type),
                 ann,
                 filterable,
                 fullTextSearch,
                 regex,
-                type,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -296,11 +311,11 @@ private constructor(
             return@apply
         }
 
+        type()
         ann().ifPresent { it.validate() }
         filterable()
         fullTextSearch().ifPresent { it.validate() }
         regex()
-        type()
         validated = true
     }
 
@@ -319,11 +334,11 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (ann.asKnown().getOrNull()?.validity() ?: 0) +
+        (if (type.asKnown().isPresent) 1 else 0) +
+            (ann.asKnown().getOrNull()?.validity() ?: 0) +
             (if (filterable.asKnown().isPresent) 1 else 0) +
             (fullTextSearch.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (regex.asKnown().isPresent) 1 else 0) +
-            (if (type.asKnown().isPresent) 1 else 0)
+            (if (regex.asKnown().isPresent) 1 else 0)
 
     /**
      * Whether to create an approximate nearest neighbor index for the attribute. Can be a boolean
@@ -663,20 +678,20 @@ private constructor(
         }
 
         return other is AttributeSchemaConfig &&
+            type == other.type &&
             ann == other.ann &&
             filterable == other.filterable &&
             fullTextSearch == other.fullTextSearch &&
             regex == other.regex &&
-            type == other.type &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(ann, filterable, fullTextSearch, regex, type, additionalProperties)
+        Objects.hash(type, ann, filterable, fullTextSearch, regex, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AttributeSchemaConfig{ann=$ann, filterable=$filterable, fullTextSearch=$fullTextSearch, regex=$regex, type=$type, additionalProperties=$additionalProperties}"
+        "AttributeSchemaConfig{type=$type, ann=$ann, filterable=$filterable, fullTextSearch=$fullTextSearch, regex=$regex, additionalProperties=$additionalProperties}"
 }
