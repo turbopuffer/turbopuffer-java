@@ -450,7 +450,7 @@ Requests time out after 1 minute by default.
 To set a custom timeout, configure the method call using the `timeout` method:
 
 ```java
-import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
+import com.turbopuffer.models.ClientNamespacesPage;
 
 NamespaceWriteResponse response = client.namespace("ns").write(RequestOptions.builder().timeout(Duration.ofSeconds(30)).build());
 ```
