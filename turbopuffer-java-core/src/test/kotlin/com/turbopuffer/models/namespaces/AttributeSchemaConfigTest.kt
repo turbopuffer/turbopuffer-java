@@ -13,18 +13,18 @@ internal class AttributeSchemaConfigTest {
     fun create() {
         val attributeSchemaConfig =
             AttributeSchemaConfig.builder()
+                .type("string")
                 .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
                 .regex(true)
-                .type("string")
                 .build()
 
+        assertThat(attributeSchemaConfig.type()).isEqualTo("string")
         assertThat(attributeSchemaConfig.ann()).contains(AttributeSchemaConfig.Ann.ofBool(true))
         assertThat(attributeSchemaConfig.filterable()).contains(true)
         assertThat(attributeSchemaConfig.fullTextSearch()).contains(FullTextSearch.ofBool(true))
         assertThat(attributeSchemaConfig.regex()).contains(true)
-        assertThat(attributeSchemaConfig.type()).contains("string")
     }
 
     @Test
@@ -32,11 +32,11 @@ internal class AttributeSchemaConfigTest {
         val jsonMapper = jsonMapper()
         val attributeSchemaConfig =
             AttributeSchemaConfig.builder()
+                .type("string")
                 .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
                 .regex(true)
-                .type("string")
                 .build()
 
         val roundtrippedAttributeSchemaConfig =

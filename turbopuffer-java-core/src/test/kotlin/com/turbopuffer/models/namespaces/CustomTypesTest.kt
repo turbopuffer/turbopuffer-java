@@ -59,10 +59,10 @@ internal class CustomTypesTest {
         // Assert that when we fetch the schema from the server it matches what
         // we expect.
         val schema = ns.schema(NamespaceSchemaParams.builder().build())
-        assertThat(schema.get("id")?.type()).isEqualTo(Optional.of("uuid"))
-        assertThat(schema.get("name")?.type()).isEqualTo(Optional.of("string"))
+        assertThat(schema.get("id")?.type()).isEqualTo("uuid")
+        assertThat(schema.get("name")?.type()).isEqualTo("string")
         assertThat(schema.get("name")?.filterable()).isEqualTo(Optional.of(false))
-        assertThat(schema.get("age")?.type()).isEqualTo(Optional.of("uint"))
+        assertThat(schema.get("age")?.type()).isEqualTo("uint")
         assertThat(schema.get("age")?.filterable()).isEqualTo(Optional.of(true))
     }
 }
