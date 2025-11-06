@@ -314,11 +314,11 @@ private constructor(
          */
         fun index(index: JsonField<Index>) = apply { this.index = index }
 
-        /** Alias for calling [index] with `Index.ofObject()`. */
-        fun indexObject() = index(Index.ofObject())
+        /** Alias for calling [index] with `Index.ofUpToDate()`. */
+        fun indexUpToDate() = index(Index.ofUpToDate())
 
-        /** Alias for calling [index] with `Index.ofUnionMember1(unionMember1)`. */
-        fun index(unionMember1: Index.UnionMember1) = index(Index.ofUnionMember1(unionMember1))
+        /** Alias for calling [index] with `Index.ofUpdating(updating)`. */
+        fun index(updating: Index.IndexUpdating) = index(Index.ofUpdating(updating))
 
         /** The schema of the namespace. */
         fun schema(schema: Schema) = schema(JsonField.of(schema))
@@ -1113,29 +1113,29 @@ private constructor(
     @JsonSerialize(using = Index.Serializer::class)
     class Index
     private constructor(
-        private val object_: JsonValue? = null,
-        private val unionMember1: UnionMember1? = null,
+        private val upToDate: JsonValue? = null,
+        private val updating: IndexUpdating? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        fun object_(): Optional<JsonValue> = Optional.ofNullable(object_)
+        fun upToDate(): Optional<JsonValue> = Optional.ofNullable(upToDate)
 
-        fun unionMember1(): Optional<UnionMember1> = Optional.ofNullable(unionMember1)
+        fun updating(): Optional<IndexUpdating> = Optional.ofNullable(updating)
 
-        fun isObject(): Boolean = object_ != null
+        fun isUpToDate(): Boolean = upToDate != null
 
-        fun isUnionMember1(): Boolean = unionMember1 != null
+        fun isUpdating(): Boolean = updating != null
 
-        fun asObject(): JsonValue = object_.getOrThrow("object_")
+        fun asUpToDate(): JsonValue = upToDate.getOrThrow("upToDate")
 
-        fun asUnionMember1(): UnionMember1 = unionMember1.getOrThrow("unionMember1")
+        fun asUpdating(): IndexUpdating = updating.getOrThrow("updating")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                object_ != null -> visitor.visitObject(object_)
-                unionMember1 != null -> visitor.visitUnionMember1(unionMember1)
+                upToDate != null -> visitor.visitUpToDate(upToDate)
+                updating != null -> visitor.visitUpdating(updating)
                 else -> visitor.unknown(_json)
             }
 
@@ -1148,18 +1148,18 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitObject(object_: JsonValue) {
-                        object_.let {
+                    override fun visitUpToDate(upToDate: JsonValue) {
+                        upToDate.let {
                             if (it != JsonValue.from(mapOf("status" to "up-to-date"))) {
                                 throw TurbopufferInvalidDataException(
-                                    "'object_' is invalid, received $it"
+                                    "'upToDate' is invalid, received $it"
                                 )
                             }
                         }
                     }
 
-                    override fun visitUnionMember1(unionMember1: UnionMember1) {
-                        unionMember1.validate()
+                    override fun visitUpdating(updating: IndexUpdating) {
+                        updating.validate()
                     }
                 }
             )
@@ -1184,13 +1184,12 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitObject(object_: JsonValue) =
-                        object_.let {
+                    override fun visitUpToDate(upToDate: JsonValue) =
+                        upToDate.let {
                             if (it == JsonValue.from(mapOf("status" to "up-to-date"))) 1 else 0
                         }
 
-                    override fun visitUnionMember1(unionMember1: UnionMember1) =
-                        unionMember1.validity()
+                    override fun visitUpdating(updating: IndexUpdating) = updating.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -1201,15 +1200,15 @@ private constructor(
                 return true
             }
 
-            return other is Index && object_ == other.object_ && unionMember1 == other.unionMember1
+            return other is Index && upToDate == other.upToDate && updating == other.updating
         }
 
-        override fun hashCode(): Int = Objects.hash(object_, unionMember1)
+        override fun hashCode(): Int = Objects.hash(upToDate, updating)
 
         override fun toString(): String =
             when {
-                object_ != null -> "Index{object_=$object_}"
-                unionMember1 != null -> "Index{unionMember1=$unionMember1}"
+                upToDate != null -> "Index{upToDate=$upToDate}"
+                updating != null -> "Index{updating=$updating}"
                 _json != null -> "Index{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Index")
             }
@@ -1217,18 +1216,17 @@ private constructor(
         companion object {
 
             @JvmStatic
-            fun ofObject() = Index(object_ = JsonValue.from(mapOf("status" to "up-to-date")))
+            fun ofUpToDate() = Index(upToDate = JsonValue.from(mapOf("status" to "up-to-date")))
 
-            @JvmStatic
-            fun ofUnionMember1(unionMember1: UnionMember1) = Index(unionMember1 = unionMember1)
+            @JvmStatic fun ofUpdating(updating: IndexUpdating) = Index(updating = updating)
         }
 
         /** An interface that defines how to map each variant of [Index] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitObject(object_: JsonValue): T
+            fun visitUpToDate(upToDate: JsonValue): T
 
-            fun visitUnionMember1(unionMember1: UnionMember1): T
+            fun visitUpdating(updating: IndexUpdating): T
 
             /**
              * Maps an unknown variant of [Index] to a value of type [T].
@@ -1253,10 +1251,10 @@ private constructor(
                 val bestMatches =
                     sequenceOf(
                             tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                ?.let { Index(object_ = it, _json = json) }
+                                ?.let { Index(upToDate = it, _json = json) }
                                 ?.takeIf { it.isValid() },
-                            tryDeserialize(node, jacksonTypeRef<UnionMember1>())?.let {
-                                Index(unionMember1 = it, _json = json)
+                            tryDeserialize(node, jacksonTypeRef<IndexUpdating>())?.let {
+                                Index(updating = it, _json = json)
                             },
                         )
                         .filterNotNull()
@@ -1283,15 +1281,15 @@ private constructor(
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.object_ != null -> generator.writeObject(value.object_)
-                    value.unionMember1 != null -> generator.writeObject(value.unionMember1)
+                    value.upToDate != null -> generator.writeObject(value.upToDate)
+                    value.updating != null -> generator.writeObject(value.updating)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Index")
                 }
             }
         }
 
-        class UnionMember1
+        class IndexUpdating
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val status: JsonValue,
@@ -1353,7 +1351,7 @@ private constructor(
             companion object {
 
                 /**
-                 * Returns a mutable builder for constructing an instance of [UnionMember1].
+                 * Returns a mutable builder for constructing an instance of [IndexUpdating].
                  *
                  * The following fields are required:
                  * ```java
@@ -1363,7 +1361,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            /** A builder for [UnionMember1]. */
+            /** A builder for [IndexUpdating]. */
             class Builder internal constructor() {
 
                 private var status: JsonValue = JsonValue.from("updating")
@@ -1371,10 +1369,10 @@ private constructor(
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(unionMember1: UnionMember1) = apply {
-                    status = unionMember1.status
-                    unindexedBytes = unionMember1.unindexedBytes
-                    additionalProperties = unionMember1.additionalProperties.toMutableMap()
+                internal fun from(indexUpdating: IndexUpdating) = apply {
+                    status = indexUpdating.status
+                    unindexedBytes = indexUpdating.unindexedBytes
+                    additionalProperties = indexUpdating.additionalProperties.toMutableMap()
                 }
 
                 /**
@@ -1432,7 +1430,7 @@ private constructor(
                 }
 
                 /**
-                 * Returns an immutable instance of [UnionMember1].
+                 * Returns an immutable instance of [IndexUpdating].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  *
@@ -1443,8 +1441,8 @@ private constructor(
                  *
                  * @throws IllegalStateException if any required field is unset.
                  */
-                fun build(): UnionMember1 =
-                    UnionMember1(
+                fun build(): IndexUpdating =
+                    IndexUpdating(
                         status,
                         checkRequired("unindexedBytes", unindexedBytes),
                         additionalProperties.toMutableMap(),
@@ -1453,7 +1451,7 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): UnionMember1 = apply {
+            fun validate(): IndexUpdating = apply {
                 if (validated) {
                     return@apply
                 }
@@ -1491,7 +1489,7 @@ private constructor(
                     return true
                 }
 
-                return other is UnionMember1 &&
+                return other is IndexUpdating &&
                     status == other.status &&
                     unindexedBytes == other.unindexedBytes &&
                     additionalProperties == other.additionalProperties
@@ -1504,7 +1502,7 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "UnionMember1{status=$status, unindexedBytes=$unindexedBytes, additionalProperties=$additionalProperties}"
+                "IndexUpdating{status=$status, unindexedBytes=$unindexedBytes, additionalProperties=$additionalProperties}"
         }
     }
 
