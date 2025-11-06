@@ -19,7 +19,7 @@ internal class NamespaceMetadataTest {
                 .approxRowCount(0L)
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .encryption(NamespaceMetadata.Encryption.Sse.builder().sse(true).build())
-                .indexObject()
+                .indexUpToDate()
                 .schema(
                     NamespaceMetadata.Schema.builder()
                         .putAdditionalProperty(
@@ -49,7 +49,7 @@ internal class NamespaceMetadataTest {
                     NamespaceMetadata.Encryption.Sse.builder().sse(true).build()
                 )
             )
-        assertThat(namespaceMetadata.index()).isEqualTo(NamespaceMetadata.Index.ofObject())
+        assertThat(namespaceMetadata.index()).isEqualTo(NamespaceMetadata.Index.ofUpToDate())
         assertThat(namespaceMetadata.schema())
             .isEqualTo(
                 NamespaceMetadata.Schema.builder()
@@ -80,7 +80,7 @@ internal class NamespaceMetadataTest {
                 .approxRowCount(0L)
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .encryption(NamespaceMetadata.Encryption.Sse.builder().sse(true).build())
-                .indexObject()
+                .indexUpToDate()
                 .schema(
                     NamespaceMetadata.Schema.builder()
                         .putAdditionalProperty(
