@@ -34,7 +34,9 @@ private constructor(
     fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
     /**
-     * The namespace to copy documents from.
+     * The namespace to copy documents from. When copying, you can optionally specify an
+     * `encryption` parameter to encrypt the destination namespace with a different CMEK key than
+     * the source namespace.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -298,7 +300,11 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** The namespace to copy documents from. */
+        /**
+         * The namespace to copy documents from. When copying, you can optionally specify an
+         * `encryption` parameter to encrypt the destination namespace with a different CMEK key
+         * than the source namespace.
+         */
         fun copyFromNamespace(copyFromNamespace: String) = apply {
             body.copyFromNamespace(copyFromNamespace)
         }
@@ -769,7 +775,9 @@ private constructor(
         )
 
         /**
-         * The namespace to copy documents from.
+         * The namespace to copy documents from. When copying, you can optionally specify an
+         * `encryption` parameter to encrypt the destination namespace with a different CMEK key
+         * than the source namespace.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
@@ -1083,7 +1091,11 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** The namespace to copy documents from. */
+            /**
+             * The namespace to copy documents from. When copying, you can optionally specify an
+             * `encryption` parameter to encrypt the destination namespace with a different CMEK key
+             * than the source namespace.
+             */
             fun copyFromNamespace(copyFromNamespace: String) =
                 copyFromNamespace(JsonField.of(copyFromNamespace))
 
