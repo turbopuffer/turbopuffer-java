@@ -688,9 +688,10 @@ To access a property's raw JSON value, which may be undocumented, call its `_` p
 
 ```java
 import com.turbopuffer.core.JsonField;
+import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import java.util.Optional;
 
-JsonField<String> copyFromNamespace = client.namespace("ns").write(params)._copyFromNamespace();
+JsonField<NamespaceWriteParams.CopyFromNamespace> copyFromNamespace = client.namespace("ns").write(params)._copyFromNamespace();
 
 if (copyFromNamespace.isMissing()) {
   // The property is absent from the JSON response
