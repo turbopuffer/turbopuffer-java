@@ -13,7 +13,7 @@ internal class NamespaceWriteParamsTest {
     fun create() {
         NamespaceWriteParams.builder()
             .namespace("namespace")
-            .copyFromNamespace("copy_from_namespace")
+            .copyFromNamespace("string")
             .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
             .deleteCondition(JsonValue.from(mapOf<String, Any>()))
             .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -84,7 +84,7 @@ internal class NamespaceWriteParamsTest {
         val params =
             NamespaceWriteParams.builder()
                 .namespace("namespace")
-                .copyFromNamespace("copy_from_namespace")
+                .copyFromNamespace("string")
                 .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
                 .deleteCondition(JsonValue.from(mapOf<String, Any>()))
                 .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -144,7 +144,8 @@ internal class NamespaceWriteParamsTest {
 
         val body = params._body()
 
-        assertThat(body.copyFromNamespace()).contains("copy_from_namespace")
+        assertThat(body.copyFromNamespace())
+            .contains(NamespaceWriteParams.CopyFromNamespace.ofString("string"))
         assertThat(body._deleteByFilter()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body._deleteCondition()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.deletes().getOrNull())

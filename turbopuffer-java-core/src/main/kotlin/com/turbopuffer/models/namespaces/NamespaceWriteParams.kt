@@ -6,13 +6,24 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.turbopuffer.core.BaseDeserializer
+import com.turbopuffer.core.BaseSerializer
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
+import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.checkRequired
+import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.toImmutable
@@ -34,14 +45,12 @@ private constructor(
     fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
     /**
-     * The namespace to copy documents from. When copying, you can optionally specify an
-     * `encryption` parameter to encrypt the destination namespace with a different CMEK key than
-     * the source namespace.
+     * The namespace to copy documents from.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun copyFromNamespace(): Optional<String> = body.copyFromNamespace()
+    fun copyFromNamespace(): Optional<CopyFromNamespace> = body.copyFromNamespace()
 
     /** The filter specifying which documents to delete. */
     fun _deleteByFilter(): JsonValue = body._deleteByFilter()
@@ -146,7 +155,7 @@ private constructor(
      * Unlike [copyFromNamespace], this method doesn't throw if the JSON field has an unexpected
      * type.
      */
-    fun _copyFromNamespace(): JsonField<String> = body._copyFromNamespace()
+    fun _copyFromNamespace(): JsonField<CopyFromNamespace> = body._copyFromNamespace()
 
     /**
      * Returns the raw JSON value of [deletes].
@@ -272,24 +281,28 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /**
-         * The namespace to copy documents from. When copying, you can optionally specify an
-         * `encryption` parameter to encrypt the destination namespace with a different CMEK key
-         * than the source namespace.
-         */
-        fun copyFromNamespace(copyFromNamespace: String) = apply {
+        /** The namespace to copy documents from. */
+        fun copyFromNamespace(copyFromNamespace: CopyFromNamespace) = apply {
             body.copyFromNamespace(copyFromNamespace)
         }
 
         /**
          * Sets [Builder.copyFromNamespace] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.copyFromNamespace] with a well-typed [String] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.copyFromNamespace] with a well-typed [CopyFromNamespace]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
-        fun copyFromNamespace(copyFromNamespace: JsonField<String>) = apply {
+        fun copyFromNamespace(copyFromNamespace: JsonField<CopyFromNamespace>) = apply {
             body.copyFromNamespace(copyFromNamespace)
+        }
+
+        /** Alias for calling [copyFromNamespace] with `CopyFromNamespace.ofString(string)`. */
+        fun copyFromNamespace(string: String) = apply { body.copyFromNamespace(string) }
+
+        /** Alias for calling [copyFromNamespace] with `CopyFromNamespace.ofConfig(config)`. */
+        fun copyFromNamespace(config: CopyFromNamespace.CopyFromNamespaceConfig) = apply {
+            body.copyFromNamespace(config)
         }
 
         /** The filter specifying which documents to delete. */
@@ -633,7 +646,7 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val copyFromNamespace: JsonField<String>,
+        private val copyFromNamespace: JsonField<CopyFromNamespace>,
         private val deleteByFilter: JsonValue,
         private val deleteCondition: JsonValue,
         private val deletes: JsonField<List<Id>>,
@@ -655,7 +668,7 @@ private constructor(
         private constructor(
             @JsonProperty("copy_from_namespace")
             @ExcludeMissing
-            copyFromNamespace: JsonField<String> = JsonMissing.of(),
+            copyFromNamespace: JsonField<CopyFromNamespace> = JsonMissing.of(),
             @JsonProperty("delete_by_filter")
             @ExcludeMissing
             deleteByFilter: JsonValue = JsonMissing.of(),
@@ -716,14 +729,12 @@ private constructor(
         )
 
         /**
-         * The namespace to copy documents from. When copying, you can optionally specify an
-         * `encryption` parameter to encrypt the destination namespace with a different CMEK key
-         * than the source namespace.
+         * The namespace to copy documents from.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun copyFromNamespace(): Optional<String> =
+        fun copyFromNamespace(): Optional<CopyFromNamespace> =
             copyFromNamespace.getOptional("copy_from_namespace")
 
         /** The filter specifying which documents to delete. */
@@ -841,7 +852,7 @@ private constructor(
          */
         @JsonProperty("copy_from_namespace")
         @ExcludeMissing
-        fun _copyFromNamespace(): JsonField<String> = copyFromNamespace
+        fun _copyFromNamespace(): JsonField<CopyFromNamespace> = copyFromNamespace
 
         /**
          * Returns the raw JSON value of [deletes].
@@ -955,7 +966,7 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var copyFromNamespace: JsonField<String> = JsonMissing.of()
+            private var copyFromNamespace: JsonField<CopyFromNamespace> = JsonMissing.of()
             private var deleteByFilter: JsonValue = JsonMissing.of()
             private var deleteCondition: JsonValue = JsonMissing.of()
             private var deletes: JsonField<MutableList<Id>>? = null
@@ -992,24 +1003,28 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /**
-             * The namespace to copy documents from. When copying, you can optionally specify an
-             * `encryption` parameter to encrypt the destination namespace with a different CMEK key
-             * than the source namespace.
-             */
-            fun copyFromNamespace(copyFromNamespace: String) =
+            /** The namespace to copy documents from. */
+            fun copyFromNamespace(copyFromNamespace: CopyFromNamespace) =
                 copyFromNamespace(JsonField.of(copyFromNamespace))
 
             /**
              * Sets [Builder.copyFromNamespace] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.copyFromNamespace] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.copyFromNamespace] with a well-typed
+             * [CopyFromNamespace] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
              */
-            fun copyFromNamespace(copyFromNamespace: JsonField<String>) = apply {
+            fun copyFromNamespace(copyFromNamespace: JsonField<CopyFromNamespace>) = apply {
                 this.copyFromNamespace = copyFromNamespace
             }
+
+            /** Alias for calling [copyFromNamespace] with `CopyFromNamespace.ofString(string)`. */
+            fun copyFromNamespace(string: String) =
+                copyFromNamespace(CopyFromNamespace.ofString(string))
+
+            /** Alias for calling [copyFromNamespace] with `CopyFromNamespace.ofConfig(config)`. */
+            fun copyFromNamespace(config: CopyFromNamespace.CopyFromNamespaceConfig) =
+                copyFromNamespace(CopyFromNamespace.ofConfig(config))
 
             /** The filter specifying which documents to delete. */
             fun deleteByFilter(deleteByFilter: JsonValue) = apply {
@@ -1278,7 +1293,7 @@ private constructor(
                 return@apply
             }
 
-            copyFromNamespace()
+            copyFromNamespace().ifPresent { it.validate() }
             deletes().ifPresent { it.forEach { it.validate() } }
             disableBackpressure()
             distanceMetric().ifPresent { it.validate() }
@@ -1308,7 +1323,7 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (copyFromNamespace.asKnown().isPresent) 1 else 0) +
+            (copyFromNamespace.asKnown().getOrNull()?.validity() ?: 0) +
                 (deletes.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (if (disableBackpressure.asKnown().isPresent) 1 else 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1369,6 +1384,407 @@ private constructor(
 
         override fun toString() =
             "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+    }
+
+    /** The namespace to copy documents from. */
+    @JsonDeserialize(using = CopyFromNamespace.Deserializer::class)
+    @JsonSerialize(using = CopyFromNamespace.Serializer::class)
+    class CopyFromNamespace
+    private constructor(
+        private val string: String? = null,
+        private val config: CopyFromNamespaceConfig? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        /** The namespace to copy documents from. */
+        fun string(): Optional<String> = Optional.ofNullable(string)
+
+        fun config(): Optional<CopyFromNamespaceConfig> = Optional.ofNullable(config)
+
+        fun isString(): Boolean = string != null
+
+        fun isConfig(): Boolean = config != null
+
+        /** The namespace to copy documents from. */
+        fun asString(): String = string.getOrThrow("string")
+
+        fun asConfig(): CopyFromNamespaceConfig = config.getOrThrow("config")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                string != null -> visitor.visitString(string)
+                config != null -> visitor.visitConfig(config)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): CopyFromNamespace = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitConfig(config: CopyFromNamespaceConfig) {
+                        config.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitString(string: String) = 1
+
+                    override fun visitConfig(config: CopyFromNamespaceConfig) = config.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is CopyFromNamespace && string == other.string && config == other.config
+        }
+
+        override fun hashCode(): Int = Objects.hash(string, config)
+
+        override fun toString(): String =
+            when {
+                string != null -> "CopyFromNamespace{string=$string}"
+                config != null -> "CopyFromNamespace{config=$config}"
+                _json != null -> "CopyFromNamespace{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid CopyFromNamespace")
+            }
+
+        companion object {
+
+            /** The namespace to copy documents from. */
+            @JvmStatic fun ofString(string: String) = CopyFromNamespace(string = string)
+
+            @JvmStatic
+            fun ofConfig(config: CopyFromNamespaceConfig) = CopyFromNamespace(config = config)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [CopyFromNamespace] to a value of
+         * type [T].
+         */
+        interface Visitor<out T> {
+
+            /** The namespace to copy documents from. */
+            fun visitString(string: String): T
+
+            fun visitConfig(config: CopyFromNamespaceConfig): T
+
+            /**
+             * Maps an unknown variant of [CopyFromNamespace] to a value of type [T].
+             *
+             * An instance of [CopyFromNamespace] can contain an unknown variant if it was
+             * deserialized from data that doesn't match any known variant. For example, if the SDK
+             * is on an older version than the API, then the API may respond with new variants that
+             * the SDK is unaware of.
+             *
+             * @throws TurbopufferInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw TurbopufferInvalidDataException("Unknown CopyFromNamespace: $json")
+            }
+        }
+
+        internal class Deserializer :
+            BaseDeserializer<CopyFromNamespace>(CopyFromNamespace::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): CopyFromNamespace {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<CopyFromNamespaceConfig>())?.let {
+                                CopyFromNamespace(config = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                CopyFromNamespace(string = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from array).
+                    0 -> CopyFromNamespace(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<CopyFromNamespace>(CopyFromNamespace::class) {
+
+            override fun serialize(
+                value: CopyFromNamespace,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.config != null -> generator.writeObject(value.config)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid CopyFromNamespace")
+                }
+            }
+        }
+
+        class CopyFromNamespaceConfig
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val sourceApiKey: JsonField<String>,
+            private val sourceNamespace: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("source_api_key")
+                @ExcludeMissing
+                sourceApiKey: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("source_namespace")
+                @ExcludeMissing
+                sourceNamespace: JsonField<String> = JsonMissing.of(),
+            ) : this(sourceApiKey, sourceNamespace, mutableMapOf())
+
+            /**
+             * An API key for the organization containing the source namespace
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun sourceApiKey(): String = sourceApiKey.getRequired("source_api_key")
+
+            /**
+             * The namespace to copy documents from.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun sourceNamespace(): String = sourceNamespace.getRequired("source_namespace")
+
+            /**
+             * Returns the raw JSON value of [sourceApiKey].
+             *
+             * Unlike [sourceApiKey], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("source_api_key")
+            @ExcludeMissing
+            fun _sourceApiKey(): JsonField<String> = sourceApiKey
+
+            /**
+             * Returns the raw JSON value of [sourceNamespace].
+             *
+             * Unlike [sourceNamespace], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("source_namespace")
+            @ExcludeMissing
+            fun _sourceNamespace(): JsonField<String> = sourceNamespace
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of
+                 * [CopyFromNamespaceConfig].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .sourceApiKey()
+                 * .sourceNamespace()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [CopyFromNamespaceConfig]. */
+            class Builder internal constructor() {
+
+                private var sourceApiKey: JsonField<String>? = null
+                private var sourceNamespace: JsonField<String>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(copyFromNamespaceConfig: CopyFromNamespaceConfig) = apply {
+                    sourceApiKey = copyFromNamespaceConfig.sourceApiKey
+                    sourceNamespace = copyFromNamespaceConfig.sourceNamespace
+                    additionalProperties =
+                        copyFromNamespaceConfig.additionalProperties.toMutableMap()
+                }
+
+                /** An API key for the organization containing the source namespace */
+                fun sourceApiKey(sourceApiKey: String) = sourceApiKey(JsonField.of(sourceApiKey))
+
+                /**
+                 * Sets [Builder.sourceApiKey] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.sourceApiKey] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun sourceApiKey(sourceApiKey: JsonField<String>) = apply {
+                    this.sourceApiKey = sourceApiKey
+                }
+
+                /** The namespace to copy documents from. */
+                fun sourceNamespace(sourceNamespace: String) =
+                    sourceNamespace(JsonField.of(sourceNamespace))
+
+                /**
+                 * Sets [Builder.sourceNamespace] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.sourceNamespace] with a well-typed [String]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun sourceNamespace(sourceNamespace: JsonField<String>) = apply {
+                    this.sourceNamespace = sourceNamespace
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [CopyFromNamespaceConfig].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .sourceApiKey()
+                 * .sourceNamespace()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): CopyFromNamespaceConfig =
+                    CopyFromNamespaceConfig(
+                        checkRequired("sourceApiKey", sourceApiKey),
+                        checkRequired("sourceNamespace", sourceNamespace),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): CopyFromNamespaceConfig = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                sourceApiKey()
+                sourceNamespace()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (sourceApiKey.asKnown().isPresent) 1 else 0) +
+                    (if (sourceNamespace.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is CopyFromNamespaceConfig &&
+                    sourceApiKey == other.sourceApiKey &&
+                    sourceNamespace == other.sourceNamespace &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(sourceApiKey, sourceNamespace, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "CopyFromNamespaceConfig{sourceApiKey=$sourceApiKey, sourceNamespace=$sourceNamespace, additionalProperties=$additionalProperties}"
+        }
     }
 
     /** The encryption configuration for a namespace. */
