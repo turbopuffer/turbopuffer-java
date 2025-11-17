@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.6.0 (2025-11-17)
+
+Full Changelog: [v1.5.0...v1.6.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.5.0...v1.6.0)
+
+### Features
+
+* Add vector attribute schema to metadata endpoint ([02f3439](https://github.com/turbopuffer/turbopuffer-java/commit/02f3439ed0488436c57418260670ad6ff250be1a))
+* Allow for a CMEK key to be specified in copy_from_namespace ([3d9d0be](https://github.com/turbopuffer/turbopuffer-java/commit/3d9d0be54e8ed98efda7b1bc4c3bfeccc904d3ed))
+* Make `type` required on `AttributeSchemaConfig` ([82b9df6](https://github.com/turbopuffer/turbopuffer-java/commit/82b9df66a53888e5df664039abc1a40f5102f3c8))
+* openapi: Fix stainless warnings ([5807dd3](https://github.com/turbopuffer/turbopuffer-java/commit/5807dd387904b6a9d1cee4265737ef4cca664c8d))
+* openapi: name variants of `NamespaceMetadata.index` ([42a6cae](https://github.com/turbopuffer/turbopuffer-java/commit/42a6caebdec3fc97ac52fac3cb5c52ea3cc3ed89))
+* spec: add support for cross-org CFN to SDKs ([9e75d54](https://github.com/turbopuffer/turbopuffer-java/commit/9e75d54817802ad9077b9adf0dfea7174cfd80d8))
+
+
+### Bug Fixes
+
+* **client:** multi-value header serialization ([10e0601](https://github.com/turbopuffer/turbopuffer-java/commit/10e06017a5531050cb82a61351a8b0fd0aba02e3))
+
+
+### Documentation
+
+* **client:** update readme timeout snippet ([08912ad](https://github.com/turbopuffer/turbopuffer-java/commit/08912ad12d6ac1c1ed925cc286e48152d74fa02b))
+
 ## 1.5.0 (2025-10-22)
 
 Full Changelog: [v1.3.0...v1.5.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.3.0...v1.5.0)
