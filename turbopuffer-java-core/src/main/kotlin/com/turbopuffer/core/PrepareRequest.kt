@@ -7,17 +7,19 @@ import java.util.concurrent.CompletableFuture
 
 @JvmSynthetic
 internal fun HttpRequest.prepare(clientOptions: ClientOptions, params: Params): HttpRequest {
-    val builder = toBuilder()
-        .putAllQueryParams(clientOptions.queryParams)
-        .replaceAllQueryParams(params._queryParams())
-        .putAllHeaders(clientOptions.headers)
-        .replaceAllHeaders(params._headers())
-    
-    // If compression is disabled, set Accept-Encoding to identity to prevent server from compressing responses
+    val builder =
+        toBuilder()
+            .putAllQueryParams(clientOptions.queryParams)
+            .replaceAllQueryParams(params._queryParams())
+            .putAllHeaders(clientOptions.headers)
+            .replaceAllHeaders(params._headers())
+
+    // If compression is disabled, set Accept-Encoding to identity to prevent server from
+    // compressing responses
     if (!clientOptions.compression) {
         builder.replaceHeaders("Accept-Encoding", "identity")
     }
-    
+
     return builder.build()
 }
 
