@@ -111,6 +111,12 @@ private constructor(
     @get:JvmName("apiKey") val apiKey: String,
     private val region: String?,
     private val defaultNamespace: String?,
+    /**
+     * Whether to compress requests and responses with gzip.
+     *
+     * Defaults to true. When the client is CPU constrained or when not limited by bandwidth you may want to disable compression.
+     */
+    @get:JvmName("compression") val compression: Boolean,
 ) {
 
     init {
@@ -182,6 +188,7 @@ private constructor(
         private var apiKey: String? = null
         private var region: String? = null
         private var defaultNamespace: String? = null
+        private var compression: Boolean = true
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -200,6 +207,7 @@ private constructor(
             apiKey = clientOptions.apiKey
             region = clientOptions.region
             defaultNamespace = clientOptions.defaultNamespace
+            compression = clientOptions.compression
         }
 
         /**
@@ -336,6 +344,13 @@ private constructor(
         /** Alias for calling [Builder.defaultNamespace] with `defaultNamespace.orElse(null)`. */
         fun defaultNamespace(defaultNamespace: Optional<String>) =
             defaultNamespace(defaultNamespace.getOrNull())
+
+        /**
+         * Whether to compress requests and responses with gzip.
+         *
+         * Defaults to true. When the client is CPU constrained or when not limited by bandwidth you may want to disable compression.
+         */
+        fun compression(compression: Boolean) = apply { this.compression = compression }
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
@@ -532,6 +547,7 @@ private constructor(
                 apiKey,
                 region,
                 defaultNamespace,
+                compression,
             )
         }
     }

@@ -488,6 +488,23 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
     .build();
 ```
 
+### Compression
+
+Requests default to advertising gzip compression so responses are transparently decompressed by OkHttp (outbound bodies are never gzipped unless you add a custom interceptor). To disable both request and response compression set the `compression` option:
+
+```java
+TurbopufferClient uncompressedClient = TurbopufferOkHttpClient.builder()
+    .fromEnv()
+    .compression(false)
+    .build();
+```
+
+Or temporarily override it:
+
+```java
+TurbopufferClient clientWithOptions = client.withOptions(opts -> opts.compression(false));
+```
+
 ### HTTPS
 
 > [!NOTE]
