@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.0 (2025-11-19)
+
+Full Changelog: [v1.6.0...v1.7.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.6.0...v1.7.0)
+
+### Features
+
+* add ability to disable response compression  ([#192](https://github.com/turbopuffer/turbopuffer-java/issues/192)) ([9ecbd2c](https://github.com/turbopuffer/turbopuffer-java/commit/9ecbd2c36edae8908368337b88c062b0d2bbbf58))
+
 ## 1.6.0 (2025-11-17)
 
 Full Changelog: [v1.5.0...v1.6.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.5.0...v1.6.0)
