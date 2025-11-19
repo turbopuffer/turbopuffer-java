@@ -225,6 +225,14 @@ class TurbopufferOkHttpClient private constructor() {
         fun defaultNamespace(defaultNamespace: Optional<String>) =
             defaultNamespace(defaultNamespace.getOrNull())
 
+        /**
+         * Whether to compress requests and responses with gzip.
+         *
+         * Defaults to true. When the client is CPU constrained or when not limited by bandwidth you
+         * may want to disable compression.
+         */
+        fun compression(compression: Boolean) = apply { clientOptions.compression(compression) }
+
         fun headers(headers: Headers) = apply { clientOptions.headers(headers) }
 
         fun headers(headers: Map<String, Iterable<String>>) = apply {
