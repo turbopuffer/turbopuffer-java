@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.0 (2025-11-25)
+
+Full Changelog: [v1.7.0...v1.8.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.7.0...v1.8.0)
+
+### Features
+
+* site: add ascii_folding to docs and SDKs ([453c76c](https://github.com/turbopuffer/turbopuffer-java/commit/453c76c039c4a5e9aeb8954368ccbc7e4ccfffe4))
+
 ## 1.7.0 (2025-11-19)
 
 Full Changelog: [v1.6.0...v1.7.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.6.0...v1.7.0)
