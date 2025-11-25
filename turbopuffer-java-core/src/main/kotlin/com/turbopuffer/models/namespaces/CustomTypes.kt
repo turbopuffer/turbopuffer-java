@@ -17,6 +17,8 @@ sealed class AggregateBy() {
     companion object {
         @JvmStatic public fun count(): AggregateByCount = AggregateByCount.create()
 
+        @JvmStatic public fun sum(attr: String): AggregateBySum = AggregateBySum.create(attr)
+
         @JvmStatic
         public fun count(attr: String): AggregateByCountDeprecated =
             AggregateByCountDeprecated.create(attr)
@@ -53,6 +55,22 @@ class AggregateByCountDeprecated private constructor(attr: String) : AggregateBy
         @JvmSynthetic
         internal fun create(attr: String): AggregateByCountDeprecated =
             AggregateByCountDeprecated(attr)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "attr")
+class AggregateBySum private constructor(attr: String) : AggregateBy() {
+    private val f0: String = "Sum"
+    private val attr: String = attr
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic internal fun create(attr: String): AggregateBySum = AggregateBySum(attr)
     }
 }
 
@@ -170,6 +188,16 @@ sealed class Filter() {
             params: ContainsAllTokensFilterParams,
         ): FilterContainsAllTokensArrayWithParams =
             FilterContainsAllTokensArrayWithParams.create(attr, value, params)
+
+        @JvmStatic
+        public fun containsTokenSequence(attr: String, value: String): FilterContainsTokenSequence =
+            FilterContainsTokenSequence.create(attr, value)
+
+        @JvmStatic
+        public fun containsTokenSequence(
+            attr: String,
+            value: List<String>,
+        ): FilterContainsTokenSequenceArray = FilterContainsTokenSequenceArray.create(attr, value)
 
         @JvmStatic public fun not(filter: Filter): FilterNot = FilterNot.create(filter)
 
@@ -393,6 +421,45 @@ class FilterContainsAny private constructor(attr: String, value: List<Any>) : Fi
         @JvmSynthetic
         internal fun create(attr: String, value: List<Any>): FilterContainsAny =
             FilterContainsAny(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterContainsTokenSequence private constructor(attr: String, value: String) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "ContainsTokenSequence"
+    private val value: String = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: String): FilterContainsTokenSequence =
+            FilterContainsTokenSequence(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterContainsTokenSequenceArray private constructor(attr: String, value: List<String>) :
+    Filter() {
+    private val attr: String = attr
+    private val f0: String = "ContainsTokenSequence"
+    private val value: List<String> = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: List<String>): FilterContainsTokenSequenceArray =
+            FilterContainsTokenSequenceArray(attr, value)
     }
 }
 
