@@ -13,6 +13,7 @@ internal class FullTextSearchConfigTest {
     fun create() {
         val fullTextSearchConfig =
             FullTextSearchConfig.builder()
+                .asciiFolding(true)
                 .b(0.0)
                 .caseSensitive(true)
                 .k1(0.0)
@@ -23,6 +24,7 @@ internal class FullTextSearchConfigTest {
                 .tokenizer(Tokenizer.PRE_TOKENIZED_ARRAY)
                 .build()
 
+        assertThat(fullTextSearchConfig.asciiFolding()).contains(true)
         assertThat(fullTextSearchConfig.b()).contains(0.0)
         assertThat(fullTextSearchConfig.caseSensitive()).contains(true)
         assertThat(fullTextSearchConfig.k1()).contains(0.0)
@@ -38,6 +40,7 @@ internal class FullTextSearchConfigTest {
         val jsonMapper = jsonMapper()
         val fullTextSearchConfig =
             FullTextSearchConfig.builder()
+                .asciiFolding(true)
                 .b(0.0)
                 .caseSensitive(true)
                 .k1(0.0)
