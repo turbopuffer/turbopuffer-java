@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 class FullTextSearchConfig
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
+    private val asciiFolding: JsonField<Boolean>,
     private val b: JsonField<Double>,
     private val caseSensitive: JsonField<Boolean>,
     private val k1: JsonField<Double>,
@@ -33,6 +34,9 @@ private constructor(
 
     @JsonCreator
     private constructor(
+        @JsonProperty("ascii_folding")
+        @ExcludeMissing
+        asciiFolding: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("b") @ExcludeMissing b: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("case_sensitive")
         @ExcludeMissing
@@ -50,6 +54,7 @@ private constructor(
         @ExcludeMissing
         tokenizer: JsonField<Tokenizer> = JsonMissing.of(),
     ) : this(
+        asciiFolding,
         b,
         caseSensitive,
         k1,
@@ -60,6 +65,15 @@ private constructor(
         tokenizer,
         mutableMapOf(),
     )
+
+    /**
+     * Whether to convert each non-ASCII character in a token to its ASCII equivalent, if one exists
+     * (e.g., à -> a). Defaults to `false` (i.e., no folding).
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun asciiFolding(): Optional<Boolean> = asciiFolding.getOptional("ascii_folding")
 
     /**
      * The `b` document length normalization parameter for BM25. Defaults to `0.75`.
@@ -126,6 +140,15 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun tokenizer(): Optional<Tokenizer> = tokenizer.getOptional("tokenizer")
+
+    /**
+     * Returns the raw JSON value of [asciiFolding].
+     *
+     * Unlike [asciiFolding], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("ascii_folding")
+    @ExcludeMissing
+    fun _asciiFolding(): JsonField<Boolean> = asciiFolding
 
     /**
      * Returns the raw JSON value of [b].
@@ -213,6 +236,7 @@ private constructor(
     /** A builder for [FullTextSearchConfig]. */
     class Builder internal constructor() {
 
+        private var asciiFolding: JsonField<Boolean> = JsonMissing.of()
         private var b: JsonField<Double> = JsonMissing.of()
         private var caseSensitive: JsonField<Boolean> = JsonMissing.of()
         private var k1: JsonField<Double> = JsonMissing.of()
@@ -225,6 +249,7 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(fullTextSearchConfig: FullTextSearchConfig) = apply {
+            asciiFolding = fullTextSearchConfig.asciiFolding
             b = fullTextSearchConfig.b
             caseSensitive = fullTextSearchConfig.caseSensitive
             k1 = fullTextSearchConfig.k1
@@ -234,6 +259,23 @@ private constructor(
             stemming = fullTextSearchConfig.stemming
             tokenizer = fullTextSearchConfig.tokenizer
             additionalProperties = fullTextSearchConfig.additionalProperties.toMutableMap()
+        }
+
+        /**
+         * Whether to convert each non-ASCII character in a token to its ASCII equivalent, if one
+         * exists (e.g., à -> a). Defaults to `false` (i.e., no folding).
+         */
+        fun asciiFolding(asciiFolding: Boolean) = asciiFolding(JsonField.of(asciiFolding))
+
+        /**
+         * Sets [Builder.asciiFolding] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.asciiFolding] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun asciiFolding(asciiFolding: JsonField<Boolean>) = apply {
+            this.asciiFolding = asciiFolding
         }
 
         /** The `b` document length normalization parameter for BM25. Defaults to `0.75`. */
@@ -369,6 +411,7 @@ private constructor(
          */
         fun build(): FullTextSearchConfig =
             FullTextSearchConfig(
+                asciiFolding,
                 b,
                 caseSensitive,
                 k1,
@@ -388,6 +431,7 @@ private constructor(
             return@apply
         }
 
+        asciiFolding()
         b()
         caseSensitive()
         k1()
@@ -414,7 +458,8 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (b.asKnown().isPresent) 1 else 0) +
+        (if (asciiFolding.asKnown().isPresent) 1 else 0) +
+            (if (b.asKnown().isPresent) 1 else 0) +
             (if (caseSensitive.asKnown().isPresent) 1 else 0) +
             (if (k1.asKnown().isPresent) 1 else 0) +
             (language.asKnown().getOrNull()?.validity() ?: 0) +
@@ -429,6 +474,7 @@ private constructor(
         }
 
         return other is FullTextSearchConfig &&
+            asciiFolding == other.asciiFolding &&
             b == other.b &&
             caseSensitive == other.caseSensitive &&
             k1 == other.k1 &&
@@ -442,6 +488,7 @@ private constructor(
 
     private val hashCode: Int by lazy {
         Objects.hash(
+            asciiFolding,
             b,
             caseSensitive,
             k1,
@@ -457,5 +504,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FullTextSearchConfig{b=$b, caseSensitive=$caseSensitive, k1=$k1, language=$language, maxTokenLength=$maxTokenLength, removeStopwords=$removeStopwords, stemming=$stemming, tokenizer=$tokenizer, additionalProperties=$additionalProperties}"
+        "FullTextSearchConfig{asciiFolding=$asciiFolding, b=$b, caseSensitive=$caseSensitive, k1=$k1, language=$language, maxTokenLength=$maxTokenLength, removeStopwords=$removeStopwords, stemming=$stemming, tokenizer=$tokenizer, additionalProperties=$additionalProperties}"
 }
