@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.1 (2025-11-26)
+
+Full Changelog: [v1.8.0...v1.8.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.8.0...v1.8.1)
+
+### Bug Fixes
+
+* **client:** cancel okhttp call when future cancelled ([755e46d](https://github.com/turbopuffer/turbopuffer-java/commit/755e46df1b264140051b0b0533cab2e182029aae))
+
 ## 1.8.0 (2025-11-25)
 
 Full Changelog: [v1.7.0...v1.8.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.7.0...v1.8.0)
