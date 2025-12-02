@@ -28,6 +28,7 @@ internal class NamespaceWriteResponseTest {
                 .rowsAffected(0L)
                 .rowsDeleted(0L)
                 .rowsPatched(0L)
+                .rowsRemaining(true)
                 .rowsUpserted(0L)
                 .build()
 
@@ -47,6 +48,7 @@ internal class NamespaceWriteResponseTest {
         assertThat(namespaceWriteResponse.rowsAffected()).isEqualTo(0L)
         assertThat(namespaceWriteResponse.rowsDeleted()).contains(0L)
         assertThat(namespaceWriteResponse.rowsPatched()).contains(0L)
+        assertThat(namespaceWriteResponse.rowsRemaining()).contains(true)
         assertThat(namespaceWriteResponse.rowsUpserted()).contains(0L)
     }
 
@@ -70,6 +72,7 @@ internal class NamespaceWriteResponseTest {
                 .rowsAffected(0L)
                 .rowsDeleted(0L)
                 .rowsPatched(0L)
+                .rowsRemaining(true)
                 .rowsUpserted(0L)
                 .build()
 

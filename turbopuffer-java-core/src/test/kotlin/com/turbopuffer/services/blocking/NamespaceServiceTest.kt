@@ -252,6 +252,7 @@ internal class NamespaceServiceTest {
                 NamespaceWriteParams.builder()
                     .namespace("namespace")
                     .copyFromNamespace("string")
+                    .deleteByFilterAllowPartial(true)
                     .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .disableBackpressure(true)
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -274,6 +275,7 @@ internal class NamespaceServiceTest {
                             )
                             .build()
                     )
+                    .patchByFilterAllowPartial(true)
                     .patchColumns(
                         Columns.builder()
                             .put("id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
