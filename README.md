@@ -375,13 +375,13 @@ The SDK uses the standard [OkHttp logging interceptor](https://github.com/square
 Enable logging by setting the `TURBOPUFFER_LOG` environment variable to `info`:
 
 ```sh
-$ export TURBOPUFFER_LOG=info
+export TURBOPUFFER_LOG=info
 ```
 
 Or to `debug` for more verbose logging:
 
 ```sh
-$ export TURBOPUFFER_LOG=debug
+export TURBOPUFFER_LOG=debug
 ```
 
 ## ProGuard and R8
