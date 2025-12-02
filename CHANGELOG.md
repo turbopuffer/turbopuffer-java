@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.1 (2025-12-02)
+
+Full Changelog: [v1.9.0...v1.9.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.9.0...v1.9.1)
+
+### Documentation
+
+* add cross-region copy_from_namespace to write API docs ([d76f6b5](https://github.com/turbopuffer/turbopuffer-java/commit/d76f6b55496bcc7fedc154fa5a2b536a5bbbcabd))
+
 ## 1.9.0 (2025-12-02)
 
 Full Changelog: [v1.8.1...v1.9.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.8.1...v1.9.0)
