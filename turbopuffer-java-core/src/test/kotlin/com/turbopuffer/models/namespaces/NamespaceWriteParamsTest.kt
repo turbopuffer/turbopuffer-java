@@ -15,6 +15,7 @@ internal class NamespaceWriteParamsTest {
             .namespace("namespace")
             .copyFromNamespace("string")
             .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+            .deleteByFilterAllowPartial(true)
             .deleteCondition(JsonValue.from(mapOf<String, Any>()))
             .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
             .disableBackpressure(true)
@@ -36,6 +37,7 @@ internal class NamespaceWriteParamsTest {
                     )
                     .build()
             )
+            .patchByFilterAllowPartial(true)
             .patchColumns(
                 Columns.builder()
                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -86,6 +88,7 @@ internal class NamespaceWriteParamsTest {
                 .namespace("namespace")
                 .copyFromNamespace("string")
                 .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+                .deleteByFilterAllowPartial(true)
                 .deleteCondition(JsonValue.from(mapOf<String, Any>()))
                 .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .disableBackpressure(true)
@@ -109,6 +112,7 @@ internal class NamespaceWriteParamsTest {
                         )
                         .build()
                 )
+                .patchByFilterAllowPartial(true)
                 .patchColumns(
                     Columns.builder()
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -147,6 +151,7 @@ internal class NamespaceWriteParamsTest {
         assertThat(body.copyFromNamespace())
             .contains(NamespaceWriteParams.CopyFromNamespace.ofString("string"))
         assertThat(body._deleteByFilter()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.deleteByFilterAllowPartial()).contains(true)
         assertThat(body._deleteCondition()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.deletes().getOrNull())
             .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
@@ -171,6 +176,7 @@ internal class NamespaceWriteParamsTest {
                     )
                     .build()
             )
+        assertThat(body.patchByFilterAllowPartial()).contains(true)
         assertThat(body.patchColumns())
             .contains(
                 Columns.builder()

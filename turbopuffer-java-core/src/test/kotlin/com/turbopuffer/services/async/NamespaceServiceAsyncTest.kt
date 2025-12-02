@@ -266,6 +266,7 @@ internal class NamespaceServiceAsyncTest {
                     .namespace("namespace")
                     .copyFromNamespace("string")
                     .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .disableBackpressure(true)
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .encryption(
@@ -287,6 +288,7 @@ internal class NamespaceServiceAsyncTest {
                             )
                             .build()
                     )
+                    .patchByFilterAllowPartial(true)
                     .patchColumns(
                         Columns.builder()
                             .put(
