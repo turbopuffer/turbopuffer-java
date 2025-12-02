@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.9.0 (2025-12-02)
+
+Full Changelog: [v1.8.1...v1.9.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.8.1...v1.9.0)
+
+### Features
+
+* sdks: add &lt;patch|delete&gt;_by_filter_allow_partial options ([7f5b192](https://github.com/turbopuffer/turbopuffer-java/commit/7f5b192ae58536f842f6c0079a17a3b45e04c113))
+
+
+### Documentation
+
+* remove `$` for better copy-pasteabality ([02adb7a](https://github.com/turbopuffer/turbopuffer-java/commit/02adb7a8b00cfa991bc7890e7bb6649bdc885480))
+
 ## 1.8.1 (2025-11-26)
 
 Full Changelog: [v1.8.0...v1.8.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.8.0...v1.8.1)
