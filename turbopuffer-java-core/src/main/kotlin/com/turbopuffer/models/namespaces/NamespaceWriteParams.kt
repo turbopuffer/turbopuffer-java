@@ -1854,29 +1854,24 @@ private constructor(
         class CopyFromNamespaceConfig
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
-            private val sourceApiKey: JsonField<String>,
             private val sourceNamespace: JsonField<String>,
+            private val sourceApiKey: JsonField<String>,
+            private val sourceRegion: JsonField<String>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
             @JsonCreator
             private constructor(
-                @JsonProperty("source_api_key")
-                @ExcludeMissing
-                sourceApiKey: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("source_namespace")
                 @ExcludeMissing
                 sourceNamespace: JsonField<String> = JsonMissing.of(),
-            ) : this(sourceApiKey, sourceNamespace, mutableMapOf())
-
-            /**
-             * An API key for the organization containing the source namespace
-             *
-             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
-             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
-             */
-            fun sourceApiKey(): String = sourceApiKey.getRequired("source_api_key")
+                @JsonProperty("source_api_key")
+                @ExcludeMissing
+                sourceApiKey: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("source_region")
+                @ExcludeMissing
+                sourceRegion: JsonField<String> = JsonMissing.of(),
+            ) : this(sourceNamespace, sourceApiKey, sourceRegion, mutableMapOf())
 
             /**
              * The namespace to copy documents from.
@@ -1886,6 +1881,32 @@ private constructor(
              *   value).
              */
             fun sourceNamespace(): String = sourceNamespace.getRequired("source_namespace")
+
+            /**
+             * (Optional) An API key for the organization containing the source namespace
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
+             *   (e.g. if the server responded with an unexpected value).
+             */
+            fun sourceApiKey(): Optional<String> = sourceApiKey.getOptional("source_api_key")
+
+            /**
+             * (Optional) The region of the source namespace.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
+             *   (e.g. if the server responded with an unexpected value).
+             */
+            fun sourceRegion(): Optional<String> = sourceRegion.getOptional("source_region")
+
+            /**
+             * Returns the raw JSON value of [sourceNamespace].
+             *
+             * Unlike [sourceNamespace], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("source_namespace")
+            @ExcludeMissing
+            fun _sourceNamespace(): JsonField<String> = sourceNamespace
 
             /**
              * Returns the raw JSON value of [sourceApiKey].
@@ -1898,14 +1919,14 @@ private constructor(
             fun _sourceApiKey(): JsonField<String> = sourceApiKey
 
             /**
-             * Returns the raw JSON value of [sourceNamespace].
+             * Returns the raw JSON value of [sourceRegion].
              *
-             * Unlike [sourceNamespace], this method doesn't throw if the JSON field has an
-             * unexpected type.
+             * Unlike [sourceRegion], this method doesn't throw if the JSON field has an unexpected
+             * type.
              */
-            @JsonProperty("source_namespace")
+            @JsonProperty("source_region")
             @ExcludeMissing
-            fun _sourceNamespace(): JsonField<String> = sourceNamespace
+            fun _sourceRegion(): JsonField<String> = sourceRegion
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1927,7 +1948,6 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .sourceApiKey()
                  * .sourceNamespace()
                  * ```
                  */
@@ -1937,30 +1957,18 @@ private constructor(
             /** A builder for [CopyFromNamespaceConfig]. */
             class Builder internal constructor() {
 
-                private var sourceApiKey: JsonField<String>? = null
                 private var sourceNamespace: JsonField<String>? = null
+                private var sourceApiKey: JsonField<String> = JsonMissing.of()
+                private var sourceRegion: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(copyFromNamespaceConfig: CopyFromNamespaceConfig) = apply {
-                    sourceApiKey = copyFromNamespaceConfig.sourceApiKey
                     sourceNamespace = copyFromNamespaceConfig.sourceNamespace
+                    sourceApiKey = copyFromNamespaceConfig.sourceApiKey
+                    sourceRegion = copyFromNamespaceConfig.sourceRegion
                     additionalProperties =
                         copyFromNamespaceConfig.additionalProperties.toMutableMap()
-                }
-
-                /** An API key for the organization containing the source namespace */
-                fun sourceApiKey(sourceApiKey: String) = sourceApiKey(JsonField.of(sourceApiKey))
-
-                /**
-                 * Sets [Builder.sourceApiKey] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.sourceApiKey] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
-                 */
-                fun sourceApiKey(sourceApiKey: JsonField<String>) = apply {
-                    this.sourceApiKey = sourceApiKey
                 }
 
                 /** The namespace to copy documents from. */
@@ -1976,6 +1984,34 @@ private constructor(
                  */
                 fun sourceNamespace(sourceNamespace: JsonField<String>) = apply {
                     this.sourceNamespace = sourceNamespace
+                }
+
+                /** (Optional) An API key for the organization containing the source namespace */
+                fun sourceApiKey(sourceApiKey: String) = sourceApiKey(JsonField.of(sourceApiKey))
+
+                /**
+                 * Sets [Builder.sourceApiKey] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.sourceApiKey] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun sourceApiKey(sourceApiKey: JsonField<String>) = apply {
+                    this.sourceApiKey = sourceApiKey
+                }
+
+                /** (Optional) The region of the source namespace. */
+                fun sourceRegion(sourceRegion: String) = sourceRegion(JsonField.of(sourceRegion))
+
+                /**
+                 * Sets [Builder.sourceRegion] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.sourceRegion] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun sourceRegion(sourceRegion: JsonField<String>) = apply {
+                    this.sourceRegion = sourceRegion
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2007,7 +2043,6 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .sourceApiKey()
                  * .sourceNamespace()
                  * ```
                  *
@@ -2015,8 +2050,9 @@ private constructor(
                  */
                 fun build(): CopyFromNamespaceConfig =
                     CopyFromNamespaceConfig(
-                        checkRequired("sourceApiKey", sourceApiKey),
                         checkRequired("sourceNamespace", sourceNamespace),
+                        sourceApiKey,
+                        sourceRegion,
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -2028,8 +2064,9 @@ private constructor(
                     return@apply
                 }
 
-                sourceApiKey()
                 sourceNamespace()
+                sourceApiKey()
+                sourceRegion()
                 validated = true
             }
 
@@ -2049,8 +2086,9 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                (if (sourceApiKey.asKnown().isPresent) 1 else 0) +
-                    (if (sourceNamespace.asKnown().isPresent) 1 else 0)
+                (if (sourceNamespace.asKnown().isPresent) 1 else 0) +
+                    (if (sourceApiKey.asKnown().isPresent) 1 else 0) +
+                    (if (sourceRegion.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2058,19 +2096,20 @@ private constructor(
                 }
 
                 return other is CopyFromNamespaceConfig &&
-                    sourceApiKey == other.sourceApiKey &&
                     sourceNamespace == other.sourceNamespace &&
+                    sourceApiKey == other.sourceApiKey &&
+                    sourceRegion == other.sourceRegion &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(sourceApiKey, sourceNamespace, additionalProperties)
+                Objects.hash(sourceNamespace, sourceApiKey, sourceRegion, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "CopyFromNamespaceConfig{sourceApiKey=$sourceApiKey, sourceNamespace=$sourceNamespace, additionalProperties=$additionalProperties}"
+                "CopyFromNamespaceConfig{sourceNamespace=$sourceNamespace, sourceApiKey=$sourceApiKey, sourceRegion=$sourceRegion, additionalProperties=$additionalProperties}"
         }
     }
 
