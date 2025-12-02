@@ -293,6 +293,7 @@ internal class NamespaceServiceAsyncTest {
                     .namespace("namespace")
                     .copyFromNamespace("string")
                     .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+                    .deleteByFilterAllowPartial(true)
                     .deleteCondition(JsonValue.from(mapOf<String, Any>()))
                     .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .disableBackpressure(true)
@@ -316,6 +317,7 @@ internal class NamespaceServiceAsyncTest {
                             )
                             .build()
                     )
+                    .patchByFilterAllowPartial(true)
                     .patchColumns(
                         Columns.builder()
                             .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")

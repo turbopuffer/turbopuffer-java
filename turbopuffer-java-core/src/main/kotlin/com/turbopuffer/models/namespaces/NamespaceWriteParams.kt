@@ -56,6 +56,14 @@ private constructor(
     fun _deleteByFilter(): JsonValue = body._deleteByFilter()
 
     /**
+     * Allow partial completion when filter matches too many documents.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun deleteByFilterAllowPartial(): Optional<Boolean> = body.deleteByFilterAllowPartial()
+
+    /**
      * A condition evaluated against the current value of each document targeted by a delete write.
      * Only documents that pass the condition are deleted.
      */
@@ -98,6 +106,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun patchByFilter(): Optional<PatchByFilter> = body.patchByFilter()
+
+    /**
+     * Allow partial completion when filter matches too many documents.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun patchByFilterAllowPartial(): Optional<Boolean> = body.patchByFilterAllowPartial()
 
     /**
      * A list of documents in columnar format. Each key is a column name, mapped to an array of
@@ -158,6 +174,14 @@ private constructor(
     fun _copyFromNamespace(): JsonField<CopyFromNamespace> = body._copyFromNamespace()
 
     /**
+     * Returns the raw JSON value of [deleteByFilterAllowPartial].
+     *
+     * Unlike [deleteByFilterAllowPartial], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    fun _deleteByFilterAllowPartial(): JsonField<Boolean> = body._deleteByFilterAllowPartial()
+
+    /**
      * Returns the raw JSON value of [deletes].
      *
      * Unlike [deletes], this method doesn't throw if the JSON field has an unexpected type.
@@ -192,6 +216,14 @@ private constructor(
      * Unlike [patchByFilter], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _patchByFilter(): JsonField<PatchByFilter> = body._patchByFilter()
+
+    /**
+     * Returns the raw JSON value of [patchByFilterAllowPartial].
+     *
+     * Unlike [patchByFilterAllowPartial], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    fun _patchByFilterAllowPartial(): JsonField<Boolean> = body._patchByFilterAllowPartial()
 
     /**
      * Returns the raw JSON value of [patchColumns].
@@ -274,9 +306,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [copyFromNamespace]
          * - [deleteByFilter]
+         * - [deleteByFilterAllowPartial]
          * - [deleteCondition]
          * - [deletes]
-         * - [disableBackpressure]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -308,6 +340,22 @@ private constructor(
         /** The filter specifying which documents to delete. */
         fun deleteByFilter(deleteByFilter: JsonValue) = apply {
             body.deleteByFilter(deleteByFilter)
+        }
+
+        /** Allow partial completion when filter matches too many documents. */
+        fun deleteByFilterAllowPartial(deleteByFilterAllowPartial: Boolean) = apply {
+            body.deleteByFilterAllowPartial(deleteByFilterAllowPartial)
+        }
+
+        /**
+         * Sets [Builder.deleteByFilterAllowPartial] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deleteByFilterAllowPartial] with a well-typed [Boolean]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun deleteByFilterAllowPartial(deleteByFilterAllowPartial: JsonField<Boolean>) = apply {
+            body.deleteByFilterAllowPartial(deleteByFilterAllowPartial)
         }
 
         /**
@@ -400,6 +448,22 @@ private constructor(
          */
         fun patchByFilter(patchByFilter: JsonField<PatchByFilter>) = apply {
             body.patchByFilter(patchByFilter)
+        }
+
+        /** Allow partial completion when filter matches too many documents. */
+        fun patchByFilterAllowPartial(patchByFilterAllowPartial: Boolean) = apply {
+            body.patchByFilterAllowPartial(patchByFilterAllowPartial)
+        }
+
+        /**
+         * Sets [Builder.patchByFilterAllowPartial] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.patchByFilterAllowPartial] with a well-typed [Boolean]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun patchByFilterAllowPartial(patchByFilterAllowPartial: JsonField<Boolean>) = apply {
+            body.patchByFilterAllowPartial(patchByFilterAllowPartial)
         }
 
         /**
@@ -648,12 +712,14 @@ private constructor(
     private constructor(
         private val copyFromNamespace: JsonField<CopyFromNamespace>,
         private val deleteByFilter: JsonValue,
+        private val deleteByFilterAllowPartial: JsonField<Boolean>,
         private val deleteCondition: JsonValue,
         private val deletes: JsonField<List<Id>>,
         private val disableBackpressure: JsonField<Boolean>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val encryption: JsonField<Encryption>,
         private val patchByFilter: JsonField<PatchByFilter>,
+        private val patchByFilterAllowPartial: JsonField<Boolean>,
         private val patchColumns: JsonField<Columns>,
         private val patchCondition: JsonValue,
         private val patchRows: JsonField<List<Row>>,
@@ -672,6 +738,9 @@ private constructor(
             @JsonProperty("delete_by_filter")
             @ExcludeMissing
             deleteByFilter: JsonValue = JsonMissing.of(),
+            @JsonProperty("delete_by_filter_allow_partial")
+            @ExcludeMissing
+            deleteByFilterAllowPartial: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("delete_condition")
             @ExcludeMissing
             deleteCondition: JsonValue = JsonMissing.of(),
@@ -690,6 +759,9 @@ private constructor(
             @JsonProperty("patch_by_filter")
             @ExcludeMissing
             patchByFilter: JsonField<PatchByFilter> = JsonMissing.of(),
+            @JsonProperty("patch_by_filter_allow_partial")
+            @ExcludeMissing
+            patchByFilterAllowPartial: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("patch_columns")
             @ExcludeMissing
             patchColumns: JsonField<Columns> = JsonMissing.of(),
@@ -712,12 +784,14 @@ private constructor(
         ) : this(
             copyFromNamespace,
             deleteByFilter,
+            deleteByFilterAllowPartial,
             deleteCondition,
             deletes,
             disableBackpressure,
             distanceMetric,
             encryption,
             patchByFilter,
+            patchByFilterAllowPartial,
             patchColumns,
             patchCondition,
             patchRows,
@@ -741,6 +815,15 @@ private constructor(
         @JsonProperty("delete_by_filter")
         @ExcludeMissing
         fun _deleteByFilter(): JsonValue = deleteByFilter
+
+        /**
+         * Allow partial completion when filter matches too many documents.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun deleteByFilterAllowPartial(): Optional<Boolean> =
+            deleteByFilterAllowPartial.getOptional("delete_by_filter_allow_partial")
 
         /**
          * A condition evaluated against the current value of each document targeted by a delete
@@ -789,6 +872,15 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun patchByFilter(): Optional<PatchByFilter> = patchByFilter.getOptional("patch_by_filter")
+
+        /**
+         * Allow partial completion when filter matches too many documents.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun patchByFilterAllowPartial(): Optional<Boolean> =
+            patchByFilterAllowPartial.getOptional("patch_by_filter_allow_partial")
 
         /**
          * A list of documents in columnar format. Each key is a column name, mapped to an array of
@@ -855,6 +947,16 @@ private constructor(
         fun _copyFromNamespace(): JsonField<CopyFromNamespace> = copyFromNamespace
 
         /**
+         * Returns the raw JSON value of [deleteByFilterAllowPartial].
+         *
+         * Unlike [deleteByFilterAllowPartial], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("delete_by_filter_allow_partial")
+        @ExcludeMissing
+        fun _deleteByFilterAllowPartial(): JsonField<Boolean> = deleteByFilterAllowPartial
+
+        /**
          * Returns the raw JSON value of [deletes].
          *
          * Unlike [deletes], this method doesn't throw if the JSON field has an unexpected type.
@@ -899,6 +1001,16 @@ private constructor(
         @JsonProperty("patch_by_filter")
         @ExcludeMissing
         fun _patchByFilter(): JsonField<PatchByFilter> = patchByFilter
+
+        /**
+         * Returns the raw JSON value of [patchByFilterAllowPartial].
+         *
+         * Unlike [patchByFilterAllowPartial], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("patch_by_filter_allow_partial")
+        @ExcludeMissing
+        fun _patchByFilterAllowPartial(): JsonField<Boolean> = patchByFilterAllowPartial
 
         /**
          * Returns the raw JSON value of [patchColumns].
@@ -968,12 +1080,14 @@ private constructor(
 
             private var copyFromNamespace: JsonField<CopyFromNamespace> = JsonMissing.of()
             private var deleteByFilter: JsonValue = JsonMissing.of()
+            private var deleteByFilterAllowPartial: JsonField<Boolean> = JsonMissing.of()
             private var deleteCondition: JsonValue = JsonMissing.of()
             private var deletes: JsonField<MutableList<Id>>? = null
             private var disableBackpressure: JsonField<Boolean> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var encryption: JsonField<Encryption> = JsonMissing.of()
             private var patchByFilter: JsonField<PatchByFilter> = JsonMissing.of()
+            private var patchByFilterAllowPartial: JsonField<Boolean> = JsonMissing.of()
             private var patchColumns: JsonField<Columns> = JsonMissing.of()
             private var patchCondition: JsonValue = JsonMissing.of()
             private var patchRows: JsonField<MutableList<Row>>? = null
@@ -987,12 +1101,14 @@ private constructor(
             internal fun from(body: Body) = apply {
                 copyFromNamespace = body.copyFromNamespace
                 deleteByFilter = body.deleteByFilter
+                deleteByFilterAllowPartial = body.deleteByFilterAllowPartial
                 deleteCondition = body.deleteCondition
                 deletes = body.deletes.map { it.toMutableList() }
                 disableBackpressure = body.disableBackpressure
                 distanceMetric = body.distanceMetric
                 encryption = body.encryption
                 patchByFilter = body.patchByFilter
+                patchByFilterAllowPartial = body.patchByFilterAllowPartial
                 patchColumns = body.patchColumns
                 patchCondition = body.patchCondition
                 patchRows = body.patchRows.map { it.toMutableList() }
@@ -1029,6 +1145,21 @@ private constructor(
             /** The filter specifying which documents to delete. */
             fun deleteByFilter(deleteByFilter: JsonValue) = apply {
                 this.deleteByFilter = deleteByFilter
+            }
+
+            /** Allow partial completion when filter matches too many documents. */
+            fun deleteByFilterAllowPartial(deleteByFilterAllowPartial: Boolean) =
+                deleteByFilterAllowPartial(JsonField.of(deleteByFilterAllowPartial))
+
+            /**
+             * Sets [Builder.deleteByFilterAllowPartial] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.deleteByFilterAllowPartial] with a well-typed
+             * [Boolean] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
+             */
+            fun deleteByFilterAllowPartial(deleteByFilterAllowPartial: JsonField<Boolean>) = apply {
+                this.deleteByFilterAllowPartial = deleteByFilterAllowPartial
             }
 
             /**
@@ -1127,6 +1258,21 @@ private constructor(
              */
             fun patchByFilter(patchByFilter: JsonField<PatchByFilter>) = apply {
                 this.patchByFilter = patchByFilter
+            }
+
+            /** Allow partial completion when filter matches too many documents. */
+            fun patchByFilterAllowPartial(patchByFilterAllowPartial: Boolean) =
+                patchByFilterAllowPartial(JsonField.of(patchByFilterAllowPartial))
+
+            /**
+             * Sets [Builder.patchByFilterAllowPartial] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.patchByFilterAllowPartial] with a well-typed
+             * [Boolean] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
+             */
+            fun patchByFilterAllowPartial(patchByFilterAllowPartial: JsonField<Boolean>) = apply {
+                this.patchByFilterAllowPartial = patchByFilterAllowPartial
             }
 
             /**
@@ -1269,12 +1415,14 @@ private constructor(
                 Body(
                     copyFromNamespace,
                     deleteByFilter,
+                    deleteByFilterAllowPartial,
                     deleteCondition,
                     (deletes ?: JsonMissing.of()).map { it.toImmutable() },
                     disableBackpressure,
                     distanceMetric,
                     encryption,
                     patchByFilter,
+                    patchByFilterAllowPartial,
                     patchColumns,
                     patchCondition,
                     (patchRows ?: JsonMissing.of()).map { it.toImmutable() },
@@ -1294,11 +1442,13 @@ private constructor(
             }
 
             copyFromNamespace().ifPresent { it.validate() }
+            deleteByFilterAllowPartial()
             deletes().ifPresent { it.forEach { it.validate() } }
             disableBackpressure()
             distanceMetric().ifPresent { it.validate() }
             encryption().ifPresent { it.validate() }
             patchByFilter().ifPresent { it.validate() }
+            patchByFilterAllowPartial()
             patchColumns().ifPresent { it.validate() }
             patchRows().ifPresent { it.forEach { it.validate() } }
             schema().ifPresent { it.validate() }
@@ -1324,11 +1474,13 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (copyFromNamespace.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (deleteByFilterAllowPartial.asKnown().isPresent) 1 else 0) +
                 (deletes.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (if (disableBackpressure.asKnown().isPresent) 1 else 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (encryption.asKnown().getOrNull()?.validity() ?: 0) +
                 (patchByFilter.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (patchByFilterAllowPartial.asKnown().isPresent) 1 else 0) +
                 (patchColumns.asKnown().getOrNull()?.validity() ?: 0) +
                 (patchRows.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (schema.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1343,12 +1495,14 @@ private constructor(
             return other is Body &&
                 copyFromNamespace == other.copyFromNamespace &&
                 deleteByFilter == other.deleteByFilter &&
+                deleteByFilterAllowPartial == other.deleteByFilterAllowPartial &&
                 deleteCondition == other.deleteCondition &&
                 deletes == other.deletes &&
                 disableBackpressure == other.disableBackpressure &&
                 distanceMetric == other.distanceMetric &&
                 encryption == other.encryption &&
                 patchByFilter == other.patchByFilter &&
+                patchByFilterAllowPartial == other.patchByFilterAllowPartial &&
                 patchColumns == other.patchColumns &&
                 patchCondition == other.patchCondition &&
                 patchRows == other.patchRows &&
@@ -1363,12 +1517,14 @@ private constructor(
             Objects.hash(
                 copyFromNamespace,
                 deleteByFilter,
+                deleteByFilterAllowPartial,
                 deleteCondition,
                 deletes,
                 disableBackpressure,
                 distanceMetric,
                 encryption,
                 patchByFilter,
+                patchByFilterAllowPartial,
                 patchColumns,
                 patchCondition,
                 patchRows,
@@ -1383,7 +1539,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
     }
 
     /** The namespace to copy documents from. */

@@ -27,6 +27,7 @@ private constructor(
     private val status: JsonValue,
     private val rowsDeleted: JsonField<Long>,
     private val rowsPatched: JsonField<Long>,
+    private val rowsRemaining: JsonField<Boolean>,
     private val rowsUpserted: JsonField<Long>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -47,6 +48,9 @@ private constructor(
         @JsonProperty("rows_patched")
         @ExcludeMissing
         rowsPatched: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("rows_remaining")
+        @ExcludeMissing
+        rowsRemaining: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("rows_upserted")
         @ExcludeMissing
         rowsUpserted: JsonField<Long> = JsonMissing.of(),
@@ -57,6 +61,7 @@ private constructor(
         status,
         rowsDeleted,
         rowsPatched,
+        rowsRemaining,
         rowsUpserted,
         mutableMapOf(),
     )
@@ -115,6 +120,14 @@ private constructor(
     fun rowsPatched(): Optional<Long> = rowsPatched.getOptional("rows_patched")
 
     /**
+     * Whether more documents match the filter for partial operations.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun rowsRemaining(): Optional<Boolean> = rowsRemaining.getOptional("rows_remaining")
+
+    /**
      * The number of rows upserted by the write request.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -158,6 +171,15 @@ private constructor(
      * Unlike [rowsPatched], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("rows_patched") @ExcludeMissing fun _rowsPatched(): JsonField<Long> = rowsPatched
+
+    /**
+     * Returns the raw JSON value of [rowsRemaining].
+     *
+     * Unlike [rowsRemaining], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("rows_remaining")
+    @ExcludeMissing
+    fun _rowsRemaining(): JsonField<Boolean> = rowsRemaining
 
     /**
      * Returns the raw JSON value of [rowsUpserted].
@@ -204,6 +226,7 @@ private constructor(
         private var status: JsonValue = JsonValue.from("OK")
         private var rowsDeleted: JsonField<Long> = JsonMissing.of()
         private var rowsPatched: JsonField<Long> = JsonMissing.of()
+        private var rowsRemaining: JsonField<Boolean> = JsonMissing.of()
         private var rowsUpserted: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -215,6 +238,7 @@ private constructor(
             status = namespaceWriteResponse.status
             rowsDeleted = namespaceWriteResponse.rowsDeleted
             rowsPatched = namespaceWriteResponse.rowsPatched
+            rowsRemaining = namespaceWriteResponse.rowsRemaining
             rowsUpserted = namespaceWriteResponse.rowsUpserted
             additionalProperties = namespaceWriteResponse.additionalProperties.toMutableMap()
         }
@@ -292,6 +316,20 @@ private constructor(
          */
         fun rowsPatched(rowsPatched: JsonField<Long>) = apply { this.rowsPatched = rowsPatched }
 
+        /** Whether more documents match the filter for partial operations. */
+        fun rowsRemaining(rowsRemaining: Boolean) = rowsRemaining(JsonField.of(rowsRemaining))
+
+        /**
+         * Sets [Builder.rowsRemaining] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.rowsRemaining] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun rowsRemaining(rowsRemaining: JsonField<Boolean>) = apply {
+            this.rowsRemaining = rowsRemaining
+        }
+
         /** The number of rows upserted by the write request. */
         fun rowsUpserted(rowsUpserted: Long) = rowsUpserted(JsonField.of(rowsUpserted))
 
@@ -345,6 +383,7 @@ private constructor(
                 status,
                 rowsDeleted,
                 rowsPatched,
+                rowsRemaining,
                 rowsUpserted,
                 additionalProperties.toMutableMap(),
             )
@@ -367,6 +406,7 @@ private constructor(
         }
         rowsDeleted()
         rowsPatched()
+        rowsRemaining()
         rowsUpserted()
         validated = true
     }
@@ -392,6 +432,7 @@ private constructor(
             status.let { if (it == JsonValue.from("OK")) 1 else 0 } +
             (if (rowsDeleted.asKnown().isPresent) 1 else 0) +
             (if (rowsPatched.asKnown().isPresent) 1 else 0) +
+            (if (rowsRemaining.asKnown().isPresent) 1 else 0) +
             (if (rowsUpserted.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
@@ -406,6 +447,7 @@ private constructor(
             status == other.status &&
             rowsDeleted == other.rowsDeleted &&
             rowsPatched == other.rowsPatched &&
+            rowsRemaining == other.rowsRemaining &&
             rowsUpserted == other.rowsUpserted &&
             additionalProperties == other.additionalProperties
     }
@@ -418,6 +460,7 @@ private constructor(
             status,
             rowsDeleted,
             rowsPatched,
+            rowsRemaining,
             rowsUpserted,
             additionalProperties,
         )
@@ -426,5 +469,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceWriteResponse{billing=$billing, message=$message, rowsAffected=$rowsAffected, status=$status, rowsDeleted=$rowsDeleted, rowsPatched=$rowsPatched, rowsUpserted=$rowsUpserted, additionalProperties=$additionalProperties}"
+        "NamespaceWriteResponse{billing=$billing, message=$message, rowsAffected=$rowsAffected, status=$status, rowsDeleted=$rowsDeleted, rowsPatched=$rowsPatched, rowsRemaining=$rowsRemaining, rowsUpserted=$rowsUpserted, additionalProperties=$additionalProperties}"
 }
