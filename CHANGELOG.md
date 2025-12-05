@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.2 (2025-12-05)
+
+Full Changelog: [v1.9.1...v1.9.2](https://github.com/turbopuffer/turbopuffer-java/compare/v1.9.1...v1.9.2)
+
+### Chores
+
+* codegen updates ([3702fce](https://github.com/turbopuffer/turbopuffer-java/commit/3702fce718fd61c3ba92d5aa5443583f4c184a2b))
+
 ## 1.9.1 (2025-12-02)
 
 Full Changelog: [v1.9.0...v1.9.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.9.0...v1.9.1)
