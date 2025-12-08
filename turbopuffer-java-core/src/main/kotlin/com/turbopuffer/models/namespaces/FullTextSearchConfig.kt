@@ -134,7 +134,7 @@ private constructor(
     fun stemming(): Optional<Boolean> = stemming.getOptional("stemming")
 
     /**
-     * The tokenizer to use for full-text search on an attribute. Defaults to `word_v2`.
+     * The tokenizer to use for full-text search on an attribute. Defaults to `word_v3`.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -370,7 +370,7 @@ private constructor(
          */
         fun stemming(stemming: JsonField<Boolean>) = apply { this.stemming = stemming }
 
-        /** The tokenizer to use for full-text search on an attribute. Defaults to `word_v2`. */
+        /** The tokenizer to use for full-text search on an attribute. Defaults to `word_v3`. */
         fun tokenizer(tokenizer: Tokenizer) = tokenizer(JsonField.of(tokenizer))
 
         /**
