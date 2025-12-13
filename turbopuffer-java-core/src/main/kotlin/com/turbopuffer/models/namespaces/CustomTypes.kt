@@ -7,12 +7,18 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.fasterxml.jackson.annotation.JsonValue as JsonValueAnnotation
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.turbopuffer.core.BaseDeserializer
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
 
 val jsonMapper: JsonMapper = jsonMapper()
 
+@JsonDeserialize(using = AggregateBy.Deserializer::class)
 sealed class AggregateBy() {
     companion object {
         @JvmStatic public fun count(): AggregateByCount = AggregateByCount.create()
@@ -22,6 +28,20 @@ sealed class AggregateBy() {
         @JvmStatic
         public fun count(attr: String): AggregateByCountDeprecated =
             AggregateByCountDeprecated.create(attr)
+    }
+
+    class Deserializer : BaseDeserializer<AggregateBy>(AggregateBy::class) {
+        override fun ObjectCodec.deserialize(node: JsonNode): AggregateBy {
+            return AggregateByRaw(JsonValue.fromJsonNode(node))
+        }
+    }
+}
+
+class AggregateByRaw internal constructor(value: JsonValue) : AggregateBy() {
+    @JsonValueAnnotation private val value: JsonValue = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
     }
 }
 
@@ -74,9 +94,24 @@ class AggregateBySum private constructor(attr: String) : AggregateBy() {
     }
 }
 
+@JsonDeserialize(using = Expr.Deserializer::class)
 sealed class Expr() {
     companion object {
         @JvmStatic public fun refNew(refNew: String): ExprRefNew = ExprRefNew.create(refNew)
+    }
+
+    class Deserializer : BaseDeserializer<Expr>(Expr::class) {
+        override fun ObjectCodec.deserialize(node: JsonNode): Expr {
+            return ExprRaw(JsonValue.fromJsonNode(node))
+        }
+    }
+}
+
+class ExprRaw internal constructor(value: JsonValue) : Expr() {
+    @JsonValueAnnotation private val value: JsonValue = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
     }
 }
 
@@ -94,6 +129,7 @@ class ExprRefNew private constructor(refNew: String) : Expr() {
     }
 }
 
+@JsonDeserialize(using = Filter.Deserializer::class)
 sealed class Filter() {
     companion object {
         @JvmStatic public fun eq(attr: String, value: Any): FilterEq = FilterEq.create(attr, value)
@@ -206,6 +242,20 @@ sealed class Filter() {
 
         @JvmStatic
         public fun or(vararg filters: Filter): FilterOr = FilterOr.create(filters.asList())
+    }
+
+    class Deserializer : BaseDeserializer<Filter>(Filter::class) {
+        override fun ObjectCodec.deserialize(node: JsonNode): Filter {
+            return FilterRaw(JsonValue.fromJsonNode(node))
+        }
+    }
+}
+
+class FilterRaw internal constructor(value: JsonValue) : Filter() {
+    @JsonValueAnnotation private val value: JsonValue = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
     }
 }
 
@@ -768,6 +818,7 @@ class FilterRegex private constructor(attr: String, value: String) : Filter() {
     }
 }
 
+@JsonDeserialize(using = RankBy.Deserializer::class)
 sealed class RankBy() {
     companion object {
         @JvmStatic
@@ -777,6 +828,20 @@ sealed class RankBy() {
         @JvmStatic
         public fun attribute(attr: String, order: RankByAttributeOrder): RankByAttribute =
             RankByAttribute.create(attr, order)
+    }
+
+    class Deserializer : BaseDeserializer<RankBy>(RankBy::class) {
+        override fun ObjectCodec.deserialize(node: JsonNode): RankBy {
+            return RankByRaw(JsonValue.fromJsonNode(node))
+        }
+    }
+}
+
+class RankByRaw internal constructor(value: JsonValue) : RankBy() {
+    @JsonValueAnnotation private val value: JsonValue = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
     }
 }
 
@@ -803,6 +868,7 @@ enum class RankByAttributeOrder {
     @JsonProperty("desc") DESC,
 }
 
+@JsonDeserialize(using = RankByText.Deserializer::class)
 sealed class RankByText() : RankBy() {
     companion object {
         @JvmStatic
@@ -842,6 +908,20 @@ sealed class RankByText() : RankBy() {
         @JvmStatic
         public fun product(subquery: RankByText, weight: Double): RankByTextProduct2 =
             RankByTextProduct2.create(subquery, weight)
+    }
+
+    class Deserializer : BaseDeserializer<RankByText>(RankByText::class) {
+        override fun ObjectCodec.deserialize(node: JsonNode): RankByText {
+            return RankByTextRaw(JsonValue.fromJsonNode(node))
+        }
+    }
+}
+
+class RankByTextRaw internal constructor(value: JsonValue) : RankByText() {
+    @JsonValueAnnotation private val value: JsonValue = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
     }
 }
 
