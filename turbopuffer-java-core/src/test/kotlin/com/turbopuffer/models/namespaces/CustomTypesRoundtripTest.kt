@@ -16,7 +16,7 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.eq("attr1", "value1")
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -24,7 +24,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.notEq("attr1", 42)
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -32,7 +33,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.`in`("attr1", listOf("a", "b", "c"))
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -40,7 +42,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.and(Filter.eq("attr1", "value1"), Filter.eq("attr2", "value2"))
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -48,7 +51,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.or(Filter.eq("attr1", "value1"), Filter.eq("attr2", "value2"))
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -56,7 +60,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.not(Filter.eq("attr1", "value1"))
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -68,7 +73,8 @@ internal class CustomTypesRoundtripTest {
             )
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -76,7 +82,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.contains("attr1", "substring")
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -84,7 +91,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.containsAllTokens("attr1", "quick brown fox")
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -92,7 +100,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.containsAllTokens("attr1", listOf("quick", "brown", "fox"))
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -101,7 +110,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.containsAllTokens("attr1", "quick brown fox", params)
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -116,7 +126,8 @@ internal class CustomTypesRoundtripTest {
         for (filter in filters) {
             val json = jsonMapper.writeValueAsString(filter)
             val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-            assertThat(deserialized).isEqualTo(filter)
+            assertThat(jsonMapper.writeValueAsString(deserialized))
+                .isEqualTo(jsonMapper.writeValueAsString(filter))
         }
     }
 
@@ -132,7 +143,8 @@ internal class CustomTypesRoundtripTest {
         for (filter in filters) {
             val json = jsonMapper.writeValueAsString(filter)
             val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-            assertThat(deserialized).isEqualTo(filter)
+            assertThat(jsonMapper.writeValueAsString(deserialized))
+                .isEqualTo(jsonMapper.writeValueAsString(filter))
         }
     }
 
@@ -141,7 +153,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.notContains("attr1", "substring")
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -149,7 +162,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.containsAny("tags", listOf("tag1", "tag2", "tag3"))
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -157,7 +171,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.notContainsAny("tags", listOf("tag1", "tag2"))
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -165,7 +180,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.notIn("status", listOf("deleted", "archived"))
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -173,7 +189,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.glob("filename", "*.txt")
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -181,7 +198,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.notGlob("filename", "*.tmp")
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -189,7 +207,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.iGlob("filename", "*.TXT")
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -197,7 +216,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.notIGlob("filename", "*.TMP")
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -205,7 +225,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.regex("email", "^[a-z]+@[a-z]+\\.[a-z]+$")
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -214,7 +235,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.containsAllTokens("attr1", listOf("quick", "brown", "fox"), params)
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -222,7 +244,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.containsTokenSequence("text", "quick brown")
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -230,7 +253,8 @@ internal class CustomTypesRoundtripTest {
         val filter = Filter.containsTokenSequence("text", listOf("quick", "brown", "fox"))
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
     @Test
@@ -270,16 +294,18 @@ internal class CustomTypesRoundtripTest {
             )
         val json = jsonMapper.writeValueAsString(filter)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Filter>())
-        assertThat(deserialized).isEqualTo(filter)
+        assertThat(jsonMapper.writeValueAsString(deserialized))
+            .isEqualTo(jsonMapper.writeValueAsString(filter))
     }
 
-    /* Commenting out RankBy tests ... paused on impl these in the first pass
+    // ========== RankBy Tests ==========
+
     @Test
     fun rankByVectorRoundtrip() {
         val rankBy = RankBy.vector("embedding", listOf(0.1f, 0.2f, 0.3f))
         val json = jsonMapper.writeValueAsString(rankBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<RankBy>())
-        assertThat(deserialized).isEqualTo(rankBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -287,7 +313,7 @@ internal class CustomTypesRoundtripTest {
         val rankBy = RankBy.attribute("score", RankByAttributeOrder.DESC)
         val json = jsonMapper.writeValueAsString(rankBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<RankBy>())
-        assertThat(deserialized).isEqualTo(rankBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     // ========== RankByText Tests ==========
@@ -297,7 +323,7 @@ internal class CustomTypesRoundtripTest {
         val rankBy = RankByText.bm25("content", "search query")
         val json = jsonMapper.writeValueAsString(rankBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<RankByText>())
-        assertThat(deserialized).isEqualTo(rankBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -305,7 +331,7 @@ internal class CustomTypesRoundtripTest {
         val rankBy = RankByText.bm25("content", listOf("query1", "query2"))
         val json = jsonMapper.writeValueAsString(rankBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<RankByText>())
-        assertThat(deserialized).isEqualTo(rankBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -314,7 +340,7 @@ internal class CustomTypesRoundtripTest {
         val rankBy = RankByText.bm25("content", "search query", params)
         val json = jsonMapper.writeValueAsString(rankBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<RankByText>())
-        assertThat(deserialized).isEqualTo(rankBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -323,7 +349,7 @@ internal class CustomTypesRoundtripTest {
             RankByText.sum(RankByText.bm25("title", "query"), RankByText.bm25("body", "query"))
         val json = jsonMapper.writeValueAsString(rankBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<RankByText>())
-        assertThat(deserialized).isEqualTo(rankBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -332,7 +358,7 @@ internal class CustomTypesRoundtripTest {
             RankByText.max(RankByText.bm25("title", "query"), RankByText.bm25("body", "query"))
         val json = jsonMapper.writeValueAsString(rankBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<RankByText>())
-        assertThat(deserialized).isEqualTo(rankBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -340,7 +366,7 @@ internal class CustomTypesRoundtripTest {
         val rankBy = RankByText.product(2.0, RankByText.bm25("content", "query"))
         val json = jsonMapper.writeValueAsString(rankBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<RankByText>())
-        assertThat(deserialized).isEqualTo(rankBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -348,7 +374,7 @@ internal class CustomTypesRoundtripTest {
         val rankBy = RankByText.product(RankByText.bm25("content", "query"), 2.0)
         val json = jsonMapper.writeValueAsString(rankBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<RankByText>())
-        assertThat(deserialized).isEqualTo(rankBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -360,9 +386,8 @@ internal class CustomTypesRoundtripTest {
             )
         val json = jsonMapper.writeValueAsString(rankBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<RankByText>())
-        assertThat(deserialized).isEqualTo(rankBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
-    */
 
     // ========== AggregateBy Tests ==========
 
@@ -371,7 +396,7 @@ internal class CustomTypesRoundtripTest {
         val aggregateBy = AggregateBy.count()
         val json = jsonMapper.writeValueAsString(aggregateBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<AggregateBy>())
-        assertThat(deserialized).isEqualTo(aggregateBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -379,7 +404,7 @@ internal class CustomTypesRoundtripTest {
         val aggregateBy = AggregateBy.count("attr1")
         val json = jsonMapper.writeValueAsString(aggregateBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<AggregateBy>())
-        assertThat(deserialized).isEqualTo(aggregateBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     @Test
@@ -387,7 +412,7 @@ internal class CustomTypesRoundtripTest {
         val aggregateBy = AggregateBy.sum("attr1")
         val json = jsonMapper.writeValueAsString(aggregateBy)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<AggregateBy>())
-        assertThat(deserialized).isEqualTo(aggregateBy)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     // ========== Expr Tests ==========
@@ -397,7 +422,7 @@ internal class CustomTypesRoundtripTest {
         val expr = Expr.refNew("ref_name")
         val json = jsonMapper.writeValueAsString(expr)
         val deserialized = jsonMapper.readValue(json, jacksonTypeRef<Expr>())
-        assertThat(deserialized).isEqualTo(expr)
+        assertThat(jsonMapper.writeValueAsString(deserialized)).isEqualTo(json)
     }
 
     // ========== Integration Tests ==========
@@ -416,10 +441,10 @@ internal class CustomTypesRoundtripTest {
         // Verify the filter was deserialized correctly
         val originalFilter = query.filters().get()
         val deserializedFilter = deserialized.filters().get()
-        assertThat(deserializedFilter).isEqualTo(originalFilter)
+        assertThat(jsonMapper.writeValueAsString(deserializedFilter))
+            .isEqualTo(jsonMapper.writeValueAsString(originalFilter))
     }
 
-    /* Commenting out RankBy tests ... pulled back on impl these in the first pass
     @Test
     fun queryWithRankByRoundtrip() {
         val query =
@@ -433,7 +458,8 @@ internal class CustomTypesRoundtripTest {
 
         val originalRankBy = query.rankBy().get()
         val deserializedRankBy = deserialized.rankBy().get()
-        assertThat(deserializedRankBy).isEqualTo(originalRankBy)
+        assertThat(jsonMapper.writeValueAsString(deserializedRankBy))
+            .isEqualTo(jsonMapper.writeValueAsString(originalRankBy))
     }
 
     @Test
@@ -459,5 +485,4 @@ internal class CustomTypesRoundtripTest {
         assertThat(jsonMapper.writeValueAsString(deserialized.rankBy().get()))
             .isEqualTo(jsonMapper.writeValueAsString(rankBy))
     }
-    */
 }
