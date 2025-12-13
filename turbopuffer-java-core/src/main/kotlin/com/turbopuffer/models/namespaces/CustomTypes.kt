@@ -5,14 +5,18 @@ package com.turbopuffer.models.namespaces
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
+import java.util.Objects
 
 val jsonMapper: JsonMapper = jsonMapper()
 
+@JsonDeserialize(using = AggregateByDeserializer::class)
 sealed class AggregateBy() {
     companion object {
         @JvmStatic public fun count(): AggregateByCount = AggregateByCount.create()
@@ -35,6 +39,16 @@ class AggregateByCount private constructor() : AggregateBy() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is AggregateByCount
+    }
+
+    override fun hashCode(): Int = 0
+
     companion object {
         @JvmSynthetic internal fun create(): AggregateByCount = AggregateByCount()
     }
@@ -50,6 +64,18 @@ class AggregateByCountDeprecated private constructor(attr: String) : AggregateBy
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is AggregateByCountDeprecated && attr == other.attr
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -69,11 +95,24 @@ class AggregateBySum private constructor(attr: String) : AggregateBy() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is AggregateBySum && attr == other.attr
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic internal fun create(attr: String): AggregateBySum = AggregateBySum(attr)
     }
 }
 
+@JsonDeserialize(using = ExprDeserializer::class)
 sealed class Expr() {
     companion object {
         @JvmStatic public fun refNew(refNew: String): ExprRefNew = ExprRefNew.create(refNew)
@@ -89,11 +128,24 @@ class ExprRefNew private constructor(refNew: String) : Expr() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is ExprRefNew && refNew == other.refNew
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(refNew) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic internal fun create(refNew: String): ExprRefNew = ExprRefNew(refNew)
     }
 }
 
+@JsonDeserialize(using = FilterDeserializer::class)
 sealed class Filter() {
     companion object {
         @JvmStatic public fun eq(attr: String, value: Any): FilterEq = FilterEq.create(attr, value)
@@ -220,6 +272,18 @@ class FilterAnd private constructor(filters: List<Filter>) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterAnd && filters == other.filters
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(filters) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic internal fun create(filters: List<Filter>): FilterAnd = FilterAnd(filters)
     }
@@ -236,6 +300,18 @@ class FilterAnyGt private constructor(attr: String, value: Any) : Filter() {
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterAnyGt && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -255,6 +331,18 @@ class FilterAnyGte private constructor(attr: String, value: Any) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterAnyGte && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterAnyGte = FilterAnyGte(attr, value)
@@ -272,6 +360,18 @@ class FilterAnyLt private constructor(attr: String, value: Any) : Filter() {
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterAnyLt && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -291,6 +391,18 @@ class FilterAnyLte private constructor(attr: String, value: Any) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterAnyLte && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterAnyLte = FilterAnyLte(attr, value)
@@ -309,6 +421,18 @@ class FilterContains private constructor(attr: String, value: Any) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterContains && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterContains = FilterContains(attr, value)
@@ -326,6 +450,18 @@ class FilterContainsAllTokens private constructor(attr: String, value: String) :
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterContainsAllTokens && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -346,6 +482,18 @@ class FilterContainsAllTokensArray private constructor(attr: String, value: List
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterContainsAllTokensArray && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -368,6 +516,21 @@ private constructor(attr: String, value: List<String>, params: ContainsAllTokens
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterContainsAllTokensArrayWithParams &&
+            attr == other.attr &&
+            value == other.value &&
+            params == other.params
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value, params) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -394,6 +557,21 @@ private constructor(attr: String, value: String, params: ContainsAllTokensFilter
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterContainsAllTokensWithParams &&
+            attr == other.attr &&
+            value == other.value &&
+            params == other.params
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value, params) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(
@@ -417,6 +595,18 @@ class FilterContainsAny private constructor(attr: String, value: List<Any>) : Fi
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterContainsAny && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: List<Any>): FilterContainsAny =
@@ -435,6 +625,18 @@ class FilterContainsTokenSequence private constructor(attr: String, value: Strin
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterContainsTokenSequence && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -456,6 +658,20 @@ class FilterContainsTokenSequenceArray private constructor(attr: String, value: 
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterContainsTokenSequenceArray &&
+            attr == other.attr &&
+            value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: List<String>): FilterContainsTokenSequenceArray =
@@ -475,6 +691,18 @@ class FilterEq private constructor(attr: String, value: Any) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterEq && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterEq = FilterEq(attr, value)
@@ -492,6 +720,18 @@ class FilterGlob private constructor(attr: String, value: String) : Filter() {
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterGlob && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -511,6 +751,18 @@ class FilterGt private constructor(attr: String, value: Any) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterGt && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterGt = FilterGt(attr, value)
@@ -528,6 +780,18 @@ class FilterGte private constructor(attr: String, value: Any) : Filter() {
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterGte && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -547,6 +811,18 @@ class FilterIGlob private constructor(attr: String, value: String) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterIGlob && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: String): FilterIGlob = FilterIGlob(attr, value)
@@ -564,6 +840,18 @@ class FilterIn private constructor(attr: String, value: List<Any>) : Filter() {
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterIn && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -583,6 +871,18 @@ class FilterLt private constructor(attr: String, value: Any) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterLt && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterLt = FilterLt(attr, value)
@@ -601,6 +901,18 @@ class FilterLte private constructor(attr: String, value: Any) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterLte && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterLte = FilterLte(attr, value)
@@ -618,6 +930,18 @@ class FilterNot private constructor(filter: Filter) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterNot && filter == other.filter
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(filter) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic internal fun create(filter: Filter): FilterNot = FilterNot(filter)
     }
@@ -634,6 +958,18 @@ class FilterNotContains private constructor(attr: String, value: Any) : Filter()
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterNotContains && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -654,6 +990,18 @@ class FilterNotContainsAny private constructor(attr: String, value: List<Any>) :
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterNotContainsAny && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: List<Any>): FilterNotContainsAny =
@@ -673,6 +1021,18 @@ class FilterNotEq private constructor(attr: String, value: Any) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterNotEq && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterNotEq = FilterNotEq(attr, value)
@@ -691,6 +1051,18 @@ class FilterNotGlob private constructor(attr: String, value: String) : Filter() 
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterNotGlob && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: String): FilterNotGlob = FilterNotGlob(attr, value)
@@ -708,6 +1080,18 @@ class FilterNotIGlob private constructor(attr: String, value: String) : Filter()
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterNotIGlob && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -728,6 +1112,18 @@ class FilterNotIn private constructor(attr: String, value: List<Any>) : Filter()
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterNotIn && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: List<Any>): FilterNotIn = FilterNotIn(attr, value)
@@ -745,6 +1141,18 @@ class FilterOr private constructor(filters: List<Filter>) : Filter() {
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterOr && filters == other.filters
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(filters) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic internal fun create(filters: List<Filter>): FilterOr = FilterOr(filters)
     }
@@ -761,6 +1169,18 @@ class FilterRegex private constructor(attr: String, value: String) : Filter() {
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is FilterRegex && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -790,6 +1210,18 @@ class RankByAttribute private constructor(attr: String, order: RankByAttributeOr
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RankByAttribute && attr == other.attr && order == other.order
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, order) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -857,6 +1289,18 @@ class RankByTextBM25 private constructor(attr: String, value: String) : RankByTe
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RankByTextBM25 && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: String): RankByTextBM25 =
@@ -875,6 +1319,18 @@ class RankByTextBM25Array private constructor(attr: String, value: List<String>)
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RankByTextBM25Array && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -896,6 +1352,21 @@ private constructor(attr: String, value: List<String>, params: Bm25ClauseParams)
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RankByTextBM25ArrayWithParams &&
+            attr == other.attr &&
+            value == other.value &&
+            params == other.params
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value, params) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -921,6 +1392,21 @@ private constructor(attr: String, value: String, params: Bm25ClauseParams) : Ran
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RankByTextBM25WithParams &&
+            attr == other.attr &&
+            value == other.value &&
+            params == other.params
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value, params) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(
@@ -942,6 +1428,18 @@ class RankByTextMax private constructor(subqueries: List<RankByText>) : RankByTe
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RankByTextMax && subqueries == other.subqueries
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(subqueries) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(subqueries: List<RankByText>): RankByTextMax = RankByTextMax(subqueries)
@@ -959,6 +1457,18 @@ class RankByTextProduct private constructor(weight: Double, subquery: RankByText
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RankByTextProduct && weight == other.weight && subquery == other.subquery
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(weight, subquery) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
@@ -979,6 +1489,18 @@ class RankByTextProduct2 private constructor(subquery: RankByText, weight: Doubl
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RankByTextProduct2 && subquery == other.subquery && weight == other.weight
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(subquery, weight) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(subquery: RankByText, weight: Double): RankByTextProduct2 =
@@ -997,6 +1519,18 @@ class RankByTextSum private constructor(subqueries: List<RankByText>) : RankByTe
         return jsonMapper.writeValueAsString(this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RankByTextSum && subqueries == other.subqueries
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(subqueries) }
+
+    override fun hashCode(): Int = hashCode
+
     companion object {
         @JvmSynthetic
         internal fun create(subqueries: List<RankByText>): RankByTextSum = RankByTextSum(subqueries)
@@ -1014,6 +1548,18 @@ class RankByVector private constructor(attr: String, value: List<Float>) : RankB
     override fun toString(): String {
         return jsonMapper.writeValueAsString(this)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RankByVector && attr == other.attr && value == other.value
+    }
+
+    @delegate:JsonIgnore private val hashCode: Int by lazy { Objects.hash(attr, value) }
+
+    override fun hashCode(): Int = hashCode
 
     companion object {
         @JvmSynthetic
