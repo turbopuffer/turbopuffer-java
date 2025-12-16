@@ -228,8 +228,8 @@ class TurbopufferOkHttpClient private constructor() {
         /**
          * Whether to compress requests and responses with gzip.
          *
-         * Defaults to true. When the client is CPU constrained or when not limited by bandwidth you
-         * may want to disable compression.
+         * Defaults to false. When the client is bandwidth constrained and not CPU limited you may
+         * want to enable compression.
          */
         fun compression(compression: Boolean) = apply { clientOptions.compression(compression) }
 
