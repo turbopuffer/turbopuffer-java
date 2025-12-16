@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.11.0 (2025-12-16)
+
+Full Changelog: [v1.10.0...v1.11.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.10.0...v1.11.0)
+
+### Features
+
+* disable response compression by default ([da3113c](https://github.com/turbopuffer/turbopuffer-java/commit/da3113ce9bbdc4cb4b5ad1c8b7ea60fd133376f4))
+
 ## 1.10.0 (2025-12-16)
 
 Full Changelog: [v1.9.1...v1.10.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.9.1...v1.10.0)
