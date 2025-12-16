@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.10.0 (2025-12-16)
+
+Full Changelog: [v1.9.1...v1.10.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.9.1...v1.10.0)
+
+### Features
+
+* add word_v3 to the spec ([86a8493](https://github.com/turbopuffer/turbopuffer-java/commit/86a84935bd09e04832194f1b5f877a3076cb21b6))
+* fix round-trip serialization for Filter, AggregateBy, RankBy ([c4f7fe3](https://github.com/turbopuffer/turbopuffer-java/commit/c4f7fe306be7215f3803187f4afd9ae129e0d992))
+
+
+### Chores
+
+* codegen updates ([3702fce](https://github.com/turbopuffer/turbopuffer-java/commit/3702fce718fd61c3ba92d5aa5443583f4c184a2b))
+
 ## 1.9.1 (2025-12-02)
 
 Full Changelog: [v1.9.0...v1.9.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.9.0...v1.9.1)
