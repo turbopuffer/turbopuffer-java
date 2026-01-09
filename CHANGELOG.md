@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.12.0 (2026-01-09)
+
+Full Changelog: [v1.11.0...v1.12.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.11.0...v1.12.0)
+
+### Features
+
+* **client:** add `HttpRequest#url()` method ([7c2dd0c](https://github.com/turbopuffer/turbopuffer-java/commit/7c2dd0c750cb3708f178dbc99ffe570febd5d808))
+* **client:** allow configuring dispatcher executor service ([05cc555](https://github.com/turbopuffer/turbopuffer-java/commit/05cc55579a992290bee9841c80b791be21ee53cf))
+
 ## 1.11.0 (2025-12-16)
 
 Full Changelog: [v1.10.0...v1.11.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.10.0...v1.11.0)
