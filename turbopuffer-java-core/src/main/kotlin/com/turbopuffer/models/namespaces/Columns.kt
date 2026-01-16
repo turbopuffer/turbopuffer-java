@@ -397,14 +397,14 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                Vector(string = it, _json = json)
+                            },
                             tryDeserialize(node, jacksonTypeRef<List<Vector>>())?.let {
                                 Vector(vectors = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<List<Double>>())?.let {
                                 Vector(number = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                                Vector(string = it, _json = json)
                             },
                         )
                         .filterNotNull()
