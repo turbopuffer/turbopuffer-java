@@ -234,6 +234,8 @@ private constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClien
         fun build(): OkHttpClient {
             return OkHttpClient(
                 okhttp3.OkHttpClient.Builder()
+                    // `RetryingHttpClient` handles retries if the user enabled them.
+                    .retryOnConnectionFailure(false)
                     .connectTimeout(timeout.connect())
                     .readTimeout(timeout.read())
                     .writeTimeout(timeout.write())
