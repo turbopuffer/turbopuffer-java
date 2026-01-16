@@ -9,6 +9,8 @@ import com.turbopuffer.errors.TurbopufferInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class VectorTest {
 
@@ -54,10 +56,17 @@ internal class VectorTest {
         assertThat(roundtrippedVector).isEqualTo(vector)
     }
 
-    @Test
-    fun incompatibleJsonShapeDeserializesToUnknown() {
-        val value = JsonValue.from(mapOf("invalid" to "object"))
-        val vector = jsonMapper().convertValue(value, jacksonTypeRef<Vector>())
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        OBJECT(JsonValue.from(mapOf("invalid" to "object"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
+        val vector = jsonMapper().convertValue(testCase.value, jacksonTypeRef<Vector>())
 
         val e = assertThrows<TurbopufferInvalidDataException> { vector.validate() }
         assertThat(e).hasMessageStartingWith("Unknown ")
