@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.12.1 (2026-01-16)
+
+Full Changelog: [v1.12.0...v1.12.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.12.0...v1.12.1)
+
+### Bug Fixes
+
+* **client:** disallow coercion from float to int ([f72e46e](https://github.com/turbopuffer/turbopuffer-java/commit/f72e46ebf81cd7080d87c61faefb7d994dd139ba))
+* **client:** fully respect max retries ([a287cdb](https://github.com/turbopuffer/turbopuffer-java/commit/a287cdbffe73d0fb7c7ee0ccad4d1619b616e4e2))
+* **client:** send retry count header for max retries 0 ([a287cdb](https://github.com/turbopuffer/turbopuffer-java/commit/a287cdbffe73d0fb7c7ee0ccad4d1619b616e4e2))
+* date time deserialization leniency ([7cc5946](https://github.com/turbopuffer/turbopuffer-java/commit/7cc594644c4b140ef7f4f92b6e998e8b5d6e6ff3))
+* deserialization order ([42838fb](https://github.com/turbopuffer/turbopuffer-java/commit/42838fbf6d7ab9fbdb90d4bee8c87ce15ea6aa2d))
+
+
+### Chores
+
+* **ci:** upgrade `actions/setup-java` ([b6acffd](https://github.com/turbopuffer/turbopuffer-java/commit/b6acffd169a5f7166817515dd0ce5769dd18b693))
+* configure new SDK language ([3dfeb8f](https://github.com/turbopuffer/turbopuffer-java/commit/3dfeb8f481f8cd93cf3585be86be8c38d0ad077f))
+* **internal:** clean up maven repo artifact script and add html documentation to repo root ([9554136](https://github.com/turbopuffer/turbopuffer-java/commit/9554136532d5f316c101b65ce9258f79c571bb2f))
+* **internal:** depend on packages directly in example ([a287cdb](https://github.com/turbopuffer/turbopuffer-java/commit/a287cdbffe73d0fb7c7ee0ccad4d1619b616e4e2))
+* **internal:** improve maven repo docs ([e06538b](https://github.com/turbopuffer/turbopuffer-java/commit/e06538b6900133afb29a8e1619556aae7446b3e4))
+* **internal:** support uploading Maven repo artifacts to stainless package server ([370ce44](https://github.com/turbopuffer/turbopuffer-java/commit/370ce44ac4aa3ad43ae158b303d1aafeed9596ef))
+* **internal:** update `actions/checkout` version ([4805ff7](https://github.com/turbopuffer/turbopuffer-java/commit/4805ff78bb87bbb5aa0ea9fbc0bf356d63eeac28))
+* test on Jackson 2.14.0 to avoid encountering FasterXML/jackson-databind[#3240](https://github.com/turbopuffer/turbopuffer-java/issues/3240) in tests ([7cc5946](https://github.com/turbopuffer/turbopuffer-java/commit/7cc594644c4b140ef7f4f92b6e998e8b5d6e6ff3))
+
 ## 1.12.0 (2026-01-09)
 
 Full Changelog: [v1.11.0...v1.12.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.11.0...v1.12.0)
