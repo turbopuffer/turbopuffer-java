@@ -51,6 +51,7 @@ internal class NamespaceWriteParamsTest {
                     .vectorOfNumber(listOf(0.0))
                     .build()
             )
+            .returnAffectedIds(true)
             .schema(
                 NamespaceWriteParams.Schema.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -126,6 +127,7 @@ internal class NamespaceWriteParamsTest {
                         .vectorOfNumber(listOf(0.0))
                         .build()
                 )
+                .returnAffectedIds(true)
                 .schema(
                     NamespaceWriteParams.Schema.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -192,6 +194,7 @@ internal class NamespaceWriteParamsTest {
                     .vectorOfNumber(listOf(0.0))
                     .build()
             )
+        assertThat(body.returnAffectedIds()).contains(true)
         assertThat(body.schema())
             .contains(
                 NamespaceWriteParams.Schema.builder()

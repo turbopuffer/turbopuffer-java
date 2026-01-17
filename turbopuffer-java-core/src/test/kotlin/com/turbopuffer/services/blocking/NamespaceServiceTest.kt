@@ -320,6 +320,7 @@ internal class NamespaceServiceTest {
                             .vectorOfNumber(listOf(0.0))
                             .build()
                     )
+                    .returnAffectedIds(true)
                     .schema(
                         NamespaceWriteParams.Schema.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))

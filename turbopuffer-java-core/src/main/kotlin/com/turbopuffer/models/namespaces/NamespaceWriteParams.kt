@@ -137,6 +137,15 @@ private constructor(
     fun patchRows(): Optional<List<Row>> = body.patchRows()
 
     /**
+     * If true, return the IDs of affected rows (deleted, patched, upserted) in the response. For
+     * filtered and conditional writes, only IDs for writes that succeeded will be included.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun returnAffectedIds(): Optional<Boolean> = body.returnAffectedIds()
+
+    /**
      * The schema of the attributes attached to the documents.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -238,6 +247,14 @@ private constructor(
      * Unlike [patchRows], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _patchRows(): JsonField<List<Row>> = body._patchRows()
+
+    /**
+     * Returns the raw JSON value of [returnAffectedIds].
+     *
+     * Unlike [returnAffectedIds], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _returnAffectedIds(): JsonField<Boolean> = body._returnAffectedIds()
 
     /**
      * Returns the raw JSON value of [schema].
@@ -509,6 +526,25 @@ private constructor(
          */
         fun addPatchRow(patchRow: Row) = apply { body.addPatchRow(patchRow) }
 
+        /**
+         * If true, return the IDs of affected rows (deleted, patched, upserted) in the response.
+         * For filtered and conditional writes, only IDs for writes that succeeded will be included.
+         */
+        fun returnAffectedIds(returnAffectedIds: Boolean) = apply {
+            body.returnAffectedIds(returnAffectedIds)
+        }
+
+        /**
+         * Sets [Builder.returnAffectedIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.returnAffectedIds] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun returnAffectedIds(returnAffectedIds: JsonField<Boolean>) = apply {
+            body.returnAffectedIds(returnAffectedIds)
+        }
+
         /** The schema of the attributes attached to the documents. */
         fun schema(schema: Schema) = apply { body.schema(schema) }
 
@@ -723,6 +759,7 @@ private constructor(
         private val patchColumns: JsonField<Columns>,
         private val patchCondition: JsonValue,
         private val patchRows: JsonField<List<Row>>,
+        private val returnAffectedIds: JsonField<Boolean>,
         private val schema: JsonField<Schema>,
         private val upsertColumns: JsonField<Columns>,
         private val upsertCondition: JsonValue,
@@ -771,6 +808,9 @@ private constructor(
             @JsonProperty("patch_rows")
             @ExcludeMissing
             patchRows: JsonField<List<Row>> = JsonMissing.of(),
+            @JsonProperty("return_affected_ids")
+            @ExcludeMissing
+            returnAffectedIds: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("schema") @ExcludeMissing schema: JsonField<Schema> = JsonMissing.of(),
             @JsonProperty("upsert_columns")
             @ExcludeMissing
@@ -795,6 +835,7 @@ private constructor(
             patchColumns,
             patchCondition,
             patchRows,
+            returnAffectedIds,
             schema,
             upsertColumns,
             upsertCondition,
@@ -904,6 +945,16 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun patchRows(): Optional<List<Row>> = patchRows.getOptional("patch_rows")
+
+        /**
+         * If true, return the IDs of affected rows (deleted, patched, upserted) in the response.
+         * For filtered and conditional writes, only IDs for writes that succeeded will be included.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun returnAffectedIds(): Optional<Boolean> =
+            returnAffectedIds.getOptional("return_affected_ids")
 
         /**
          * The schema of the attributes attached to the documents.
@@ -1032,6 +1083,16 @@ private constructor(
         fun _patchRows(): JsonField<List<Row>> = patchRows
 
         /**
+         * Returns the raw JSON value of [returnAffectedIds].
+         *
+         * Unlike [returnAffectedIds], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("return_affected_ids")
+        @ExcludeMissing
+        fun _returnAffectedIds(): JsonField<Boolean> = returnAffectedIds
+
+        /**
          * Returns the raw JSON value of [schema].
          *
          * Unlike [schema], this method doesn't throw if the JSON field has an unexpected type.
@@ -1091,6 +1152,7 @@ private constructor(
             private var patchColumns: JsonField<Columns> = JsonMissing.of()
             private var patchCondition: JsonValue = JsonMissing.of()
             private var patchRows: JsonField<MutableList<Row>>? = null
+            private var returnAffectedIds: JsonField<Boolean> = JsonMissing.of()
             private var schema: JsonField<Schema> = JsonMissing.of()
             private var upsertColumns: JsonField<Columns> = JsonMissing.of()
             private var upsertCondition: JsonValue = JsonMissing.of()
@@ -1112,6 +1174,7 @@ private constructor(
                 patchColumns = body.patchColumns
                 patchCondition = body.patchCondition
                 patchRows = body.patchRows.map { it.toMutableList() }
+                returnAffectedIds = body.returnAffectedIds
                 schema = body.schema
                 upsertColumns = body.upsertColumns
                 upsertCondition = body.upsertCondition
@@ -1325,6 +1388,25 @@ private constructor(
                     }
             }
 
+            /**
+             * If true, return the IDs of affected rows (deleted, patched, upserted) in the
+             * response. For filtered and conditional writes, only IDs for writes that succeeded
+             * will be included.
+             */
+            fun returnAffectedIds(returnAffectedIds: Boolean) =
+                returnAffectedIds(JsonField.of(returnAffectedIds))
+
+            /**
+             * Sets [Builder.returnAffectedIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.returnAffectedIds] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun returnAffectedIds(returnAffectedIds: JsonField<Boolean>) = apply {
+                this.returnAffectedIds = returnAffectedIds
+            }
+
             /** The schema of the attributes attached to the documents. */
             fun schema(schema: Schema) = schema(JsonField.of(schema))
 
@@ -1426,6 +1508,7 @@ private constructor(
                     patchColumns,
                     patchCondition,
                     (patchRows ?: JsonMissing.of()).map { it.toImmutable() },
+                    returnAffectedIds,
                     schema,
                     upsertColumns,
                     upsertCondition,
@@ -1451,6 +1534,7 @@ private constructor(
             patchByFilterAllowPartial()
             patchColumns().ifPresent { it.validate() }
             patchRows().ifPresent { it.forEach { it.validate() } }
+            returnAffectedIds()
             schema().ifPresent { it.validate() }
             upsertColumns().ifPresent { it.validate() }
             upsertRows().ifPresent { it.forEach { it.validate() } }
@@ -1483,6 +1567,7 @@ private constructor(
                 (if (patchByFilterAllowPartial.asKnown().isPresent) 1 else 0) +
                 (patchColumns.asKnown().getOrNull()?.validity() ?: 0) +
                 (patchRows.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (if (returnAffectedIds.asKnown().isPresent) 1 else 0) +
                 (schema.asKnown().getOrNull()?.validity() ?: 0) +
                 (upsertColumns.asKnown().getOrNull()?.validity() ?: 0) +
                 (upsertRows.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
@@ -1506,6 +1591,7 @@ private constructor(
                 patchColumns == other.patchColumns &&
                 patchCondition == other.patchCondition &&
                 patchRows == other.patchRows &&
+                returnAffectedIds == other.returnAffectedIds &&
                 schema == other.schema &&
                 upsertColumns == other.upsertColumns &&
                 upsertCondition == other.upsertCondition &&
@@ -1528,6 +1614,7 @@ private constructor(
                 patchColumns,
                 patchCondition,
                 patchRows,
+                returnAffectedIds,
                 schema,
                 upsertColumns,
                 upsertCondition,
@@ -1539,7 +1626,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
     }
 
     /** The namespace to copy documents from. */
