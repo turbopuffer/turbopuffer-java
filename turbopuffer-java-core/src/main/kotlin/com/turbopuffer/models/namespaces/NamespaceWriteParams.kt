@@ -1839,7 +1839,7 @@ private constructor(
             fun sourceNamespace(): String = sourceNamespace.getRequired("source_namespace")
 
             /**
-             * An API key for the organization containing the source namespace
+             * (Optional) An API key for the organization containing the source namespace
              *
              * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
              *   (e.g. if the server responded with an unexpected value).
@@ -1847,7 +1847,7 @@ private constructor(
             fun sourceApiKey(): Optional<String> = sourceApiKey.getOptional("source_api_key")
 
             /**
-             * The region of the source namespace.
+             * (Optional) The region of the source namespace.
              *
              * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
              *   (e.g. if the server responded with an unexpected value).
@@ -1942,7 +1942,7 @@ private constructor(
                     this.sourceNamespace = sourceNamespace
                 }
 
-                /** An API key for the organization containing the source namespace */
+                /** (Optional) An API key for the organization containing the source namespace */
                 fun sourceApiKey(sourceApiKey: String) = sourceApiKey(JsonField.of(sourceApiKey))
 
                 /**
@@ -1956,7 +1956,7 @@ private constructor(
                     this.sourceApiKey = sourceApiKey
                 }
 
-                /** The region of the source namespace. */
+                /** (Optional) The region of the source namespace. */
                 fun sourceRegion(sourceRegion: String) = sourceRegion(JsonField.of(sourceRegion))
 
                 /**
