@@ -60,6 +60,11 @@ private constructor(
 
     /**
      * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceQueryParams.filters().convert(MyClass.class);
+     * ```
      */
     fun _filters(): JsonValue = body._filters()
 
@@ -80,7 +85,14 @@ private constructor(
      */
     fun includeAttributes(): Optional<IncludeAttributes> = body.includeAttributes()
 
-    /** How to rank the documents in the namespace. */
+    /**
+     * How to rank the documents in the namespace.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceQueryParams.rankBy().convert(MyClass.class);
+     * ```
+     */
     fun _rankBy(): JsonValue = body._rankBy()
 
     /**
@@ -614,6 +626,11 @@ private constructor(
         /**
          * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
          * clause.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.filters().convert(MyClass.class);
+         * ```
          */
         @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
 
@@ -635,7 +652,14 @@ private constructor(
         fun includeAttributes(): Optional<IncludeAttributes> =
             includeAttributes.getOptional("include_attributes")
 
-        /** How to rank the documents in the namespace. */
+        /**
+         * How to rank the documents in the namespace.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.rankBy().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
 
         /**

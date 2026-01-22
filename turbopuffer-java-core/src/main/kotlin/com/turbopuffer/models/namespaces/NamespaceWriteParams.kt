@@ -52,7 +52,14 @@ private constructor(
      */
     fun copyFromNamespace(): Optional<CopyFromNamespace> = body.copyFromNamespace()
 
-    /** The filter specifying which documents to delete. */
+    /**
+     * The filter specifying which documents to delete.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceWriteParams.deleteByFilter().convert(MyClass.class);
+     * ```
+     */
     fun _deleteByFilter(): JsonValue = body._deleteByFilter()
 
     /**
@@ -66,6 +73,11 @@ private constructor(
     /**
      * A condition evaluated against the current value of each document targeted by a delete write.
      * Only documents that pass the condition are deleted.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceWriteParams.deleteCondition().convert(MyClass.class);
+     * ```
      */
     fun _deleteCondition(): JsonValue = body._deleteCondition()
 
@@ -127,6 +139,11 @@ private constructor(
     /**
      * A condition evaluated against the current value of each document targeted by a patch write.
      * Only documents that pass the condition are patched.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceWriteParams.patchCondition().convert(MyClass.class);
+     * ```
      */
     fun _patchCondition(): JsonValue = body._patchCondition()
 
@@ -165,6 +182,11 @@ private constructor(
     /**
      * A condition evaluated against the current value of each document targeted by an upsert write.
      * Only documents that pass the condition are upserted.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceWriteParams.upsertCondition().convert(MyClass.class);
+     * ```
      */
     fun _upsertCondition(): JsonValue = body._upsertCondition()
 
@@ -852,7 +874,14 @@ private constructor(
         fun copyFromNamespace(): Optional<CopyFromNamespace> =
             copyFromNamespace.getOptional("copy_from_namespace")
 
-        /** The filter specifying which documents to delete. */
+        /**
+         * The filter specifying which documents to delete.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.deleteByFilter().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("delete_by_filter")
         @ExcludeMissing
         fun _deleteByFilter(): JsonValue = deleteByFilter
@@ -869,6 +898,11 @@ private constructor(
         /**
          * A condition evaluated against the current value of each document targeted by a delete
          * write. Only documents that pass the condition are deleted.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.deleteCondition().convert(MyClass.class);
+         * ```
          */
         @JsonProperty("delete_condition")
         @ExcludeMissing
@@ -935,6 +969,11 @@ private constructor(
         /**
          * A condition evaluated against the current value of each document targeted by a patch
          * write. Only documents that pass the condition are patched.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.patchCondition().convert(MyClass.class);
+         * ```
          */
         @JsonProperty("patch_condition")
         @ExcludeMissing
@@ -976,6 +1015,11 @@ private constructor(
         /**
          * A condition evaluated against the current value of each document targeted by an upsert
          * write. Only documents that pass the condition are upserted.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.upsertCondition().convert(MyClass.class);
+         * ```
          */
         @JsonProperty("upsert_condition")
         @ExcludeMissing
@@ -2389,7 +2433,14 @@ private constructor(
             @JsonProperty("patch") @ExcludeMissing patch: JsonField<Patch> = JsonMissing.of(),
         ) : this(filters, patch, mutableMapOf())
 
-        /** Filter by attributes. Same syntax as the query endpoint. */
+        /**
+         * Filter by attributes. Same syntax as the query endpoint.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = patchByFilter.filters().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
 
         /**

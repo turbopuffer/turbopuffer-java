@@ -32,7 +32,14 @@ private constructor(
 
     fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
-    /** Filter by attributes. Same syntax as the query endpoint. */
+    /**
+     * Filter by attributes. Same syntax as the query endpoint.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceRecallParams.filters().convert(MyClass.class);
+     * ```
+     */
     fun _filters(): JsonValue = body._filters()
 
     /**
@@ -376,7 +383,14 @@ private constructor(
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
         ) : this(filters, includeGroundTruth, num, queries, topK, mutableMapOf())
 
-        /** Filter by attributes. Same syntax as the query endpoint. */
+        /**
+         * Filter by attributes. Same syntax as the query endpoint.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.filters().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
 
         /**

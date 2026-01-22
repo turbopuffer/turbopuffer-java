@@ -93,6 +93,11 @@ private constructor(
 
     /**
      * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = query.filters().convert(MyClass.class);
+     * ```
      */
     @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
 
@@ -114,7 +119,14 @@ private constructor(
     fun includeAttributes(): Optional<IncludeAttributes> =
         includeAttributes.getOptional("include_attributes")
 
-    /** How to rank the documents in the namespace. */
+    /**
+     * How to rank the documents in the namespace.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = query.rankBy().convert(MyClass.class);
+     * ```
+     */
     @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
 
     /**
