@@ -130,7 +130,7 @@ class ExprRefNew private constructor(refNew: String) : Expr() {
 }
 
 @JsonDeserialize(using = Filter.Deserializer::class)
-sealed class Filter() {
+sealed class Filter() : RankByText() {
     companion object {
         @JvmStatic public fun eq(attr: String, value: Any): FilterEq = FilterEq.create(attr, value)
 
@@ -224,6 +224,16 @@ sealed class Filter() {
             params: ContainsAllTokensFilterParams,
         ): FilterContainsAllTokensArrayWithParams =
             FilterContainsAllTokensArrayWithParams.create(attr, value, params)
+
+        @JvmStatic
+        public fun containsAnyToken(attr: String, value: String): FilterContainsAnyToken =
+            FilterContainsAnyToken.create(attr, value)
+
+        @JvmStatic
+        public fun containsAnyToken(
+            attr: String,
+            value: List<String>,
+        ): FilterContainsAnyTokenArray = FilterContainsAnyTokenArray.create(attr, value)
 
         @JvmStatic
         public fun containsTokenSequence(attr: String, value: String): FilterContainsTokenSequence =
@@ -471,6 +481,45 @@ class FilterContainsAny private constructor(attr: String, value: List<Any>) : Fi
         @JvmSynthetic
         internal fun create(attr: String, value: List<Any>): FilterContainsAny =
             FilterContainsAny(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterContainsAnyToken private constructor(attr: String, value: String) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "ContainsAnyToken"
+    private val value: String = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: String): FilterContainsAnyToken =
+            FilterContainsAnyToken(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class FilterContainsAnyTokenArray private constructor(attr: String, value: List<String>) :
+    Filter() {
+    private val attr: String = attr
+    private val f0: String = "ContainsAnyToken"
+    private val value: List<String> = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: List<String>): FilterContainsAnyTokenArray =
+            FilterContainsAnyTokenArray(attr, value)
     }
 }
 
@@ -826,8 +875,15 @@ sealed class RankBy() {
             RankByVector.create(attr, value)
 
         @JvmStatic
+        public fun knn(attr: String, value: List<Float>): RankByKnn = RankByKnn.create(attr, value)
+
+        @JvmStatic
         public fun attribute(attr: String, order: RankByAttributeOrder): RankByAttribute =
             RankByAttribute.create(attr, order)
+
+        @JvmStatic
+        public fun attributes(vararg items: RankByAttribute): RankByAttributes =
+            RankByAttributes.create(items.asList())
     }
 
     class Deserializer : BaseDeserializer<RankBy>(RankBy::class) {
@@ -866,6 +922,37 @@ class RankByAttribute private constructor(attr: String, order: RankByAttributeOr
 enum class RankByAttributeOrder {
     @JsonProperty("asc") ASC,
     @JsonProperty("desc") DESC,
+}
+
+class RankByAttributes
+private constructor(@JsonValueAnnotation private val items: List<RankByAttribute>) : RankBy() {
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(items: List<RankByAttribute>): RankByAttributes =
+            RankByAttributes(items)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class RankByKnn private constructor(attr: String, value: List<Float>) : RankBy() {
+    private val attr: String = attr
+    private val f0: String = "kNN"
+    private val value: List<Float> = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: List<Float>): RankByKnn = RankByKnn(attr, value)
+    }
 }
 
 @JsonDeserialize(using = RankByText.Deserializer::class)
