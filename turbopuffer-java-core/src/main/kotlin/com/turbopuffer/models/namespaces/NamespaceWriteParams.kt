@@ -66,6 +66,11 @@ private constructor(
     /**
      * A condition evaluated against the current value of each document targeted by a delete write.
      * Only documents that pass the condition are deleted.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceWriteParams.deleteCondition().convert(MyClass.class);
+     * ```
      */
     fun deleteCondition(): Optional<Filter> = body.deleteCondition()
 
@@ -127,6 +132,11 @@ private constructor(
     /**
      * A condition evaluated against the current value of each document targeted by a patch write.
      * Only documents that pass the condition are patched.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceWriteParams.patchCondition().convert(MyClass.class);
+     * ```
      */
     fun patchCondition(): Optional<Filter> = body.patchCondition()
 
@@ -165,6 +175,11 @@ private constructor(
     /**
      * A condition evaluated against the current value of each document targeted by an upsert write.
      * Only documents that pass the condition are upserted.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceWriteParams.upsertCondition().convert(MyClass.class);
+     * ```
      */
     fun upsertCondition(): Optional<Filter> = body.upsertCondition()
 

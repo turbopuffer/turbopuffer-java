@@ -60,6 +60,11 @@ private constructor(
 
     /**
      * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE clause.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceExplainQueryParams.filters().convert(MyClass.class);
+     * ```
      */
     fun filters(): Optional<Filter> = body.filters()
 
