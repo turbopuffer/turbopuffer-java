@@ -305,6 +305,7 @@ internal class NamespaceServiceAsyncTest {
                             .put("vectorOfNumber", listOf(0.0))
                             .build()
                     )
+                    .returnAffectedIds(true)
                     .schema(
                         Schema.builder()
                             .put("id", AttributeSchemaConfig.builder().type("uuid").build())

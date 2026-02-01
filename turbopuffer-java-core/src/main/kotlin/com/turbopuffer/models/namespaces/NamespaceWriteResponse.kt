@@ -10,7 +10,9 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.checkRequired
+import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -25,10 +27,13 @@ private constructor(
     private val message: JsonField<String>,
     private val rowsAffected: JsonField<Long>,
     private val status: JsonValue,
+    private val deletedIds: JsonField<List<Id>>,
+    private val patchedIds: JsonField<List<Id>>,
     private val rowsDeleted: JsonField<Long>,
     private val rowsPatched: JsonField<Long>,
     private val rowsRemaining: JsonField<Boolean>,
     private val rowsUpserted: JsonField<Long>,
+    private val upsertedIds: JsonField<List<Id>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -42,6 +47,12 @@ private constructor(
         @ExcludeMissing
         rowsAffected: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonValue = JsonMissing.of(),
+        @JsonProperty("deleted_ids")
+        @ExcludeMissing
+        deletedIds: JsonField<List<Id>> = JsonMissing.of(),
+        @JsonProperty("patched_ids")
+        @ExcludeMissing
+        patchedIds: JsonField<List<Id>> = JsonMissing.of(),
         @JsonProperty("rows_deleted")
         @ExcludeMissing
         rowsDeleted: JsonField<Long> = JsonMissing.of(),
@@ -54,15 +65,21 @@ private constructor(
         @JsonProperty("rows_upserted")
         @ExcludeMissing
         rowsUpserted: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("upserted_ids")
+        @ExcludeMissing
+        upsertedIds: JsonField<List<Id>> = JsonMissing.of(),
     ) : this(
         billing,
         message,
         rowsAffected,
         status,
+        deletedIds,
+        patchedIds,
         rowsDeleted,
         rowsPatched,
         rowsRemaining,
         rowsUpserted,
+        upsertedIds,
         mutableMapOf(),
     )
 
@@ -104,6 +121,24 @@ private constructor(
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonValue = status
 
     /**
+     * The IDs of documents that were deleted. Only included when `return_affected_ids` is true and
+     * at least one document was deleted.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun deletedIds(): Optional<List<Id>> = deletedIds.getOptional("deleted_ids")
+
+    /**
+     * The IDs of documents that were patched. Only included when `return_affected_ids` is true and
+     * at least one document was patched.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun patchedIds(): Optional<List<Id>> = patchedIds.getOptional("patched_ids")
+
+    /**
      * The number of rows deleted by the write request.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -136,6 +171,15 @@ private constructor(
     fun rowsUpserted(): Optional<Long> = rowsUpserted.getOptional("rows_upserted")
 
     /**
+     * The IDs of documents that were upserted. Only included when `return_affected_ids` is true and
+     * at least one document was upserted.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun upsertedIds(): Optional<List<Id>> = upsertedIds.getOptional("upserted_ids")
+
+    /**
      * Returns the raw JSON value of [billing].
      *
      * Unlike [billing], this method doesn't throw if the JSON field has an unexpected type.
@@ -157,6 +201,20 @@ private constructor(
     @JsonProperty("rows_affected")
     @ExcludeMissing
     fun _rowsAffected(): JsonField<Long> = rowsAffected
+
+    /**
+     * Returns the raw JSON value of [deletedIds].
+     *
+     * Unlike [deletedIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("deleted_ids") @ExcludeMissing fun _deletedIds(): JsonField<List<Id>> = deletedIds
+
+    /**
+     * Returns the raw JSON value of [patchedIds].
+     *
+     * Unlike [patchedIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("patched_ids") @ExcludeMissing fun _patchedIds(): JsonField<List<Id>> = patchedIds
 
     /**
      * Returns the raw JSON value of [rowsDeleted].
@@ -189,6 +247,15 @@ private constructor(
     @JsonProperty("rows_upserted")
     @ExcludeMissing
     fun _rowsUpserted(): JsonField<Long> = rowsUpserted
+
+    /**
+     * Returns the raw JSON value of [upsertedIds].
+     *
+     * Unlike [upsertedIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("upserted_ids")
+    @ExcludeMissing
+    fun _upsertedIds(): JsonField<List<Id>> = upsertedIds
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -224,10 +291,13 @@ private constructor(
         private var message: JsonField<String>? = null
         private var rowsAffected: JsonField<Long>? = null
         private var status: JsonValue = JsonValue.from("OK")
+        private var deletedIds: JsonField<MutableList<Id>>? = null
+        private var patchedIds: JsonField<MutableList<Id>>? = null
         private var rowsDeleted: JsonField<Long> = JsonMissing.of()
         private var rowsPatched: JsonField<Long> = JsonMissing.of()
         private var rowsRemaining: JsonField<Boolean> = JsonMissing.of()
         private var rowsUpserted: JsonField<Long> = JsonMissing.of()
+        private var upsertedIds: JsonField<MutableList<Id>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -236,10 +306,13 @@ private constructor(
             message = namespaceWriteResponse.message
             rowsAffected = namespaceWriteResponse.rowsAffected
             status = namespaceWriteResponse.status
+            deletedIds = namespaceWriteResponse.deletedIds.map { it.toMutableList() }
+            patchedIds = namespaceWriteResponse.patchedIds.map { it.toMutableList() }
             rowsDeleted = namespaceWriteResponse.rowsDeleted
             rowsPatched = namespaceWriteResponse.rowsPatched
             rowsRemaining = namespaceWriteResponse.rowsRemaining
             rowsUpserted = namespaceWriteResponse.rowsUpserted
+            upsertedIds = namespaceWriteResponse.upsertedIds.map { it.toMutableList() }
             additionalProperties = namespaceWriteResponse.additionalProperties.toMutableMap()
         }
 
@@ -292,6 +365,76 @@ private constructor(
          */
         fun status(status: JsonValue) = apply { this.status = status }
 
+        /**
+         * The IDs of documents that were deleted. Only included when `return_affected_ids` is true
+         * and at least one document was deleted.
+         */
+        fun deletedIds(deletedIds: List<Id>) = deletedIds(JsonField.of(deletedIds))
+
+        /**
+         * Sets [Builder.deletedIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deletedIds] with a well-typed `List<Id>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun deletedIds(deletedIds: JsonField<List<Id>>) = apply {
+            this.deletedIds = deletedIds.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Id] to [deletedIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addDeletedId(deletedId: Id) = apply {
+            deletedIds =
+                (deletedIds ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("deletedIds", it).add(deletedId)
+                }
+        }
+
+        /** Alias for calling [addDeletedId] with `Id.ofString(string)`. */
+        fun addDeletedId(string: String) = addDeletedId(Id.ofString(string))
+
+        /** Alias for calling [addDeletedId] with `Id.ofInteger(integer)`. */
+        fun addDeletedId(integer: Long) = addDeletedId(Id.ofInteger(integer))
+
+        /**
+         * The IDs of documents that were patched. Only included when `return_affected_ids` is true
+         * and at least one document was patched.
+         */
+        fun patchedIds(patchedIds: List<Id>) = patchedIds(JsonField.of(patchedIds))
+
+        /**
+         * Sets [Builder.patchedIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.patchedIds] with a well-typed `List<Id>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun patchedIds(patchedIds: JsonField<List<Id>>) = apply {
+            this.patchedIds = patchedIds.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Id] to [patchedIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addPatchedId(patchedId: Id) = apply {
+            patchedIds =
+                (patchedIds ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("patchedIds", it).add(patchedId)
+                }
+        }
+
+        /** Alias for calling [addPatchedId] with `Id.ofString(string)`. */
+        fun addPatchedId(string: String) = addPatchedId(Id.ofString(string))
+
+        /** Alias for calling [addPatchedId] with `Id.ofInteger(integer)`. */
+        fun addPatchedId(integer: Long) = addPatchedId(Id.ofInteger(integer))
+
         /** The number of rows deleted by the write request. */
         fun rowsDeleted(rowsDeleted: Long) = rowsDeleted(JsonField.of(rowsDeleted))
 
@@ -342,6 +485,41 @@ private constructor(
          */
         fun rowsUpserted(rowsUpserted: JsonField<Long>) = apply { this.rowsUpserted = rowsUpserted }
 
+        /**
+         * The IDs of documents that were upserted. Only included when `return_affected_ids` is true
+         * and at least one document was upserted.
+         */
+        fun upsertedIds(upsertedIds: List<Id>) = upsertedIds(JsonField.of(upsertedIds))
+
+        /**
+         * Sets [Builder.upsertedIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.upsertedIds] with a well-typed `List<Id>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun upsertedIds(upsertedIds: JsonField<List<Id>>) = apply {
+            this.upsertedIds = upsertedIds.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Id] to [upsertedIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addUpsertedId(upsertedId: Id) = apply {
+            upsertedIds =
+                (upsertedIds ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("upsertedIds", it).add(upsertedId)
+                }
+        }
+
+        /** Alias for calling [addUpsertedId] with `Id.ofString(string)`. */
+        fun addUpsertedId(string: String) = addUpsertedId(Id.ofString(string))
+
+        /** Alias for calling [addUpsertedId] with `Id.ofInteger(integer)`. */
+        fun addUpsertedId(integer: Long) = addUpsertedId(Id.ofInteger(integer))
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -381,10 +559,13 @@ private constructor(
                 checkRequired("message", message),
                 checkRequired("rowsAffected", rowsAffected),
                 status,
+                (deletedIds ?: JsonMissing.of()).map { it.toImmutable() },
+                (patchedIds ?: JsonMissing.of()).map { it.toImmutable() },
                 rowsDeleted,
                 rowsPatched,
                 rowsRemaining,
                 rowsUpserted,
+                (upsertedIds ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
             )
     }
@@ -404,10 +585,13 @@ private constructor(
                 throw TurbopufferInvalidDataException("'status' is invalid, received $it")
             }
         }
+        deletedIds().ifPresent { it.forEach { it.validate() } }
+        patchedIds().ifPresent { it.forEach { it.validate() } }
         rowsDeleted()
         rowsPatched()
         rowsRemaining()
         rowsUpserted()
+        upsertedIds().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
 
@@ -430,10 +614,13 @@ private constructor(
             (if (message.asKnown().isPresent) 1 else 0) +
             (if (rowsAffected.asKnown().isPresent) 1 else 0) +
             status.let { if (it == JsonValue.from("OK")) 1 else 0 } +
+            (deletedIds.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (patchedIds.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (rowsDeleted.asKnown().isPresent) 1 else 0) +
             (if (rowsPatched.asKnown().isPresent) 1 else 0) +
             (if (rowsRemaining.asKnown().isPresent) 1 else 0) +
-            (if (rowsUpserted.asKnown().isPresent) 1 else 0)
+            (if (rowsUpserted.asKnown().isPresent) 1 else 0) +
+            (upsertedIds.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -445,10 +632,13 @@ private constructor(
             message == other.message &&
             rowsAffected == other.rowsAffected &&
             status == other.status &&
+            deletedIds == other.deletedIds &&
+            patchedIds == other.patchedIds &&
             rowsDeleted == other.rowsDeleted &&
             rowsPatched == other.rowsPatched &&
             rowsRemaining == other.rowsRemaining &&
             rowsUpserted == other.rowsUpserted &&
+            upsertedIds == other.upsertedIds &&
             additionalProperties == other.additionalProperties
     }
 
@@ -458,10 +648,13 @@ private constructor(
             message,
             rowsAffected,
             status,
+            deletedIds,
+            patchedIds,
             rowsDeleted,
             rowsPatched,
             rowsRemaining,
             rowsUpserted,
+            upsertedIds,
             additionalProperties,
         )
     }
@@ -469,5 +662,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceWriteResponse{billing=$billing, message=$message, rowsAffected=$rowsAffected, status=$status, rowsDeleted=$rowsDeleted, rowsPatched=$rowsPatched, rowsRemaining=$rowsRemaining, rowsUpserted=$rowsUpserted, additionalProperties=$additionalProperties}"
+        "NamespaceWriteResponse{billing=$billing, message=$message, rowsAffected=$rowsAffected, status=$status, deletedIds=$deletedIds, patchedIds=$patchedIds, rowsDeleted=$rowsDeleted, rowsPatched=$rowsPatched, rowsRemaining=$rowsRemaining, rowsUpserted=$rowsUpserted, upsertedIds=$upsertedIds, additionalProperties=$additionalProperties}"
 }
