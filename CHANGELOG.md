@@ -1,5 +1,50 @@
 # Changelog
 
+## 1.13.0 (2026-02-01)
+
+Full Changelog: [v1.12.0...v1.13.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.12.0...v1.13.0)
+
+### Features
+
+* [TPUF-1097] tpuf: return failed IDs for conditional writes ([7bbbdfe](https://github.com/turbopuffer/turbopuffer-java/commit/7bbbdfea06eed448361c8d01842b1e2d35b5e450))
+* add RankByKnn, ContainsAnyToken, RankByAttributes ([32d6dc8](https://github.com/turbopuffer/turbopuffer-java/commit/32d6dc8b128404aaf4e80014db016a195aa1ce3f))
+* Apigen integration ([91ac532](https://github.com/turbopuffer/turbopuffer-java/commit/91ac532567201742a7e905ad21f81f3353c584a5))
+* **client:** send `X-Stainless-Kotlin-Version` header ([59c388d](https://github.com/turbopuffer/turbopuffer-java/commit/59c388db0a79042d384f7541737c48679b849f81))
+
+
+### Bug Fixes
+
+* **client:** disallow coercion from float to int ([f72e46e](https://github.com/turbopuffer/turbopuffer-java/commit/f72e46ebf81cd7080d87c61faefb7d994dd139ba))
+* **client:** fully respect max retries ([a287cdb](https://github.com/turbopuffer/turbopuffer-java/commit/a287cdbffe73d0fb7c7ee0ccad4d1619b616e4e2))
+* **client:** preserve time zone in lenient date-time parsing ([8d9ac53](https://github.com/turbopuffer/turbopuffer-java/commit/8d9ac5319bda3e191dc21ba5fe1936bba8ee895d))
+* **client:** send retry count header for max retries 0 ([a287cdb](https://github.com/turbopuffer/turbopuffer-java/commit/a287cdbffe73d0fb7c7ee0ccad4d1619b616e4e2))
+* date time deserialization leniency ([7cc5946](https://github.com/turbopuffer/turbopuffer-java/commit/7cc594644c4b140ef7f4f92b6e998e8b5d6e6ff3))
+* deserialization order ([42838fb](https://github.com/turbopuffer/turbopuffer-java/commit/42838fbf6d7ab9fbdb90d4bee8c87ce15ea6aa2d))
+* **docs:** fix mcp installation instructions for remote servers ([d557a38](https://github.com/turbopuffer/turbopuffer-java/commit/d557a38e1129695e12021a12c7f8f90fd3330cf2))
+
+
+### Chores
+
+* **ci:** upgrade `actions/github-script` ([deeb685](https://github.com/turbopuffer/turbopuffer-java/commit/deeb685a2939d44824e08dbf5923fdcd60b88e89))
+* **ci:** upgrade `actions/setup-java` ([b6acffd](https://github.com/turbopuffer/turbopuffer-java/commit/b6acffd169a5f7166817515dd0ce5769dd18b693))
+* configure new SDK language ([3dfeb8f](https://github.com/turbopuffer/turbopuffer-java/commit/3dfeb8f481f8cd93cf3585be86be8c38d0ad077f))
+* fix automatic type regeneration ([68f1f9d](https://github.com/turbopuffer/turbopuffer-java/commit/68f1f9dfd23b335c65e1cb64c880740d27fa71b7))
+* fix codegen for custom Id type ([1dc1197](https://github.com/turbopuffer/turbopuffer-java/commit/1dc11973ad20fb54352d53194711433f08f9fbf9))
+* **internal:** allow passing args to `./scripts/test` ([39a8aef](https://github.com/turbopuffer/turbopuffer-java/commit/39a8aefb17a3640539627f7e7acc6f4f9fbf5eb2))
+* **internal:** clean up maven repo artifact script and add html documentation to repo root ([9554136](https://github.com/turbopuffer/turbopuffer-java/commit/9554136532d5f316c101b65ce9258f79c571bb2f))
+* **internal:** correct cache invalidation for `SKIP_MOCK_TESTS` ([bc5c5c9](https://github.com/turbopuffer/turbopuffer-java/commit/bc5c5c94143b3afa23f34d386be9a198f59f84a7))
+* **internal:** depend on packages directly in example ([a287cdb](https://github.com/turbopuffer/turbopuffer-java/commit/a287cdbffe73d0fb7c7ee0ccad4d1619b616e4e2))
+* **internal:** improve maven repo docs ([e06538b](https://github.com/turbopuffer/turbopuffer-java/commit/e06538b6900133afb29a8e1619556aae7446b3e4))
+* **internal:** support uploading Maven repo artifacts to stainless package server ([370ce44](https://github.com/turbopuffer/turbopuffer-java/commit/370ce44ac4aa3ad43ae158b303d1aafeed9596ef))
+* **internal:** update `actions/checkout` version ([4805ff7](https://github.com/turbopuffer/turbopuffer-java/commit/4805ff78bb87bbb5aa0ea9fbc0bf356d63eeac28))
+* **internal:** update maven repo doc to include authentication ([33cdcd9](https://github.com/turbopuffer/turbopuffer-java/commit/33cdcd99fa46848272d2fa87f312c93552f8a158))
+* test on Jackson 2.14.0 to avoid encountering FasterXML/jackson-databind[#3240](https://github.com/turbopuffer/turbopuffer-java/issues/3240) in tests ([7cc5946](https://github.com/turbopuffer/turbopuffer-java/commit/7cc594644c4b140ef7f4f92b6e998e8b5d6e6ff3))
+
+
+### Documentation
+
+* add comment for arbitrary value fields ([856ae29](https://github.com/turbopuffer/turbopuffer-java/commit/856ae29f8be34e0792b56959ca550effa989bdf9))
+
 ## 1.12.0 (2026-01-09)
 
 Full Changelog: [v1.11.0...v1.12.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.11.0...v1.12.0)
