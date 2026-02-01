@@ -394,12 +394,6 @@ private constructor(
                 }
         }
 
-        /** Alias for calling [addDeletedId] with `Id.ofString(string)`. */
-        fun addDeletedId(string: String) = addDeletedId(Id.ofString(string))
-
-        /** Alias for calling [addDeletedId] with `Id.ofInteger(integer)`. */
-        fun addDeletedId(integer: Long) = addDeletedId(Id.ofInteger(integer))
-
         /**
          * The IDs of documents that were patched. Only included when `return_affected_ids` is true
          * and at least one document was patched.
@@ -428,12 +422,6 @@ private constructor(
                     checkKnown("patchedIds", it).add(patchedId)
                 }
         }
-
-        /** Alias for calling [addPatchedId] with `Id.ofString(string)`. */
-        fun addPatchedId(string: String) = addPatchedId(Id.ofString(string))
-
-        /** Alias for calling [addPatchedId] with `Id.ofInteger(integer)`. */
-        fun addPatchedId(integer: Long) = addPatchedId(Id.ofInteger(integer))
 
         /** The number of rows deleted by the write request. */
         fun rowsDeleted(rowsDeleted: Long) = rowsDeleted(JsonField.of(rowsDeleted))
@@ -514,12 +502,6 @@ private constructor(
                 }
         }
 
-        /** Alias for calling [addUpsertedId] with `Id.ofString(string)`. */
-        fun addUpsertedId(string: String) = addUpsertedId(Id.ofString(string))
-
-        /** Alias for calling [addUpsertedId] with `Id.ofInteger(integer)`. */
-        fun addUpsertedId(integer: Long) = addUpsertedId(Id.ofInteger(integer))
-
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -585,13 +567,13 @@ private constructor(
                 throw TurbopufferInvalidDataException("'status' is invalid, received $it")
             }
         }
-        deletedIds().ifPresent { it.forEach { it.validate() } }
-        patchedIds().ifPresent { it.forEach { it.validate() } }
+        deletedIds()
+        patchedIds()
         rowsDeleted()
         rowsPatched()
         rowsRemaining()
         rowsUpserted()
-        upsertedIds().ifPresent { it.forEach { it.validate() } }
+        upsertedIds()
         validated = true
     }
 
@@ -614,13 +596,13 @@ private constructor(
             (if (message.asKnown().isPresent) 1 else 0) +
             (if (rowsAffected.asKnown().isPresent) 1 else 0) +
             status.let { if (it == JsonValue.from("OK")) 1 else 0 } +
-            (deletedIds.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            (patchedIds.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (deletedIds.asKnown().isPresent) 1 else 0) +
+            (if (patchedIds.asKnown().isPresent) 1 else 0) +
             (if (rowsDeleted.asKnown().isPresent) 1 else 0) +
             (if (rowsPatched.asKnown().isPresent) 1 else 0) +
             (if (rowsRemaining.asKnown().isPresent) 1 else 0) +
             (if (rowsUpserted.asKnown().isPresent) 1 else 0) +
-            (upsertedIds.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+            (if (upsertedIds.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
