@@ -236,6 +236,22 @@ sealed class Filter() : RankByText() {
         ): FilterContainsAnyTokenArray = FilterContainsAnyTokenArray.create(attr, value)
 
         @JvmStatic
+        public fun containsAnyToken(
+            attr: String,
+            value: String,
+            params: ContainsAnyTokenFilterParams,
+        ): FilterContainsAnyTokenWithParams =
+            FilterContainsAnyTokenWithParams.create(attr, value, params)
+
+        @JvmStatic
+        public fun containsAnyToken(
+            attr: String,
+            value: List<String>,
+            params: ContainsAnyTokenFilterParams,
+        ): FilterContainsAnyTokenArrayWithParams =
+            FilterContainsAnyTokenArrayWithParams.create(attr, value, params)
+
+        @JvmStatic
         public fun containsTokenSequence(attr: String, value: String): FilterContainsTokenSequence =
             FilterContainsTokenSequence.create(attr, value)
 
@@ -520,6 +536,56 @@ class FilterContainsAnyTokenArray private constructor(attr: String, value: List<
         @JvmSynthetic
         internal fun create(attr: String, value: List<String>): FilterContainsAnyTokenArray =
             FilterContainsAnyTokenArray(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value", "params")
+class FilterContainsAnyTokenArrayWithParams
+private constructor(attr: String, value: List<String>, params: ContainsAnyTokenFilterParams) :
+    Filter() {
+    private val attr: String = attr
+    private val f0: String = "ContainsAnyToken"
+    private val value: List<String> = value
+    private val params: ContainsAnyTokenFilterParams = params
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(
+            attr: String,
+            value: List<String>,
+            params: ContainsAnyTokenFilterParams,
+        ): FilterContainsAnyTokenArrayWithParams =
+            FilterContainsAnyTokenArrayWithParams(attr, value, params)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value", "params")
+class FilterContainsAnyTokenWithParams
+private constructor(attr: String, value: String, params: ContainsAnyTokenFilterParams) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "ContainsAnyToken"
+    private val value: String = value
+    private val params: ContainsAnyTokenFilterParams = params
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(
+            attr: String,
+            value: String,
+            params: ContainsAnyTokenFilterParams,
+        ): FilterContainsAnyTokenWithParams = FilterContainsAnyTokenWithParams(attr, value, params)
     }
 }
 
