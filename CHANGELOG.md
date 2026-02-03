@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.14.0 (2026-02-03)
+
+Full Changelog: [v1.13.0...v1.14.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.13.0...v1.14.0)
+
+### Features
+
+* ContainsAnyToken last_as_prefix docs ([bd29c3b](https://github.com/turbopuffer/turbopuffer-java/commit/bd29c3b94fc827013f907f34ddf790fcd7d3946a))
+
+
+### Chores
+
+* regenerate custom types ([843e8f5](https://github.com/turbopuffer/turbopuffer-java/commit/843e8f50576de168ef1c0375b086ac086f85e285))
+
 ## 1.13.0 (2026-02-01)
 
 Full Changelog: [v1.12.0...v1.13.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.12.0...v1.13.0)
