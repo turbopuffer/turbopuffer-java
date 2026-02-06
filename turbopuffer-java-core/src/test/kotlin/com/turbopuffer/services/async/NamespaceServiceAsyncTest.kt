@@ -71,6 +71,7 @@ internal class NamespaceServiceAsyncTest {
                     .filters(JsonValue.from(mapOf<String, Any>()))
                     .addGroupBy("string")
                     .includeAttributes(true)
+                    .limit(0L)
                     .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
                     .consistency(
@@ -150,6 +151,7 @@ internal class NamespaceServiceAsyncTest {
                             .filters(JsonValue.from(mapOf<String, Any>()))
                             .addGroupBy("string")
                             .includeAttributes(true)
+                            .limit(0L)
                             .rankBy(JsonValue.from(mapOf<String, Any>()))
                             .topK(0L)
                             .build()
@@ -191,6 +193,7 @@ internal class NamespaceServiceAsyncTest {
                     .filters(JsonValue.from(mapOf<String, Any>()))
                     .addGroupBy("string")
                     .includeAttributes(true)
+                    .limit(0L)
                     .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
                     .consistency(
