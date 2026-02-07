@@ -65,6 +65,7 @@ internal class NamespaceServiceTest {
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .addExcludeAttribute("string")
                     .includeAttributes(true)
+                    .limit(0L)
                     .topK(0L)
                     .consistency(
                         NamespaceExplainQueryParams.Consistency.builder()
@@ -130,6 +131,7 @@ internal class NamespaceServiceTest {
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .addExcludeAttribute("string")
                             .includeAttributes(true)
+                            .limit(0L)
                             .topK(0L)
                             .build()
                     )
@@ -162,6 +164,7 @@ internal class NamespaceServiceTest {
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .addExcludeAttribute("string")
                     .includeAttributes(true)
+                    .limit(0L)
                     .topK(0L)
                     .consistency(
                         NamespaceQueryParams.Consistency.builder()

@@ -23,6 +23,7 @@ internal class NamespaceExplainQueryParamsTest {
             .filters(JsonValue.from(mapOf<String, Any>()))
             .addGroupBy("string")
             .includeAttributes(true)
+            .limit(0L)
             .rankBy(JsonValue.from(mapOf<String, Any>()))
             .topK(0L)
             .consistency(
@@ -58,6 +59,7 @@ internal class NamespaceExplainQueryParamsTest {
                 .filters(JsonValue.from(mapOf<String, Any>()))
                 .addGroupBy("string")
                 .includeAttributes(true)
+                .limit(0L)
                 .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)
                 .consistency(
@@ -81,6 +83,7 @@ internal class NamespaceExplainQueryParamsTest {
         assertThat(body._filters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.groupBy().getOrNull()).containsExactly("string")
         assertThat(body.includeAttributes()).contains(IncludeAttributes.ofBool(true))
+        assertThat(body.limit()).contains(Query.Limit.ofInteger(0L))
         assertThat(body._rankBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.topK()).contains(0L)
         assertThat(body.consistency())

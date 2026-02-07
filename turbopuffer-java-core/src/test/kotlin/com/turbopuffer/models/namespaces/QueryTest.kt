@@ -25,6 +25,7 @@ internal class QueryTest {
                 .filters(JsonValue.from(mapOf<String, Any>()))
                 .addGroupBy("string")
                 .includeAttributes(true)
+                .limit(0L)
                 .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)
                 .build()
@@ -40,6 +41,7 @@ internal class QueryTest {
         assertThat(query._filters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(query.groupBy().getOrNull()).containsExactly("string")
         assertThat(query.includeAttributes()).contains(IncludeAttributes.ofBool(true))
+        assertThat(query.limit()).contains(Query.Limit.ofInteger(0L))
         assertThat(query._rankBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(query.topK()).contains(0L)
     }
@@ -59,6 +61,7 @@ internal class QueryTest {
                 .filters(JsonValue.from(mapOf<String, Any>()))
                 .addGroupBy("string")
                 .includeAttributes(true)
+                .limit(0L)
                 .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)
                 .build()
