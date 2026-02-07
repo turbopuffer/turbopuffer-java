@@ -93,6 +93,14 @@ private constructor(
     fun includeAttributes(): Optional<IncludeAttributes> = body.includeAttributes()
 
     /**
+     * Limit configuration for query results.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun limit(): Optional<Query.Limit> = body.limit()
+
+    /**
      * How to rank the documents in the namespace.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -167,6 +175,13 @@ private constructor(
      * type.
      */
     fun _includeAttributes(): JsonField<IncludeAttributes> = body._includeAttributes()
+
+    /**
+     * Returns the raw JSON value of [limit].
+     *
+     * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _limit(): JsonField<Query.Limit> = body._limit()
 
     /**
      * Returns the raw JSON value of [topK].
@@ -355,6 +370,24 @@ private constructor(
         fun includeAttributesOfStrings(strings: List<String>) = apply {
             body.includeAttributesOfStrings(strings)
         }
+
+        /** Limit configuration for query results. */
+        fun limit(limit: Query.Limit) = apply { body.limit(limit) }
+
+        /**
+         * Sets [Builder.limit] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.limit] with a well-typed [Query.Limit] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun limit(limit: JsonField<Query.Limit>) = apply { body.limit(limit) }
+
+        /** Alias for calling [limit] with `Query.Limit.ofInteger(integer)`. */
+        fun limit(integer: Long) = apply { body.limit(integer) }
+
+        /** Alias for calling [Builder.limit] with `Query.Limit.ofLimit(limit)`. */
+        fun limit(limit: Query.Limit.InnerLimit) = apply { body.limit(limit) }
 
         /** How to rank the documents in the namespace. */
         fun rankBy(rankBy: RankBy) = apply { body.rankBy(rankBy) }
@@ -553,6 +586,7 @@ private constructor(
         private val filters: JsonField<Filter>,
         private val groupBy: JsonField<List<String>>,
         private val includeAttributes: JsonField<IncludeAttributes>,
+        private val limit: JsonField<Query.Limit>,
         private val rankBy: JsonField<RankBy>,
         private val topK: JsonField<Long>,
         private val consistency: JsonField<Consistency>,
@@ -578,6 +612,7 @@ private constructor(
             @JsonProperty("include_attributes")
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
+            @JsonProperty("limit") @ExcludeMissing limit: JsonField<Query.Limit> = JsonMissing.of(),
             @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonField<RankBy> = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("consistency")
@@ -593,6 +628,7 @@ private constructor(
             filters,
             groupBy,
             includeAttributes,
+            limit,
             rankBy,
             topK,
             consistency,
@@ -608,6 +644,7 @@ private constructor(
                 .filters(filters)
                 .groupBy(groupBy)
                 .includeAttributes(includeAttributes)
+                .limit(limit)
                 .rankBy(rankBy)
                 .topK(topK)
                 .build()
@@ -674,6 +711,14 @@ private constructor(
          */
         fun includeAttributes(): Optional<IncludeAttributes> =
             includeAttributes.getOptional("include_attributes")
+
+        /**
+         * Limit configuration for query results.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun limit(): Optional<Query.Limit> = limit.getOptional("limit")
 
         /**
          * How to rank the documents in the namespace.
@@ -763,6 +808,13 @@ private constructor(
         fun _includeAttributes(): JsonField<IncludeAttributes> = includeAttributes
 
         /**
+         * Returns the raw JSON value of [limit].
+         *
+         * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Query.Limit> = limit
+
+        /**
          * Returns the raw JSON value of [topK].
          *
          * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
@@ -815,6 +867,7 @@ private constructor(
             private var filters: JsonField<Filter> = JsonMissing.of()
             private var groupBy: JsonField<MutableList<String>>? = null
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
+            private var limit: JsonField<Query.Limit> = JsonMissing.of()
             private var rankBy: JsonField<RankBy> = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
             private var consistency: JsonField<Consistency> = JsonMissing.of()
@@ -829,6 +882,7 @@ private constructor(
                 filters = body.filters
                 groupBy = body.groupBy.map { it.toMutableList() }
                 includeAttributes = body.includeAttributes
+                limit = body.limit
                 rankBy = body.rankBy
                 topK = body.topK
                 consistency = body.consistency
@@ -966,6 +1020,24 @@ private constructor(
             fun includeAttributesOfStrings(strings: List<String>) =
                 includeAttributes(IncludeAttributes.ofStrings(strings))
 
+            /** Limit configuration for query results. */
+            fun limit(limit: Query.Limit) = limit(JsonField.of(limit))
+
+            /**
+             * Sets [Builder.limit] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.limit] with a well-typed [Query.Limit] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun limit(limit: JsonField<Query.Limit>) = apply { this.limit = limit }
+
+            /** Alias for calling [limit] with `Query.Limit.ofInteger(integer)`. */
+            fun limit(integer: Long) = limit(Query.Limit.ofInteger(integer))
+
+            /** Alias for calling [Builder.limit] with `Query.Limit.ofLimit(limit)`. */
+            fun limit(limit: Query.Limit.InnerLimit) = limit(Query.Limit.ofLimit(limit))
+
             /**
              * Sets [Builder.rankBy] to an arbitrary JSON value.
              *
@@ -1057,6 +1129,7 @@ private constructor(
                     filters,
                     (groupBy ?: JsonMissing.of()).map { it.toImmutable() },
                     includeAttributes,
+                    limit,
                     rankBy,
                     topK,
                     consistency,
@@ -1077,6 +1150,7 @@ private constructor(
             excludeAttributes()
 
             includeAttributes().ifPresent { it.validate() }
+            limit().ifPresent { it.validate() }
             topK()
             consistency().ifPresent { it.validate() }
             vectorEncoding().ifPresent { it.validate() }
@@ -1103,6 +1177,7 @@ private constructor(
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (excludeAttributes.asKnown().getOrNull()?.size ?: 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
+                (limit.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0) +
                 (consistency.asKnown().getOrNull()?.validity() ?: 0) +
                 (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
@@ -1119,6 +1194,7 @@ private constructor(
                 filters == other.filters &&
                 groupBy == other.groupBy &&
                 includeAttributes == other.includeAttributes &&
+                limit == other.limit &&
                 rankBy == other.rankBy &&
                 topK == other.topK &&
                 consistency == other.consistency &&
@@ -1134,6 +1210,7 @@ private constructor(
                 filters,
                 groupBy,
                 includeAttributes,
+                limit,
                 rankBy,
                 topK,
                 consistency,
@@ -1145,7 +1222,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, rankBy=$rankBy, topK=$topK, consistency=$consistency, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, consistency=$consistency, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
