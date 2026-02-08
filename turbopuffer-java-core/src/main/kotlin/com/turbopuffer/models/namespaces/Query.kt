@@ -415,7 +415,7 @@ private constructor(
         fun limit(integer: Long) = limit(Limit.ofInteger(integer))
 
         /** Alias for calling [Builder.limit] with `Limit.ofLimit(limit)`. */
-        fun limit(limit: Limit) = limit(Limit.ofLimit(limit))
+        fun limit(limit: com.turbopuffer.models.namespaces.Limit) = limit(Limit.ofLimit(limit))
 
         /** How to rank the documents in the namespace. */
         fun rankBy(rankBy: RankBy) = rankBy(JsonField.of(rankBy))
@@ -520,120 +520,20 @@ private constructor(
             (if (rankBy.asKnown().isPresent()) 1 else 0) +
             (if (topK.asKnown().isPresent) 1 else 0)
 
-    /** Aggregations to compute over all documents in the namespace that match the filters. */
-    class AggregateBy
-    @JsonCreator
-    private constructor(
-        @com.fasterxml.jackson.annotation.JsonValue
-        private val additionalProperties: Map<String, JsonValue>
-    ) {
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [AggregateBy]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [AggregateBy]. */
-        class Builder internal constructor() {
-
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(aggregateBy: AggregateBy) = apply {
-                additionalProperties = aggregateBy.additionalProperties.toMutableMap()
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [AggregateBy].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): AggregateBy = AggregateBy(additionalProperties.toImmutable())
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): AggregateBy = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: TurbopufferInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is AggregateBy && additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() = "AggregateBy{additionalProperties=$additionalProperties}"
-    }
-
     /** Limits the documents returned by a query. */
     @JsonDeserialize(using = Limit.Deserializer::class)
     @JsonSerialize(using = Limit.Serializer::class)
     class Limit
     private constructor(
         private val integer: Long? = null,
-        private val limit: Limit? = null,
+        private val limit: com.turbopuffer.models.namespaces.Limit? = null,
         private val _json: JsonValue? = null,
     ) {
 
         fun integer(): Optional<Long> = Optional.ofNullable(integer)
 
         /** Limits the documents returned by a query. */
-        fun limit(): Optional<Limit> = Optional.ofNullable(limit)
+        fun limit(): Optional<com.turbopuffer.models.namespaces.Limit> = Optional.ofNullable(limit)
 
         fun isInteger(): Boolean = integer != null
 
@@ -642,7 +542,7 @@ private constructor(
         fun asInteger(): Long = integer.getOrThrow("integer")
 
         /** Limits the documents returned by a query. */
-        fun asLimit(): Limit = limit.getOrThrow("limit")
+        fun asLimit(): com.turbopuffer.models.namespaces.Limit = limit.getOrThrow("limit")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -664,7 +564,7 @@ private constructor(
                 object : Visitor<Unit> {
                     override fun visitInteger(integer: Long) {}
 
-                    override fun visitLimit(limit: Limit) {
+                    override fun visitLimit(limit: com.turbopuffer.models.namespaces.Limit) {
                         limit.validate()
                     }
                 }
@@ -692,7 +592,8 @@ private constructor(
                 object : Visitor<Int> {
                     override fun visitInteger(integer: Long) = 1
 
-                    override fun visitLimit(limit: Limit) = limit.validity()
+                    override fun visitLimit(limit: com.turbopuffer.models.namespaces.Limit) =
+                        limit.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -721,7 +622,8 @@ private constructor(
             @JvmStatic fun ofInteger(integer: Long) = Limit(integer = integer)
 
             /** Limits the documents returned by a query. */
-            @JvmStatic fun ofLimit(limit: Limit) = Limit(limit = limit)
+            @JvmStatic
+            fun ofLimit(limit: com.turbopuffer.models.namespaces.Limit) = Limit(limit = limit)
         }
 
         /** An interface that defines how to map each variant of [Limit] to a value of type [T]. */
@@ -730,7 +632,7 @@ private constructor(
             fun visitInteger(integer: Long): T
 
             /** Limits the documents returned by a query. */
-            fun visitLimit(limit: Limit): T
+            fun visitLimit(limit: com.turbopuffer.models.namespaces.Limit): T
 
             /**
              * Maps an unknown variant of [Limit] to a value of type [T].
@@ -754,9 +656,11 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<Limit>())?.let {
-                                Limit(limit = it, _json = json)
-                            },
+                            tryDeserialize(
+                                    node,
+                                    jacksonTypeRef<com.turbopuffer.models.namespaces.Limit>(),
+                                )
+                                ?.let { Limit(limit = it, _json = json) },
                             tryDeserialize(node, jacksonTypeRef<Long>())?.let {
                                 Limit(integer = it, _json = json)
                             },
