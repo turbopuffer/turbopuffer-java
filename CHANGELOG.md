@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.15.0 (2026-02-08)
+
+Full Changelog: [v1.14.0...v1.15.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.14.0...v1.15.0)
+
+### Features
+
+* add support for `limit` query parameter ([bd784a7](https://github.com/turbopuffer/turbopuffer-java/commit/bd784a7882a4f88cdbb5510950aa77adfb9d18be))
+* spec: clean up limit codegen ([3aa6609](https://github.com/turbopuffer/turbopuffer-java/commit/3aa660981674eb0463064120f35b15333d1c75c0))
+
+
+### Chores
+
+* **internal:** upgrade AssertJ ([8bb6293](https://github.com/turbopuffer/turbopuffer-java/commit/8bb629385488aa0b7dd29f71bf3fe8e1bd7bd9fe))
+
 ## 1.14.0 (2026-02-03)
 
 Full Changelog: [v1.13.0...v1.14.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.13.0...v1.14.0)
