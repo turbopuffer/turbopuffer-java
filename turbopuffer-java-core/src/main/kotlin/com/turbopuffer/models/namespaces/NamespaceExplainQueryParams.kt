@@ -93,7 +93,7 @@ private constructor(
     fun includeAttributes(): Optional<IncludeAttributes> = body.includeAttributes()
 
     /**
-     * Limit configuration for query results.
+     * Limits the documents returned by a query.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -371,7 +371,7 @@ private constructor(
             body.includeAttributesOfStrings(strings)
         }
 
-        /** Limit configuration for query results. */
+        /** Limits the documents returned by a query. */
         fun limit(limit: Query.Limit) = apply { body.limit(limit) }
 
         /**
@@ -387,7 +387,7 @@ private constructor(
         fun limit(integer: Long) = apply { body.limit(integer) }
 
         /** Alias for calling [Builder.limit] with `Query.Limit.ofLimit(limit)`. */
-        fun limit(limit: Query.Limit.InnerLimit) = apply { body.limit(limit) }
+        fun limit(limit: Limit) = apply { body.limit(limit) }
 
         /** How to rank the documents in the namespace. */
         fun rankBy(rankBy: RankBy) = apply { body.rankBy(rankBy) }
@@ -713,7 +713,7 @@ private constructor(
             includeAttributes.getOptional("include_attributes")
 
         /**
-         * Limit configuration for query results.
+         * Limits the documents returned by a query.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
@@ -1020,7 +1020,7 @@ private constructor(
             fun includeAttributesOfStrings(strings: List<String>) =
                 includeAttributes(IncludeAttributes.ofStrings(strings))
 
-            /** Limit configuration for query results. */
+            /** Limits the documents returned by a query. */
             fun limit(limit: Query.Limit) = limit(JsonField.of(limit))
 
             /**
@@ -1036,7 +1036,7 @@ private constructor(
             fun limit(integer: Long) = limit(Query.Limit.ofInteger(integer))
 
             /** Alias for calling [Builder.limit] with `Query.Limit.ofLimit(limit)`. */
-            fun limit(limit: Query.Limit.InnerLimit) = limit(Query.Limit.ofLimit(limit))
+            fun limit(limit: Limit) = limit(Query.Limit.ofLimit(limit))
 
             /**
              * Sets [Builder.rankBy] to an arbitrary JSON value.
