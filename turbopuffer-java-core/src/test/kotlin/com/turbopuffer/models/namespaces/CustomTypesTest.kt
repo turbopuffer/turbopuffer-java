@@ -26,6 +26,26 @@ internal class CustomTypesTest {
             .isEqualTo("""["Product",2.0,["attr1","BM25","quick brown fox"]]""")
     }
 
+    @Test
+    fun rankByAttributeToString() {
+        val rankBy = RankByText.sum(
+            RankByText.bm25("name", "morgan"),
+            RankByText.product(2.0, RankByText.saturate(RankByText.attribute("age"), 12.0, 0.8))
+        );
+        assertThat(rankBy.toString())
+            .isEqualTo("""["Sum",[["name","BM25","morgan"],["Product",2.0,["Saturate",["Attribute","age"],{"pivot":12.0,"exponent":0.8}]]]]""")
+    }
+
+    @Test
+    fun rankByRecencyToString() {
+        val rankBy = RankByText.sum(
+            RankByText.bm25("name", "morgan"),
+            RankByText.product(2.0, RankByText.decay(RankByText.dist(RankByText.attribute("birth_date"), "2000-01-01"), "90d"))
+        );
+        assertThat(rankBy.toString())
+            .isEqualTo("""["Sum",[["name","BM25","morgan"],["Product",2.0,["Decay",["Dist",["Attribute","birth_date"],"2000-01-01"],{"pivot":"90d"}]]]]""")
+    }
+
     // Basic sanity check of the custom schema builder.
     @Test
     fun getSchema() {

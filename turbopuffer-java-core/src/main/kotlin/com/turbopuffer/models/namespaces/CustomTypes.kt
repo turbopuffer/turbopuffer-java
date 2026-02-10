@@ -1061,6 +1061,42 @@ sealed class RankByText() : RankBy() {
         @JvmStatic
         public fun product(subquery: RankByText, weight: Double): RankByTextProduct2 =
             RankByTextProduct2.create(subquery, weight)
+
+        @JvmStatic
+        public fun attribute(attr: String): RankByTextAttribute = RankByTextAttribute.create(attr)
+
+        @JvmStatic
+        public fun saturate(subquery: RankByText, pivot: Double): RankByTextSaturate = RankByTextSaturate.create(subquery, mutableMapOf(Pair("pivot", JsonValue.from(pivot))))
+
+        @JvmStatic
+        public fun saturate(subquery: RankByText, pivot: Double, exponent: Double): RankByTextSaturate = RankByTextSaturate.create(subquery, mutableMapOf(Pair("pivot", JsonValue.from(pivot)), Pair("exponent", JsonValue.from(exponent))))
+
+        @JvmStatic
+        public fun saturate(subquery: RankByText, pivot: String): RankByTextDecay = RankByTextDecay.create(subquery, mutableMapOf(Pair("pivot", JsonValue.from(pivot))))
+
+        @JvmStatic
+        public fun saturate(subquery: RankByText, pivot: String, exponent: Double): RankByTextDecay = RankByTextDecay.create(subquery, mutableMapOf(Pair("pivot", JsonValue.from(pivot)), Pair("exponent", JsonValue.from(exponent))))
+
+        @JvmStatic
+        public fun decay(subquery: RankByText, pivot: Double): RankByTextDecay = RankByTextDecay.create(subquery, mutableMapOf(Pair("pivot", JsonValue.from(pivot))))
+
+        @JvmStatic
+        public fun decay(subquery: RankByText, pivot: Double, exponent: Double): RankByTextDecay = RankByTextDecay.create(subquery, mutableMapOf(Pair("pivot", JsonValue.from(pivot)), Pair("exponent", JsonValue.from(exponent))))
+
+        @JvmStatic
+        public fun decay(subquery: RankByText, pivot: String): RankByTextDecay = RankByTextDecay.create(subquery, mutableMapOf(Pair("pivot", JsonValue.from(pivot))))
+
+        @JvmStatic
+        public fun decay(subquery: RankByText, pivot: String, exponent: Double): RankByTextDecay = RankByTextDecay.create(subquery, mutableMapOf(Pair("pivot", JsonValue.from(pivot)), Pair("exponent", JsonValue.from(exponent))))
+
+        @JvmStatic
+        public fun dist(subquery: RankByText, origin: String): RankByTextDist = RankByTextDist.create(subquery, JsonValue.from(origin))
+
+        @JvmStatic
+        public fun dist(subquery: RankByText, origin: Long): RankByTextDist = RankByTextDist.create(subquery, JsonValue.from(origin))
+
+        @JvmStatic
+        public fun dist(subquery: RankByText, origin: Double): RankByTextDist = RankByTextDist.create(subquery, JsonValue.from(origin))
     }
 
     class Deserializer : BaseDeserializer<RankByText>(RankByText::class) {
@@ -1233,6 +1269,77 @@ class RankByTextSum private constructor(subqueries: List<RankByText>) : RankByTe
     companion object {
         @JvmSynthetic
         internal fun create(subqueries: List<RankByText>): RankByTextSum = RankByTextSum(subqueries)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "attr")
+class RankByTextAttribute private constructor(attr: String) : RankByText() {
+    private val f0: String = "Attribute"
+    private val attr: String = attr
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String): RankByTextAttribute = RankByTextAttribute(attr)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "clause", "options")
+class RankByTextSaturate private constructor(clause: RankByText, options: MutableMap<String, JsonValue>) : RankByText() {
+    private val f0: String = "Saturate"
+    private val clause: RankByText = clause;
+    private val options: MutableMap<String, JsonValue> = options;
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(clause: RankByText, options: MutableMap<String, JsonValue>): RankByTextSaturate = RankByTextSaturate(clause, options)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "clause", "options")
+class RankByTextDecay private constructor(clause: RankByText, options: MutableMap<String, JsonValue>) : RankByText() {
+    private val f0: String = "Decay"
+    private val clause: RankByText = clause;
+    private val options: MutableMap<String, JsonValue> = options;
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(clause: RankByText, options: MutableMap<String, JsonValue>): RankByTextDecay = RankByTextDecay(clause, options)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "clause", "origin")
+class RankByTextDist private constructor(clause: RankByText, origin: JsonValue) : RankByText() {
+    private val f0: String = "Dist"
+    private val clause: RankByText = clause;
+    private val origin: JsonValue = origin;
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(clause: RankByText, origin: JsonValue): RankByTextDist = RankByTextDist(clause, origin)
     }
 }
 
