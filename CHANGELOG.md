@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.16.0 (2026-02-17)
+
+Full Changelog: [v1.15.0...v1.16.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.15.0...v1.16.0)
+
+### Features
+
+* Add ranking-by-attribute to the spec. ([457c604](https://github.com/turbopuffer/turbopuffer-java/commit/457c6040dfedae246326e071a7ad01c664ab2db4))
+
+
+### Chores
+
+* **internal:** update `TestServerExtension` comment ([e3ce07f](https://github.com/turbopuffer/turbopuffer-java/commit/e3ce07f2d2a1d383f8095c2bddd4f0c79f708815))
+
 ## 1.15.0 (2026-02-08)
 
 Full Changelog: [v1.14.0...v1.15.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.14.0...v1.15.0)
