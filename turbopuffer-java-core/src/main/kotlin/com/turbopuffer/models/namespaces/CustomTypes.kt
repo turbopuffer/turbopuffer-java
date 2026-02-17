@@ -1061,6 +1061,21 @@ sealed class RankByText() : RankBy() {
         @JvmStatic
         public fun product(subquery: RankByText, weight: Double): RankByTextProduct2 =
             RankByTextProduct2.create(subquery, weight)
+
+        @JvmStatic
+        public fun attribute(attr: String): RankByTextAttribute = RankByTextAttribute.create(attr)
+
+        @JvmStatic
+        public fun saturate(subquery: RankByText, params: SaturateParams): RankByTextSaturate =
+            RankByTextSaturate.create(subquery, params)
+
+        @JvmStatic
+        public fun decay(subquery: RankByText, params: DecayParams): RankByTextDecay =
+            RankByTextDecay.create(subquery, params)
+
+        @JvmStatic
+        public fun dist(subquery: RankByText, origin: Any): RankByTextDist =
+            RankByTextDist.create(subquery, origin)
     }
 
     class Deserializer : BaseDeserializer<RankByText>(RankByText::class) {
@@ -1075,6 +1090,23 @@ class RankByTextRaw internal constructor(value: JsonValue) : RankByText() {
 
     override fun toString(): String {
         return jsonMapper.writeValueAsString(value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "attr")
+class RankByTextAttribute private constructor(attr: String) : RankByText() {
+    private val f0: String = "Attribute"
+    private val attr: String = attr
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String): RankByTextAttribute = RankByTextAttribute(attr)
     }
 }
 
@@ -1166,6 +1198,45 @@ private constructor(attr: String, value: String, params: Bm25ClauseParams) : Ran
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "subquery", "params")
+class RankByTextDecay private constructor(subquery: RankByText, params: DecayParams) :
+    RankByText() {
+    private val f0: String = "Decay"
+    private val subquery: RankByText = subquery
+    private val params: DecayParams = params
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(subquery: RankByText, params: DecayParams): RankByTextDecay =
+            RankByTextDecay(subquery, params)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "subquery", "origin")
+class RankByTextDist private constructor(subquery: RankByText, origin: Any) : RankByText() {
+    private val f0: String = "Dist"
+    private val subquery: RankByText = subquery
+    private val origin: JsonValue = JsonValue.from(origin)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(subquery: RankByText, origin: Any): RankByTextDist =
+            RankByTextDist(subquery, origin)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("f0", "subqueries")
 class RankByTextMax private constructor(subqueries: List<RankByText>) : RankByText() {
     private val f0: String = "Max"
@@ -1216,6 +1287,26 @@ class RankByTextProduct2 private constructor(subquery: RankByText, weight: Doubl
         @JvmSynthetic
         internal fun create(subquery: RankByText, weight: Double): RankByTextProduct2 =
             RankByTextProduct2(subquery, weight)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "subquery", "params")
+class RankByTextSaturate private constructor(subquery: RankByText, params: SaturateParams) :
+    RankByText() {
+    private val f0: String = "Saturate"
+    private val subquery: RankByText = subquery
+    private val params: SaturateParams = params
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(subquery: RankByText, params: SaturateParams): RankByTextSaturate =
+            RankByTextSaturate(subquery, params)
     }
 }
 
