@@ -63,12 +63,14 @@ import com.turbopuffer.models.namespaces.NamespaceWriteResponse;
 import com.turbopuffer.models.namespaces.Row;
 import java.util.List;
 
-// Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
-// Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
-TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
+TurbopufferClient client = TurbopufferOkHttpClient.builder()
+    // Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+    // Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+    .fromEnv()
+    .defaultNamespace("My Default Namespace")
+    .build();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
     .addUpsertRow(Row.builder()
         .id("2108ed60-6851-49a0-9016-8325434f3845")
@@ -175,12 +177,14 @@ import com.turbopuffer.models.namespaces.Row;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
-// Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
-TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
+TurbopufferClient client = TurbopufferOkHttpClient.builder()
+    // Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+    // Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+    .fromEnv()
+    .defaultNamespace("My Default Namespace")
+    .build();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
     .addUpsertRow(Row.builder()
         .id("2108ed60-6851-49a0-9016-8325434f3845")
@@ -204,12 +208,14 @@ import com.turbopuffer.models.namespaces.Row;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
-// Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
-TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
+TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.builder()
+    // Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+    // Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+    .fromEnv()
+    .defaultNamespace("My Default Namespace")
+    .build();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .namespace("products")
     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
     .addUpsertRow(Row.builder()
         .id("2108ed60-6851-49a0-9016-8325434f3845")
