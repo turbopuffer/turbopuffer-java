@@ -25,6 +25,7 @@ import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
+import com.turbopuffer.models.namespaces.Schema
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -206,6 +207,17 @@ interface NamespaceServiceAsync {
         params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
     ): CompletableFuture<NamespaceUpdateSchemaResponse> =
         updateSchema(params, RequestOptions.none())
+
+    /** @see updateSchema */
+    fun updateSchema(
+        schema: Schema,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceUpdateSchemaResponse> =
+        updateSchema(NamespaceUpdateSchemaParams.builder().schema(schema).build(), requestOptions)
+
+    /** @see updateSchema */
+    fun updateSchema(schema: Schema): CompletableFuture<NamespaceUpdateSchemaResponse> =
+        updateSchema(schema, RequestOptions.none())
 
     /** @see updateSchema */
     fun updateSchema(
@@ -457,6 +469,22 @@ interface NamespaceServiceAsync {
             params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
         ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
             updateSchema(params, RequestOptions.none())
+
+        /** @see updateSchema */
+        fun updateSchema(
+            schema: Schema,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
+            updateSchema(
+                NamespaceUpdateSchemaParams.builder().schema(schema).build(),
+                requestOptions,
+            )
+
+        /** @see updateSchema */
+        fun updateSchema(
+            schema: Schema
+        ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
+            updateSchema(schema, RequestOptions.none())
 
         /** @see updateSchema */
         fun updateSchema(

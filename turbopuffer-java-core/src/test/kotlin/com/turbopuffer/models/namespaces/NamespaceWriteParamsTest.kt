@@ -53,8 +53,8 @@ internal class NamespaceWriteParamsTest {
             )
             .returnAffectedIds(true)
             .schema(
-                NamespaceWriteParams.Schema.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                Schema.builder()
+                    .put("foo", AttributeSchemaConfig.builder().type("string").build())
                     .build()
             )
             .upsertColumns(
@@ -129,8 +129,8 @@ internal class NamespaceWriteParamsTest {
                 )
                 .returnAffectedIds(true)
                 .schema(
-                    NamespaceWriteParams.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                    Schema.builder()
+                        .put("foo", AttributeSchemaConfig.builder().type("string").build())
                         .build()
                 )
                 .upsertColumns(
@@ -197,8 +197,8 @@ internal class NamespaceWriteParamsTest {
         assertThat(body.returnAffectedIds()).contains(true)
         assertThat(body.schema())
             .contains(
-                NamespaceWriteParams.Schema.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                Schema.builder()
+                    .put("foo", AttributeSchemaConfig.builder().type("string").build())
                     .build()
             )
         assertThat(body.upsertColumns())
