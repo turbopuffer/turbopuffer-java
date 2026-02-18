@@ -499,6 +499,25 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
     .build();
 ```
 
+### Connection pooling
+
+To customize the underlying OkHttp connection pool, configure the client using the `maxIdleConnections` and `keepAliveDuration` methods:
+
+```java
+import com.turbopuffer.client.TurbopufferClient;
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import java.time.Duration;
+
+TurbopufferClient client = TurbopufferOkHttpClient.builder()
+    .fromEnv()
+    // If `maxIdleConnections` is set, then `keepAliveDuration` must be set, and vice versa.
+    .maxIdleConnections(10)
+    .keepAliveDuration(Duration.ofMinutes(2))
+    .build();
+```
+
+If both options are unset, OkHttp's default connection pool settings are used.
+
 ### Compression
 
 Requests default to not advertising gzip compression. To enable compression so responses are
