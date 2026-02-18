@@ -206,6 +206,19 @@ interface NamespaceServiceAsync {
 
     /** @see updateSchema */
     fun updateSchema(
+        schema: NamespaceUpdateSchemaParams.Schema,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceUpdateSchemaResponse> =
+        updateSchema(NamespaceUpdateSchemaParams.builder().schema(schema).build(), requestOptions)
+
+    /** @see updateSchema */
+    fun updateSchema(
+        schema: NamespaceUpdateSchemaParams.Schema
+    ): CompletableFuture<NamespaceUpdateSchemaResponse> =
+        updateSchema(schema, RequestOptions.none())
+
+    /** @see updateSchema */
+    fun updateSchema(
         requestOptions: RequestOptions
     ): CompletableFuture<NamespaceUpdateSchemaResponse> =
         updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
@@ -451,6 +464,22 @@ interface NamespaceServiceAsync {
             params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
         ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
             updateSchema(params, RequestOptions.none())
+
+        /** @see updateSchema */
+        fun updateSchema(
+            schema: NamespaceUpdateSchemaParams.Schema,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
+            updateSchema(
+                NamespaceUpdateSchemaParams.builder().schema(schema).build(),
+                requestOptions,
+            )
+
+        /** @see updateSchema */
+        fun updateSchema(
+            schema: NamespaceUpdateSchemaParams.Schema
+        ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
+            updateSchema(schema, RequestOptions.none())
 
         /** @see updateSchema */
         fun updateSchema(

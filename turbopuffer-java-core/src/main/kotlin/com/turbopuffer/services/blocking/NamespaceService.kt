@@ -195,6 +195,17 @@ interface NamespaceService {
     ): NamespaceUpdateSchemaResponse = updateSchema(params, RequestOptions.none())
 
     /** @see updateSchema */
+    fun updateSchema(
+        schema: NamespaceUpdateSchemaParams.Schema,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceUpdateSchemaResponse =
+        updateSchema(NamespaceUpdateSchemaParams.builder().schema(schema).build(), requestOptions)
+
+    /** @see updateSchema */
+    fun updateSchema(schema: NamespaceUpdateSchemaParams.Schema): NamespaceUpdateSchemaResponse =
+        updateSchema(schema, RequestOptions.none())
+
+    /** @see updateSchema */
     fun updateSchema(requestOptions: RequestOptions): NamespaceUpdateSchemaResponse =
         updateSchema(NamespaceUpdateSchemaParams.none(), requestOptions)
 
@@ -450,6 +461,24 @@ interface NamespaceService {
             params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
         ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
             updateSchema(params, RequestOptions.none())
+
+        /** @see updateSchema */
+        @MustBeClosed
+        fun updateSchema(
+            schema: NamespaceUpdateSchemaParams.Schema,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
+            updateSchema(
+                NamespaceUpdateSchemaParams.builder().schema(schema).build(),
+                requestOptions,
+            )
+
+        /** @see updateSchema */
+        @MustBeClosed
+        fun updateSchema(
+            schema: NamespaceUpdateSchemaParams.Schema
+        ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
+            updateSchema(schema, RequestOptions.none())
 
         /** @see updateSchema */
         @MustBeClosed
