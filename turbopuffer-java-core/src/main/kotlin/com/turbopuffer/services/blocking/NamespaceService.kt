@@ -26,6 +26,7 @@ import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
+import com.turbopuffer.models.namespaces.Schema
 import java.util.function.Consumer
 
 interface NamespaceService {
@@ -196,6 +197,17 @@ interface NamespaceService {
     fun updateSchema(
         params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
     ): NamespaceUpdateSchemaResponse = updateSchema(params, RequestOptions.none())
+
+    /** @see updateSchema */
+    fun updateSchema(
+        schema: Schema,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceUpdateSchemaResponse =
+        updateSchema(NamespaceUpdateSchemaParams.builder().schema(schema).build(), requestOptions)
+
+    /** @see updateSchema */
+    fun updateSchema(schema: Schema): NamespaceUpdateSchemaResponse =
+        updateSchema(schema, RequestOptions.none())
 
     /** @see updateSchema */
     fun updateSchema(requestOptions: RequestOptions): NamespaceUpdateSchemaResponse =
@@ -456,6 +468,22 @@ interface NamespaceService {
             params: NamespaceUpdateSchemaParams = NamespaceUpdateSchemaParams.none()
         ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
             updateSchema(params, RequestOptions.none())
+
+        /** @see updateSchema */
+        @MustBeClosed
+        fun updateSchema(
+            schema: Schema,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
+            updateSchema(
+                NamespaceUpdateSchemaParams.builder().schema(schema).build(),
+                requestOptions,
+            )
+
+        /** @see updateSchema */
+        @MustBeClosed
+        fun updateSchema(schema: Schema): HttpResponseFor<NamespaceUpdateSchemaResponse> =
+            updateSchema(schema, RequestOptions.none())
 
         /** @see updateSchema */
         @MustBeClosed
