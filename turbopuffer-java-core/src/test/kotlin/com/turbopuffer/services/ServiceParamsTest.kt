@@ -45,7 +45,7 @@ internal class ServiceParamsTest {
                 .build()
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun namespaces() {
         val turbopufferClient = client
@@ -65,7 +65,7 @@ internal class ServiceParamsTest {
         )
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun write() {
         val namespaceService = client.namespace("ns")
