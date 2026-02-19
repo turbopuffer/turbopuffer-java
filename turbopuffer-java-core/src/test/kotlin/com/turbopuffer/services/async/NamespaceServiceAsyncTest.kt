@@ -2,7 +2,6 @@
 
 package com.turbopuffer.services.async
 
-import com.turbopuffer.TestServerExtension
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.namespaces.AttributeSchemaConfig
@@ -25,19 +24,13 @@ import com.turbopuffer.models.namespaces.Schema
 import com.turbopuffer.models.namespaces.VectorEncoding
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(TestServerExtension::class)
 internal class NamespaceServiceAsyncTest {
 
     @Disabled("Prism tests are disabled")
     @Test
     fun deleteAll() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .build()
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
@@ -52,11 +45,7 @@ internal class NamespaceServiceAsyncTest {
     @Disabled("Prism tests are disabled")
     @Test
     fun explainQuery() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .build()
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
@@ -84,11 +73,7 @@ internal class NamespaceServiceAsyncTest {
     @Disabled("Prism tests are disabled")
     @Test
     fun hintCacheWarm() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .build()
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
@@ -103,11 +88,7 @@ internal class NamespaceServiceAsyncTest {
     @Disabled("Prism tests are disabled")
     @Test
     fun metadata() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .build()
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespace("ns")
 
         val namespaceMetadataFuture =
@@ -120,11 +101,7 @@ internal class NamespaceServiceAsyncTest {
     @Disabled("Prism tests are disabled")
     @Test
     fun multiQuery() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .build()
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
@@ -156,11 +133,7 @@ internal class NamespaceServiceAsyncTest {
     @Disabled("Prism tests are disabled")
     @Test
     fun query() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .build()
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
@@ -188,11 +161,7 @@ internal class NamespaceServiceAsyncTest {
     @Disabled("Prism tests are disabled")
     @Test
     fun recall() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .build()
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
@@ -213,11 +182,7 @@ internal class NamespaceServiceAsyncTest {
     @Disabled("Prism tests are disabled")
     @Test
     fun schema() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .build()
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
@@ -231,11 +196,7 @@ internal class NamespaceServiceAsyncTest {
     @Disabled("Prism tests are disabled")
     @Test
     fun updateSchema() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .build()
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
@@ -256,11 +217,7 @@ internal class NamespaceServiceAsyncTest {
     @Disabled("Prism tests are disabled")
     @Test
     fun write() {
-        val client =
-            TurbopufferOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("tpuf_A1...")
-                .build()
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespace("ns")
 
         val responseFuture =
