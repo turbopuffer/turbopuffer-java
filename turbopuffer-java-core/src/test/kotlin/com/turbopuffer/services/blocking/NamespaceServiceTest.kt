@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test
 
 internal class NamespaceServiceTest {
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun deleteAll() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
@@ -39,7 +39,7 @@ internal class NamespaceServiceTest {
         response.validate()
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun explainQuery() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
@@ -74,7 +74,7 @@ internal class NamespaceServiceTest {
         response.validate()
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun hintCacheWarm() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
@@ -88,7 +88,7 @@ internal class NamespaceServiceTest {
         response.validate()
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun metadata() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
@@ -102,7 +102,7 @@ internal class NamespaceServiceTest {
         namespaceMetadata.validate()
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun multiQuery() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
@@ -141,7 +141,7 @@ internal class NamespaceServiceTest {
         response.validate()
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun query() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
@@ -176,7 +176,7 @@ internal class NamespaceServiceTest {
         response.validate()
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun recall() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
@@ -197,7 +197,7 @@ internal class NamespaceServiceTest {
         response.validate()
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun schema() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
@@ -209,7 +209,7 @@ internal class NamespaceServiceTest {
         response.validate()
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun updateSchema() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
@@ -230,7 +230,7 @@ internal class NamespaceServiceTest {
         response.validate()
     }
 
-    @Disabled("Prism tests are disabled")
+    @Disabled("Mock server tests are disabled")
     @Test
     fun write() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
