@@ -60,12 +60,21 @@ import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
 import com.turbopuffer.models.namespaces.*;
 import java.util.List;
 
-TurbopufferClient tpuf = TurbopufferOkHttpClient.builder()
+TurbopufferClient client = TurbopufferOkHttpClient.builder()
+    // Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+    // Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
     .fromEnv()
-    // when using fromEnv(), this is the default and can be omitted
-    .apiKey(System.getenv("TURBOPUFFER_API_KEY"))
-    // when using fromEnv(), this defaults to `TURBOPUFFER_REGION`
-    .region("gcp-us-central1")
+    .defaultNamespace("My Default Namespace")
+    .build();
+
+NamespaceWriteParams params = NamespaceWriteParams.builder()
+    .distanceMetric(DistanceMetric.COSINE_DISTANCE)
+    .addUpsertRow(Row.builder()
+        .id("2108ed60-6851-49a0-9016-8325434f3845")
+        .vectorOfNumber(List.of(
+          0.1, 0.2
+        ))
+        .build())
     .build();
 
 var ns = tpuf.namespace("example");
@@ -191,9 +200,12 @@ import com.turbopuffer.models.namespaces.Row;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
-// Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
-TurbopufferClient client = TurbopufferOkHttpClient.fromEnv();
+TurbopufferClient client = TurbopufferOkHttpClient.builder()
+    // Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+    // Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+    .fromEnv()
+    .defaultNamespace("My Default Namespace")
+    .build();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -219,9 +231,12 @@ import com.turbopuffer.models.namespaces.Row;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
-// Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
-TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.fromEnv();
+TurbopufferClientAsync client = TurbopufferOkHttpClientAsync.builder()
+    // Configures using the `turbopuffer.apiKey`, `turbopuffer.region` and `turbopuffer.baseUrl` system properties
+    // Or configures using the `TURBOPUFFER_API_KEY`, `TURBOPUFFER_REGION` and `TURBOPUFFER_BASE_URL` environment variables
+    .fromEnv()
+    .defaultNamespace("My Default Namespace")
+    .build();
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
