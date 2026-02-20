@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.17.0 (2026-02-20)
+
+Full Changelog: [v1.16.0...v1.17.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.16.0...v1.17.0)
+
+### Features
+
+* **client:** add connection pooling option ([0ac683f](https://github.com/turbopuffer/turbopuffer-java/commit/0ac683fe3ea39506f515ac5c0f12cd0595debd08))
+* **client:** add more convenience service method overloads ([18b6b5a](https://github.com/turbopuffer/turbopuffer-java/commit/18b6b5ae87c76efb828dab31e3f6a7a2805d77c5))
+
+
+### Chores
+
+* **internal:** make `OkHttp` constructor internal ([33bf6d1](https://github.com/turbopuffer/turbopuffer-java/commit/33bf6d1450fbba27ce3c355d3ea58f3ec18a8e30))
+* **internal:** remove mock server code ([7462248](https://github.com/turbopuffer/turbopuffer-java/commit/7462248f0291025e6c4f1fa32171a6f18fd8acb3))
+* update mock server docs ([967addb](https://github.com/turbopuffer/turbopuffer-java/commit/967addba715d502642f7d4e0a69cb48901f9e666))
+
+
+### Documentation
+
+* simplify examples ([99e9d34](https://github.com/turbopuffer/turbopuffer-java/commit/99e9d34ebb9da752ed97ab297054fbf7b8636004))
+
 ## 1.16.0 (2026-02-17)
 
 Full Changelog: [v1.15.0...v1.16.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.15.0...v1.16.0)
