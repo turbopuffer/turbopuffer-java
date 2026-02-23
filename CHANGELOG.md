@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.17.1 (2026-02-23)
+
+Full Changelog: [v1.17.0...v1.17.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.17.0...v1.17.1)
+
+### Chores
+
+* drop apache dependency ([3f21095](https://github.com/turbopuffer/turbopuffer-java/commit/3f21095c05a26925f2cfef2c034e43050ea0a4ac))
+* make `Properties` more resilient to `null` ([2dd0f3c](https://github.com/turbopuffer/turbopuffer-java/commit/2dd0f3cea8b04ba6cad47d70f2264a5a32493571))
+
 ## 1.17.0 (2026-02-20)
 
 Full Changelog: [v1.16.0...v1.17.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.16.0...v1.17.0)
