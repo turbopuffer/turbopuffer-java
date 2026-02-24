@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.17.2 (2026-02-24)
+
+Full Changelog: [v1.17.1...v1.17.2](https://github.com/turbopuffer/turbopuffer-java/compare/v1.17.1...v1.17.2)
+
+### Chores
+
+* **internal:** expand imports ([3f37e90](https://github.com/turbopuffer/turbopuffer-java/commit/3f37e9058e7e355eb77fadb9e4570f2636944092))
+
 ## 1.17.1 (2026-02-23)
 
 Full Changelog: [v1.17.0...v1.17.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.17.0...v1.17.1)
