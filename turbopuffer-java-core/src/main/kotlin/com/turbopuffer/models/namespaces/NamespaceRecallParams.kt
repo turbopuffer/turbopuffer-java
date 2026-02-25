@@ -11,10 +11,8 @@ import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
-import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
-import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -59,14 +57,6 @@ private constructor(
     fun num(): Optional<Long> = body.num()
 
     /**
-     * Use specific query vectors for the measurement. If omitted, sampled from the index.
-     *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun queries(): Optional<List<Double>> = body.queries()
-
-    /**
      * Search for `top_k` nearest neighbors.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -88,13 +78,6 @@ private constructor(
      * Unlike [num], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _num(): JsonField<Long> = body._num()
-
-    /**
-     * Returns the raw JSON value of [queries].
-     *
-     * Unlike [queries], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _queries(): JsonField<List<Double>> = body._queries()
 
     /**
      * Returns the raw JSON value of [topK].
@@ -150,9 +133,7 @@ private constructor(
          * - [filters]
          * - [includeGroundTruth]
          * - [num]
-         * - [queries]
          * - [topK]
-         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -185,25 +166,6 @@ private constructor(
          * is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun num(num: JsonField<Long>) = apply { body.num(num) }
-
-        /** Use specific query vectors for the measurement. If omitted, sampled from the index. */
-        fun queries(queries: List<Double>) = apply { body.queries(queries) }
-
-        /**
-         * Sets [Builder.queries] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.queries] with a well-typed `List<Double>` value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun queries(queries: JsonField<List<Double>>) = apply { body.queries(queries) }
-
-        /**
-         * Adds a single [Double] to [queries].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addQuery(query: Double) = apply { body.addQuery(query) }
 
         /** Search for `top_k` nearest neighbors. */
         fun topK(topK: Long) = apply { body.topK(topK) }
@@ -365,7 +327,6 @@ private constructor(
         private val filters: JsonValue,
         private val includeGroundTruth: JsonField<Boolean>,
         private val num: JsonField<Long>,
-        private val queries: JsonField<List<Double>>,
         private val topK: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -377,11 +338,8 @@ private constructor(
             @ExcludeMissing
             includeGroundTruth: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("num") @ExcludeMissing num: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("queries")
-            @ExcludeMissing
-            queries: JsonField<List<Double>> = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
-        ) : this(filters, includeGroundTruth, num, queries, topK, mutableMapOf())
+        ) : this(filters, includeGroundTruth, num, topK, mutableMapOf())
 
         /**
          * Filter by attributes. Same syntax as the query endpoint.
@@ -411,14 +369,6 @@ private constructor(
         fun num(): Optional<Long> = num.getOptional("num")
 
         /**
-         * Use specific query vectors for the measurement. If omitted, sampled from the index.
-         *
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun queries(): Optional<List<Double>> = queries.getOptional("queries")
-
-        /**
          * Search for `top_k` nearest neighbors.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -442,13 +392,6 @@ private constructor(
          * Unlike [num], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("num") @ExcludeMissing fun _num(): JsonField<Long> = num
-
-        /**
-         * Returns the raw JSON value of [queries].
-         *
-         * Unlike [queries], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("queries") @ExcludeMissing fun _queries(): JsonField<List<Double>> = queries
 
         /**
          * Returns the raw JSON value of [topK].
@@ -481,7 +424,6 @@ private constructor(
             private var filters: JsonValue = JsonMissing.of()
             private var includeGroundTruth: JsonField<Boolean> = JsonMissing.of()
             private var num: JsonField<Long> = JsonMissing.of()
-            private var queries: JsonField<MutableList<Double>>? = null
             private var topK: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -490,7 +432,6 @@ private constructor(
                 filters = body.filters
                 includeGroundTruth = body.includeGroundTruth
                 num = body.num
-                queries = body.queries.map { it.toMutableList() }
                 topK = body.topK
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -526,34 +467,6 @@ private constructor(
              * value.
              */
             fun num(num: JsonField<Long>) = apply { this.num = num }
-
-            /**
-             * Use specific query vectors for the measurement. If omitted, sampled from the index.
-             */
-            fun queries(queries: List<Double>) = queries(JsonField.of(queries))
-
-            /**
-             * Sets [Builder.queries] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.queries] with a well-typed `List<Double>` value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun queries(queries: JsonField<List<Double>>) = apply {
-                this.queries = queries.map { it.toMutableList() }
-            }
-
-            /**
-             * Adds a single [Double] to [queries].
-             *
-             * @throws IllegalStateException if the field was previously set to a non-list.
-             */
-            fun addQuery(query: Double) = apply {
-                queries =
-                    (queries ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("queries", it).add(query)
-                    }
-            }
 
             /** Search for `top_k` nearest neighbors. */
             fun topK(topK: Long) = topK(JsonField.of(topK))
@@ -592,14 +505,7 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Body =
-                Body(
-                    filters,
-                    includeGroundTruth,
-                    num,
-                    (queries ?: JsonMissing.of()).map { it.toImmutable() },
-                    topK,
-                    additionalProperties.toMutableMap(),
-                )
+                Body(filters, includeGroundTruth, num, topK, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -611,7 +517,6 @@ private constructor(
 
             includeGroundTruth()
             num()
-            queries()
             topK()
             validated = true
         }
@@ -634,7 +539,6 @@ private constructor(
         internal fun validity(): Int =
             (if (includeGroundTruth.asKnown().isPresent) 1 else 0) +
                 (if (num.asKnown().isPresent) 1 else 0) +
-                (queries.asKnown().getOrNull()?.size ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
@@ -646,19 +550,18 @@ private constructor(
                 filters == other.filters &&
                 includeGroundTruth == other.includeGroundTruth &&
                 num == other.num &&
-                queries == other.queries &&
                 topK == other.topK &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(filters, includeGroundTruth, num, queries, topK, additionalProperties)
+            Objects.hash(filters, includeGroundTruth, num, topK, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{filters=$filters, includeGroundTruth=$includeGroundTruth, num=$num, queries=$queries, topK=$topK, additionalProperties=$additionalProperties}"
+            "Body{filters=$filters, includeGroundTruth=$includeGroundTruth, num=$num, topK=$topK, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
