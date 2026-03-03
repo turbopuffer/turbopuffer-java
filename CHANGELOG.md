@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.18.0 (2026-03-03)
+
+Full Changelog: [v1.17.1...v1.18.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.17.1...v1.18.0)
+
+### Features
+
+* Remove `queries` from recall endpoint ([7875f73](https://github.com/turbopuffer/turbopuffer-java/commit/7875f734195e868d33e7ee079a6c6d8279926d15))
+
+
+### Chores
+
+* **internal:** expand imports ([3f37e90](https://github.com/turbopuffer/turbopuffer-java/commit/3f37e9058e7e355eb77fadb9e4570f2636944092))
+
 ## 1.17.1 (2026-02-23)
 
 Full Changelog: [v1.17.0...v1.17.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.17.0...v1.17.1)
