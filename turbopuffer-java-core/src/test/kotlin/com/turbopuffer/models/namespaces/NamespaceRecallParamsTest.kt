@@ -3,7 +3,6 @@
 package com.turbopuffer.models.namespaces
 
 import com.turbopuffer.core.JsonValue
-import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -16,7 +15,6 @@ internal class NamespaceRecallParamsTest {
             .filters(JsonValue.from(mapOf<String, Any>()))
             .includeGroundTruth(true)
             .num(0L)
-            .addQuery(0.0)
             .topK(0L)
             .build()
     }
@@ -38,7 +36,6 @@ internal class NamespaceRecallParamsTest {
                 .filters(JsonValue.from(mapOf<String, Any>()))
                 .includeGroundTruth(true)
                 .num(0L)
-                .addQuery(0.0)
                 .topK(0L)
                 .build()
 
@@ -47,7 +44,6 @@ internal class NamespaceRecallParamsTest {
         assertThat(body._filters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.includeGroundTruth()).contains(true)
         assertThat(body.num()).contains(0L)
-        assertThat(body.queries().getOrNull()).containsExactly(0.0)
         assertThat(body.topK()).contains(0L)
     }
 
