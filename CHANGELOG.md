@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.19.0 (2026-03-15)
+
+Full Changelog: [v1.18.0...v1.19.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.18.0...v1.19.0)
+
+### Features
+
+* spec: host MCP on stainless ([aca4e23](https://github.com/turbopuffer/turbopuffer-java/commit/aca4e236f68434ff9e726e0ae90df0742fe6a6d7))
+
+
+### Bug Fixes
+
+* **client:** incorrect `Retry-After` parsing ([0f3fde2](https://github.com/turbopuffer/turbopuffer-java/commit/0f3fde2ad36dedcf0112c1a6462b6e803d4177bf))
+* fix request delays for retrying to be more respectful of high requested delays ([50931fc](https://github.com/turbopuffer/turbopuffer-java/commit/50931fcb733f921b4760c869c9919a0dd29660b1))
+
+
+### Chores
+
+* **ci:** skip uploading artifacts on stainless-internal branches ([75b025e](https://github.com/turbopuffer/turbopuffer-java/commit/75b025e680398d439aec4867da3a16ae7f76f04e))
+* **internal:** bump palantir-java-format ([9887f61](https://github.com/turbopuffer/turbopuffer-java/commit/9887f61276e05c5df9379b4c02ebc8afbaf94173))
+
 ## 1.18.0 (2026-03-03)
 
 Full Changelog: [v1.17.1...v1.18.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.17.1...v1.18.0)
