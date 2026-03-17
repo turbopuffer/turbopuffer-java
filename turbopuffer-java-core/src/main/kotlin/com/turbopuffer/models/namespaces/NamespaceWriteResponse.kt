@@ -29,6 +29,7 @@ private constructor(
     private val status: JsonValue,
     private val deletedIds: JsonField<List<Id>>,
     private val patchedIds: JsonField<List<Id>>,
+    private val performance: JsonField<WritePerformance>,
     private val rowsDeleted: JsonField<Long>,
     private val rowsPatched: JsonField<Long>,
     private val rowsRemaining: JsonField<Boolean>,
@@ -53,6 +54,9 @@ private constructor(
         @JsonProperty("patched_ids")
         @ExcludeMissing
         patchedIds: JsonField<List<Id>> = JsonMissing.of(),
+        @JsonProperty("performance")
+        @ExcludeMissing
+        performance: JsonField<WritePerformance> = JsonMissing.of(),
         @JsonProperty("rows_deleted")
         @ExcludeMissing
         rowsDeleted: JsonField<Long> = JsonMissing.of(),
@@ -75,6 +79,7 @@ private constructor(
         status,
         deletedIds,
         patchedIds,
+        performance,
         rowsDeleted,
         rowsPatched,
         rowsRemaining,
@@ -137,6 +142,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun patchedIds(): Optional<List<Id>> = patchedIds.getOptional("patched_ids")
+
+    /**
+     * The performance information for a write request.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun performance(): Optional<WritePerformance> = performance.getOptional("performance")
 
     /**
      * The number of rows deleted by the write request.
@@ -217,6 +230,15 @@ private constructor(
     @JsonProperty("patched_ids") @ExcludeMissing fun _patchedIds(): JsonField<List<Id>> = patchedIds
 
     /**
+     * Returns the raw JSON value of [performance].
+     *
+     * Unlike [performance], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("performance")
+    @ExcludeMissing
+    fun _performance(): JsonField<WritePerformance> = performance
+
+    /**
      * Returns the raw JSON value of [rowsDeleted].
      *
      * Unlike [rowsDeleted], this method doesn't throw if the JSON field has an unexpected type.
@@ -293,6 +315,7 @@ private constructor(
         private var status: JsonValue = JsonValue.from("OK")
         private var deletedIds: JsonField<MutableList<Id>>? = null
         private var patchedIds: JsonField<MutableList<Id>>? = null
+        private var performance: JsonField<WritePerformance> = JsonMissing.of()
         private var rowsDeleted: JsonField<Long> = JsonMissing.of()
         private var rowsPatched: JsonField<Long> = JsonMissing.of()
         private var rowsRemaining: JsonField<Boolean> = JsonMissing.of()
@@ -308,6 +331,7 @@ private constructor(
             status = namespaceWriteResponse.status
             deletedIds = namespaceWriteResponse.deletedIds.map { it.toMutableList() }
             patchedIds = namespaceWriteResponse.patchedIds.map { it.toMutableList() }
+            performance = namespaceWriteResponse.performance
             rowsDeleted = namespaceWriteResponse.rowsDeleted
             rowsPatched = namespaceWriteResponse.rowsPatched
             rowsRemaining = namespaceWriteResponse.rowsRemaining
@@ -435,6 +459,20 @@ private constructor(
         /** Alias for calling [addPatchedId] with `Id.ofInteger(integer)`. */
         fun addPatchedId(integer: Long) = addPatchedId(Id.ofInteger(integer))
 
+        /** The performance information for a write request. */
+        fun performance(performance: WritePerformance) = performance(JsonField.of(performance))
+
+        /**
+         * Sets [Builder.performance] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.performance] with a well-typed [WritePerformance] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun performance(performance: JsonField<WritePerformance>) = apply {
+            this.performance = performance
+        }
+
         /** The number of rows deleted by the write request. */
         fun rowsDeleted(rowsDeleted: Long) = rowsDeleted(JsonField.of(rowsDeleted))
 
@@ -561,6 +599,7 @@ private constructor(
                 status,
                 (deletedIds ?: JsonMissing.of()).map { it.toImmutable() },
                 (patchedIds ?: JsonMissing.of()).map { it.toImmutable() },
+                performance,
                 rowsDeleted,
                 rowsPatched,
                 rowsRemaining,
@@ -587,6 +626,7 @@ private constructor(
         }
         deletedIds().ifPresent { it.forEach { it.validate() } }
         patchedIds().ifPresent { it.forEach { it.validate() } }
+        performance().ifPresent { it.validate() }
         rowsDeleted()
         rowsPatched()
         rowsRemaining()
@@ -616,6 +656,7 @@ private constructor(
             status.let { if (it == JsonValue.from("OK")) 1 else 0 } +
             (deletedIds.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (patchedIds.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (performance.asKnown().getOrNull()?.validity() ?: 0) +
             (if (rowsDeleted.asKnown().isPresent) 1 else 0) +
             (if (rowsPatched.asKnown().isPresent) 1 else 0) +
             (if (rowsRemaining.asKnown().isPresent) 1 else 0) +
@@ -634,6 +675,7 @@ private constructor(
             status == other.status &&
             deletedIds == other.deletedIds &&
             patchedIds == other.patchedIds &&
+            performance == other.performance &&
             rowsDeleted == other.rowsDeleted &&
             rowsPatched == other.rowsPatched &&
             rowsRemaining == other.rowsRemaining &&
@@ -650,6 +692,7 @@ private constructor(
             status,
             deletedIds,
             patchedIds,
+            performance,
             rowsDeleted,
             rowsPatched,
             rowsRemaining,
@@ -662,5 +705,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceWriteResponse{billing=$billing, message=$message, rowsAffected=$rowsAffected, status=$status, deletedIds=$deletedIds, patchedIds=$patchedIds, rowsDeleted=$rowsDeleted, rowsPatched=$rowsPatched, rowsRemaining=$rowsRemaining, rowsUpserted=$rowsUpserted, upsertedIds=$upsertedIds, additionalProperties=$additionalProperties}"
+        "NamespaceWriteResponse{billing=$billing, message=$message, rowsAffected=$rowsAffected, status=$status, deletedIds=$deletedIds, patchedIds=$patchedIds, performance=$performance, rowsDeleted=$rowsDeleted, rowsPatched=$rowsPatched, rowsRemaining=$rowsRemaining, rowsUpserted=$rowsUpserted, upsertedIds=$upsertedIds, additionalProperties=$additionalProperties}"
 }
