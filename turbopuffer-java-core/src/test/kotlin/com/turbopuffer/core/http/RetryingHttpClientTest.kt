@@ -412,7 +412,7 @@ internal class RetryingHttpClientTest {
     fun execute_withExponentialBackoffCap(async: Boolean) {
         stubFor(post(urlPathEqualTo("/something")).willReturn(serviceUnavailable()))
         val sleeper = RecordingSleeper()
-        val retryingClient = retryingHttpClientBuilder(sleeper).maxRetries(6).build()
+        val retryingClient = retryingHttpClientBuilder(sleeper).maxRetries(7).build()
 
         val response =
             retryingClient.execute(
@@ -431,6 +431,8 @@ internal class RetryingHttpClientTest {
         assertThat(sleeper.durations[4]).isBetween(Duration.ofMillis(3600), Duration.ofMillis(4800))
         // retries=6: min(0.3 * 2^5, 8) = min(9.6, 8) = 8.0s * [0.75, 1.0] (capped)
         assertThat(sleeper.durations[5]).isBetween(Duration.ofMillis(6000), Duration.ofMillis(8000))
+        // retries=7: still capped at 8s * [0.75, 1.0]
+        assertThat(sleeper.durations[6]).isBetween(Duration.ofMillis(6000), Duration.ofMillis(8000))
         assertNoResponseLeaks()
     }
 
