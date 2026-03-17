@@ -97,6 +97,25 @@ internal class ClientOptionsTest {
     }
 
     @Test
+    fun toBuilder_updatesAuthorizationHeaderWhenApiKeyChanges() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("tpuf_old_key")
+                .baseUrl("https://tpuf.example.com")
+                .build()
+
+        assertThat(clientOptions.headers.values("Authorization"))
+            .containsExactly("Bearer tpuf_old_key")
+
+        val newClientOptions = clientOptions.toBuilder().apiKey("tpuf_new_key").build()
+
+        assertThat(newClientOptions.headers.values("Authorization"))
+            .containsExactly("Bearer tpuf_new_key")
+        assertThat(newClientOptions.apiKey).isEqualTo("tpuf_new_key")
+    }
+
+    @Test
     fun toBuilder_whenOriginalClientOptionsGarbageCollected_doesNotCloseOriginalClient() {
         var clientOptions =
             ClientOptions.builder()

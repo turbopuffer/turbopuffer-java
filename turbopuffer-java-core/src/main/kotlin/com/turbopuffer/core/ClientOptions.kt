@@ -200,7 +200,7 @@ private constructor(
             sleeper = clientOptions.sleeper
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
-            headers = clientOptions.headers.toBuilder()
+            headers = clientOptions.headers.toBuilder().apply { remove("Authorization") }
             queryParams = clientOptions.queryParams.toBuilder()
             responseValidation = clientOptions.responseValidation
             timeout = clientOptions.timeout
