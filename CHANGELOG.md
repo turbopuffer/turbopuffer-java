@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.19.1 (2026-03-17)
+
+Full Changelog: [v1.19.0...v1.19.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.19.0...v1.19.1)
+
+### Bug Fixes
+
+* correct Authorization header when API key changes via withOptions ([a587a2d](https://github.com/turbopuffer/turbopuffer-java/commit/a587a2da601be94d1b882bd7d135b65324d71907))
+
+
+### Chores
+
+* **internal:** tweak CI branches ([4a3fcf4](https://github.com/turbopuffer/turbopuffer-java/commit/4a3fcf48eedf79a5ba79682601ccf9923b912546))
+
 ## 1.19.0 (2026-03-15)
 
 Full Changelog: [v1.18.0...v1.19.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.18.0...v1.19.0)
