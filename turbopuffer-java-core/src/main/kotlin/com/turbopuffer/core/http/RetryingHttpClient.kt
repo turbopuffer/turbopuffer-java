@@ -219,7 +219,7 @@ private constructor(
             }
 
         // Apply exponential backoff, but not more than the max.
-        val backoffSeconds = min(0.3 * 2.0.pow(retries - 1), 8.0)
+        val backoffSeconds = min(0.25 * 2.0.pow(retries - 1), 8.0)
 
         // Apply some jitter
         val jitter = 1.0 - 0.25 * ThreadLocalRandom.current().nextDouble()
