@@ -45,6 +45,14 @@ private constructor(
     fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
     /**
+     * The namespace to create an instant, copy-on-write clone of.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun branchFromNamespace(): Optional<String> = body.branchFromNamespace()
+
+    /**
      * The namespace to copy documents from.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -197,6 +205,14 @@ private constructor(
     fun upsertRows(): Optional<List<Row>> = body.upsertRows()
 
     /**
+     * Returns the raw JSON value of [branchFromNamespace].
+     *
+     * Unlike [branchFromNamespace], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _branchFromNamespace(): JsonField<String> = body._branchFromNamespace()
+
+    /**
      * Returns the raw JSON value of [copyFromNamespace].
      *
      * Unlike [copyFromNamespace], this method doesn't throw if the JSON field has an unexpected
@@ -343,14 +359,30 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [branchFromNamespace]
          * - [copyFromNamespace]
          * - [deleteByFilter]
          * - [deleteByFilterAllowPartial]
          * - [deleteCondition]
-         * - [deletes]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /** The namespace to create an instant, copy-on-write clone of. */
+        fun branchFromNamespace(branchFromNamespace: String) = apply {
+            body.branchFromNamespace(branchFromNamespace)
+        }
+
+        /**
+         * Sets [Builder.branchFromNamespace] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.branchFromNamespace] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun branchFromNamespace(branchFromNamespace: JsonField<String>) = apply {
+            body.branchFromNamespace(branchFromNamespace)
+        }
 
         /** The namespace to copy documents from. */
         fun copyFromNamespace(copyFromNamespace: CopyFromNamespace) = apply {
@@ -768,6 +800,7 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val branchFromNamespace: JsonField<String>,
         private val copyFromNamespace: JsonField<CopyFromNamespace>,
         private val deleteByFilter: JsonValue,
         private val deleteByFilterAllowPartial: JsonField<Boolean>,
@@ -791,6 +824,9 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("branch_from_namespace")
+            @ExcludeMissing
+            branchFromNamespace: JsonField<String> = JsonMissing.of(),
             @JsonProperty("copy_from_namespace")
             @ExcludeMissing
             copyFromNamespace: JsonField<CopyFromNamespace> = JsonMissing.of(),
@@ -844,6 +880,7 @@ private constructor(
             @ExcludeMissing
             upsertRows: JsonField<List<Row>> = JsonMissing.of(),
         ) : this(
+            branchFromNamespace,
             copyFromNamespace,
             deleteByFilter,
             deleteByFilterAllowPartial,
@@ -864,6 +901,15 @@ private constructor(
             upsertRows,
             mutableMapOf(),
         )
+
+        /**
+         * The namespace to create an instant, copy-on-write clone of.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun branchFromNamespace(): Optional<String> =
+            branchFromNamespace.getOptional("branch_from_namespace")
 
         /**
          * The namespace to copy documents from.
@@ -1032,6 +1078,16 @@ private constructor(
         fun upsertRows(): Optional<List<Row>> = upsertRows.getOptional("upsert_rows")
 
         /**
+         * Returns the raw JSON value of [branchFromNamespace].
+         *
+         * Unlike [branchFromNamespace], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("branch_from_namespace")
+        @ExcludeMissing
+        fun _branchFromNamespace(): JsonField<String> = branchFromNamespace
+
+        /**
          * Returns the raw JSON value of [copyFromNamespace].
          *
          * Unlike [copyFromNamespace], this method doesn't throw if the JSON field has an unexpected
@@ -1183,6 +1239,7 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
+            private var branchFromNamespace: JsonField<String> = JsonMissing.of()
             private var copyFromNamespace: JsonField<CopyFromNamespace> = JsonMissing.of()
             private var deleteByFilter: JsonValue = JsonMissing.of()
             private var deleteByFilterAllowPartial: JsonField<Boolean> = JsonMissing.of()
@@ -1205,6 +1262,7 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
+                branchFromNamespace = body.branchFromNamespace
                 copyFromNamespace = body.copyFromNamespace
                 deleteByFilter = body.deleteByFilter
                 deleteByFilterAllowPartial = body.deleteByFilterAllowPartial
@@ -1224,6 +1282,21 @@ private constructor(
                 upsertCondition = body.upsertCondition
                 upsertRows = body.upsertRows.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** The namespace to create an instant, copy-on-write clone of. */
+            fun branchFromNamespace(branchFromNamespace: String) =
+                branchFromNamespace(JsonField.of(branchFromNamespace))
+
+            /**
+             * Sets [Builder.branchFromNamespace] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.branchFromNamespace] with a well-typed [String]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun branchFromNamespace(branchFromNamespace: JsonField<String>) = apply {
+                this.branchFromNamespace = branchFromNamespace
             }
 
             /** The namespace to copy documents from. */
@@ -1539,6 +1612,7 @@ private constructor(
              */
             fun build(): Body =
                 Body(
+                    branchFromNamespace,
                     copyFromNamespace,
                     deleteByFilter,
                     deleteByFilterAllowPartial,
@@ -1568,6 +1642,7 @@ private constructor(
                 return@apply
             }
 
+            branchFromNamespace()
             copyFromNamespace().ifPresent { it.validate() }
             deleteByFilterAllowPartial()
             deletes().ifPresent { it.forEach { it.validate() } }
@@ -1601,7 +1676,8 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (copyFromNamespace.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (branchFromNamespace.asKnown().isPresent) 1 else 0) +
+                (copyFromNamespace.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (deleteByFilterAllowPartial.asKnown().isPresent) 1 else 0) +
                 (deletes.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (if (disableBackpressure.asKnown().isPresent) 1 else 0) +
@@ -1622,6 +1698,7 @@ private constructor(
             }
 
             return other is Body &&
+                branchFromNamespace == other.branchFromNamespace &&
                 copyFromNamespace == other.copyFromNamespace &&
                 deleteByFilter == other.deleteByFilter &&
                 deleteByFilterAllowPartial == other.deleteByFilterAllowPartial &&
@@ -1645,6 +1722,7 @@ private constructor(
 
         private val hashCode: Int by lazy {
             Objects.hash(
+                branchFromNamespace,
                 copyFromNamespace,
                 deleteByFilter,
                 deleteByFilterAllowPartial,
@@ -1670,7 +1748,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+            "Body{branchFromNamespace=$branchFromNamespace, copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
     }
 
     /** The namespace to copy documents from. */

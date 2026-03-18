@@ -711,22 +711,21 @@ To access a property's raw JSON value, which may be undocumented, call its `_` p
 
 ```java
 import com.turbopuffer.core.JsonField;
-import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import java.util.Optional;
 
-JsonField<NamespaceWriteParams.CopyFromNamespace> copyFromNamespace = client.namespaces().write(params)._copyFromNamespace();
+JsonField<String> branchFromNamespace = client.namespaces().write(params)._branchFromNamespace();
 
-if (copyFromNamespace.isMissing()) {
+if (branchFromNamespace.isMissing()) {
   // The property is absent from the JSON response
-} else if (copyFromNamespace.isNull()) {
+} else if (branchFromNamespace.isNull()) {
   // The property was set to literal null
 } else {
   // Check if value was provided as a string
   // Other methods include `asNumber()`, `asBoolean()`, etc.
-  Optional<String> jsonString = copyFromNamespace.asString();
+  Optional<String> jsonString = branchFromNamespace.asString();
 
   // Try to deserialize into a custom type
-  MyClass myObject = copyFromNamespace.asUnknown().orElseThrow().convert(MyClass.class);
+  MyClass myObject = branchFromNamespace.asUnknown().orElseThrow().convert(MyClass.class);
 }
 ```
 

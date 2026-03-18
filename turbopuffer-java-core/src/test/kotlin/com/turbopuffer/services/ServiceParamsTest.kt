@@ -72,6 +72,7 @@ internal class ServiceParamsTest {
         namespaceService.write(
             NamespaceWriteParams.builder()
                 .namespace("namespace")
+                .branchFromNamespace("branch_from_namespace")
                 .copyFromNamespace("string")
                 .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
                 .deleteByFilterAllowPartial(true)
