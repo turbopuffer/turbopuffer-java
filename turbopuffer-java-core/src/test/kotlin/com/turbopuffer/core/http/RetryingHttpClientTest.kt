@@ -369,9 +369,9 @@ internal class RetryingHttpClientTest {
             postRequestedFor(urlPathEqualTo("/something"))
                 .withHeader("x-stainless-retry-count", equalTo("0")),
         )
-        // Exponential backoff with jitter: 0.3s * jitter where jitter is in [0.75, 1.0].
+        // Exponential backoff with jitter: 0.5s * jitter where jitter is in [0.75, 1.0].
         assertThat(sleeper.durations).hasSize(1)
-        assertThat(sleeper.durations[0]).isBetween(Duration.ofMillis(225), Duration.ofMillis(300))
+        assertThat(sleeper.durations[0]).isBetween(Duration.ofMillis(375), Duration.ofMillis(500))
         assertNoResponseLeaks()
     }
 
@@ -395,15 +395,15 @@ internal class RetryingHttpClientTest {
         // All retries exhausted; the last 503 response is returned.
         assertThat(response.statusCode()).isEqualTo(503)
         verify(4, postRequestedFor(urlPathEqualTo("/something")))
-        // Exponential backoff with jitter: backoff = min(0.3 * 2^(retries-1), 8) * jitter where
+        // Exponential backoff with jitter: backoff = min(0.5 * 2^(retries-1), 8) * jitter where
         // jitter is in [0.75, 1.0].
         assertThat(sleeper.durations).hasSize(3)
-        // retries=1: 0.3s * [0.75, 1.0]
-        assertThat(sleeper.durations[0]).isBetween(Duration.ofMillis(225), Duration.ofMillis(300))
-        // retries=2: 0.6s * [0.75, 1.0]
-        assertThat(sleeper.durations[1]).isBetween(Duration.ofMillis(450), Duration.ofMillis(600))
-        // retries=3: 1.2s * [0.75, 1.0]
-        assertThat(sleeper.durations[2]).isBetween(Duration.ofMillis(900), Duration.ofMillis(1200))
+        // retries=1: 0.5s * [0.75, 1.0]
+        assertThat(sleeper.durations[0]).isBetween(Duration.ofMillis(375), Duration.ofMillis(500))
+        // retries=2: 1.0s * [0.75, 1.0]
+        assertThat(sleeper.durations[1]).isBetween(Duration.ofMillis(750), Duration.ofMillis(1000))
+        // retries=3: 2.0s * [0.75, 1.0]
+        assertThat(sleeper.durations[2]).isBetween(Duration.ofMillis(1500), Duration.ofMillis(2000))
         assertNoResponseLeaks()
     }
 
@@ -412,7 +412,7 @@ internal class RetryingHttpClientTest {
     fun execute_withExponentialBackoffCap(async: Boolean) {
         stubFor(post(urlPathEqualTo("/something")).willReturn(serviceUnavailable()))
         val sleeper = RecordingSleeper()
-        val retryingClient = retryingHttpClientBuilder(sleeper).maxRetries(6).build()
+        val retryingClient = retryingHttpClientBuilder(sleeper).maxRetries(7).build()
 
         val response =
             retryingClient.execute(
@@ -427,10 +427,12 @@ internal class RetryingHttpClientTest {
         assertThat(response.statusCode()).isEqualTo(503)
         verify(7, postRequestedFor(urlPathEqualTo("/something")))
         assertThat(sleeper.durations).hasSize(6)
-        // retries=5: min(0.3 * 2^4, 8) = 4.8s * [0.75, 1.0]
-        assertThat(sleeper.durations[4]).isBetween(Duration.ofMillis(3600), Duration.ofMillis(4800))
-        // retries=6: min(0.3 * 2^5, 8) = min(9.6, 8) = 8.0s * [0.75, 1.0] (capped)
+        // retries=5: min(0.5 * 2^4, 8) = 8.0s * [0.75, 1.0]
+        assertThat(sleeper.durations[4]).isBetween(Duration.ofMillis(6000), Duration.ofMillis(8000))
+        // retries=6: min(0.5 * 2^5, 8) = min(16, 8) = 8.0s * [0.75, 1.0] (capped)
         assertThat(sleeper.durations[5]).isBetween(Duration.ofMillis(6000), Duration.ofMillis(8000))
+        // retries=7: still capped at 8s * [0.75, 1.0]
+        assertThat(sleeper.durations[6]).isBetween(Duration.ofMillis(6000), Duration.ofMillis(8000))
         assertNoResponseLeaks()
     }
 
@@ -507,7 +509,7 @@ internal class RetryingHttpClientTest {
         assertThat(response.statusCode()).isEqualTo(200)
         // Unparseable Retry-After falls through to exponential backoff.
         assertThat(sleeper.durations).hasSize(1)
-        assertThat(sleeper.durations[0]).isBetween(Duration.ofMillis(225), Duration.ofMillis(300))
+        assertThat(sleeper.durations[0]).isBetween(Duration.ofMillis(375), Duration.ofMillis(500))
         assertNoResponseLeaks()
     }
 
