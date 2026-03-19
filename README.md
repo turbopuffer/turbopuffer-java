@@ -711,9 +711,10 @@ To access a property's raw JSON value, which may be undocumented, call its `_` p
 
 ```java
 import com.turbopuffer.core.JsonField;
+import com.turbopuffer.models.namespaces.BranchFromNamespaceParams;
 import java.util.Optional;
 
-JsonField<String> branchFromNamespace = client.namespaces().write(params)._branchFromNamespace();
+JsonField<BranchFromNamespaceParams> branchFromNamespace = client.namespaces().write(params)._branchFromNamespace();
 
 if (branchFromNamespace.isMissing()) {
   // The property is absent from the JSON response
