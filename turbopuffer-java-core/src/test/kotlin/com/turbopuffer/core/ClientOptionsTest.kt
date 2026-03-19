@@ -116,6 +116,34 @@ internal class ClientOptionsTest {
     }
 
     @Test
+    fun putHeader_canOverwriteDefaultHeader() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .putHeader("User-Agent", "My User Agent")
+                .apiKey("tpuf_A1...")
+                .region("my-cool-region")
+                .build()
+
+        assertThat(clientOptions.headers.values("User-Agent")).containsExactly("My User Agent")
+    }
+
+    @Test
+    fun toBuilder_bearerAuthCanBeUpdated() {
+        var clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .region("my-cool-region")
+                .apiKey("tpuf_A1...")
+                .build()
+
+        clientOptions = clientOptions.toBuilder().apiKey("another tpuf_A1...").build()
+
+        assertThat(clientOptions.headers.values("Authorization"))
+            .containsExactly("Bearer another tpuf_A1...")
+    }
+
+    @Test
     fun toBuilder_whenOriginalClientOptionsGarbageCollected_doesNotCloseOriginalClient() {
         var clientOptions =
             ClientOptions.builder()

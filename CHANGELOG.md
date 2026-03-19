@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.20.0 (2026-03-18)
+
+Full Changelog: [v1.19.1...v1.20.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.19.1...v1.20.0)
+
+### Features
+
+* Response performance object ([7aca5d5](https://github.com/turbopuffer/turbopuffer-java/commit/7aca5d560d33abd27cfb033d6709459607852b43))
+* tpuf: add branching to openapi spec ([7731b23](https://github.com/turbopuffer/turbopuffer-java/commit/7731b236b928fb0a89cd05d7dc3fc1ad040379f9))
+
+
+### Bug Fixes
+
+* **client:** allow updating header/query affecting fields in `toBuilder()` ([e2203d9](https://github.com/turbopuffer/turbopuffer-java/commit/e2203d9fedd2fc74e62a1d3edec83538ddec48fa))
+* **client:** use higher retry delay precision ([809e2cc](https://github.com/turbopuffer/turbopuffer-java/commit/809e2cc8d9600be5dd5587a80bd814bd05417fcf))
+
 ## 1.19.1 (2026-03-17)
 
 Full Changelog: [v1.19.0...v1.19.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.19.0...v1.19.1)

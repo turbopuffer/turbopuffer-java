@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/1.19.1)
-[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/1.19.1/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/1.19.1)
+[![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/1.20.0)
+[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/1.20.0/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/1.20.0)
 
 <!-- x-release-please-end -->
 
@@ -22,7 +22,7 @@ Use the Turbopuffer MCP Server to enable AI assistants to interact with this API
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs/auth). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/1.19.1).
+The REST API documentation can be found on [turbopuffer.com](https://turbopuffer.com/docs/auth). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/1.20.0).
 
 <!-- x-release-please-end -->
 
@@ -33,7 +33,7 @@ The REST API documentation can be found on [turbopuffer.com](https://turbopuffer
 ### Gradle
 
 ```kotlin
-implementation("com.turbopuffer:turbopuffer-java:1.19.1")
+implementation("com.turbopuffer:turbopuffer-java:1.20.0")
 ```
 
 ### Maven
@@ -42,7 +42,7 @@ implementation("com.turbopuffer:turbopuffer-java:1.19.1")
 <dependency>
   <groupId>com.turbopuffer</groupId>
   <artifactId>turbopuffer-java</artifactId>
-  <version>1.19.1</version>
+  <version>1.20.0</version>
 </dependency>
 ```
 
@@ -753,22 +753,21 @@ To access a property's raw JSON value, which may be undocumented, call its `_` p
 
 ```java
 import com.turbopuffer.core.JsonField;
-import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 import java.util.Optional;
 
-JsonField<NamespaceWriteParams.CopyFromNamespace> copyFromNamespace = client.namespace("ns").write(params)._copyFromNamespace();
+JsonField<String> branchFromNamespace = client.namespace("ns").write(params)._branchFromNamespace();
 
-if (copyFromNamespace.isMissing()) {
+if (branchFromNamespace.isMissing()) {
   // The property is absent from the JSON response
-} else if (copyFromNamespace.isNull()) {
+} else if (branchFromNamespace.isNull()) {
   // The property was set to literal null
 } else {
   // Check if value was provided as a string
   // Other methods include `asNumber()`, `asBoolean()`, etc.
-  Optional<String> jsonString = copyFromNamespace.asString();
+  Optional<String> jsonString = branchFromNamespace.asString();
 
   // Try to deserialize into a custom type
-  MyClass myObject = copyFromNamespace.asUnknown().orElseThrow().convert(MyClass.class);
+  MyClass myObject = branchFromNamespace.asUnknown().orElseThrow().convert(MyClass.class);
 }
 ```
 

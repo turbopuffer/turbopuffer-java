@@ -210,6 +210,7 @@ internal class NamespaceServiceTest {
             namespaceService.write(
                 NamespaceWriteParams.builder()
                     .namespace("namespace")
+                    .branchFromNamespace("branch_from_namespace")
                     .copyFromNamespace("string")
                     .deleteByFilterAllowPartial(true)
                     .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
