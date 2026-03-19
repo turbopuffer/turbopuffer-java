@@ -73,6 +73,7 @@ internal class ServiceParamsTest {
 
         namespaceService.write(
             NamespaceWriteParams.builder()
+                .branchFromNamespace("string")
                 .copyFromNamespace("string")
                 .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .disableBackpressure(true)
