@@ -50,7 +50,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun branchFromNamespace(): Optional<String> = body.branchFromNamespace()
+    fun branchFromNamespace(): Optional<BranchFromNamespaceParams> = body.branchFromNamespace()
 
     /**
      * The namespace to copy documents from.
@@ -203,7 +203,7 @@ private constructor(
      * Unlike [branchFromNamespace], this method doesn't throw if the JSON field has an unexpected
      * type.
      */
-    fun _branchFromNamespace(): JsonField<String> = body._branchFromNamespace()
+    fun _branchFromNamespace(): JsonField<BranchFromNamespaceParams> = body._branchFromNamespace()
 
     /**
      * Returns the raw JSON value of [copyFromNamespace].
@@ -383,20 +383,35 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** The namespace to create an instant, copy-on-write clone of. */
-        fun branchFromNamespace(branchFromNamespace: String) = apply {
+        fun branchFromNamespace(branchFromNamespace: BranchFromNamespaceParams) = apply {
             body.branchFromNamespace(branchFromNamespace)
         }
 
         /**
          * Sets [Builder.branchFromNamespace] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.branchFromNamespace] with a well-typed [String] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.branchFromNamespace] with a well-typed
+         * [BranchFromNamespaceParams] value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
          */
-        fun branchFromNamespace(branchFromNamespace: JsonField<String>) = apply {
+        fun branchFromNamespace(branchFromNamespace: JsonField<BranchFromNamespaceParams>) = apply {
             body.branchFromNamespace(branchFromNamespace)
         }
+
+        /**
+         * Alias for calling [branchFromNamespace] with
+         * `BranchFromNamespaceParams.ofString(string)`.
+         */
+        fun branchFromNamespace(string: String) = apply { body.branchFromNamespace(string) }
+
+        /**
+         * Alias for calling [branchFromNamespace] with
+         * `BranchFromNamespaceParams.ofConfig(config)`.
+         */
+        fun branchFromNamespace(config: BranchFromNamespaceParams.BranchFromNamespaceConfig) =
+            apply {
+                body.branchFromNamespace(config)
+            }
 
         /** The namespace to copy documents from. */
         fun copyFromNamespace(copyFromNamespace: CopyFromNamespace) = apply {
@@ -845,7 +860,7 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val branchFromNamespace: JsonField<String>,
+        private val branchFromNamespace: JsonField<BranchFromNamespaceParams>,
         private val copyFromNamespace: JsonField<CopyFromNamespace>,
         private val deleteByFilter: JsonField<Filter>,
         private val deleteByFilterAllowPartial: JsonField<Boolean>,
@@ -871,7 +886,7 @@ private constructor(
         private constructor(
             @JsonProperty("branch_from_namespace")
             @ExcludeMissing
-            branchFromNamespace: JsonField<String> = JsonMissing.of(),
+            branchFromNamespace: JsonField<BranchFromNamespaceParams> = JsonMissing.of(),
             @JsonProperty("copy_from_namespace")
             @ExcludeMissing
             copyFromNamespace: JsonField<CopyFromNamespace> = JsonMissing.of(),
@@ -953,7 +968,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun branchFromNamespace(): Optional<String> =
+        fun branchFromNamespace(): Optional<BranchFromNamespaceParams> =
             branchFromNamespace.getOptional("branch_from_namespace")
 
         /**
@@ -1114,7 +1129,7 @@ private constructor(
          */
         @JsonProperty("branch_from_namespace")
         @ExcludeMissing
-        fun _branchFromNamespace(): JsonField<String> = branchFromNamespace
+        fun _branchFromNamespace(): JsonField<BranchFromNamespaceParams> = branchFromNamespace
 
         /**
          * Returns the raw JSON value of [copyFromNamespace].
@@ -1301,7 +1316,8 @@ private constructor(
 
         /** A builder for [Body]. */
         class Builder internal constructor() {
-            private var branchFromNamespace: JsonField<String> = JsonMissing.of()
+
+            private var branchFromNamespace: JsonField<BranchFromNamespaceParams> = JsonMissing.of()
             private var copyFromNamespace: JsonField<CopyFromNamespace> = JsonMissing.of()
             private var deleteByFilter: JsonField<Filter> = JsonMissing.of()
             private var deleteByFilterAllowPartial: JsonField<Boolean> = JsonMissing.of()
@@ -1347,19 +1363,34 @@ private constructor(
             }
 
             /** The namespace to create an instant, copy-on-write clone of. */
-            fun branchFromNamespace(branchFromNamespace: String) =
+            fun branchFromNamespace(branchFromNamespace: BranchFromNamespaceParams) =
                 branchFromNamespace(JsonField.of(branchFromNamespace))
 
             /**
              * Sets [Builder.branchFromNamespace] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.branchFromNamespace] with a well-typed [String]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
+             * You should usually call [Builder.branchFromNamespace] with a well-typed
+             * [BranchFromNamespaceParams] value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
              */
-            fun branchFromNamespace(branchFromNamespace: JsonField<String>) = apply {
-                this.branchFromNamespace = branchFromNamespace
-            }
+            fun branchFromNamespace(branchFromNamespace: JsonField<BranchFromNamespaceParams>) =
+                apply {
+                    this.branchFromNamespace = branchFromNamespace
+                }
+
+            /**
+             * Alias for calling [branchFromNamespace] with
+             * `BranchFromNamespaceParams.ofString(string)`.
+             */
+            fun branchFromNamespace(string: String) =
+                branchFromNamespace(BranchFromNamespaceParams.ofString(string))
+
+            /**
+             * Alias for calling [branchFromNamespace] with
+             * `BranchFromNamespaceParams.ofConfig(config)`.
+             */
+            fun branchFromNamespace(config: BranchFromNamespaceParams.BranchFromNamespaceConfig) =
+                branchFromNamespace(BranchFromNamespaceParams.ofConfig(config))
 
             /** The namespace to copy documents from. */
             fun copyFromNamespace(copyFromNamespace: CopyFromNamespace) =
@@ -1745,7 +1776,7 @@ private constructor(
                 return@apply
             }
 
-            branchFromNamespace()
+            branchFromNamespace().ifPresent { it.validate() }
             copyFromNamespace().ifPresent { it.validate() }
             deleteByFilterAllowPartial()
             deletes()
@@ -1779,7 +1810,7 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (branchFromNamespace.asKnown().isPresent) 1 else 0) +
+            (branchFromNamespace.asKnown().getOrNull()?.validity() ?: 0) +
                 (copyFromNamespace.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (deleteByFilterAllowPartial.asKnown().isPresent) 1 else 0) +
                 (deletes.asKnown().getOrNull()?.size ?: 0) +
