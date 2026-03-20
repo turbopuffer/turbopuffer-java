@@ -154,8 +154,7 @@ internal class NamespaceWriteParamsTest {
 
         assertThat(body.branchFromNamespace())
             .contains(BranchFromNamespaceParams.ofString("string"))
-        assertThat(body.copyFromNamespace())
-            .contains(NamespaceWriteParams.CopyFromNamespace.ofString("string"))
+        assertThat(body.copyFromNamespace()).contains(CopyFromNamespaceParams.ofString("string"))
         assertThat(body._deleteByFilter()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.deleteByFilterAllowPartial()).contains(true)
         assertThat(body._deleteCondition()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
