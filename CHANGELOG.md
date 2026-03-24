@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.21.0 (2026-03-24)
+
+Full Changelog: [v1.20.0...v1.21.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.20.0...v1.21.0)
+
+### Features
+
+* spec: disable CopyFromNamespace syntax sugar in Go ([16bfb87](https://github.com/turbopuffer/turbopuffer-java/commit/16bfb87be991624c274e8647e8ff5d574d724845))
+* tpuf-engine: add verbose form of branch_from_namespace ([7134fa5](https://github.com/turbopuffer/turbopuffer-java/commit/7134fa54489d121a5320553382e007565e49f32f))
+
+
+### Chores
+
+* **ci:** skip lint on metadata-only changes ([e51d6e1](https://github.com/turbopuffer/turbopuffer-java/commit/e51d6e1ff3ed5883d50f145998effbdc9c03f3f5))
+* **internal:** update gitignore ([67aaaff](https://github.com/turbopuffer/turbopuffer-java/commit/67aaaffe21c3fd548882aed6c128733560cd1a8d))
+* **tests:** bump steady to v0.19.4 ([89c2d8c](https://github.com/turbopuffer/turbopuffer-java/commit/89c2d8ca11c70e82585397b4e9bf4af5114e5c4f))
+
 ## 1.20.0 (2026-03-18)
 
 Full Changelog: [v1.19.1...v1.20.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.19.1...v1.20.0)
