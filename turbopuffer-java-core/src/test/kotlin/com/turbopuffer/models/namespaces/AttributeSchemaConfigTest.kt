@@ -17,6 +17,7 @@ internal class AttributeSchemaConfigTest {
                 .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
+                .glob(true)
                 .regex(true)
                 .build()
 
@@ -24,6 +25,7 @@ internal class AttributeSchemaConfigTest {
         assertThat(attributeSchemaConfig.ann()).contains(AttributeSchemaConfig.Ann.ofBool(true))
         assertThat(attributeSchemaConfig.filterable()).contains(true)
         assertThat(attributeSchemaConfig.fullTextSearch()).contains(FullTextSearch.ofBool(true))
+        assertThat(attributeSchemaConfig.glob()).contains(true)
         assertThat(attributeSchemaConfig.regex()).contains(true)
     }
 
@@ -36,6 +38,7 @@ internal class AttributeSchemaConfigTest {
                 .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
+                .glob(true)
                 .regex(true)
                 .build()
 
