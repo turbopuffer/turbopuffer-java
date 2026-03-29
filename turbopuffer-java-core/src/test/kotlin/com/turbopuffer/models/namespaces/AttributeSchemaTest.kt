@@ -46,6 +46,7 @@ internal class AttributeSchemaTest {
                 .ann(true)
                 .filterable(true)
                 .fullTextSearch(true)
+                .glob(true)
                 .regex(true)
                 .build()
 
@@ -65,6 +66,7 @@ internal class AttributeSchemaTest {
                     .ann(true)
                     .filterable(true)
                     .fullTextSearch(true)
+                    .glob(true)
                     .regex(true)
                     .build()
             )

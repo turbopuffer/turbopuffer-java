@@ -36,6 +36,7 @@ private constructor(
     private val ann: JsonField<Ann>,
     private val filterable: JsonField<Boolean>,
     private val fullTextSearch: JsonField<FullTextSearch>,
+    private val glob: JsonField<Boolean>,
     private val regex: JsonField<Boolean>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -50,8 +51,9 @@ private constructor(
         @JsonProperty("full_text_search")
         @ExcludeMissing
         fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of(),
+        @JsonProperty("glob") @ExcludeMissing glob: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("regex") @ExcludeMissing regex: JsonField<Boolean> = JsonMissing.of(),
-    ) : this(type, ann, filterable, fullTextSearch, regex, mutableMapOf())
+    ) : this(type, ann, filterable, fullTextSearch, glob, regex, mutableMapOf())
 
     /**
      * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
@@ -88,6 +90,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun fullTextSearch(): Optional<FullTextSearch> = fullTextSearch.getOptional("full_text_search")
+
+    /**
+     * Whether to enable Glob filters on this attribute.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun glob(): Optional<Boolean> = glob.getOptional("glob")
 
     /**
      * Whether to enable Regex filters on this attribute.
@@ -128,6 +138,13 @@ private constructor(
     fun _fullTextSearch(): JsonField<FullTextSearch> = fullTextSearch
 
     /**
+     * Returns the raw JSON value of [glob].
+     *
+     * Unlike [glob], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("glob") @ExcludeMissing fun _glob(): JsonField<Boolean> = glob
+
+    /**
      * Returns the raw JSON value of [regex].
      *
      * Unlike [regex], this method doesn't throw if the JSON field has an unexpected type.
@@ -166,6 +183,7 @@ private constructor(
         private var ann: JsonField<Ann> = JsonMissing.of()
         private var filterable: JsonField<Boolean> = JsonMissing.of()
         private var fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of()
+        private var glob: JsonField<Boolean> = JsonMissing.of()
         private var regex: JsonField<Boolean> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -175,6 +193,7 @@ private constructor(
             ann = attributeSchemaConfig.ann
             filterable = attributeSchemaConfig.filterable
             fullTextSearch = attributeSchemaConfig.fullTextSearch
+            glob = attributeSchemaConfig.glob
             regex = attributeSchemaConfig.regex
             additionalProperties = attributeSchemaConfig.additionalProperties.toMutableMap()
         }
@@ -251,6 +270,17 @@ private constructor(
         fun fullTextSearch(config: FullTextSearchConfig) =
             fullTextSearch(FullTextSearch.ofConfig(config))
 
+        /** Whether to enable Glob filters on this attribute. */
+        fun glob(glob: Boolean) = glob(JsonField.of(glob))
+
+        /**
+         * Sets [Builder.glob] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.glob] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun glob(glob: JsonField<Boolean>) = apply { this.glob = glob }
+
         /** Whether to enable Regex filters on this attribute. */
         fun regex(regex: Boolean) = regex(JsonField.of(regex))
 
@@ -299,6 +329,7 @@ private constructor(
                 ann,
                 filterable,
                 fullTextSearch,
+                glob,
                 regex,
                 additionalProperties.toMutableMap(),
             )
@@ -315,6 +346,7 @@ private constructor(
         ann().ifPresent { it.validate() }
         filterable()
         fullTextSearch().ifPresent { it.validate() }
+        glob()
         regex()
         validated = true
     }
@@ -338,6 +370,7 @@ private constructor(
             (ann.asKnown().getOrNull()?.validity() ?: 0) +
             (if (filterable.asKnown().isPresent) 1 else 0) +
             (fullTextSearch.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (glob.asKnown().isPresent) 1 else 0) +
             (if (regex.asKnown().isPresent) 1 else 0)
 
     /**
@@ -682,16 +715,17 @@ private constructor(
             ann == other.ann &&
             filterable == other.filterable &&
             fullTextSearch == other.fullTextSearch &&
+            glob == other.glob &&
             regex == other.regex &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(type, ann, filterable, fullTextSearch, regex, additionalProperties)
+        Objects.hash(type, ann, filterable, fullTextSearch, glob, regex, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AttributeSchemaConfig{type=$type, ann=$ann, filterable=$filterable, fullTextSearch=$fullTextSearch, regex=$regex, additionalProperties=$additionalProperties}"
+        "AttributeSchemaConfig{type=$type, ann=$ann, filterable=$filterable, fullTextSearch=$fullTextSearch, glob=$glob, regex=$regex, additionalProperties=$additionalProperties}"
 }
