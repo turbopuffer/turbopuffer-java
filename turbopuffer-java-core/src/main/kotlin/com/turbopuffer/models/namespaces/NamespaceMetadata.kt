@@ -41,6 +41,7 @@ private constructor(
     private val index: JsonField<Index>,
     private val schema: JsonField<Schema>,
     private val updatedAt: JsonField<OffsetDateTime>,
+    private val pinning: JsonField<PinningConfig>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -63,6 +64,9 @@ private constructor(
         @JsonProperty("updated_at")
         @ExcludeMissing
         updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+        @JsonProperty("pinning")
+        @ExcludeMissing
+        pinning: JsonField<PinningConfig> = JsonMissing.of(),
     ) : this(
         approxLogicalBytes,
         approxRowCount,
@@ -71,6 +75,7 @@ private constructor(
         index,
         schema,
         updatedAt,
+        pinning,
         mutableMapOf(),
     )
 
@@ -127,6 +132,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun updatedAt(): OffsetDateTime = updatedAt.getRequired("updated_at")
+
+    /**
+     * Configuration for namespace pinning.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun pinning(): Optional<PinningConfig> = pinning.getOptional("pinning")
 
     /**
      * Returns the raw JSON value of [approxLogicalBytes].
@@ -188,6 +201,13 @@ private constructor(
     @ExcludeMissing
     fun _updatedAt(): JsonField<OffsetDateTime> = updatedAt
 
+    /**
+     * Returns the raw JSON value of [pinning].
+     *
+     * Unlike [pinning], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("pinning") @ExcludeMissing fun _pinning(): JsonField<PinningConfig> = pinning
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -229,6 +249,7 @@ private constructor(
         private var index: JsonField<Index>? = null
         private var schema: JsonField<Schema>? = null
         private var updatedAt: JsonField<OffsetDateTime>? = null
+        private var pinning: JsonField<PinningConfig> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -240,6 +261,7 @@ private constructor(
             index = namespaceMetadata.index
             schema = namespaceMetadata.schema
             updatedAt = namespaceMetadata.updatedAt
+            pinning = namespaceMetadata.pinning
             additionalProperties = namespaceMetadata.additionalProperties.toMutableMap()
         }
 
@@ -343,6 +365,18 @@ private constructor(
          */
         fun updatedAt(updatedAt: JsonField<OffsetDateTime>) = apply { this.updatedAt = updatedAt }
 
+        /** Configuration for namespace pinning. */
+        fun pinning(pinning: PinningConfig) = pinning(JsonField.of(pinning))
+
+        /**
+         * Sets [Builder.pinning] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.pinning] with a well-typed [PinningConfig] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun pinning(pinning: JsonField<PinningConfig>) = apply { this.pinning = pinning }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -389,6 +423,7 @@ private constructor(
                 checkRequired("index", index),
                 checkRequired("schema", schema),
                 checkRequired("updatedAt", updatedAt),
+                pinning,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -407,6 +442,7 @@ private constructor(
         index().validate()
         schema().validate()
         updatedAt()
+        pinning().ifPresent { it.validate() }
         validated = true
     }
 
@@ -431,7 +467,8 @@ private constructor(
             (encryption.asKnown().getOrNull()?.validity() ?: 0) +
             (index.asKnown().getOrNull()?.validity() ?: 0) +
             (schema.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (updatedAt.asKnown().isPresent) 1 else 0)
+            (if (updatedAt.asKnown().isPresent) 1 else 0) +
+            (pinning.asKnown().getOrNull()?.validity() ?: 0)
 
     /** Indicates that the namespace is encrypted with a customer-managed encryption key (CMEK). */
     @JsonDeserialize(using = Encryption.Deserializer::class)
@@ -1619,6 +1656,7 @@ private constructor(
             index == other.index &&
             schema == other.schema &&
             updatedAt == other.updatedAt &&
+            pinning == other.pinning &&
             additionalProperties == other.additionalProperties
     }
 
@@ -1631,6 +1669,7 @@ private constructor(
             index,
             schema,
             updatedAt,
+            pinning,
             additionalProperties,
         )
     }
@@ -1638,5 +1677,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, encryption=$encryption, index=$index, schema=$schema, updatedAt=$updatedAt, additionalProperties=$additionalProperties}"
+        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, encryption=$encryption, index=$index, schema=$schema, updatedAt=$updatedAt, pinning=$pinning, additionalProperties=$additionalProperties}"
 }

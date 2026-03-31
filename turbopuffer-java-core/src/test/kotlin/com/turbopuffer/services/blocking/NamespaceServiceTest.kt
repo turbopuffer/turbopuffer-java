@@ -10,10 +10,12 @@ import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceMetadataParams
+import com.turbopuffer.models.namespaces.NamespaceMetadataPatch
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Query
@@ -206,6 +208,23 @@ internal class NamespaceServiceTest {
             namespaceService.schema(NamespaceSchemaParams.builder().namespace("namespace").build())
 
         response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun updateMetadata() {
+        val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
+        val namespaceService = client.namespaces()
+
+        val namespaceMetadata =
+            namespaceService.updateMetadata(
+                NamespaceUpdateMetadataParams.builder()
+                    .namespace("namespace")
+                    .namespaceMetadataPatch(NamespaceMetadataPatch.builder().pinning(true).build())
+                    .build()
+            )
+
+        namespaceMetadata.validate()
     }
 
     @Disabled("Mock server tests are disabled")

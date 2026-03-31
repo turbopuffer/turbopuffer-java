@@ -14,6 +14,7 @@ import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
 import com.turbopuffer.models.namespaces.NamespaceMetadata
 import com.turbopuffer.models.namespaces.NamespaceMetadataParams
+import com.turbopuffer.models.namespaces.NamespaceMetadataPatch
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
@@ -22,6 +23,7 @@ import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceRecallResponse
 import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
@@ -178,6 +180,40 @@ interface NamespaceService {
     /** @see schema */
     fun schema(requestOptions: RequestOptions): NamespaceSchemaResponse =
         schema(NamespaceSchemaParams.none(), requestOptions)
+
+    /** Update metadata configuration for a namespace. */
+    fun updateMetadata(): NamespaceMetadata = updateMetadata(NamespaceUpdateMetadataParams.none())
+
+    /** @see updateMetadata */
+    fun updateMetadata(
+        params: NamespaceUpdateMetadataParams = NamespaceUpdateMetadataParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceMetadata
+
+    /** @see updateMetadata */
+    fun updateMetadata(
+        params: NamespaceUpdateMetadataParams = NamespaceUpdateMetadataParams.none()
+    ): NamespaceMetadata = updateMetadata(params, RequestOptions.none())
+
+    /** @see updateMetadata */
+    fun updateMetadata(
+        namespaceMetadataPatch: NamespaceMetadataPatch,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): NamespaceMetadata =
+        updateMetadata(
+            NamespaceUpdateMetadataParams.builder()
+                .namespaceMetadataPatch(namespaceMetadataPatch)
+                .build(),
+            requestOptions,
+        )
+
+    /** @see updateMetadata */
+    fun updateMetadata(namespaceMetadataPatch: NamespaceMetadataPatch): NamespaceMetadata =
+        updateMetadata(namespaceMetadataPatch, RequestOptions.none())
+
+    /** @see updateMetadata */
+    fun updateMetadata(requestOptions: RequestOptions): NamespaceMetadata =
+        updateMetadata(NamespaceUpdateMetadataParams.none(), requestOptions)
 
     /** Update namespace schema. */
     fun updateSchema(): NamespaceUpdateSchemaResponse =
@@ -439,6 +475,52 @@ interface NamespaceService {
         @MustBeClosed
         fun schema(requestOptions: RequestOptions): HttpResponseFor<NamespaceSchemaResponse> =
             schema(NamespaceSchemaParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `patch /v1/namespaces/{namespace}/metadata`, but is
+         * otherwise the same as [NamespaceService.updateMetadata].
+         */
+        @MustBeClosed
+        fun updateMetadata(): HttpResponseFor<NamespaceMetadata> =
+            updateMetadata(NamespaceUpdateMetadataParams.none())
+
+        /** @see updateMetadata */
+        @MustBeClosed
+        fun updateMetadata(
+            params: NamespaceUpdateMetadataParams = NamespaceUpdateMetadataParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceMetadata>
+
+        /** @see updateMetadata */
+        @MustBeClosed
+        fun updateMetadata(
+            params: NamespaceUpdateMetadataParams = NamespaceUpdateMetadataParams.none()
+        ): HttpResponseFor<NamespaceMetadata> = updateMetadata(params, RequestOptions.none())
+
+        /** @see updateMetadata */
+        @MustBeClosed
+        fun updateMetadata(
+            namespaceMetadataPatch: NamespaceMetadataPatch,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<NamespaceMetadata> =
+            updateMetadata(
+                NamespaceUpdateMetadataParams.builder()
+                    .namespaceMetadataPatch(namespaceMetadataPatch)
+                    .build(),
+                requestOptions,
+            )
+
+        /** @see updateMetadata */
+        @MustBeClosed
+        fun updateMetadata(
+            namespaceMetadataPatch: NamespaceMetadataPatch
+        ): HttpResponseFor<NamespaceMetadata> =
+            updateMetadata(namespaceMetadataPatch, RequestOptions.none())
+
+        /** @see updateMetadata */
+        @MustBeClosed
+        fun updateMetadata(requestOptions: RequestOptions): HttpResponseFor<NamespaceMetadata> =
+            updateMetadata(NamespaceUpdateMetadataParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/schema`, but is

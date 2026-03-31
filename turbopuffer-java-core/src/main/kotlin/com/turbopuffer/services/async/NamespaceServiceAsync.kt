@@ -13,6 +13,7 @@ import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmResponse
 import com.turbopuffer.models.namespaces.NamespaceMetadata
 import com.turbopuffer.models.namespaces.NamespaceMetadataParams
+import com.turbopuffer.models.namespaces.NamespaceMetadataPatch
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
@@ -21,6 +22,7 @@ import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceRecallResponse
 import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
@@ -187,6 +189,43 @@ interface NamespaceServiceAsync {
     /** @see schema */
     fun schema(requestOptions: RequestOptions): CompletableFuture<NamespaceSchemaResponse> =
         schema(NamespaceSchemaParams.none(), requestOptions)
+
+    /** Update metadata configuration for a namespace. */
+    fun updateMetadata(): CompletableFuture<NamespaceMetadata> =
+        updateMetadata(NamespaceUpdateMetadataParams.none())
+
+    /** @see updateMetadata */
+    fun updateMetadata(
+        params: NamespaceUpdateMetadataParams = NamespaceUpdateMetadataParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceMetadata>
+
+    /** @see updateMetadata */
+    fun updateMetadata(
+        params: NamespaceUpdateMetadataParams = NamespaceUpdateMetadataParams.none()
+    ): CompletableFuture<NamespaceMetadata> = updateMetadata(params, RequestOptions.none())
+
+    /** @see updateMetadata */
+    fun updateMetadata(
+        namespaceMetadataPatch: NamespaceMetadataPatch,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceMetadata> =
+        updateMetadata(
+            NamespaceUpdateMetadataParams.builder()
+                .namespaceMetadataPatch(namespaceMetadataPatch)
+                .build(),
+            requestOptions,
+        )
+
+    /** @see updateMetadata */
+    fun updateMetadata(
+        namespaceMetadataPatch: NamespaceMetadataPatch
+    ): CompletableFuture<NamespaceMetadata> =
+        updateMetadata(namespaceMetadataPatch, RequestOptions.none())
+
+    /** @see updateMetadata */
+    fun updateMetadata(requestOptions: RequestOptions): CompletableFuture<NamespaceMetadata> =
+        updateMetadata(NamespaceUpdateMetadataParams.none(), requestOptions)
 
     /** Update namespace schema. */
     fun updateSchema(): CompletableFuture<NamespaceUpdateSchemaResponse> =
@@ -445,6 +484,49 @@ interface NamespaceServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceSchemaResponse>> =
             schema(NamespaceSchemaParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `patch /v1/namespaces/{namespace}/metadata`, but is
+         * otherwise the same as [NamespaceServiceAsync.updateMetadata].
+         */
+        fun updateMetadata(): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
+            updateMetadata(NamespaceUpdateMetadataParams.none())
+
+        /** @see updateMetadata */
+        fun updateMetadata(
+            params: NamespaceUpdateMetadataParams = NamespaceUpdateMetadataParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceMetadata>>
+
+        /** @see updateMetadata */
+        fun updateMetadata(
+            params: NamespaceUpdateMetadataParams = NamespaceUpdateMetadataParams.none()
+        ): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
+            updateMetadata(params, RequestOptions.none())
+
+        /** @see updateMetadata */
+        fun updateMetadata(
+            namespaceMetadataPatch: NamespaceMetadataPatch,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
+            updateMetadata(
+                NamespaceUpdateMetadataParams.builder()
+                    .namespaceMetadataPatch(namespaceMetadataPatch)
+                    .build(),
+                requestOptions,
+            )
+
+        /** @see updateMetadata */
+        fun updateMetadata(
+            namespaceMetadataPatch: NamespaceMetadataPatch
+        ): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
+            updateMetadata(namespaceMetadataPatch, RequestOptions.none())
+
+        /** @see updateMetadata */
+        fun updateMetadata(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
+            updateMetadata(NamespaceUpdateMetadataParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /v1/namespaces/{namespace}/schema`, but is
