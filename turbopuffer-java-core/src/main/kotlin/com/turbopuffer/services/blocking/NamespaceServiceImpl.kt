@@ -33,6 +33,7 @@ import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceRecallResponse
 import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
@@ -109,6 +110,13 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     ): NamespaceSchemaResponse =
         // get /v1/namespaces/{namespace}/schema
         withRawResponse().schema(params, requestOptions).parse()
+
+    override fun updateMetadata(
+        params: NamespaceUpdateMetadataParams,
+        requestOptions: RequestOptions,
+    ): NamespaceMetadata =
+        // patch /v1/namespaces/{namespace}/metadata
+        withRawResponse().updateMetadata(params, requestOptions).parse()
 
     override fun updateSchema(
         params: NamespaceUpdateSchemaParams,
@@ -439,6 +447,44 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.values.forEach { it.validate() }
+                        }
+                    }
+            }
+        }
+
+        private val updateMetadataHandler: Handler<NamespaceMetadata> =
+            jsonHandler<NamespaceMetadata>(clientOptions.jsonMapper)
+
+        override fun updateMetadata(
+            params: NamespaceUpdateMetadataParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceMetadata> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PATCH)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "metadata",
+                    )
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { updateMetadataHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
                         }
                     }
             }
