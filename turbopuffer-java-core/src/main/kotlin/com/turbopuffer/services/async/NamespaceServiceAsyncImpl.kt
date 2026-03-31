@@ -33,6 +33,7 @@ import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceRecallResponse
 import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
@@ -110,6 +111,13 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
     ): CompletableFuture<NamespaceSchemaResponse> =
         // get /v1/namespaces/{namespace}/schema
         withRawResponse().schema(params, requestOptions).thenApply { it.parse() }
+
+    override fun updateMetadata(
+        params: NamespaceUpdateMetadataParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<NamespaceMetadata> =
+        // patch /v1/namespaces/{namespace}/metadata
+        withRawResponse().updateMetadata(params, requestOptions).thenApply { it.parse() }
 
     override fun updateSchema(
         params: NamespaceUpdateSchemaParams,
@@ -463,6 +471,47 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.values.forEach { it.validate() }
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val updateMetadataHandler: Handler<NamespaceMetadata> =
+            jsonHandler<NamespaceMetadata>(clientOptions.jsonMapper)
+
+        override fun updateMetadata(
+            params: NamespaceUpdateMetadataParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<NamespaceMetadata>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.PATCH)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "metadata",
+                    )
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { updateMetadataHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
                                 }
                             }
                     }
