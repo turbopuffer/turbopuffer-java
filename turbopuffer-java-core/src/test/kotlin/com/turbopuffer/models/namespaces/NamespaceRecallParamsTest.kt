@@ -15,6 +15,7 @@ internal class NamespaceRecallParamsTest {
             .filters(JsonValue.from(mapOf<String, Any>()))
             .includeGroundTruth(true)
             .num(0L)
+            .rankBy(JsonValue.from(mapOf<String, Any>()))
             .topK(0L)
             .build()
     }
@@ -36,6 +37,7 @@ internal class NamespaceRecallParamsTest {
                 .filters(JsonValue.from(mapOf<String, Any>()))
                 .includeGroundTruth(true)
                 .num(0L)
+                .rankBy(JsonValue.from(mapOf<String, Any>()))
                 .topK(0L)
                 .build()
 
@@ -44,6 +46,7 @@ internal class NamespaceRecallParamsTest {
         assertThat(body._filters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.includeGroundTruth()).contains(true)
         assertThat(body.num()).contains(0L)
+        assertThat(body._rankBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.topK()).contains(0L)
     }
 

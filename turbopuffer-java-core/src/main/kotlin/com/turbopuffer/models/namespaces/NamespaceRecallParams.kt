@@ -57,6 +57,16 @@ private constructor(
     fun num(): Optional<Long> = body.num()
 
     /**
+     * The ranking function to evaluate recall for. If provided, `num` must be either null or 1.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceRecallParams.rankBy().convert(MyClass.class);
+     * ```
+     */
+    fun _rankBy(): JsonValue = body._rankBy()
+
+    /**
      * Search for `top_k` nearest neighbors.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -133,7 +143,9 @@ private constructor(
          * - [filters]
          * - [includeGroundTruth]
          * - [num]
+         * - [rankBy]
          * - [topK]
+         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -166,6 +178,11 @@ private constructor(
          * is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun num(num: JsonField<Long>) = apply { body.num(num) }
+
+        /**
+         * The ranking function to evaluate recall for. If provided, `num` must be either null or 1.
+         */
+        fun rankBy(rankBy: JsonValue) = apply { body.rankBy(rankBy) }
 
         /** Search for `top_k` nearest neighbors. */
         fun topK(topK: Long) = apply { body.topK(topK) }
@@ -327,6 +344,7 @@ private constructor(
         private val filters: JsonValue,
         private val includeGroundTruth: JsonField<Boolean>,
         private val num: JsonField<Long>,
+        private val rankBy: JsonValue,
         private val topK: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -338,8 +356,9 @@ private constructor(
             @ExcludeMissing
             includeGroundTruth: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("num") @ExcludeMissing num: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
-        ) : this(filters, includeGroundTruth, num, topK, mutableMapOf())
+        ) : this(filters, includeGroundTruth, num, rankBy, topK, mutableMapOf())
 
         /**
          * Filter by attributes. Same syntax as the query endpoint.
@@ -367,6 +386,16 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun num(): Optional<Long> = num.getOptional("num")
+
+        /**
+         * The ranking function to evaluate recall for. If provided, `num` must be either null or 1.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.rankBy().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
 
         /**
          * Search for `top_k` nearest neighbors.
@@ -424,6 +453,7 @@ private constructor(
             private var filters: JsonValue = JsonMissing.of()
             private var includeGroundTruth: JsonField<Boolean> = JsonMissing.of()
             private var num: JsonField<Long> = JsonMissing.of()
+            private var rankBy: JsonValue = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -432,6 +462,7 @@ private constructor(
                 filters = body.filters
                 includeGroundTruth = body.includeGroundTruth
                 num = body.num
+                rankBy = body.rankBy
                 topK = body.topK
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -467,6 +498,12 @@ private constructor(
              * value.
              */
             fun num(num: JsonField<Long>) = apply { this.num = num }
+
+            /**
+             * The ranking function to evaluate recall for. If provided, `num` must be either null
+             * or 1.
+             */
+            fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
 
             /** Search for `top_k` nearest neighbors. */
             fun topK(topK: Long) = topK(JsonField.of(topK))
@@ -505,7 +542,14 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Body =
-                Body(filters, includeGroundTruth, num, topK, additionalProperties.toMutableMap())
+                Body(
+                    filters,
+                    includeGroundTruth,
+                    num,
+                    rankBy,
+                    topK,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -550,18 +594,19 @@ private constructor(
                 filters == other.filters &&
                 includeGroundTruth == other.includeGroundTruth &&
                 num == other.num &&
+                rankBy == other.rankBy &&
                 topK == other.topK &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(filters, includeGroundTruth, num, topK, additionalProperties)
+            Objects.hash(filters, includeGroundTruth, num, rankBy, topK, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{filters=$filters, includeGroundTruth=$includeGroundTruth, num=$num, topK=$topK, additionalProperties=$additionalProperties}"
+            "Body{filters=$filters, includeGroundTruth=$includeGroundTruth, num=$num, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
