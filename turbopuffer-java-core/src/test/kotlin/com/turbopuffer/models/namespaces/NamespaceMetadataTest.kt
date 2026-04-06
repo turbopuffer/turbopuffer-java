@@ -38,7 +38,18 @@ internal class NamespaceMetadataTest {
                         .build()
                 )
                 .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                .pinning(PinningConfig.builder().replicas(1L).build())
+                .pinning(
+                    NamespaceMetadata.Pinning.builder()
+                        .replicas(1L)
+                        .status(
+                            NamespaceMetadata.Pinning.Status.builder()
+                                .readyReplicas(0L)
+                                .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                                .utilization(0.0)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         assertThat(namespaceMetadata.approxLogicalBytes()).isEqualTo(0L)
@@ -73,7 +84,18 @@ internal class NamespaceMetadataTest {
         assertThat(namespaceMetadata.updatedAt())
             .isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(namespaceMetadata.pinning())
-            .contains(PinningConfig.builder().replicas(1L).build())
+            .contains(
+                NamespaceMetadata.Pinning.builder()
+                    .replicas(1L)
+                    .status(
+                        NamespaceMetadata.Pinning.Status.builder()
+                            .readyReplicas(0L)
+                            .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                            .utilization(0.0)
+                            .build()
+                    )
+                    .build()
+            )
     }
 
     @Test
@@ -104,7 +126,18 @@ internal class NamespaceMetadataTest {
                         .build()
                 )
                 .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                .pinning(PinningConfig.builder().replicas(1L).build())
+                .pinning(
+                    NamespaceMetadata.Pinning.builder()
+                        .replicas(1L)
+                        .status(
+                            NamespaceMetadata.Pinning.Status.builder()
+                                .readyReplicas(0L)
+                                .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                                .utilization(0.0)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         val roundtrippedNamespaceMetadata =
