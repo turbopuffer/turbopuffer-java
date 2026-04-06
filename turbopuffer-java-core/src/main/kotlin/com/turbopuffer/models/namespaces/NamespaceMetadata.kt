@@ -41,7 +41,7 @@ private constructor(
     private val index: JsonField<Index>,
     private val schema: JsonField<Schema>,
     private val updatedAt: JsonField<OffsetDateTime>,
-    private val pinning: JsonField<PinningConfig>,
+    private val pinning: JsonField<Pinning>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -64,9 +64,7 @@ private constructor(
         @JsonProperty("updated_at")
         @ExcludeMissing
         updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
-        @JsonProperty("pinning")
-        @ExcludeMissing
-        pinning: JsonField<PinningConfig> = JsonMissing.of(),
+        @JsonProperty("pinning") @ExcludeMissing pinning: JsonField<Pinning> = JsonMissing.of(),
     ) : this(
         approxLogicalBytes,
         approxRowCount,
@@ -134,12 +132,12 @@ private constructor(
     fun updatedAt(): OffsetDateTime = updatedAt.getRequired("updated_at")
 
     /**
-     * Configuration for namespace pinning.
+     * Configuration for namespace pinning, along with the current status of the pinned namespace.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun pinning(): Optional<PinningConfig> = pinning.getOptional("pinning")
+    fun pinning(): Optional<Pinning> = pinning.getOptional("pinning")
 
     /**
      * Returns the raw JSON value of [approxLogicalBytes].
@@ -206,7 +204,7 @@ private constructor(
      *
      * Unlike [pinning], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("pinning") @ExcludeMissing fun _pinning(): JsonField<PinningConfig> = pinning
+    @JsonProperty("pinning") @ExcludeMissing fun _pinning(): JsonField<Pinning> = pinning
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -249,7 +247,7 @@ private constructor(
         private var index: JsonField<Index>? = null
         private var schema: JsonField<Schema>? = null
         private var updatedAt: JsonField<OffsetDateTime>? = null
-        private var pinning: JsonField<PinningConfig> = JsonMissing.of()
+        private var pinning: JsonField<Pinning> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -365,17 +363,19 @@ private constructor(
          */
         fun updatedAt(updatedAt: JsonField<OffsetDateTime>) = apply { this.updatedAt = updatedAt }
 
-        /** Configuration for namespace pinning. */
-        fun pinning(pinning: PinningConfig) = pinning(JsonField.of(pinning))
+        /**
+         * Configuration for namespace pinning, along with the current status of the pinned
+         * namespace.
+         */
+        fun pinning(pinning: Pinning) = pinning(JsonField.of(pinning))
 
         /**
          * Sets [Builder.pinning] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.pinning] with a well-typed [PinningConfig] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.pinning] with a well-typed [Pinning] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun pinning(pinning: JsonField<PinningConfig>) = apply { this.pinning = pinning }
+        fun pinning(pinning: JsonField<Pinning>) = apply { this.pinning = pinning }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -1641,6 +1641,457 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() = "Schema{additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Configuration for namespace pinning, along with the current status of the pinned namespace.
+     */
+    class Pinning
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val replicas: JsonField<Long>,
+        private val status: JsonField<Status>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("replicas") @ExcludeMissing replicas: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        ) : this(replicas, status, mutableMapOf())
+
+        fun toPinningConfig(): PinningConfig = PinningConfig.builder().replicas(replicas).build()
+
+        /**
+         * The number of read replicas to provision. Defaults to 1 if not specified.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun replicas(): Optional<Long> = replicas.getOptional("replicas")
+
+        /**
+         * Operational status for a pinned namespace.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun status(): Optional<Status> = status.getOptional("status")
+
+        /**
+         * Returns the raw JSON value of [replicas].
+         *
+         * Unlike [replicas], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("replicas") @ExcludeMissing fun _replicas(): JsonField<Long> = replicas
+
+        /**
+         * Returns the raw JSON value of [status].
+         *
+         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Pinning]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Pinning]. */
+        class Builder internal constructor() {
+
+            private var replicas: JsonField<Long> = JsonMissing.of()
+            private var status: JsonField<Status> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(pinning: Pinning) = apply {
+                replicas = pinning.replicas
+                status = pinning.status
+                additionalProperties = pinning.additionalProperties.toMutableMap()
+            }
+
+            /** The number of read replicas to provision. Defaults to 1 if not specified. */
+            fun replicas(replicas: Long) = replicas(JsonField.of(replicas))
+
+            /**
+             * Sets [Builder.replicas] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.replicas] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun replicas(replicas: JsonField<Long>) = apply { this.replicas = replicas }
+
+            /** Operational status for a pinned namespace. */
+            fun status(status: Status) = status(JsonField.of(status))
+
+            /**
+             * Sets [Builder.status] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.status] with a well-typed [Status] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun status(status: JsonField<Status>) = apply { this.status = status }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Pinning].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Pinning = Pinning(replicas, status, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Pinning = apply {
+            if (validated) {
+                return@apply
+            }
+
+            replicas()
+            status().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (replicas.asKnown().isPresent) 1 else 0) +
+                (status.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Operational status for a pinned namespace. */
+        class Status
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val readyReplicas: JsonField<Long>,
+            private val updatedAt: JsonField<OffsetDateTime>,
+            private val utilization: JsonField<Double>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("ready_replicas")
+                @ExcludeMissing
+                readyReplicas: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("updated_at")
+                @ExcludeMissing
+                updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+                @JsonProperty("utilization")
+                @ExcludeMissing
+                utilization: JsonField<Double> = JsonMissing.of(),
+            ) : this(readyReplicas, updatedAt, utilization, mutableMapOf())
+
+            /**
+             * The number of replicas that are warm and serving traffic.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun readyReplicas(): Long = readyReplicas.getRequired("ready_replicas")
+
+            /**
+             * The timestamp of the latest pinning status snapshot.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun updatedAt(): OffsetDateTime = updatedAt.getRequired("updated_at")
+
+            /**
+             * Aggregate utilization for the pinned namespace, reported as a value between 0.0 and
+             * 1.0.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun utilization(): Double = utilization.getRequired("utilization")
+
+            /**
+             * Returns the raw JSON value of [readyReplicas].
+             *
+             * Unlike [readyReplicas], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("ready_replicas")
+            @ExcludeMissing
+            fun _readyReplicas(): JsonField<Long> = readyReplicas
+
+            /**
+             * Returns the raw JSON value of [updatedAt].
+             *
+             * Unlike [updatedAt], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("updated_at")
+            @ExcludeMissing
+            fun _updatedAt(): JsonField<OffsetDateTime> = updatedAt
+
+            /**
+             * Returns the raw JSON value of [utilization].
+             *
+             * Unlike [utilization], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("utilization")
+            @ExcludeMissing
+            fun _utilization(): JsonField<Double> = utilization
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Status].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .readyReplicas()
+                 * .updatedAt()
+                 * .utilization()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Status]. */
+            class Builder internal constructor() {
+
+                private var readyReplicas: JsonField<Long>? = null
+                private var updatedAt: JsonField<OffsetDateTime>? = null
+                private var utilization: JsonField<Double>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(status: Status) = apply {
+                    readyReplicas = status.readyReplicas
+                    updatedAt = status.updatedAt
+                    utilization = status.utilization
+                    additionalProperties = status.additionalProperties.toMutableMap()
+                }
+
+                /** The number of replicas that are warm and serving traffic. */
+                fun readyReplicas(readyReplicas: Long) = readyReplicas(JsonField.of(readyReplicas))
+
+                /**
+                 * Sets [Builder.readyReplicas] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.readyReplicas] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun readyReplicas(readyReplicas: JsonField<Long>) = apply {
+                    this.readyReplicas = readyReplicas
+                }
+
+                /** The timestamp of the latest pinning status snapshot. */
+                fun updatedAt(updatedAt: OffsetDateTime) = updatedAt(JsonField.of(updatedAt))
+
+                /**
+                 * Sets [Builder.updatedAt] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.updatedAt] with a well-typed [OffsetDateTime]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun updatedAt(updatedAt: JsonField<OffsetDateTime>) = apply {
+                    this.updatedAt = updatedAt
+                }
+
+                /**
+                 * Aggregate utilization for the pinned namespace, reported as a value between 0.0
+                 * and 1.0.
+                 */
+                fun utilization(utilization: Double) = utilization(JsonField.of(utilization))
+
+                /**
+                 * Sets [Builder.utilization] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.utilization] with a well-typed [Double] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun utilization(utilization: JsonField<Double>) = apply {
+                    this.utilization = utilization
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Status].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .readyReplicas()
+                 * .updatedAt()
+                 * .utilization()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Status =
+                    Status(
+                        checkRequired("readyReplicas", readyReplicas),
+                        checkRequired("updatedAt", updatedAt),
+                        checkRequired("utilization", utilization),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Status = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                readyReplicas()
+                updatedAt()
+                utilization()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (readyReplicas.asKnown().isPresent) 1 else 0) +
+                    (if (updatedAt.asKnown().isPresent) 1 else 0) +
+                    (if (utilization.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Status &&
+                    readyReplicas == other.readyReplicas &&
+                    updatedAt == other.updatedAt &&
+                    utilization == other.utilization &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(readyReplicas, updatedAt, utilization, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Status{readyReplicas=$readyReplicas, updatedAt=$updatedAt, utilization=$utilization, additionalProperties=$additionalProperties}"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Pinning &&
+                replicas == other.replicas &&
+                status == other.status &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(replicas, status, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Pinning{replicas=$replicas, status=$status, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
