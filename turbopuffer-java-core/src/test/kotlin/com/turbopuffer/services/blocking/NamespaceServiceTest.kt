@@ -166,6 +166,7 @@ internal class NamespaceServiceTest {
                     .filters(JsonValue.from(mapOf<String, Any>()))
                     .includeGroundTruth(true)
                     .num(0L)
+                    .rankBy(JsonValue.from(mapOf<String, Any>()))
                     .topK(0L)
                     .build()
             )
