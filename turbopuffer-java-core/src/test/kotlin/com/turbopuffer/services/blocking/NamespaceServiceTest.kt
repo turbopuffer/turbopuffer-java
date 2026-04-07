@@ -188,7 +188,7 @@ internal class NamespaceServiceTest {
     @Test
     fun updateMetadata() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val namespaceMetadata =
             namespaceService.updateMetadata(
