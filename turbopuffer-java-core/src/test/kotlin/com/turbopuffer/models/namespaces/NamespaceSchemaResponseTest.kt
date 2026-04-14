@@ -22,6 +22,7 @@ internal class NamespaceSchemaResponseTest {
                             "ann" to true,
                             "filterable" to true,
                             "full_text_search" to true,
+                            "fuzzy" to true,
                             "glob" to true,
                             "regex" to true,
                         )
@@ -43,6 +44,7 @@ internal class NamespaceSchemaResponseTest {
                             "ann" to true,
                             "filterable" to true,
                             "full_text_search" to true,
+                            "fuzzy" to true,
                             "glob" to true,
                             "regex" to true,
                         )
