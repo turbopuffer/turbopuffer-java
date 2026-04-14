@@ -36,6 +36,7 @@ private constructor(
     private val ann: JsonField<Ann>,
     private val filterable: JsonField<Boolean>,
     private val fullTextSearch: JsonField<FullTextSearch>,
+    private val fuzzy: JsonField<Boolean>,
     private val glob: JsonField<Boolean>,
     private val regex: JsonField<Boolean>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -51,9 +52,10 @@ private constructor(
         @JsonProperty("full_text_search")
         @ExcludeMissing
         fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of(),
+        @JsonProperty("fuzzy") @ExcludeMissing fuzzy: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("glob") @ExcludeMissing glob: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("regex") @ExcludeMissing regex: JsonField<Boolean> = JsonMissing.of(),
-    ) : this(type, ann, filterable, fullTextSearch, glob, regex, mutableMapOf())
+    ) : this(type, ann, filterable, fullTextSearch, fuzzy, glob, regex, mutableMapOf())
 
     /**
      * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
@@ -90,6 +92,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun fullTextSearch(): Optional<FullTextSearch> = fullTextSearch.getOptional("full_text_search")
+
+    /**
+     * Whether to enable Fuzzy filters on this attribute.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun fuzzy(): Optional<Boolean> = fuzzy.getOptional("fuzzy")
 
     /**
      * Whether to enable Glob filters on this attribute.
@@ -138,6 +148,13 @@ private constructor(
     fun _fullTextSearch(): JsonField<FullTextSearch> = fullTextSearch
 
     /**
+     * Returns the raw JSON value of [fuzzy].
+     *
+     * Unlike [fuzzy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("fuzzy") @ExcludeMissing fun _fuzzy(): JsonField<Boolean> = fuzzy
+
+    /**
      * Returns the raw JSON value of [glob].
      *
      * Unlike [glob], this method doesn't throw if the JSON field has an unexpected type.
@@ -183,6 +200,7 @@ private constructor(
         private var ann: JsonField<Ann> = JsonMissing.of()
         private var filterable: JsonField<Boolean> = JsonMissing.of()
         private var fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of()
+        private var fuzzy: JsonField<Boolean> = JsonMissing.of()
         private var glob: JsonField<Boolean> = JsonMissing.of()
         private var regex: JsonField<Boolean> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -193,6 +211,7 @@ private constructor(
             ann = attributeSchemaConfig.ann
             filterable = attributeSchemaConfig.filterable
             fullTextSearch = attributeSchemaConfig.fullTextSearch
+            fuzzy = attributeSchemaConfig.fuzzy
             glob = attributeSchemaConfig.glob
             regex = attributeSchemaConfig.regex
             additionalProperties = attributeSchemaConfig.additionalProperties.toMutableMap()
@@ -270,6 +289,17 @@ private constructor(
         fun fullTextSearch(config: FullTextSearchConfig) =
             fullTextSearch(FullTextSearch.ofConfig(config))
 
+        /** Whether to enable Fuzzy filters on this attribute. */
+        fun fuzzy(fuzzy: Boolean) = fuzzy(JsonField.of(fuzzy))
+
+        /**
+         * Sets [Builder.fuzzy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fuzzy] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun fuzzy(fuzzy: JsonField<Boolean>) = apply { this.fuzzy = fuzzy }
+
         /** Whether to enable Glob filters on this attribute. */
         fun glob(glob: Boolean) = glob(JsonField.of(glob))
 
@@ -329,6 +359,7 @@ private constructor(
                 ann,
                 filterable,
                 fullTextSearch,
+                fuzzy,
                 glob,
                 regex,
                 additionalProperties.toMutableMap(),
@@ -346,6 +377,7 @@ private constructor(
         ann().ifPresent { it.validate() }
         filterable()
         fullTextSearch().ifPresent { it.validate() }
+        fuzzy()
         glob()
         regex()
         validated = true
@@ -370,6 +402,7 @@ private constructor(
             (ann.asKnown().getOrNull()?.validity() ?: 0) +
             (if (filterable.asKnown().isPresent) 1 else 0) +
             (fullTextSearch.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (fuzzy.asKnown().isPresent) 1 else 0) +
             (if (glob.asKnown().isPresent) 1 else 0) +
             (if (regex.asKnown().isPresent) 1 else 0)
 
@@ -715,17 +748,27 @@ private constructor(
             ann == other.ann &&
             filterable == other.filterable &&
             fullTextSearch == other.fullTextSearch &&
+            fuzzy == other.fuzzy &&
             glob == other.glob &&
             regex == other.regex &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(type, ann, filterable, fullTextSearch, glob, regex, additionalProperties)
+        Objects.hash(
+            type,
+            ann,
+            filterable,
+            fullTextSearch,
+            fuzzy,
+            glob,
+            regex,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AttributeSchemaConfig{type=$type, ann=$ann, filterable=$filterable, fullTextSearch=$fullTextSearch, glob=$glob, regex=$regex, additionalProperties=$additionalProperties}"
+        "AttributeSchemaConfig{type=$type, ann=$ann, filterable=$filterable, fullTextSearch=$fullTextSearch, fuzzy=$fuzzy, glob=$glob, regex=$regex, additionalProperties=$additionalProperties}"
 }
