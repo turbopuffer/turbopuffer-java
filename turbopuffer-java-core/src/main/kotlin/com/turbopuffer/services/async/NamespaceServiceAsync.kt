@@ -5,6 +5,10 @@ package com.turbopuffer.services.async
 import com.turbopuffer.core.ClientOptions
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
+import com.turbopuffer.models.namespaces.NamespaceBranchFromParams
+import com.turbopuffer.models.namespaces.NamespaceBranchFromResponse
+import com.turbopuffer.models.namespaces.NamespaceCopyFromParams
+import com.turbopuffer.models.namespaces.NamespaceCopyFromResponse
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
@@ -43,6 +47,27 @@ interface NamespaceServiceAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): NamespaceServiceAsync
+
+    /** Creates an instant, copy-on-write clone of a namespace. */
+    fun branchFrom(
+        params: NamespaceBranchFromParams
+    ): CompletableFuture<NamespaceBranchFromResponse> = branchFrom(params, RequestOptions.none())
+
+    /** @see branchFrom */
+    fun branchFrom(
+        params: NamespaceBranchFromParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceBranchFromResponse>
+
+    /** Copy all documents from another namespace into this one. */
+    fun copyFrom(params: NamespaceCopyFromParams): CompletableFuture<NamespaceCopyFromResponse> =
+        copyFrom(params, RequestOptions.none())
+
+    /** @see copyFrom */
+    fun copyFrom(
+        params: NamespaceCopyFromParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceCopyFromResponse>
 
     /** Delete namespace. */
     fun deleteAll(): CompletableFuture<NamespaceDeleteAllResponse> =
@@ -293,6 +318,38 @@ interface NamespaceServiceAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): NamespaceServiceAsync.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post
+         * /v2/namespaces/{namespace}?stainless_overload=branchFrom`, but is otherwise the same as
+         * [NamespaceServiceAsync.branchFrom].
+         */
+        fun branchFrom(
+            params: NamespaceBranchFromParams
+        ): CompletableFuture<HttpResponseFor<NamespaceBranchFromResponse>> =
+            branchFrom(params, RequestOptions.none())
+
+        /** @see branchFrom */
+        fun branchFrom(
+            params: NamespaceBranchFromParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceBranchFromResponse>>
+
+        /**
+         * Returns a raw HTTP response for `post
+         * /v2/namespaces/{namespace}?stainless_overload=copyFrom`, but is otherwise the same as
+         * [NamespaceServiceAsync.copyFrom].
+         */
+        fun copyFrom(
+            params: NamespaceCopyFromParams
+        ): CompletableFuture<HttpResponseFor<NamespaceCopyFromResponse>> =
+            copyFrom(params, RequestOptions.none())
+
+        /** @see copyFrom */
+        fun copyFrom(
+            params: NamespaceCopyFromParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceCopyFromResponse>>
 
         /**
          * Returns a raw HTTP response for `delete /v2/namespaces/{namespace}`, but is otherwise the

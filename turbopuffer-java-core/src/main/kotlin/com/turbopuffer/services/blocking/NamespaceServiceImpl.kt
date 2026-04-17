@@ -16,6 +16,10 @@ import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
+import com.turbopuffer.models.namespaces.NamespaceBranchFromParams
+import com.turbopuffer.models.namespaces.NamespaceBranchFromResponse
+import com.turbopuffer.models.namespaces.NamespaceCopyFromParams
+import com.turbopuffer.models.namespaces.NamespaceCopyFromResponse
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllResponse
 import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
@@ -51,6 +55,20 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): NamespaceService =
         NamespaceServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun branchFrom(
+        params: NamespaceBranchFromParams,
+        requestOptions: RequestOptions,
+    ): NamespaceBranchFromResponse =
+        // post /v2/namespaces/{namespace}?stainless_overload=branchFrom
+        withRawResponse().branchFrom(params, requestOptions).parse()
+
+    override fun copyFrom(
+        params: NamespaceCopyFromParams,
+        requestOptions: RequestOptions,
+    ): NamespaceCopyFromResponse =
+        // post /v2/namespaces/{namespace}?stainless_overload=copyFrom
+        withRawResponse().copyFrom(params, requestOptions).parse()
 
     override fun deleteAll(
         params: NamespaceDeleteAllParams,
@@ -141,6 +159,82 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             NamespaceServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        private val branchFromHandler: Handler<NamespaceBranchFromResponse> =
+            jsonHandler<NamespaceBranchFromResponse>(clientOptions.jsonMapper)
+
+        override fun branchFrom(
+            params: NamespaceBranchFromParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceBranchFromResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                    )
+                    .putQueryParam("stainless_overload", "branchFrom")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { branchFromHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val copyFromHandler: Handler<NamespaceCopyFromResponse> =
+            jsonHandler<NamespaceCopyFromResponse>(clientOptions.jsonMapper)
+
+        override fun copyFrom(
+            params: NamespaceCopyFromParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceCopyFromResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                    )
+                    .putQueryParam("stainless_overload", "copyFrom")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { copyFromHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
 
         private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
             jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
