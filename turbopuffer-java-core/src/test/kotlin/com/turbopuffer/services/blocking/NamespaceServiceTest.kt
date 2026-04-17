@@ -8,6 +8,8 @@ import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.Filter
+import com.turbopuffer.models.namespaces.NamespaceBranchFromParams
+import com.turbopuffer.models.namespaces.NamespaceCopyFromParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
 import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
 import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
@@ -27,6 +29,40 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class NamespaceServiceTest {
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun branchFrom() {
+        val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.branchFrom(
+                NamespaceBranchFromParams.builder()
+                    .namespace("namespace")
+                    .branchFromNamespace("string")
+                    .build()
+            )
+
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun copyFrom() {
+        val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
+        val namespaceService = client.namespaces()
+
+        val response =
+            namespaceService.copyFrom(
+                NamespaceCopyFromParams.builder()
+                    .namespace("namespace")
+                    .copyFromNamespace("string")
+                    .build()
+            )
+
+        response.validate()
+    }
 
     @Disabled("Mock server tests are disabled")
     @Test
