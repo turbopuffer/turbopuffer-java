@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0-alpha.2 (2026-04-29)
+
+Full Changelog: [v2.0.0-alpha.1...v2.0.0-alpha.2](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.1...v2.0.0-alpha.2)
+
+### Features
+
+* Spec: Add sparse_distance_metric to the list of models. ([e377669](https://github.com/turbopuffer/turbopuffer-java/commit/e377669eeac89f156dca39010f8145a672354710))
+
 ## 2.0.0-alpha.1 (2026-04-29)
 
 Full Changelog: [v1.21.0...v2.0.0-alpha.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.21.0...v2.0.0-alpha.1)
