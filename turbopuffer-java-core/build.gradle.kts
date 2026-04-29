@@ -55,8 +55,6 @@ kotlin {
                 exclude("com/turbopuffer/models/namespaces/NamespaceWriteParamsTest.kt")
                 exclude("com/turbopuffer/models/namespaces/QueryTest.kt")
                 exclude("com/turbopuffer/models/namespaces/RowTest.kt")
-                exclude("com/turbopuffer/services/async/NamespaceServiceAsyncTest.kt")
-                exclude("com/turbopuffer/services/blocking/NamespaceServiceTest.kt")
             }
         }
     }

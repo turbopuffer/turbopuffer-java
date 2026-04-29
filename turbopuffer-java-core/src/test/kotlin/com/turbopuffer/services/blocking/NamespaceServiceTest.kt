@@ -35,7 +35,7 @@ internal class NamespaceServiceTest {
     @Test
     fun branchFrom() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.branchFrom(
@@ -52,7 +52,7 @@ internal class NamespaceServiceTest {
     @Test
     fun copyFrom() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("ns")
 
         val response =
             namespaceService.copyFrom(
@@ -139,7 +139,7 @@ internal class NamespaceServiceTest {
                 NamespaceMultiQueryParams.builder()
                     .namespace("namespace")
                     .addQuery(
-                        Query.builder()
+                        NamespaceMultiQueryParams.Query.builder()
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .addExcludeAttribute("string")
                             .includeAttributes(true)
