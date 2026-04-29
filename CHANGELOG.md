@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.0.0-alpha.1 (2026-04-29)
+
+Full Changelog: [v1.21.0...v2.0.0-alpha.1](https://github.com/turbopuffer/turbopuffer-java/compare/v1.21.0...v2.0.0-alpha.1)
+
+### Features
+
+* Add sparse vectors to the spec. ([fd43b8d](https://github.com/turbopuffer/turbopuffer-java/commit/fd43b8d62094f7d4adf8ff8e409ab974e7b2f241))
+* Enable Stainless normalizer v2 while keeping Query inlined ([438ec9a](https://github.com/turbopuffer/turbopuffer-java/commit/438ec9a9a82e3847044ee7da0bbb0e41a82d73ae))
+* Require `fuzzy: true` in the schema to use the `Fuzzy` filter ([eca8915](https://github.com/turbopuffer/turbopuffer-java/commit/eca89159f85bc14a13badb9e65d95ea82c470a90))
+* set up branchFrom and copyFrom sugar in the OpenAPI spec ([94a1c36](https://github.com/turbopuffer/turbopuffer-java/commit/94a1c3688e915242beafdc3fa90ae995653d4c80))
+* spec: flatten branchFrom/copyFrom sugar endpoint params ([5111bd0](https://github.com/turbopuffer/turbopuffer-java/commit/5111bd02a6570e65f6dbdf370cbe8a455e5ee3d0))
+* spec: update OpenAPI spec for v2 encryption API ([21611ac](https://github.com/turbopuffer/turbopuffer-java/commit/21611acf13f874fe68212735caf9279b57ee2dff))
+* support setting headers via env ([e65d5b9](https://github.com/turbopuffer/turbopuffer-java/commit/e65d5b9c024bc22a9743c9aefef070c3a891ba27))
+
+
+### Bug Fixes
+
+* upgrade apigen and hand-patch Stainless codegen bugs ([41b39e6](https://github.com/turbopuffer/turbopuffer-java/commit/41b39e60ab2178144d404967739c8c9351f229d1))
+
 ## 1.21.0 (2026-04-07)
 
 Full Changelog: [v1.20.0...v1.21.0](https://github.com/turbopuffer/turbopuffer-java/compare/v1.20.0...v1.21.0)
