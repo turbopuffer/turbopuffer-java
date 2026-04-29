@@ -25,6 +25,7 @@ internal class NamespaceSchemaResponseTest {
                             "fuzzy" to true,
                             "glob" to true,
                             "regex" to true,
+                            "sparse_knn" to mapOf("distance_metric" to "dot_product"),
                         )
                     ),
                 )
@@ -47,6 +48,7 @@ internal class NamespaceSchemaResponseTest {
                             "fuzzy" to true,
                             "glob" to true,
                             "regex" to true,
+                            "sparse_knn" to mapOf("distance_metric" to "dot_product"),
                         )
                     ),
                 )

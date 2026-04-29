@@ -49,6 +49,7 @@ internal class AttributeSchemaTest {
                 .fuzzy(true)
                 .glob(true)
                 .regex(true)
+                .sparseKnn(AttributeSchemaConfig.SparseKnn.builder().build())
                 .build()
 
         val attributeSchema = AttributeSchema.ofConfig(config)
@@ -70,6 +71,7 @@ internal class AttributeSchemaTest {
                     .fuzzy(true)
                     .glob(true)
                     .regex(true)
+                    .sparseKnn(AttributeSchemaConfig.SparseKnn.builder().build())
                     .build()
             )
 

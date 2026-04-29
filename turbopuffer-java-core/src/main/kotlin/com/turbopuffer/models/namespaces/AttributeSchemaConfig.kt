@@ -39,6 +39,7 @@ private constructor(
     private val fuzzy: JsonField<Boolean>,
     private val glob: JsonField<Boolean>,
     private val regex: JsonField<Boolean>,
+    private val sparseKnn: JsonField<SparseKnn>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -55,11 +56,14 @@ private constructor(
         @JsonProperty("fuzzy") @ExcludeMissing fuzzy: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("glob") @ExcludeMissing glob: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("regex") @ExcludeMissing regex: JsonField<Boolean> = JsonMissing.of(),
-    ) : this(type, ann, filterable, fullTextSearch, fuzzy, glob, regex, mutableMapOf())
+        @JsonProperty("sparse_knn")
+        @ExcludeMissing
+        sparseKnn: JsonField<SparseKnn> = JsonMissing.of(),
+    ) : this(type, ann, filterable, fullTextSearch, fuzzy, glob, regex, sparseKnn, mutableMapOf())
 
     /**
      * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
-     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
+     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32, {}f16.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -118,6 +122,14 @@ private constructor(
     fun regex(): Optional<Boolean> = regex.getOptional("regex")
 
     /**
+     * Whether to create a sparse kNN index for the attribute. Requires the `{}f16` type.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun sparseKnn(): Optional<SparseKnn> = sparseKnn.getOptional("sparse_knn")
+
+    /**
      * Returns the raw JSON value of [type].
      *
      * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
@@ -168,6 +180,13 @@ private constructor(
      */
     @JsonProperty("regex") @ExcludeMissing fun _regex(): JsonField<Boolean> = regex
 
+    /**
+     * Returns the raw JSON value of [sparseKnn].
+     *
+     * Unlike [sparseKnn], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sparse_knn") @ExcludeMissing fun _sparseKnn(): JsonField<SparseKnn> = sparseKnn
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -203,6 +222,7 @@ private constructor(
         private var fuzzy: JsonField<Boolean> = JsonMissing.of()
         private var glob: JsonField<Boolean> = JsonMissing.of()
         private var regex: JsonField<Boolean> = JsonMissing.of()
+        private var sparseKnn: JsonField<SparseKnn> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -214,12 +234,14 @@ private constructor(
             fuzzy = attributeSchemaConfig.fuzzy
             glob = attributeSchemaConfig.glob
             regex = attributeSchemaConfig.regex
+            sparseKnn = attributeSchemaConfig.sparseKnn
             additionalProperties = attributeSchemaConfig.additionalProperties.toMutableMap()
         }
 
         /**
          * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime,
-         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
+         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32,
+         * {}f16.
          */
         fun type(type: String) = type(JsonField.of(type))
 
@@ -322,6 +344,18 @@ private constructor(
          */
         fun regex(regex: JsonField<Boolean>) = apply { this.regex = regex }
 
+        /** Whether to create a sparse kNN index for the attribute. Requires the `{}f16` type. */
+        fun sparseKnn(sparseKnn: SparseKnn) = sparseKnn(JsonField.of(sparseKnn))
+
+        /**
+         * Sets [Builder.sparseKnn] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sparseKnn] with a well-typed [SparseKnn] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun sparseKnn(sparseKnn: JsonField<SparseKnn>) = apply { this.sparseKnn = sparseKnn }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -362,6 +396,7 @@ private constructor(
                 fuzzy,
                 glob,
                 regex,
+                sparseKnn,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -380,6 +415,7 @@ private constructor(
         fuzzy()
         glob()
         regex()
+        sparseKnn().ifPresent { it.validate() }
         validated = true
     }
 
@@ -404,7 +440,8 @@ private constructor(
             (fullTextSearch.asKnown().getOrNull()?.validity() ?: 0) +
             (if (fuzzy.asKnown().isPresent) 1 else 0) +
             (if (glob.asKnown().isPresent) 1 else 0) +
-            (if (regex.asKnown().isPresent) 1 else 0)
+            (if (regex.asKnown().isPresent) 1 else 0) +
+            (sparseKnn.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
      * Whether to create an approximate nearest neighbor index for the attribute. Can be a boolean
@@ -738,6 +775,162 @@ private constructor(
         }
     }
 
+    /** Whether to create a sparse kNN index for the attribute. Requires the `{}f16` type. */
+    class SparseKnn
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val distanceMetric: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("distance_metric")
+            @ExcludeMissing
+            distanceMetric: JsonValue = JsonMissing.of()
+        ) : this(distanceMetric, mutableMapOf())
+
+        /**
+         * A function used to calculate sparse vector similarity.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("dot_product")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("distance_metric")
+        @ExcludeMissing
+        fun _distanceMetric(): JsonValue = distanceMetric
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [SparseKnn]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [SparseKnn]. */
+        class Builder internal constructor() {
+
+            private var distanceMetric: JsonValue = JsonValue.from("dot_product")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(sparseKnn: SparseKnn) = apply {
+                distanceMetric = sparseKnn.distanceMetric
+                additionalProperties = sparseKnn.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("dot_product")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun distanceMetric(distanceMetric: JsonValue) = apply {
+                this.distanceMetric = distanceMetric
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [SparseKnn].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): SparseKnn = SparseKnn(distanceMetric, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): SparseKnn = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _distanceMetric().let {
+                if (it != JsonValue.from("dot_product")) {
+                    throw TurbopufferInvalidDataException(
+                        "'distanceMetric' is invalid, received $it"
+                    )
+                }
+            }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            distanceMetric.let { if (it == JsonValue.from("dot_product")) 1 else 0 }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is SparseKnn &&
+                distanceMetric == other.distanceMetric &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(distanceMetric, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "SparseKnn{distanceMetric=$distanceMetric, additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -751,6 +944,7 @@ private constructor(
             fuzzy == other.fuzzy &&
             glob == other.glob &&
             regex == other.regex &&
+            sparseKnn == other.sparseKnn &&
             additionalProperties == other.additionalProperties
     }
 
@@ -763,6 +957,7 @@ private constructor(
             fuzzy,
             glob,
             regex,
+            sparseKnn,
             additionalProperties,
         )
     }
@@ -770,5 +965,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AttributeSchemaConfig{type=$type, ann=$ann, filterable=$filterable, fullTextSearch=$fullTextSearch, fuzzy=$fuzzy, glob=$glob, regex=$regex, additionalProperties=$additionalProperties}"
+        "AttributeSchemaConfig{type=$type, ann=$ann, filterable=$filterable, fullTextSearch=$fullTextSearch, fuzzy=$fuzzy, glob=$glob, regex=$regex, sparseKnn=$sparseKnn, additionalProperties=$additionalProperties}"
 }
