@@ -976,9 +976,6 @@ private constructor(
             /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
             fun limit(integer: Long) = limit(Limit.ofInteger(integer))
 
-            /** Alias for calling [Builder.limit] with `Limit.ofLimit(limit)`. */
-            fun limit(limit: Limit) = limit(Limit.ofLimit(limit))
-
             /** How to rank the documents in the namespace. */
             fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
 

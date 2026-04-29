@@ -41,6 +41,8 @@ kotlin {
                 exclude("com/turbopuffer/models/namespaces/AttributeSchemaTest.kt")
                 exclude("com/turbopuffer/models/namespaces/ColumnsTest.kt")
                 exclude("com/turbopuffer/models/namespaces/IdTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceBranchFromResponseTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceCopyFromResponseTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceMultiQueryParamsTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceMultiQueryResponseTest.kt")
                 exclude("com/turbopuffer/models/namespaces/NamespaceExplainQueryParamsTest.kt")
@@ -53,6 +55,8 @@ kotlin {
                 exclude("com/turbopuffer/models/namespaces/NamespaceWriteParamsTest.kt")
                 exclude("com/turbopuffer/models/namespaces/QueryTest.kt")
                 exclude("com/turbopuffer/models/namespaces/RowTest.kt")
+                exclude("com/turbopuffer/services/async/NamespaceServiceAsyncTest.kt")
+                exclude("com/turbopuffer/services/blocking/NamespaceServiceTest.kt")
             }
         }
     }

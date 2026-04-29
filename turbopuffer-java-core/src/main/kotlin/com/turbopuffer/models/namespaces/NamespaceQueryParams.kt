@@ -406,11 +406,8 @@ private constructor(
          */
         fun limit(limit: JsonField<Limit>) = apply { body.limit(limit) }
 
-        /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
+        /** Alias for calling [limit] with the given total limit. */
         fun limit(integer: Long) = apply { body.limit(integer) }
-
-        /** Alias for calling [Builder.limit] with `Limit.ofLimit(limit)`. */
-        fun limit(limit: Limit) = apply { body.limit(limit) }
 
         /** How to rank the documents in the namespace. */
         fun rankBy(rankBy: RankBy) = apply { body.rankBy(rankBy) }
@@ -889,16 +886,17 @@ private constructor(
             /**
              * Aggregations to compute over all documents in the namespace that match the filters.
              */
-            fun aggregateBy(aggregateBy: AggregateBy) = aggregateBy(JsonField.of(aggregateBy))
+            fun aggregateBy(aggregateBy: MutableMap<String, AggregateBy>) =
+                aggregateBy(JsonField.of(aggregateBy))
 
             /**
              * Sets [Builder.aggregateBy] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.aggregateBy] with a well-typed [AggregateBy] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.aggregateBy] with a well-typed `MutableMap<String,
+             * AggregateBy>` value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
              */
-            fun aggregateBy(aggregateBy: JsonField<AggregateBy>) = apply {
+            fun aggregateBy(aggregateBy: JsonField<MutableMap<String, AggregateBy>>) = apply {
                 this.aggregateBy = aggregateBy
             }
 
@@ -1043,9 +1041,6 @@ private constructor(
 
             /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
             fun limit(integer: Long) = limit(Limit.ofInteger(integer))
-
-            /** Alias for calling [Builder.limit] with `Limit.ofLimit(limit)`. */
-            fun limit(limit: Limit) = limit(Limit.ofLimit(limit))
 
             /** How to rank the documents in the namespace. */
             fun rankBy(rankBy: RankBy) = rankBy(JsonField.of(rankBy))

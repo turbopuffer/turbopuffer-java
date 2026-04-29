@@ -21,9 +21,8 @@ import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
-import com.turbopuffer.models.namespaces.Filter
-
 import com.turbopuffer.models.namespaces.Encryption
+import com.turbopuffer.models.namespaces.Filter
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Row
 import com.turbopuffer.models.namespaces.Schema
