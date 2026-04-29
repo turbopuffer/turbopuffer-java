@@ -20,7 +20,11 @@ internal class AttributeSchemaConfigTest {
                 .fuzzy(true)
                 .glob(true)
                 .regex(true)
-                .sparseKnn(AttributeSchemaConfig.SparseKnn.builder().build())
+                .sparseKnn(
+                    AttributeSchemaConfig.SparseKnn.builder()
+                        .distanceMetric(SparseDistanceMetric.DOT_PRODUCT)
+                        .build()
+                )
                 .build()
 
         assertThat(attributeSchemaConfig.type()).isEqualTo("string")
@@ -31,7 +35,11 @@ internal class AttributeSchemaConfigTest {
         assertThat(attributeSchemaConfig.glob()).contains(true)
         assertThat(attributeSchemaConfig.regex()).contains(true)
         assertThat(attributeSchemaConfig.sparseKnn())
-            .contains(AttributeSchemaConfig.SparseKnn.builder().build())
+            .contains(
+                AttributeSchemaConfig.SparseKnn.builder()
+                    .distanceMetric(SparseDistanceMetric.DOT_PRODUCT)
+                    .build()
+            )
     }
 
     @Test
@@ -46,7 +54,11 @@ internal class AttributeSchemaConfigTest {
                 .fuzzy(true)
                 .glob(true)
                 .regex(true)
-                .sparseKnn(AttributeSchemaConfig.SparseKnn.builder().build())
+                .sparseKnn(
+                    AttributeSchemaConfig.SparseKnn.builder()
+                        .distanceMetric(SparseDistanceMetric.DOT_PRODUCT)
+                        .build()
+                )
                 .build()
 
         val roundtrippedAttributeSchemaConfig =

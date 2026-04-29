@@ -49,7 +49,11 @@ internal class AttributeSchemaTest {
                 .fuzzy(true)
                 .glob(true)
                 .regex(true)
-                .sparseKnn(AttributeSchemaConfig.SparseKnn.builder().build())
+                .sparseKnn(
+                    AttributeSchemaConfig.SparseKnn.builder()
+                        .distanceMetric(SparseDistanceMetric.DOT_PRODUCT)
+                        .build()
+                )
                 .build()
 
         val attributeSchema = AttributeSchema.ofConfig(config)
@@ -71,7 +75,11 @@ internal class AttributeSchemaTest {
                     .fuzzy(true)
                     .glob(true)
                     .regex(true)
-                    .sparseKnn(AttributeSchemaConfig.SparseKnn.builder().build())
+                    .sparseKnn(
+                        AttributeSchemaConfig.SparseKnn.builder()
+                            .distanceMetric(SparseDistanceMetric.DOT_PRODUCT)
+                            .build()
+                    )
                     .build()
             )
 
