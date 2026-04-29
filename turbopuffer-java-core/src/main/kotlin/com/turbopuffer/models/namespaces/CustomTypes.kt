@@ -944,6 +944,10 @@ sealed class RankBy() {
         public fun knn(attr: String, value: List<Float>): RankByKnn = RankByKnn.create(attr, value)
 
         @JvmStatic
+        public fun sparseVector(attr: String, value: Map<String, Double>): RankBySparseVector =
+            RankBySparseVector.create(attr, value)
+
+        @JvmStatic
         public fun attribute(attr: String, order: RankByAttributeOrder): RankByAttribute =
             RankByAttribute.create(attr, order)
 
@@ -1018,6 +1022,25 @@ class RankByKnn private constructor(attr: String, value: List<Float>) : RankBy()
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: List<Float>): RankByKnn = RankByKnn(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class RankBySparseVector private constructor(attr: String, value: Map<String, Double>) : RankBy() {
+    private val attr: String = attr
+    private val f0: String = "SparseKNN"
+    private val value: Map<String, Double> = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: Map<String, Double>): RankBySparseVector =
+            RankBySparseVector(attr, value)
     }
 }
 

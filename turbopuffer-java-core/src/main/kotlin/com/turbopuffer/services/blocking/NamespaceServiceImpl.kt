@@ -243,10 +243,9 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             clientOptions.defaultNamespace().orElseThrow {
                 IllegalArgumentException("clientOptions missing namespace ID")
             }
-        }
 
         private val deleteAllHandler: Handler<NamespaceDeleteAllResponse> =
-        jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
+            jsonHandler<NamespaceDeleteAllResponse>(clientOptions.jsonMapper)
 
         override fun deleteAll(
             params: NamespaceDeleteAllParams,

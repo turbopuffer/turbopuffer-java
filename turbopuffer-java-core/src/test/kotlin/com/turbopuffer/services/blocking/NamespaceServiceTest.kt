@@ -7,9 +7,8 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
-import com.turbopuffer.models.namespaces.Filter
-
 import com.turbopuffer.models.namespaces.Encryption
+import com.turbopuffer.models.namespaces.Filter
 import com.turbopuffer.models.namespaces.NamespaceBranchFromParams
 import com.turbopuffer.models.namespaces.NamespaceCopyFromParams
 import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams

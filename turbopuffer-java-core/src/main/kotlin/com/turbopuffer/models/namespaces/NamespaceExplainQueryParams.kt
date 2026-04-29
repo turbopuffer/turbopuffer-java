@@ -407,11 +407,8 @@ private constructor(
          */
         fun limit(limit: JsonField<Limit>) = apply { body.limit(limit) }
 
-        /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
+        /** Alias for calling [limit] with the given total limit. */
         fun limit(integer: Long) = apply { body.limit(integer) }
-
-        /** Alias for calling [Builder.limit] with `Limit.ofLimit(limit)`. */
-        fun limit(limit: Limit) = apply { body.limit(limit) }
 
         /** How to rank the documents in the namespace. */
         fun rankBy(rankBy: RankBy) = apply { body.rankBy(rankBy) }
@@ -1045,9 +1042,6 @@ private constructor(
 
             /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
             fun limit(integer: Long) = limit(Limit.ofInteger(integer))
-
-            /** Alias for calling [Builder.limit] with `Limit.ofLimit(limit)`. */
-            fun limit(limit: Limit) = limit(Limit.ofLimit(limit))
 
             /**
              * Sets [Builder.rankBy] to an arbitrary JSON value.
