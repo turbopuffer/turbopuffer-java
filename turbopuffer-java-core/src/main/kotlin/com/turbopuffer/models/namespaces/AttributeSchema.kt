@@ -30,7 +30,7 @@ private constructor(
 
     /**
      * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
-     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
+     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32, {}f16.
      */
     fun type(): Optional<String> = Optional.ofNullable(type)
 
@@ -43,7 +43,7 @@ private constructor(
 
     /**
      * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
-     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
+     * []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32, {}f16.
      */
     fun asType(): String = type.getOrThrow("type")
 
@@ -125,7 +125,8 @@ private constructor(
 
         /**
          * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime,
-         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
+         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32,
+         * {}f16.
          */
         @JvmStatic fun ofType(type: String) = AttributeSchema(type = type)
 
@@ -141,7 +142,8 @@ private constructor(
 
         /**
          * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime,
-         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32.
+         * bool, []string, []int, []uint, []float, []uuid, []datetime, []bool, [DIMS]f16, [DIMS]f32,
+         * {}f16.
          */
         fun visitType(type: String): T
 
