@@ -779,7 +779,7 @@ private constructor(
     class SparseKnn
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val distanceMetric: JsonValue,
+        private val distanceMetric: JsonField<SparseDistanceMetric>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -787,23 +787,26 @@ private constructor(
         private constructor(
             @JsonProperty("distance_metric")
             @ExcludeMissing
-            distanceMetric: JsonValue = JsonMissing.of()
+            distanceMetric: JsonField<SparseDistanceMetric> = JsonMissing.of()
         ) : this(distanceMetric, mutableMapOf())
 
         /**
          * A function used to calculate sparse vector similarity.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("dot_product")
-         * ```
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun distanceMetric(): SparseDistanceMetric = distanceMetric.getRequired("distance_metric")
+
+        /**
+         * Returns the raw JSON value of [distanceMetric].
          *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Unlike [distanceMetric], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("distance_metric")
         @ExcludeMissing
-        fun _distanceMetric(): JsonValue = distanceMetric
+        fun _distanceMetric(): JsonField<SparseDistanceMetric> = distanceMetric
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -819,14 +822,21 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [SparseKnn]. */
+            /**
+             * Returns a mutable builder for constructing an instance of [SparseKnn].
+             *
+             * The following fields are required:
+             * ```java
+             * .distanceMetric()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [SparseKnn]. */
         class Builder internal constructor() {
 
-            private var distanceMetric: JsonValue = JsonValue.from("dot_product")
+            private var distanceMetric: JsonField<SparseDistanceMetric>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -835,19 +845,18 @@ private constructor(
                 additionalProperties = sparseKnn.additionalProperties.toMutableMap()
             }
 
+            /** A function used to calculate sparse vector similarity. */
+            fun distanceMetric(distanceMetric: SparseDistanceMetric) =
+                distanceMetric(JsonField.of(distanceMetric))
+
             /**
-             * Sets the field to an arbitrary JSON value.
+             * Sets [Builder.distanceMetric] to an arbitrary JSON value.
              *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("dot_product")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.distanceMetric] with a well-typed
+             * [SparseDistanceMetric] value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
              */
-            fun distanceMetric(distanceMetric: JsonValue) = apply {
+            fun distanceMetric(distanceMetric: JsonField<SparseDistanceMetric>) = apply {
                 this.distanceMetric = distanceMetric
             }
 
@@ -874,8 +883,19 @@ private constructor(
              * Returns an immutable instance of [SparseKnn].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .distanceMetric()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): SparseKnn = SparseKnn(distanceMetric, additionalProperties.toMutableMap())
+            fun build(): SparseKnn =
+                SparseKnn(
+                    checkRequired("distanceMetric", distanceMetric),
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -885,13 +905,7 @@ private constructor(
                 return@apply
             }
 
-            _distanceMetric().let {
-                if (it != JsonValue.from("dot_product")) {
-                    throw TurbopufferInvalidDataException(
-                        "'distanceMetric' is invalid, received $it"
-                    )
-                }
-            }
+            distanceMetric().validate()
             validated = true
         }
 
@@ -910,8 +924,7 @@ private constructor(
          * Used for best match union deserialization.
          */
         @JvmSynthetic
-        internal fun validity(): Int =
-            distanceMetric.let { if (it == JsonValue.from("dot_product")) 1 else 0 }
+        internal fun validity(): Int = (distanceMetric.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
