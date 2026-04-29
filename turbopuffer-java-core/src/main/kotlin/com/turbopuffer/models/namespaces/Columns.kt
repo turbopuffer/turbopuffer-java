@@ -158,11 +158,8 @@ private constructor(
         /** Alias for calling [vector] with `Vector.ofVectors(vectors)`. */
         fun vectorOfVectors(vectors: List<Vector>) = vector(Vector.ofVectors(vectors))
 
-        /** Alias for calling [vector] with `Vector.ofNumber(number)`. */
-        fun vectorOfNumber(number: List<Double>) = vector(Vector.ofNumber(number))
-
-        /** Alias for calling [vector] with `Vector.ofString(string)`. */
-        fun vector(string: String) = vector(Vector.ofString(string))
+        /** Alias for calling [Builder.vector] with `Vector.ofVector(vector)`. */
+        fun vector(vector: Vector) = vector(Vector.ofVector(vector))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -239,42 +236,32 @@ private constructor(
     class Vector
     private constructor(
         private val vectors: List<Vector>? = null,
-        private val number: List<Double>? = null,
-        private val string: String? = null,
+        private val vector: Vector? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** The vector embeddings of the documents. */
         fun vectors(): Optional<List<Vector>> = Optional.ofNullable(vectors)
 
-        /** A dense vector encoded as an array of floats. */
-        fun number(): Optional<List<Double>> = Optional.ofNullable(number)
-
-        /** A dense vector encoded as a base64 string. */
-        fun string(): Optional<String> = Optional.ofNullable(string)
+        /** A vector embedding associated with a document. */
+        fun vector(): Optional<Vector> = Optional.ofNullable(vector)
 
         fun isVectors(): Boolean = vectors != null
 
-        fun isNumber(): Boolean = number != null
-
-        fun isString(): Boolean = string != null
+        fun isVector(): Boolean = vector != null
 
         /** The vector embeddings of the documents. */
         fun asVectors(): List<Vector> = vectors.getOrThrow("vectors")
 
-        /** A dense vector encoded as an array of floats. */
-        fun asNumber(): List<Double> = number.getOrThrow("number")
-
-        /** A dense vector encoded as a base64 string. */
-        fun asString(): String = string.getOrThrow("string")
+        /** A vector embedding associated with a document. */
+        fun asVector(): Vector = vector.getOrThrow("vector")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 vectors != null -> visitor.visitVectors(vectors)
-                number != null -> visitor.visitNumber(number)
-                string != null -> visitor.visitString(string)
+                vector != null -> visitor.visitVector(vector)
                 else -> visitor.unknown(_json)
             }
 
@@ -291,9 +278,9 @@ private constructor(
                         vectors.forEach { it.validate() }
                     }
 
-                    override fun visitNumber(number: List<Double>) {}
-
-                    override fun visitString(string: String) {}
+                    override fun visitVector(vector: Vector) {
+                        vector.validate()
+                    }
                 }
             )
             validated = true
@@ -320,9 +307,7 @@ private constructor(
                     override fun visitVectors(vectors: List<Vector>) =
                         vectors.sumOf { it.validity().toInt() }
 
-                    override fun visitNumber(number: List<Double>) = number.size
-
-                    override fun visitString(string: String) = 1
+                    override fun visitVector(vector: Vector) = vector.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -333,19 +318,15 @@ private constructor(
                 return true
             }
 
-            return other is Vector &&
-                vectors == other.vectors &&
-                number == other.number &&
-                string == other.string
+            return other is Vector && vectors == other.vectors && vector == other.vector
         }
 
-        override fun hashCode(): Int = Objects.hash(vectors, number, string)
+        override fun hashCode(): Int = Objects.hash(vectors, vector)
 
         override fun toString(): String =
             when {
                 vectors != null -> "Vector{vectors=$vectors}"
-                number != null -> "Vector{number=$number}"
-                string != null -> "Vector{string=$string}"
+                vector != null -> "Vector{vector=$vector}"
                 _json != null -> "Vector{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Vector")
             }
@@ -356,11 +337,8 @@ private constructor(
             @JvmStatic
             fun ofVectors(vectors: List<Vector>) = Vector(vectors = vectors.toImmutable())
 
-            /** A dense vector encoded as an array of floats. */
-            @JvmStatic fun ofNumber(number: List<Double>) = Vector(number = number.toImmutable())
-
-            /** A dense vector encoded as a base64 string. */
-            @JvmStatic fun ofString(string: String) = Vector(string = string)
+            /** A vector embedding associated with a document. */
+            @JvmStatic fun ofVector(vector: Vector) = Vector(vector = vector)
         }
 
         /** An interface that defines how to map each variant of [Vector] to a value of type [T]. */
@@ -369,11 +347,8 @@ private constructor(
             /** The vector embeddings of the documents. */
             fun visitVectors(vectors: List<Vector>): T
 
-            /** A dense vector encoded as an array of floats. */
-            fun visitNumber(number: List<Double>): T
-
-            /** A dense vector encoded as a base64 string. */
-            fun visitString(string: String): T
+            /** A vector embedding associated with a document. */
+            fun visitVector(vector: Vector): T
 
             /**
              * Maps an unknown variant of [Vector] to a value of type [T].
@@ -397,14 +372,11 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                                Vector(string = it, _json = json)
+                            tryDeserialize(node, jacksonTypeRef<Vector>())?.let {
+                                Vector(vector = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<List<Vector>>())?.let {
                                 Vector(vectors = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<Double>>())?.let {
-                                Vector(number = it, _json = json)
                             },
                         )
                         .filterNotNull()
@@ -432,8 +404,7 @@ private constructor(
             ) {
                 when {
                     value.vectors != null -> generator.writeObject(value.vectors)
-                    value.number != null -> generator.writeObject(value.number)
-                    value.string != null -> generator.writeObject(value.string)
+                    value.vector != null -> generator.writeObject(value.vector)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Vector")
                 }

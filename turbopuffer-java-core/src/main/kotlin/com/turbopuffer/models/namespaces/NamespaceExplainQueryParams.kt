@@ -6,13 +6,24 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.turbopuffer.core.BaseDeserializer
+import com.turbopuffer.core.BaseSerializer
 import com.turbopuffer.core.Enum
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
+import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.checkKnown
+import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.toImmutable
@@ -40,6 +51,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun aggregateBy(): Optional<MutableMap<String, AggregateBy>> = body.aggregateBy()
+
+    /**
+     * The consistency level for a query.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun consistency(): Optional<Consistency> = body.consistency()
 
     /**
      * A function used to calculate vector similarity.
@@ -98,7 +117,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun limit(): Optional<Query.Limit> = body.limit()
+    fun limit(): Optional<Limit> = body.limit()
 
     /**
      * How to rank the documents in the namespace.
@@ -124,14 +143,6 @@ private constructor(
     fun topK(): Optional<Long> = body.topK()
 
     /**
-     * The consistency level for a query.
-     *
-     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun consistency(): Optional<Consistency> = body.consistency()
-
-    /**
      * The encoding to use for vectors in the response.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -145,6 +156,13 @@ private constructor(
      * Unlike [aggregateBy], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _aggregateBy(): JsonField<MutableMap<String, AggregateBy>> = body._aggregateBy()
+
+    /**
+     * Returns the raw JSON value of [consistency].
+     *
+     * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _consistency(): JsonField<Consistency> = body._consistency()
 
     /**
      * Returns the raw JSON value of [distanceMetric].
@@ -181,7 +199,7 @@ private constructor(
      *
      * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _limit(): JsonField<Query.Limit> = body._limit()
+    fun _limit(): JsonField<Limit> = body._limit()
 
     /**
      * Returns the raw JSON value of [topK].
@@ -189,13 +207,6 @@ private constructor(
      * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _topK(): JsonField<Long> = body._topK()
-
-    /**
-     * Returns the raw JSON value of [consistency].
-     *
-     * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _consistency(): JsonField<Consistency> = body._consistency()
 
     /**
      * Returns the raw JSON value of [vectorEncoding].
@@ -251,10 +262,10 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [aggregateBy]
+         * - [consistency]
          * - [distanceMetric]
          * - [excludeAttributes]
          * - [filters]
-         * - [groupBy]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -273,6 +284,20 @@ private constructor(
          */
         fun aggregateBy(aggregateBy: JsonField<MutableMap<String, AggregateBy>>) = apply {
             body.aggregateBy(aggregateBy)
+        }
+
+        /** The consistency level for a query. */
+        fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
+
+        /**
+         * Sets [Builder.consistency] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.consistency] with a well-typed [Consistency] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun consistency(consistency: JsonField<Consistency>) = apply {
+            body.consistency(consistency)
         }
 
         /** A function used to calculate vector similarity. */
@@ -372,21 +397,20 @@ private constructor(
         }
 
         /** Limits the documents returned by a query. */
-        fun limit(limit: Query.Limit) = apply { body.limit(limit) }
+        fun limit(limit: Limit) = apply { body.limit(limit) }
 
         /**
          * Sets [Builder.limit] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.limit] with a well-typed [Query.Limit] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.limit] with a well-typed [Limit] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun limit(limit: JsonField<Query.Limit>) = apply { body.limit(limit) }
+        fun limit(limit: JsonField<Limit>) = apply { body.limit(limit) }
 
-        /** Alias for calling [limit] with `Query.Limit.ofInteger(integer)`. */
+        /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
         fun limit(integer: Long) = apply { body.limit(integer) }
 
-        /** Alias for calling [Builder.limit] with `Query.Limit.ofLimit(limit)`. */
+        /** Alias for calling [Builder.limit] with `Limit.ofLimit(limit)`. */
         fun limit(limit: Limit) = apply { body.limit(limit) }
 
         /** How to rank the documents in the namespace. */
@@ -402,20 +426,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun topK(topK: JsonField<Long>) = apply { body.topK(topK) }
-
-        /** The consistency level for a query. */
-        fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
-
-        /**
-         * Sets [Builder.consistency] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.consistency] with a well-typed [Consistency] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun consistency(consistency: JsonField<Consistency>) = apply {
-            body.consistency(consistency)
-        }
 
         /** The encoding to use for vectors in the response. */
         fun vectorEncoding(vectorEncoding: VectorEncoding) = apply {
@@ -581,15 +591,15 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val aggregateBy: JsonField<MutableMap<String, AggregateBy>>,
+        private val consistency: JsonField<Consistency>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val excludeAttributes: JsonField<List<String>>,
         private val filters: JsonField<Filter>,
         private val groupBy: JsonField<List<String>>,
         private val includeAttributes: JsonField<IncludeAttributes>,
-        private val limit: JsonField<Query.Limit>,
+        private val limit: JsonField<Limit>,
         private val rankBy: JsonField<RankBy>,
         private val topK: JsonField<Long>,
-        private val consistency: JsonField<Consistency>,
         private val vectorEncoding: JsonField<VectorEncoding>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -599,6 +609,9 @@ private constructor(
             @JsonProperty("aggregate_by")
             @ExcludeMissing
             aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of(),
+            @JsonProperty("consistency")
+            @ExcludeMissing
+            consistency: JsonField<Consistency> = JsonMissing.of(),
             @JsonProperty("distance_metric")
             @ExcludeMissing
             distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
@@ -612,17 +625,15 @@ private constructor(
             @JsonProperty("include_attributes")
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
-            @JsonProperty("limit") @ExcludeMissing limit: JsonField<Query.Limit> = JsonMissing.of(),
+            @JsonProperty("limit") @ExcludeMissing limit: JsonField<Limit> = JsonMissing.of(),
             @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonField<RankBy> = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("consistency")
-            @ExcludeMissing
-            consistency: JsonField<Consistency> = JsonMissing.of(),
             @JsonProperty("vector_encoding")
             @ExcludeMissing
             vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of(),
         ) : this(
             aggregateBy,
+            consistency,
             distanceMetric,
             excludeAttributes,
             filters,
@@ -631,23 +642,9 @@ private constructor(
             limit,
             rankBy,
             topK,
-            consistency,
             vectorEncoding,
             mutableMapOf(),
         )
-
-        fun toQuery(): Query =
-            Query.builder()
-                .aggregateBy(aggregateBy)
-                .distanceMetric(distanceMetric)
-                .excludeAttributes(excludeAttributes)
-                .filters(filters)
-                .groupBy(groupBy)
-                .includeAttributes(includeAttributes)
-                .limit(limit)
-                .rankBy(rankBy)
-                .topK(topK)
-                .build()
 
         /**
          * Aggregations to compute over all documents in the namespace that match the filters.
@@ -657,6 +654,14 @@ private constructor(
          */
         fun aggregateBy(): Optional<MutableMap<String, AggregateBy>> =
             aggregateBy.getOptional("aggregate_by")
+
+        /**
+         * The consistency level for a query.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun consistency(): Optional<Consistency> = consistency.getOptional("consistency")
 
         /**
          * A function used to calculate vector similarity.
@@ -718,7 +723,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun limit(): Optional<Query.Limit> = limit.getOptional("limit")
+        fun limit(): Optional<Limit> = limit.getOptional("limit")
 
         /**
          * How to rank the documents in the namespace.
@@ -745,14 +750,6 @@ private constructor(
         fun topK(): Optional<Long> = topK.getOptional("top_k")
 
         /**
-         * The consistency level for a query.
-         *
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun consistency(): Optional<Consistency> = consistency.getOptional("consistency")
-
-        /**
          * The encoding to use for vectors in the response.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -769,6 +766,15 @@ private constructor(
         @JsonProperty("aggregate_by")
         @ExcludeMissing
         fun _aggregateBy(): JsonField<MutableMap<String, AggregateBy>> = aggregateBy
+
+        /**
+         * Returns the raw JSON value of [consistency].
+         *
+         * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("consistency")
+        @ExcludeMissing
+        fun _consistency(): JsonField<Consistency> = consistency
 
         /**
          * Returns the raw JSON value of [distanceMetric].
@@ -812,7 +818,7 @@ private constructor(
          *
          * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Query.Limit> = limit
+        @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Limit> = limit
 
         /**
          * Returns the raw JSON value of [topK].
@@ -820,15 +826,6 @@ private constructor(
          * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("top_k") @ExcludeMissing fun _topK(): JsonField<Long> = topK
-
-        /**
-         * Returns the raw JSON value of [consistency].
-         *
-         * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("consistency")
-        @ExcludeMissing
-        fun _consistency(): JsonField<Consistency> = consistency
 
         /**
          * Returns the raw JSON value of [vectorEncoding].
@@ -862,21 +859,22 @@ private constructor(
         class Builder internal constructor() {
 
             private var aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of()
+            private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var excludeAttributes: JsonField<MutableList<String>>? = null
             private var filters: JsonField<Filter> = JsonMissing.of()
             private var groupBy: JsonField<MutableList<String>>? = null
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
-            private var limit: JsonField<Query.Limit> = JsonMissing.of()
+            private var limit: JsonField<Limit> = JsonMissing.of()
             private var rankBy: JsonField<RankBy> = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
-            private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 aggregateBy = body.aggregateBy
+                consistency = body.consistency
                 distanceMetric = body.distanceMetric
                 excludeAttributes = body.excludeAttributes.map { it.toMutableList() }
                 filters = body.filters
@@ -885,7 +883,6 @@ private constructor(
                 limit = body.limit
                 rankBy = body.rankBy
                 topK = body.topK
-                consistency = body.consistency
                 vectorEncoding = body.vectorEncoding
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -905,6 +902,20 @@ private constructor(
              */
             fun aggregateBy(aggregateBy: JsonField<MutableMap<String, AggregateBy>>) = apply {
                 this.aggregateBy = aggregateBy
+            }
+
+            /** The consistency level for a query. */
+            fun consistency(consistency: Consistency) = consistency(JsonField.of(consistency))
+
+            /**
+             * Sets [Builder.consistency] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.consistency] with a well-typed [Consistency] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun consistency(consistency: JsonField<Consistency>) = apply {
+                this.consistency = consistency
             }
 
             /** A function used to calculate vector similarity. */
@@ -1021,22 +1032,22 @@ private constructor(
                 includeAttributes(IncludeAttributes.ofStrings(strings))
 
             /** Limits the documents returned by a query. */
-            fun limit(limit: Query.Limit) = limit(JsonField.of(limit))
+            fun limit(limit: Limit) = limit(JsonField.of(limit))
 
             /**
              * Sets [Builder.limit] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.limit] with a well-typed [Query.Limit] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.limit] with a well-typed [Limit] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
-            fun limit(limit: JsonField<Query.Limit>) = apply { this.limit = limit }
+            fun limit(limit: JsonField<Limit>) = apply { this.limit = limit }
 
-            /** Alias for calling [limit] with `Query.Limit.ofInteger(integer)`. */
-            fun limit(integer: Long) = limit(Query.Limit.ofInteger(integer))
+            /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
+            fun limit(integer: Long) = limit(Limit.ofInteger(integer))
 
-            /** Alias for calling [Builder.limit] with `Query.Limit.ofLimit(limit)`. */
-            fun limit(limit: Limit) = limit(Query.Limit.ofLimit(limit))
+            /** Alias for calling [Builder.limit] with `Limit.ofLimit(limit)`. */
+            fun limit(limit: Limit) = limit(Limit.ofLimit(limit))
 
             /**
              * Sets [Builder.rankBy] to an arbitrary JSON value.
@@ -1067,20 +1078,6 @@ private constructor(
              * value.
              */
             fun topK(topK: JsonField<Long>) = apply { this.topK = topK }
-
-            /** The consistency level for a query. */
-            fun consistency(consistency: Consistency) = consistency(JsonField.of(consistency))
-
-            /**
-             * Sets [Builder.consistency] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.consistency] with a well-typed [Consistency] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun consistency(consistency: JsonField<Consistency>) = apply {
-                this.consistency = consistency
-            }
 
             /** The encoding to use for vectors in the response. */
             fun vectorEncoding(vectorEncoding: VectorEncoding) =
@@ -1124,6 +1121,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     aggregateBy,
+                    consistency,
                     distanceMetric,
                     (excludeAttributes ?: JsonMissing.of()).map { it.toImmutable() },
                     filters,
@@ -1132,7 +1130,6 @@ private constructor(
                     limit,
                     rankBy,
                     topK,
-                    consistency,
                     vectorEncoding,
                     additionalProperties.toMutableMap(),
                 )
@@ -1146,13 +1143,13 @@ private constructor(
             }
 
             aggregateBy()
+            consistency().ifPresent { it.validate() }
             distanceMetric().ifPresent { it.validate() }
             excludeAttributes()
 
             includeAttributes().ifPresent { it.validate() }
             limit().ifPresent { it.validate() }
             topK()
-            consistency().ifPresent { it.validate() }
             vectorEncoding().ifPresent { it.validate() }
             validated = true
         }
@@ -1174,12 +1171,12 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (aggregateBy.asKnown().isPresent()) 1 else 0) +
+                (consistency.asKnown().getOrNull()?.validity() ?: 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (excludeAttributes.asKnown().getOrNull()?.size ?: 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (limit.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0) +
-                (consistency.asKnown().getOrNull()?.validity() ?: 0) +
                 (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -1189,6 +1186,7 @@ private constructor(
 
             return other is Body &&
                 aggregateBy == other.aggregateBy &&
+                consistency == other.consistency &&
                 distanceMetric == other.distanceMetric &&
                 excludeAttributes == other.excludeAttributes &&
                 filters == other.filters &&
@@ -1197,7 +1195,6 @@ private constructor(
                 limit == other.limit &&
                 rankBy == other.rankBy &&
                 topK == other.topK &&
-                consistency == other.consistency &&
                 vectorEncoding == other.vectorEncoding &&
                 additionalProperties == other.additionalProperties
         }
@@ -1205,6 +1202,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 aggregateBy,
+                consistency,
                 distanceMetric,
                 excludeAttributes,
                 filters,
@@ -1213,7 +1211,6 @@ private constructor(
                 limit,
                 rankBy,
                 topK,
-                consistency,
                 vectorEncoding,
                 additionalProperties,
             )
@@ -1222,7 +1219,107 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, consistency=$consistency, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{aggregateBy=$aggregateBy, consistency=$consistency, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+    }
+
+    /** Aggregations to compute over all documents in the namespace that match the filters. */
+    class AggregateBy
+    @JsonCreator
+    private constructor(
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
+    ) {
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [AggregateBy]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AggregateBy]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(aggregateBy: AggregateBy) = apply {
+                additionalProperties = aggregateBy.additionalProperties.toMutableMap()
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AggregateBy].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): AggregateBy = AggregateBy(additionalProperties.toImmutable())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): AggregateBy = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AggregateBy && additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "AggregateBy{additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
@@ -1519,6 +1616,180 @@ private constructor(
 
         override fun toString() =
             "Consistency{level=$level, additionalProperties=$additionalProperties}"
+    }
+
+    /** Limits the documents returned by a query. */
+    @JsonDeserialize(using = Limit.Deserializer::class)
+    @JsonSerialize(using = Limit.Serializer::class)
+    class Limit
+    private constructor(
+        private val integer: Long? = null,
+        private val limit: Limit? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        fun integer(): Optional<Long> = Optional.ofNullable(integer)
+
+        /** Limits the documents returned by a query. */
+        fun limit(): Optional<Limit> = Optional.ofNullable(limit)
+
+        fun isInteger(): Boolean = integer != null
+
+        fun isLimit(): Boolean = limit != null
+
+        fun asInteger(): Long = integer.getOrThrow("integer")
+
+        /** Limits the documents returned by a query. */
+        fun asLimit(): Limit = limit.getOrThrow("limit")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                integer != null -> visitor.visitInteger(integer)
+                limit != null -> visitor.visitLimit(limit)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): Limit = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitInteger(integer: Long) {}
+
+                    override fun visitLimit(limit: Limit) {
+                        limit.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitInteger(integer: Long) = 1
+
+                    override fun visitLimit(limit: Limit) = limit.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Limit && integer == other.integer && limit == other.limit
+        }
+
+        override fun hashCode(): Int = Objects.hash(integer, limit)
+
+        override fun toString(): String =
+            when {
+                integer != null -> "Limit{integer=$integer}"
+                limit != null -> "Limit{limit=$limit}"
+                _json != null -> "Limit{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Limit")
+            }
+
+        companion object {
+
+            @JvmStatic fun ofInteger(integer: Long) = Limit(integer = integer)
+
+            /** Limits the documents returned by a query. */
+            @JvmStatic fun ofLimit(limit: Limit) = Limit(limit = limit)
+        }
+
+        /** An interface that defines how to map each variant of [Limit] to a value of type [T]. */
+        interface Visitor<out T> {
+
+            fun visitInteger(integer: Long): T
+
+            /** Limits the documents returned by a query. */
+            fun visitLimit(limit: Limit): T
+
+            /**
+             * Maps an unknown variant of [Limit] to a value of type [T].
+             *
+             * An instance of [Limit] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws TurbopufferInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw TurbopufferInvalidDataException("Unknown Limit: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Limit>(Limit::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Limit {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<Limit>())?.let {
+                                Limit(limit = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                Limit(integer = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Limit(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Limit>(Limit::class) {
+
+            override fun serialize(
+                value: Limit,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.integer != null -> generator.writeObject(value.integer)
+                    value.limit != null -> generator.writeObject(value.limit)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Limit")
+                }
+            }
+        }
     }
 
     override fun equals(other: Any?): Boolean {

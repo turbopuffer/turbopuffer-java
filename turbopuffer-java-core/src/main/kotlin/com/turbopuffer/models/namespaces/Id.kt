@@ -28,7 +28,7 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    /** A UUID. */
+    /** A string ID. */
     fun string(): Optional<String> = Optional.ofNullable(string)
 
     /** An integer ID. */
@@ -38,7 +38,7 @@ private constructor(
 
     fun isInteger(): Boolean = integer != null
 
-    /** A UUID. */
+    /** A string ID. */
     fun asString(): String = string.getOrThrow("string")
 
     /** An integer ID. */
@@ -115,7 +115,7 @@ private constructor(
 
     companion object {
 
-        /** A UUID. */
+        /** A string ID. */
         @JvmStatic fun ofString(string: String) = Id(string = string)
 
         /** An integer ID. */
@@ -125,7 +125,7 @@ private constructor(
     /** An interface that defines how to map each variant of [Id] to a value of type [T]. */
     interface Visitor<out T> {
 
-        /** A UUID. */
+        /** A string ID. */
         fun visitString(string: String): T
 
         /** An integer ID. */
