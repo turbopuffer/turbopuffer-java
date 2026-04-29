@@ -28,6 +28,7 @@ import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import com.turbopuffer.models.namespaces.Limit as TurbopufferLimit
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -1618,14 +1619,14 @@ private constructor(
     class Limit
     private constructor(
         private val integer: Long? = null,
-        private val limit: Limit? = null,
+        private val limit: TurbopufferLimit? = null,
         private val _json: JsonValue? = null,
     ) {
 
         fun integer(): Optional<Long> = Optional.ofNullable(integer)
 
         /** Limits the documents returned by a query. */
-        fun limit(): Optional<Limit> = Optional.ofNullable(limit)
+        fun limit(): Optional<TurbopufferLimit> = Optional.ofNullable(limit)
 
         fun isInteger(): Boolean = integer != null
 
@@ -1634,7 +1635,7 @@ private constructor(
         fun asInteger(): Long = integer.getOrThrow("integer")
 
         /** Limits the documents returned by a query. */
-        fun asLimit(): Limit = limit.getOrThrow("limit")
+        fun asLimit(): TurbopufferLimit = limit.getOrThrow("limit")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -1656,7 +1657,7 @@ private constructor(
                 object : Visitor<Unit> {
                     override fun visitInteger(integer: Long) {}
 
-                    override fun visitLimit(limit: Limit) {
+                    override fun visitLimit(limit: TurbopufferLimit) {
                         limit.validate()
                     }
                 }
@@ -1684,7 +1685,7 @@ private constructor(
                 object : Visitor<Int> {
                     override fun visitInteger(integer: Long) = 1
 
-                    override fun visitLimit(limit: Limit) = limit.validity()
+                    override fun visitLimit(limit: TurbopufferLimit) = limit.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -1713,7 +1714,7 @@ private constructor(
             @JvmStatic fun ofInteger(integer: Long) = Limit(integer = integer)
 
             /** Limits the documents returned by a query. */
-            @JvmStatic fun ofLimit(limit: Limit) = Limit(limit = limit)
+            @JvmStatic fun ofLimit(limit: TurbopufferLimit) = Limit(limit = limit)
         }
 
         /** An interface that defines how to map each variant of [Limit] to a value of type [T]. */
@@ -1722,7 +1723,7 @@ private constructor(
             fun visitInteger(integer: Long): T
 
             /** Limits the documents returned by a query. */
-            fun visitLimit(limit: Limit): T
+            fun visitLimit(limit: TurbopufferLimit): T
 
             /**
              * Maps an unknown variant of [Limit] to a value of type [T].
@@ -1746,7 +1747,7 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<Limit>())?.let {
+                            tryDeserialize(node, jacksonTypeRef<TurbopufferLimit>())?.let {
                                 Limit(limit = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<Long>())?.let {
