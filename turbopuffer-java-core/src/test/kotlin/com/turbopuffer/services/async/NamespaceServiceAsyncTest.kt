@@ -39,7 +39,7 @@ internal class NamespaceServiceAsyncTest {
             namespaceServiceAsync.branchFrom(
                 NamespaceBranchFromParams.builder()
                     .namespace("namespace")
-                    .branchFromNamespace("string")
+                    .sourceNamespace("source_namespace")
                     .build()
             )
 
@@ -57,7 +57,9 @@ internal class NamespaceServiceAsyncTest {
             namespaceServiceAsync.copyFrom(
                 NamespaceCopyFromParams.builder()
                     .namespace("namespace")
-                    .copyFromNamespace("string")
+                    .sourceNamespace("source_namespace")
+                    .sourceApiKey("source_api_key")
+                    .sourceRegion("source_region")
                     .build()
             )
 

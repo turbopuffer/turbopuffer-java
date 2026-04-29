@@ -11,13 +11,13 @@ internal class NamespaceBranchFromParamsTest {
     fun create() {
         NamespaceBranchFromParams.builder()
             .namespace("namespace")
-            .branchFromNamespace("string")
+            .sourceNamespace("source_namespace")
             .build()
     }
 
     @Test
     fun pathParams() {
-        val params = NamespaceBranchFromParams.builder().branchFromNamespace("string").build()
+        val params = NamespaceBranchFromParams.builder().sourceNamespace("source_namespace").build()
 
         assertThat(params._pathParam(0)).isEqualTo("")
         // out-of-bound path param
@@ -29,22 +29,20 @@ internal class NamespaceBranchFromParamsTest {
         val params =
             NamespaceBranchFromParams.builder()
                 .namespace("namespace")
-                .branchFromNamespace("string")
+                .sourceNamespace("source_namespace")
                 .build()
 
         val body = params._body()
 
-        assertThat(body.branchFromNamespace())
-            .isEqualTo(BranchFromNamespaceParams.ofString("string"))
+        assertThat(body.sourceNamespace()).isEqualTo("source_namespace")
     }
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = NamespaceBranchFromParams.builder().branchFromNamespace("string").build()
+        val params = NamespaceBranchFromParams.builder().sourceNamespace("source_namespace").build()
 
         val body = params._body()
 
-        assertThat(body.branchFromNamespace())
-            .isEqualTo(BranchFromNamespaceParams.ofString("string"))
+        assertThat(body.sourceNamespace()).isEqualTo("source_namespace")
     }
 }
