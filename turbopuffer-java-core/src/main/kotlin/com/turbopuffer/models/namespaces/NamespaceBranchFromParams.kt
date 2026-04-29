@@ -37,15 +37,14 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun branchFromNamespace(): BranchFromNamespaceParams = body.branchFromNamespace()
+    fun sourceNamespace(): String = body.sourceNamespace()
 
     /**
-     * Returns the raw JSON value of [branchFromNamespace].
+     * Returns the raw JSON value of [sourceNamespace].
      *
-     * Unlike [branchFromNamespace], this method doesn't throw if the JSON field has an unexpected
-     * type.
+     * Unlike [sourceNamespace], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _branchFromNamespace(): JsonField<BranchFromNamespaceParams> = body._branchFromNamespace()
+    fun _sourceNamespace(): JsonField<String> = body._sourceNamespace()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -64,7 +63,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .branchFromNamespace()
+         * .sourceNamespace()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -96,40 +95,25 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
-         * - [branchFromNamespace]
+         * - [sourceNamespace]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** The namespace to create an instant, copy-on-write clone of. */
-        fun branchFromNamespace(branchFromNamespace: BranchFromNamespaceParams) = apply {
-            body.branchFromNamespace(branchFromNamespace)
+        fun sourceNamespace(sourceNamespace: String) = apply {
+            body.sourceNamespace(sourceNamespace)
         }
 
         /**
-         * Sets [Builder.branchFromNamespace] to an arbitrary JSON value.
+         * Sets [Builder.sourceNamespace] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.branchFromNamespace] with a well-typed
-         * [BranchFromNamespaceParams] value instead. This method is primarily for setting the field
-         * to an undocumented or not yet supported value.
+         * You should usually call [Builder.sourceNamespace] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun branchFromNamespace(branchFromNamespace: JsonField<BranchFromNamespaceParams>) = apply {
-            body.branchFromNamespace(branchFromNamespace)
+        fun sourceNamespace(sourceNamespace: JsonField<String>) = apply {
+            body.sourceNamespace(sourceNamespace)
         }
-
-        /**
-         * Alias for calling [branchFromNamespace] with
-         * `BranchFromNamespaceParams.ofString(string)`.
-         */
-        fun branchFromNamespace(string: String) = apply { body.branchFromNamespace(string) }
-
-        /**
-         * Alias for calling [branchFromNamespace] with
-         * `BranchFromNamespaceParams.ofConfig(config)`.
-         */
-        fun branchFromNamespace(config: BranchFromNamespaceParams.BranchFromNamespaceConfig) =
-            apply {
-                body.branchFromNamespace(config)
-            }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -255,7 +239,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .branchFromNamespace()
+         * .sourceNamespace()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -284,16 +268,16 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val branchFromNamespace: JsonField<BranchFromNamespaceParams>,
+        private val sourceNamespace: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("branch_from_namespace")
+            @JsonProperty("source_namespace")
             @ExcludeMissing
-            branchFromNamespace: JsonField<BranchFromNamespaceParams> = JsonMissing.of()
-        ) : this(branchFromNamespace, mutableMapOf())
+            sourceNamespace: JsonField<String> = JsonMissing.of()
+        ) : this(sourceNamespace, mutableMapOf())
 
         /**
          * The namespace to create an instant, copy-on-write clone of.
@@ -301,18 +285,17 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun branchFromNamespace(): BranchFromNamespaceParams =
-            branchFromNamespace.getRequired("branch_from_namespace")
+        fun sourceNamespace(): String = sourceNamespace.getRequired("source_namespace")
 
         /**
-         * Returns the raw JSON value of [branchFromNamespace].
+         * Returns the raw JSON value of [sourceNamespace].
          *
-         * Unlike [branchFromNamespace], this method doesn't throw if the JSON field has an
-         * unexpected type.
+         * Unlike [sourceNamespace], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
-        @JsonProperty("branch_from_namespace")
+        @JsonProperty("source_namespace")
         @ExcludeMissing
-        fun _branchFromNamespace(): JsonField<BranchFromNamespaceParams> = branchFromNamespace
+        fun _sourceNamespace(): JsonField<String> = sourceNamespace
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -333,7 +316,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .branchFromNamespace()
+             * .sourceNamespace()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -342,44 +325,29 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var branchFromNamespace: JsonField<BranchFromNamespaceParams>? = null
+            private var sourceNamespace: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
-                branchFromNamespace = body.branchFromNamespace
+                sourceNamespace = body.sourceNamespace
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The namespace to create an instant, copy-on-write clone of. */
-            fun branchFromNamespace(branchFromNamespace: BranchFromNamespaceParams) =
-                branchFromNamespace(JsonField.of(branchFromNamespace))
+            fun sourceNamespace(sourceNamespace: String) =
+                sourceNamespace(JsonField.of(sourceNamespace))
 
             /**
-             * Sets [Builder.branchFromNamespace] to an arbitrary JSON value.
+             * Sets [Builder.sourceNamespace] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.branchFromNamespace] with a well-typed
-             * [BranchFromNamespaceParams] value instead. This method is primarily for setting the
-             * field to an undocumented or not yet supported value.
+             * You should usually call [Builder.sourceNamespace] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun branchFromNamespace(branchFromNamespace: JsonField<BranchFromNamespaceParams>) =
-                apply {
-                    this.branchFromNamespace = branchFromNamespace
-                }
-
-            /**
-             * Alias for calling [branchFromNamespace] with
-             * `BranchFromNamespaceParams.ofString(string)`.
-             */
-            fun branchFromNamespace(string: String) =
-                branchFromNamespace(BranchFromNamespaceParams.ofString(string))
-
-            /**
-             * Alias for calling [branchFromNamespace] with
-             * `BranchFromNamespaceParams.ofConfig(config)`.
-             */
-            fun branchFromNamespace(config: BranchFromNamespaceParams.BranchFromNamespaceConfig) =
-                branchFromNamespace(BranchFromNamespaceParams.ofConfig(config))
+            fun sourceNamespace(sourceNamespace: JsonField<String>) = apply {
+                this.sourceNamespace = sourceNamespace
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -407,14 +375,14 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .branchFromNamespace()
+             * .sourceNamespace()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
                 Body(
-                    checkRequired("branchFromNamespace", branchFromNamespace),
+                    checkRequired("sourceNamespace", sourceNamespace),
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -426,7 +394,7 @@ private constructor(
                 return@apply
             }
 
-            branchFromNamespace().validate()
+            sourceNamespace()
             validated = true
         }
 
@@ -445,7 +413,7 @@ private constructor(
          * Used for best match union deserialization.
          */
         @JvmSynthetic
-        internal fun validity(): Int = (branchFromNamespace.asKnown().getOrNull()?.validity() ?: 0)
+        internal fun validity(): Int = (if (sourceNamespace.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -453,18 +421,16 @@ private constructor(
             }
 
             return other is Body &&
-                branchFromNamespace == other.branchFromNamespace &&
+                sourceNamespace == other.sourceNamespace &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy {
-            Objects.hash(branchFromNamespace, additionalProperties)
-        }
+        private val hashCode: Int by lazy { Objects.hash(sourceNamespace, additionalProperties) }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{branchFromNamespace=$branchFromNamespace, additionalProperties=$additionalProperties}"
+            "Body{sourceNamespace=$sourceNamespace, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
