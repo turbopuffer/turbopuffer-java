@@ -336,7 +336,8 @@ private constructor(
 
             /** The vector embeddings of the documents. */
             @JvmStatic
-            fun ofVectors(vectors: List<TurbopufferVector>) = Vector(vectors = vectors.toImmutable())
+            fun ofVectors(vectors: List<TurbopufferVector>) =
+                Vector(vectors = vectors.toImmutable())
 
             /** A vector embedding associated with a document. */
             @JvmStatic fun ofVector(vector: TurbopufferVector) = Vector(vector = vector)
