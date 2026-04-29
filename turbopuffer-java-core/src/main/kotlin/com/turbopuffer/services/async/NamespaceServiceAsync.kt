@@ -432,7 +432,7 @@ interface NamespaceServiceAsync {
             hintCacheWarm(NamespaceHintCacheWarmParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `get /v1/namespaces/{namespace}/metadata`, but is
+         * Returns a raw HTTP response for `get /v2/namespaces/{namespace}/metadata`, but is
          * otherwise the same as [NamespaceServiceAsync.metadata].
          */
         fun metadata(): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
@@ -548,7 +548,7 @@ interface NamespaceServiceAsync {
             schema(NamespaceSchemaParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `patch /v1/namespaces/{namespace}/metadata`, but is
+         * Returns a raw HTTP response for `patch /v2/namespaces/{namespace}/metadata`, but is
          * otherwise the same as [NamespaceServiceAsync.updateMetadata].
          */
         fun updateMetadata(): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =

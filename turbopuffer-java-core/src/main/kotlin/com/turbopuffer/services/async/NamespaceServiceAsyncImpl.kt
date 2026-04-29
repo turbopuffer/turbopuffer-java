@@ -99,7 +99,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         params: NamespaceMetadataParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceMetadata> =
-        // get /v1/namespaces/{namespace}/metadata
+        // get /v2/namespaces/{namespace}/metadata
         withRawResponse().metadata(params, requestOptions).thenApply { it.parse() }
 
     override fun multiQuery(
@@ -134,7 +134,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         params: NamespaceUpdateMetadataParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceMetadata> =
-        // patch /v1/namespaces/{namespace}/metadata
+        // patch /v2/namespaces/{namespace}/metadata
         withRawResponse().updateMetadata(params, requestOptions).thenApply { it.parse() }
 
     override fun updateSchema(
@@ -385,7 +385,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     .method(HttpMethod.GET)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
-                        "v1",
+                        "v2",
                         "namespaces",
                         checkRequired(
                             "namespace",
@@ -590,7 +590,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     .method(HttpMethod.PATCH)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
-                        "v1",
+                        "v2",
                         "namespaces",
                         checkRequired(
                             "namespace",
