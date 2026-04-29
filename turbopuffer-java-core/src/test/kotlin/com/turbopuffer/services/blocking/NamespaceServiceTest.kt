@@ -20,7 +20,6 @@ import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
-import com.turbopuffer.models.namespaces.Query
 import com.turbopuffer.models.namespaces.Row
 import com.turbopuffer.models.namespaces.Schema
 import com.turbopuffer.models.namespaces.VectorEncoding
@@ -58,11 +57,6 @@ internal class NamespaceServiceTest {
                     .includeAttributes(true)
                     .limit(0L)
                     .topK(0L)
-                    .consistency(
-                        NamespaceExplainQueryParams.Consistency.builder()
-                            .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
-                            .build()
-                    )
                     .vectorEncoding(VectorEncoding.FLOAT)
                     .build()
             )
@@ -141,11 +135,6 @@ internal class NamespaceServiceTest {
                     .includeAttributes(true)
                     .limit(0L)
                     .topK(0L)
-                    .consistency(
-                        NamespaceQueryParams.Consistency.builder()
-                            .level(NamespaceQueryParams.Consistency.Level.STRONG)
-                            .build()
-                    )
                     .vectorEncoding(VectorEncoding.FLOAT)
                     .build()
             )
