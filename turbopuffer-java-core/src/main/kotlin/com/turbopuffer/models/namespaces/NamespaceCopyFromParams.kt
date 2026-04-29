@@ -37,15 +37,44 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun copyFromNamespace(): CopyFromNamespaceParams = body.copyFromNamespace()
+    fun sourceNamespace(): String = body.sourceNamespace()
 
     /**
-     * Returns the raw JSON value of [copyFromNamespace].
+     * (Optional) An API key for the organization containing the source namespace
      *
-     * Unlike [copyFromNamespace], this method doesn't throw if the JSON field has an unexpected
-     * type.
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun _copyFromNamespace(): JsonField<CopyFromNamespaceParams> = body._copyFromNamespace()
+    fun sourceApiKey(): Optional<String> = body.sourceApiKey()
+
+    /**
+     * (Optional) The region of the source namespace.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun sourceRegion(): Optional<String> = body.sourceRegion()
+
+    /**
+     * Returns the raw JSON value of [sourceNamespace].
+     *
+     * Unlike [sourceNamespace], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _sourceNamespace(): JsonField<String> = body._sourceNamespace()
+
+    /**
+     * Returns the raw JSON value of [sourceApiKey].
+     *
+     * Unlike [sourceApiKey], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _sourceApiKey(): JsonField<String> = body._sourceApiKey()
+
+    /**
+     * Returns the raw JSON value of [sourceRegion].
+     *
+     * Unlike [sourceRegion], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _sourceRegion(): JsonField<String> = body._sourceRegion()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -64,7 +93,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .copyFromNamespace()
+         * .sourceNamespace()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -96,36 +125,54 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
-         * - [copyFromNamespace]
+         * - [sourceNamespace]
+         * - [sourceApiKey]
+         * - [sourceRegion]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** The namespace to copy documents from. */
-        fun copyFromNamespace(copyFromNamespace: CopyFromNamespaceParams) = apply {
-            body.copyFromNamespace(copyFromNamespace)
+        fun sourceNamespace(sourceNamespace: String) = apply {
+            body.sourceNamespace(sourceNamespace)
         }
 
         /**
-         * Sets [Builder.copyFromNamespace] to an arbitrary JSON value.
+         * Sets [Builder.sourceNamespace] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.copyFromNamespace] with a well-typed
-         * [CopyFromNamespaceParams] value instead. This method is primarily for setting the field
-         * to an undocumented or not yet supported value.
+         * You should usually call [Builder.sourceNamespace] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun copyFromNamespace(copyFromNamespace: JsonField<CopyFromNamespaceParams>) = apply {
-            body.copyFromNamespace(copyFromNamespace)
+        fun sourceNamespace(sourceNamespace: JsonField<String>) = apply {
+            body.sourceNamespace(sourceNamespace)
         }
 
-        /**
-         * Alias for calling [copyFromNamespace] with `CopyFromNamespaceParams.ofString(string)`.
-         */
-        fun copyFromNamespace(string: String) = apply { body.copyFromNamespace(string) }
+        /** (Optional) An API key for the organization containing the source namespace */
+        fun sourceApiKey(sourceApiKey: String) = apply { body.sourceApiKey(sourceApiKey) }
 
         /**
-         * Alias for calling [copyFromNamespace] with `CopyFromNamespaceParams.ofConfig(config)`.
+         * Sets [Builder.sourceApiKey] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sourceApiKey] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun copyFromNamespace(config: CopyFromNamespaceParams.CopyFromNamespaceConfig) = apply {
-            body.copyFromNamespace(config)
+        fun sourceApiKey(sourceApiKey: JsonField<String>) = apply {
+            body.sourceApiKey(sourceApiKey)
+        }
+
+        /** (Optional) The region of the source namespace. */
+        fun sourceRegion(sourceRegion: String) = apply { body.sourceRegion(sourceRegion) }
+
+        /**
+         * Sets [Builder.sourceRegion] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sourceRegion] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun sourceRegion(sourceRegion: JsonField<String>) = apply {
+            body.sourceRegion(sourceRegion)
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
@@ -252,7 +299,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .copyFromNamespace()
+         * .sourceNamespace()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -281,16 +328,24 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val copyFromNamespace: JsonField<CopyFromNamespaceParams>,
+        private val sourceNamespace: JsonField<String>,
+        private val sourceApiKey: JsonField<String>,
+        private val sourceRegion: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("copy_from_namespace")
+            @JsonProperty("source_namespace")
             @ExcludeMissing
-            copyFromNamespace: JsonField<CopyFromNamespaceParams> = JsonMissing.of()
-        ) : this(copyFromNamespace, mutableMapOf())
+            sourceNamespace: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("source_api_key")
+            @ExcludeMissing
+            sourceApiKey: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("source_region")
+            @ExcludeMissing
+            sourceRegion: JsonField<String> = JsonMissing.of(),
+        ) : this(sourceNamespace, sourceApiKey, sourceRegion, mutableMapOf())
 
         /**
          * The namespace to copy documents from.
@@ -298,18 +353,53 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun copyFromNamespace(): CopyFromNamespaceParams =
-            copyFromNamespace.getRequired("copy_from_namespace")
+        fun sourceNamespace(): String = sourceNamespace.getRequired("source_namespace")
 
         /**
-         * Returns the raw JSON value of [copyFromNamespace].
+         * (Optional) An API key for the organization containing the source namespace
          *
-         * Unlike [copyFromNamespace], this method doesn't throw if the JSON field has an unexpected
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun sourceApiKey(): Optional<String> = sourceApiKey.getOptional("source_api_key")
+
+        /**
+         * (Optional) The region of the source namespace.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun sourceRegion(): Optional<String> = sourceRegion.getOptional("source_region")
+
+        /**
+         * Returns the raw JSON value of [sourceNamespace].
+         *
+         * Unlike [sourceNamespace], this method doesn't throw if the JSON field has an unexpected
          * type.
          */
-        @JsonProperty("copy_from_namespace")
+        @JsonProperty("source_namespace")
         @ExcludeMissing
-        fun _copyFromNamespace(): JsonField<CopyFromNamespaceParams> = copyFromNamespace
+        fun _sourceNamespace(): JsonField<String> = sourceNamespace
+
+        /**
+         * Returns the raw JSON value of [sourceApiKey].
+         *
+         * Unlike [sourceApiKey], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("source_api_key")
+        @ExcludeMissing
+        fun _sourceApiKey(): JsonField<String> = sourceApiKey
+
+        /**
+         * Returns the raw JSON value of [sourceRegion].
+         *
+         * Unlike [sourceRegion], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("source_region")
+        @ExcludeMissing
+        fun _sourceRegion(): JsonField<String> = sourceRegion
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -330,7 +420,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .copyFromNamespace()
+             * .sourceNamespace()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -339,43 +429,61 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var copyFromNamespace: JsonField<CopyFromNamespaceParams>? = null
+            private var sourceNamespace: JsonField<String>? = null
+            private var sourceApiKey: JsonField<String> = JsonMissing.of()
+            private var sourceRegion: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
-                copyFromNamespace = body.copyFromNamespace
+                sourceNamespace = body.sourceNamespace
+                sourceApiKey = body.sourceApiKey
+                sourceRegion = body.sourceRegion
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The namespace to copy documents from. */
-            fun copyFromNamespace(copyFromNamespace: CopyFromNamespaceParams) =
-                copyFromNamespace(JsonField.of(copyFromNamespace))
+            fun sourceNamespace(sourceNamespace: String) =
+                sourceNamespace(JsonField.of(sourceNamespace))
 
             /**
-             * Sets [Builder.copyFromNamespace] to an arbitrary JSON value.
+             * Sets [Builder.sourceNamespace] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.copyFromNamespace] with a well-typed
-             * [CopyFromNamespaceParams] value instead. This method is primarily for setting the
-             * field to an undocumented or not yet supported value.
+             * You should usually call [Builder.sourceNamespace] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun copyFromNamespace(copyFromNamespace: JsonField<CopyFromNamespaceParams>) = apply {
-                this.copyFromNamespace = copyFromNamespace
+            fun sourceNamespace(sourceNamespace: JsonField<String>) = apply {
+                this.sourceNamespace = sourceNamespace
             }
 
-            /**
-             * Alias for calling [copyFromNamespace] with
-             * `CopyFromNamespaceParams.ofString(string)`.
-             */
-            fun copyFromNamespace(string: String) =
-                copyFromNamespace(CopyFromNamespaceParams.ofString(string))
+            /** (Optional) An API key for the organization containing the source namespace */
+            fun sourceApiKey(sourceApiKey: String) = sourceApiKey(JsonField.of(sourceApiKey))
 
             /**
-             * Alias for calling [copyFromNamespace] with
-             * `CopyFromNamespaceParams.ofConfig(config)`.
+             * Sets [Builder.sourceApiKey] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sourceApiKey] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun copyFromNamespace(config: CopyFromNamespaceParams.CopyFromNamespaceConfig) =
-                copyFromNamespace(CopyFromNamespaceParams.ofConfig(config))
+            fun sourceApiKey(sourceApiKey: JsonField<String>) = apply {
+                this.sourceApiKey = sourceApiKey
+            }
+
+            /** (Optional) The region of the source namespace. */
+            fun sourceRegion(sourceRegion: String) = sourceRegion(JsonField.of(sourceRegion))
+
+            /**
+             * Sets [Builder.sourceRegion] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sourceRegion] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun sourceRegion(sourceRegion: JsonField<String>) = apply {
+                this.sourceRegion = sourceRegion
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -403,14 +511,16 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .copyFromNamespace()
+             * .sourceNamespace()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
                 Body(
-                    checkRequired("copyFromNamespace", copyFromNamespace),
+                    checkRequired("sourceNamespace", sourceNamespace),
+                    sourceApiKey,
+                    sourceRegion,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -422,7 +532,9 @@ private constructor(
                 return@apply
             }
 
-            copyFromNamespace().validate()
+            sourceNamespace()
+            sourceApiKey()
+            sourceRegion()
             validated = true
         }
 
@@ -441,7 +553,10 @@ private constructor(
          * Used for best match union deserialization.
          */
         @JvmSynthetic
-        internal fun validity(): Int = (copyFromNamespace.asKnown().getOrNull()?.validity() ?: 0)
+        internal fun validity(): Int =
+            (if (sourceNamespace.asKnown().isPresent) 1 else 0) +
+                (if (sourceApiKey.asKnown().isPresent) 1 else 0) +
+                (if (sourceRegion.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -449,16 +564,20 @@ private constructor(
             }
 
             return other is Body &&
-                copyFromNamespace == other.copyFromNamespace &&
+                sourceNamespace == other.sourceNamespace &&
+                sourceApiKey == other.sourceApiKey &&
+                sourceRegion == other.sourceRegion &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(copyFromNamespace, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(sourceNamespace, sourceApiKey, sourceRegion, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{copyFromNamespace=$copyFromNamespace, additionalProperties=$additionalProperties}"
+            "Body{sourceNamespace=$sourceNamespace, sourceApiKey=$sourceApiKey, sourceRegion=$sourceRegion, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
