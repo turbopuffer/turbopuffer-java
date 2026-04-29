@@ -18,7 +18,7 @@ internal class NamespaceMetadataTest {
                 .approxLogicalBytes(0L)
                 .approxRowCount(0L)
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                .encryption(NamespaceMetadata.Encryption.Sse.builder().sse(true).build())
+                .encryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
                 .indexUpToDate()
                 .schema(
                     NamespaceMetadata.Schema.builder()
@@ -60,8 +60,8 @@ internal class NamespaceMetadataTest {
             .isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
         assertThat(namespaceMetadata.encryption())
             .isEqualTo(
-                NamespaceMetadata.Encryption.ofSse(
-                    NamespaceMetadata.Encryption.Sse.builder().sse(true).build()
+                Encryption.ofCustomerManaged(
+                    Encryption.CustomerManaged.builder().keyName("key_name").build()
                 )
             )
         assertThat(namespaceMetadata.index()).isEqualTo(NamespaceMetadata.Index.ofUpToDate())
@@ -110,7 +110,7 @@ internal class NamespaceMetadataTest {
                 .approxLogicalBytes(0L)
                 .approxRowCount(0L)
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                .encryption(NamespaceMetadata.Encryption.Sse.builder().sse(true).build())
+                .encryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
                 .indexUpToDate()
                 .schema(
                     NamespaceMetadata.Schema.builder()
