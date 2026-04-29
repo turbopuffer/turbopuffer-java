@@ -95,7 +95,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         params: NamespaceMetadataParams,
         requestOptions: RequestOptions,
     ): NamespaceMetadata =
-        // get /v1/namespaces/{namespace}/metadata
+        // get /v2/namespaces/{namespace}/metadata
         withRawResponse().metadata(params, requestOptions).parse()
 
     override fun multiQuery(
@@ -130,7 +130,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         params: NamespaceUpdateMetadataParams,
         requestOptions: RequestOptions,
     ): NamespaceMetadata =
-        // patch /v1/namespaces/{namespace}/metadata
+        // patch /v2/namespaces/{namespace}/metadata
         withRawResponse().updateMetadata(params, requestOptions).parse()
 
     override fun updateSchema(
@@ -360,7 +360,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .method(HttpMethod.GET)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
-                        "v1",
+                        "v2",
                         "namespaces",
                         checkRequired(
                             "namespace",
@@ -550,7 +550,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .method(HttpMethod.PATCH)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
-                        "v1",
+                        "v2",
                         "namespaces",
                         checkRequired(
                             "namespace",

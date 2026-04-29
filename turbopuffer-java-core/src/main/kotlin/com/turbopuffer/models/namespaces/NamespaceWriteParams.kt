@@ -513,6 +513,14 @@ private constructor(
          */
         fun encryption(encryption: JsonField<Encryption>) = apply { body.encryption(encryption) }
 
+        /** Alias for calling [encryption] with `Encryption.ofCustomerManaged(customerManaged)`. */
+        fun encryption(customerManaged: Encryption.CustomerManaged) = apply {
+            body.encryption(customerManaged)
+        }
+
+        /** Alias for calling [encryption] with `Encryption.ofDefault()`. */
+        fun encryptionDefault() = apply { body.encryptionDefault() }
+
         /** The patch and filter specifying which documents to patch. */
         fun patchByFilter(patchByFilter: PatchByFilter) = apply {
             body.patchByFilter(patchByFilter)
@@ -1454,6 +1462,15 @@ private constructor(
                 this.encryption = encryption
             }
 
+            /**
+             * Alias for calling [encryption] with `Encryption.ofCustomerManaged(customerManaged)`.
+             */
+            fun encryption(customerManaged: Encryption.CustomerManaged) =
+                encryption(Encryption.ofCustomerManaged(customerManaged))
+
+            /** Alias for calling [encryption] with `Encryption.ofDefault()`. */
+            fun encryptionDefault() = encryption(Encryption.ofDefault())
+
             /** The patch and filter specifying which documents to patch. */
             fun patchByFilter(patchByFilter: PatchByFilter) =
                 patchByFilter(JsonField.of(patchByFilter))
@@ -1778,311 +1795,6 @@ private constructor(
 
         override fun toString() =
             "Body{branchFromNamespace=$branchFromNamespace, copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
-    }
-
-    /** The encryption configuration for a namespace. */
-    class Encryption
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val cmek: JsonField<Cmek>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("cmek") @ExcludeMissing cmek: JsonField<Cmek> = JsonMissing.of()
-        ) : this(cmek, mutableMapOf())
-
-        /**
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
-         */
-        fun cmek(): Optional<Cmek> = cmek.getOptional("cmek")
-
-        /**
-         * Returns the raw JSON value of [cmek].
-         *
-         * Unlike [cmek], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("cmek") @ExcludeMissing fun _cmek(): JsonField<Cmek> = cmek
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Encryption]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Encryption]. */
-        class Builder internal constructor() {
-
-            private var cmek: JsonField<Cmek> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(encryption: Encryption) = apply {
-                cmek = encryption.cmek
-                additionalProperties = encryption.additionalProperties.toMutableMap()
-            }
-
-            fun cmek(cmek: Cmek) = cmek(JsonField.of(cmek))
-
-            /**
-             * Sets [Builder.cmek] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.cmek] with a well-typed [Cmek] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun cmek(cmek: JsonField<Cmek>) = apply { this.cmek = cmek }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Encryption].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Encryption = Encryption(cmek, additionalProperties.toMutableMap())
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): Encryption = apply {
-            if (validated) {
-                return@apply
-            }
-
-            cmek().ifPresent { it.validate() }
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: TurbopufferInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = (cmek.asKnown().getOrNull()?.validity() ?: 0)
-
-        class Cmek
-        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-        private constructor(
-            private val keyName: JsonField<String>,
-            private val additionalProperties: MutableMap<String, JsonValue>,
-        ) {
-
-            @JsonCreator
-            private constructor(
-                @JsonProperty("key_name")
-                @ExcludeMissing
-                keyName: JsonField<String> = JsonMissing.of()
-            ) : this(keyName, mutableMapOf())
-
-            /**
-             * The identifier of the CMEK key to use for encryption. For GCP, the fully-qualified
-             * resource name of the key. For AWS, the ARN of the key.
-             *
-             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
-             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
-             */
-            fun keyName(): String = keyName.getRequired("key_name")
-
-            /**
-             * Returns the raw JSON value of [keyName].
-             *
-             * Unlike [keyName], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("key_name") @ExcludeMissing fun _keyName(): JsonField<String> = keyName
-
-            @JsonAnySetter
-            private fun putAdditionalProperty(key: String, value: JsonValue) {
-                additionalProperties.put(key, value)
-            }
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /**
-                 * Returns a mutable builder for constructing an instance of [Cmek].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .keyName()
-                 * ```
-                 */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Cmek]. */
-            class Builder internal constructor() {
-
-                private var keyName: JsonField<String>? = null
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(cmek: Cmek) = apply {
-                    keyName = cmek.keyName
-                    additionalProperties = cmek.additionalProperties.toMutableMap()
-                }
-
-                /**
-                 * The identifier of the CMEK key to use for encryption. For GCP, the
-                 * fully-qualified resource name of the key. For AWS, the ARN of the key.
-                 */
-                fun keyName(keyName: String) = keyName(JsonField.of(keyName))
-
-                /**
-                 * Sets [Builder.keyName] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.keyName] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
-                 */
-                fun keyName(keyName: JsonField<String>) = apply { this.keyName = keyName }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [Cmek].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .keyName()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
-                 */
-                fun build(): Cmek =
-                    Cmek(checkRequired("keyName", keyName), additionalProperties.toMutableMap())
-            }
-
-            private var validated: Boolean = false
-
-            fun validate(): Cmek = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                keyName()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: TurbopufferInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic internal fun validity(): Int = (if (keyName.asKnown().isPresent) 1 else 0)
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Cmek &&
-                    keyName == other.keyName &&
-                    additionalProperties == other.additionalProperties
-            }
-
-            private val hashCode: Int by lazy { Objects.hash(keyName, additionalProperties) }
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Cmek{keyName=$keyName, additionalProperties=$additionalProperties}"
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Encryption &&
-                cmek == other.cmek &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy { Objects.hash(cmek, additionalProperties) }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Encryption{cmek=$cmek, additionalProperties=$additionalProperties}"
     }
 
     /** The patch and filter specifying which documents to patch. */

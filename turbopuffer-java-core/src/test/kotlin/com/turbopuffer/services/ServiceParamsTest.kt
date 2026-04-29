@@ -20,6 +20,7 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.ClientNamespacesParams
 import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
+import com.turbopuffer.models.namespaces.Encryption
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Row
 import com.turbopuffer.models.namespaces.Vector
@@ -80,15 +81,7 @@ internal class ServiceParamsTest {
                 .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .disableBackpressure(true)
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                .encryption(
-                    NamespaceWriteParams.Encryption.builder()
-                        .cmek(
-                            NamespaceWriteParams.Encryption.Cmek.builder()
-                                .keyName("key_name")
-                                .build()
-                        )
-                        .build()
-                )
+                .encryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
                 .patchByFilter(
                     NamespaceWriteParams.PatchByFilter.builder()
                         .filters(JsonValue.from(mapOf<String, Any>()))
