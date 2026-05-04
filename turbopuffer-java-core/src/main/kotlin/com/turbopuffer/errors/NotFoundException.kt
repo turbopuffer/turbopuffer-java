@@ -5,12 +5,16 @@ package com.turbopuffer.errors
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.http.Headers
+import com.turbopuffer.core.jsonMapper
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class NotFoundException
 private constructor(private val headers: Headers, private val body: JsonValue, cause: Throwable?) :
-    TurbopufferServiceException("404: $body", cause) {
+    TurbopufferServiceException(
+        "404: ${if (body.isMissing()) "Unknown" else jsonMapper().writeValueAsString(body)}",
+        cause,
+    ) {
 
     override fun statusCode(): Int = 404
 
