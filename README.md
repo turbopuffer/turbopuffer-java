@@ -514,6 +514,21 @@ TurbopufferClient client = TurbopufferOkHttpClient.builder()
     .build();
 ```
 
+If the proxy responds with `407 Proxy Authentication Required`, supply credentials by also configuring `proxyAuthenticator`:
+
+```java
+import com.turbopuffer.client.TurbopufferClient;
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient;
+import com.turbopuffer.core.http.ProxyAuthenticator;
+
+TurbopufferClient client = TurbopufferOkHttpClient.builder()
+    .fromEnv()
+    .proxy(...)
+    // Or a custom implementation of `ProxyAuthenticator`.
+    .proxyAuthenticator(ProxyAuthenticator.basic("username", "password"))
+    .build();
+```
+
 ### Connection pooling
 
 To customize the underlying OkHttp connection pool, configure the client using the `maxIdleConnections` and `keepAliveDuration` methods:
