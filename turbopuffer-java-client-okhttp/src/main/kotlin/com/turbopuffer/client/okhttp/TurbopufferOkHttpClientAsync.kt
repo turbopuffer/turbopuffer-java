@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.turbopuffer.client.TurbopufferClientAsync
 import com.turbopuffer.client.TurbopufferClientAsyncImpl
 import com.turbopuffer.core.ClientOptions
+import com.turbopuffer.core.LogLevel
 import com.turbopuffer.core.Sleeper
 import com.turbopuffer.core.Timeout
 import com.turbopuffer.core.http.AsyncStreamResponse
@@ -293,6 +294,15 @@ class TurbopufferOkHttpClientAsync private constructor() {
         fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
 
         fun maxRequests(maxRequests: Int) = apply { this.maxRequests = maxRequests }
+
+        /**
+         * The level at which to log request and response information.
+         *
+         * [fromEnv] will set the level from environment variables. See [LogLevel.fromEnv].
+         *
+         * Defaults to [LogLevel.fromEnv].
+         */
+        fun logLevel(logLevel: LogLevel) = apply { clientOptions.logLevel(logLevel) }
 
         /** API key used for authentication */
         fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
