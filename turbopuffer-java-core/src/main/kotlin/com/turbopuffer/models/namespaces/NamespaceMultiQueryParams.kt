@@ -6,25 +6,14 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.turbopuffer.core.BaseDeserializer
-import com.turbopuffer.core.BaseSerializer
 import com.turbopuffer.core.Enum
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
-import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.checkRequired
-import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.toImmutable
@@ -616,14 +605,14 @@ private constructor(
     class Query
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val aggregateBy: JsonField<AggregateBy>,
+        private val aggregateBy: JsonField<MutableMap<String, AggregateBy>>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val excludeAttributes: JsonField<List<String>>,
-        private val filters: JsonValue,
+        private val filters: JsonField<Filter>,
         private val groupBy: JsonField<List<String>>,
         private val includeAttributes: JsonField<IncludeAttributes>,
         private val limit: JsonField<Limit>,
-        private val rankBy: JsonValue,
+        private val rankBy: JsonField<RankBy>,
         private val topK: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -632,14 +621,14 @@ private constructor(
         private constructor(
             @JsonProperty("aggregate_by")
             @ExcludeMissing
-            aggregateBy: JsonField<AggregateBy> = JsonMissing.of(),
+            aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of(),
             @JsonProperty("distance_metric")
             @ExcludeMissing
             distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
             @JsonProperty("exclude_attributes")
             @ExcludeMissing
             excludeAttributes: JsonField<List<String>> = JsonMissing.of(),
-            @JsonProperty("filters") @ExcludeMissing filters: JsonValue = JsonMissing.of(),
+            @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filter> = JsonMissing.of(),
             @JsonProperty("group_by")
             @ExcludeMissing
             groupBy: JsonField<List<String>> = JsonMissing.of(),
@@ -647,7 +636,7 @@ private constructor(
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
             @JsonProperty("limit") @ExcludeMissing limit: JsonField<Limit> = JsonMissing.of(),
-            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
+            @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonField<RankBy> = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
         ) : this(
             aggregateBy,
@@ -668,7 +657,8 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun aggregateBy(): Optional<AggregateBy> = aggregateBy.getOptional("aggregate_by")
+        fun aggregateBy(): Optional<MutableMap<String, AggregateBy>> =
+            aggregateBy.getOptional("aggregate_by")
 
         /**
          * A function used to calculate vector similarity.
@@ -693,12 +683,10 @@ private constructor(
          * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
          * clause.
          *
-         * This arbitrary value can be deserialized into a custom type using the `convert` method:
-         * ```java
-         * MyClass myObject = query.filters().convert(MyClass.class);
-         * ```
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonValue = filters
+        fun filters(): Optional<Filter> = filters.getOptional("filters")
 
         /**
          * Groups documents by the specified attributes (the "group key") before computing
@@ -729,12 +717,18 @@ private constructor(
         /**
          * How to rank the documents in the namespace.
          *
-         * This arbitrary value can be deserialized into a custom type using the `convert` method:
-         * ```java
-         * MyClass myObject = query.rankBy().convert(MyClass.class);
-         * ```
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
          */
-        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonValue = rankBy
+        fun rankBy(): Optional<RankBy> = rankBy.getOptional("rank_by")
+
+        /**
+         * How to rank the documents in the namespace.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonField<RankBy> = rankBy
 
         /**
          * The number of results to return.
@@ -751,7 +745,7 @@ private constructor(
          */
         @JsonProperty("aggregate_by")
         @ExcludeMissing
-        fun _aggregateBy(): JsonField<AggregateBy> = aggregateBy
+        fun _aggregateBy(): JsonField<MutableMap<String, AggregateBy>> = aggregateBy
 
         /**
          * Returns the raw JSON value of [distanceMetric].
@@ -825,14 +819,14 @@ private constructor(
         /** A builder for [Query]. */
         class Builder internal constructor() {
 
-            private var aggregateBy: JsonField<AggregateBy> = JsonMissing.of()
+            private var aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var excludeAttributes: JsonField<MutableList<String>>? = null
-            private var filters: JsonValue = JsonMissing.of()
+            private var filters: JsonField<Filter> = JsonMissing.of()
             private var groupBy: JsonField<MutableList<String>>? = null
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
             private var limit: JsonField<Limit> = JsonMissing.of()
-            private var rankBy: JsonValue = JsonMissing.of()
+            private var rankBy: JsonField<RankBy> = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -853,7 +847,8 @@ private constructor(
             /**
              * Aggregations to compute over all documents in the namespace that match the filters.
              */
-            fun aggregateBy(aggregateBy: AggregateBy) = aggregateBy(JsonField.of(aggregateBy))
+            fun aggregateBy(aggregateBy: MutableMap<String, AggregateBy>) =
+                aggregateBy(JsonField.of(aggregateBy))
 
             /**
              * Sets [Builder.aggregateBy] to an arbitrary JSON value.
@@ -862,7 +857,7 @@ private constructor(
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun aggregateBy(aggregateBy: JsonField<AggregateBy>) = apply {
+            fun aggregateBy(aggregateBy: JsonField<MutableMap<String, AggregateBy>>) = apply {
                 this.aggregateBy = aggregateBy
             }
 
@@ -915,7 +910,16 @@ private constructor(
              * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
              * clause.
              */
-            fun filters(filters: JsonValue) = apply { this.filters = filters }
+            fun filters(filters: Filter) = filters(JsonField.of(filters))
+
+            /**
+             * Sets [Builder.filters] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.filters] with a well-typed [Filter] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun filters(filters: JsonField<Filter>) = apply { this.filters = filters }
 
             /**
              * Groups documents by the specified attributes (the "group key") before computing
@@ -982,11 +986,26 @@ private constructor(
              */
             fun limit(limit: JsonField<Limit>) = apply { this.limit = limit }
 
-            /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
-            fun limit(integer: Long) = limit(Limit.ofInteger(integer))
+            /** Alias for calling [limit] with `Limit.builder().total(total).build()`. */
+            fun limit(total: Long) = limit(Limit.builder().total(total).build())
 
-            /** How to rank the documents in the namespace. */
-            fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
+            /**
+             * Sets [Builder.rankBy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rankBy] with a well-typed [RankBy] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun rankBy(rankBy: RankBy) = rankBy(JsonField.of(rankBy))
+
+            /**
+             * Sets [Builder.rankBy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rankBy] with a well-typed [RankBy] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun rankBy(rankBy: JsonField<RankBy>) = apply { this.rankBy = rankBy }
 
             /** The number of results to return. */
             fun topK(topK: Long) = topK(JsonField.of(topK))
@@ -1055,7 +1074,7 @@ private constructor(
                 return@apply
             }
 
-            aggregateBy().ifPresent { it.validate() }
+            aggregateBy()
             distanceMetric().ifPresent { it.validate() }
             excludeAttributes()
             groupBy()
@@ -1081,342 +1100,13 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (aggregateBy.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (aggregateBy.asKnown().isPresent()) 1 else 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (excludeAttributes.asKnown().getOrNull()?.size ?: 0) +
                 (groupBy.asKnown().getOrNull()?.size ?: 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (limit.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0)
-
-        /** Aggregations to compute over all documents in the namespace that match the filters. */
-        class AggregateBy
-        @JsonCreator
-        private constructor(
-            @com.fasterxml.jackson.annotation.JsonValue
-            private val additionalProperties: Map<String, JsonValue>
-        ) {
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /** Returns a mutable builder for constructing an instance of [AggregateBy]. */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [AggregateBy]. */
-            class Builder internal constructor() {
-
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(aggregateBy: AggregateBy) = apply {
-                    additionalProperties = aggregateBy.additionalProperties.toMutableMap()
-                }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [AggregateBy].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 */
-                fun build(): AggregateBy = AggregateBy(additionalProperties.toImmutable())
-            }
-
-            private var validated: Boolean = false
-
-            /**
-             * Validates that the types of all values in this object match their expected types
-             * recursively.
-             *
-             * This method is _not_ forwards compatible with new types from the API for existing
-             * fields.
-             *
-             * @throws TurbopufferInvalidDataException if any value type in this object doesn't
-             *   match its expected type.
-             */
-            fun validate(): AggregateBy = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: TurbopufferInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic
-            internal fun validity(): Int =
-                additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is AggregateBy && additionalProperties == other.additionalProperties
-            }
-
-            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() = "AggregateBy{additionalProperties=$additionalProperties}"
-        }
-
-        /** Limits the documents returned by a query. */
-        @JsonDeserialize(using = Limit.Deserializer::class)
-        @JsonSerialize(using = Limit.Serializer::class)
-        class Limit
-        private constructor(
-            private val integer: Long? = null,
-            private val limit: Limit? = null,
-            private val _json: JsonValue? = null,
-        ) {
-
-            fun integer(): Optional<Long> = Optional.ofNullable(integer)
-
-            /** Limits the documents returned by a query. */
-            fun limit(): Optional<Limit> = Optional.ofNullable(limit)
-
-            fun isInteger(): Boolean = integer != null
-
-            fun isLimit(): Boolean = limit != null
-
-            fun asInteger(): Long = integer.getOrThrow("integer")
-
-            /** Limits the documents returned by a query. */
-            fun asLimit(): Limit = limit.getOrThrow("limit")
-
-            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-            /**
-             * Maps this instance's current variant to a value of type [T] using the given
-             * [visitor].
-             *
-             * Note that this method is _not_ forwards compatible with new variants from the API,
-             * unless [visitor] overrides [Visitor.unknown]. To handle variants not known to this
-             * version of the SDK gracefully, consider overriding [Visitor.unknown]:
-             * ```java
-             * import com.turbopuffer.core.JsonValue;
-             * import java.util.Optional;
-             *
-             * Optional<String> result = limit.accept(new Limit.Visitor<Optional<String>>() {
-             *     @Override
-             *     public Optional<String> visitInteger(Long integer) {
-             *         return Optional.of(integer.toString());
-             *     }
-             *
-             *     // ...
-             *
-             *     @Override
-             *     public Optional<String> unknown(JsonValue json) {
-             *         // Or inspect the `json`.
-             *         return Optional.empty();
-             *     }
-             * });
-             * ```
-             *
-             * @throws TurbopufferInvalidDataException if [Visitor.unknown] is not overridden in
-             *   [visitor] and the current variant is unknown.
-             */
-            fun <T> accept(visitor: Visitor<T>): T =
-                when {
-                    integer != null -> visitor.visitInteger(integer)
-                    limit != null -> visitor.visitLimit(limit)
-                    else -> visitor.unknown(_json)
-                }
-
-            private var validated: Boolean = false
-
-            /**
-             * Validates that the types of all values in this object match their expected types
-             * recursively.
-             *
-             * This method is _not_ forwards compatible with new types from the API for existing
-             * fields.
-             *
-             * @throws TurbopufferInvalidDataException if any value type in this object doesn't
-             *   match its expected type.
-             */
-            fun validate(): Limit = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                accept(
-                    object : Visitor<Unit> {
-                        override fun visitInteger(integer: Long) {}
-
-                        override fun visitLimit(limit: Limit) {
-                            limit.validate()
-                        }
-                    }
-                )
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: TurbopufferInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic
-            internal fun validity(): Int =
-                accept(
-                    object : Visitor<Int> {
-                        override fun visitInteger(integer: Long) = 1
-
-                        override fun visitLimit(limit: Limit) = limit.validity()
-
-                        override fun unknown(json: JsonValue?) = 0
-                    }
-                )
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Limit && integer == other.integer && limit == other.limit
-            }
-
-            override fun hashCode(): Int = Objects.hash(integer, limit)
-
-            override fun toString(): String =
-                when {
-                    integer != null -> "Limit{integer=$integer}"
-                    limit != null -> "Limit{limit=$limit}"
-                    _json != null -> "Limit{_unknown=$_json}"
-                    else -> throw IllegalStateException("Invalid Limit")
-                }
-
-            companion object {
-
-                @JvmStatic fun ofInteger(integer: Long) = Limit(integer = integer)
-
-                /** Limits the documents returned by a query. */
-                @JvmStatic fun ofLimit(limit: Limit) = Limit(limit = limit)
-            }
-
-            /**
-             * An interface that defines how to map each variant of [Limit] to a value of type [T].
-             */
-            interface Visitor<out T> {
-
-                fun visitInteger(integer: Long): T
-
-                /** Limits the documents returned by a query. */
-                fun visitLimit(limit: Limit): T
-
-                /**
-                 * Maps an unknown variant of [Limit] to a value of type [T].
-                 *
-                 * An instance of [Limit] can contain an unknown variant if it was deserialized from
-                 * data that doesn't match any known variant. For example, if the SDK is on an older
-                 * version than the API, then the API may respond with new variants that the SDK is
-                 * unaware of.
-                 *
-                 * @throws TurbopufferInvalidDataException in the default implementation.
-                 */
-                fun unknown(json: JsonValue?): T {
-                    throw TurbopufferInvalidDataException("Unknown Limit: $json")
-                }
-            }
-
-            internal class Deserializer : BaseDeserializer<Limit>(Limit::class) {
-
-                override fun ObjectCodec.deserialize(node: JsonNode): Limit {
-                    val json = JsonValue.fromJsonNode(node)
-
-                    val bestMatches =
-                        sequenceOf(
-                                tryDeserialize(node, jacksonTypeRef<Limit>())?.let {
-                                    Limit(limit = it, _json = json)
-                                },
-                                tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                                    Limit(integer = it, _json = json)
-                                },
-                            )
-                            .filterNotNull()
-                            .allMaxBy { it.validity() }
-                            .toList()
-                    return when (bestMatches.size) {
-                        // This can happen if what we're deserializing is completely incompatible
-                        // with all the possible variants (e.g. deserializing from boolean).
-                        0 -> Limit(_json = json)
-                        1 -> bestMatches.single()
-                        // If there's more than one match with the highest validity, then use the
-                        // first completely valid match, or simply the first match if none are
-                        // completely valid.
-                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                    }
-                }
-            }
-
-            internal class Serializer : BaseSerializer<Limit>(Limit::class) {
-
-                override fun serialize(
-                    value: Limit,
-                    generator: JsonGenerator,
-                    provider: SerializerProvider,
-                ) {
-                    when {
-                        value.integer != null -> generator.writeObject(value.integer)
-                        value.limit != null -> generator.writeObject(value.limit)
-                        value._json != null -> generator.writeObject(value._json)
-                        else -> throw IllegalStateException("Invalid Limit")
-                    }
-                }
-            }
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
