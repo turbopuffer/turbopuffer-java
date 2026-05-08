@@ -689,6 +689,14 @@ private constructor(
         fun filters(): Optional<Filter> = filters.getOptional("filters")
 
         /**
+         * Exact filters for attributes to refine search results for. Think of it as a SQL WHERE
+         * clause.
+         *
+         * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<Filter> = filters
+
+        /**
          * Groups documents by the specified attributes (the "group key") before computing
          * aggregates. Aggregates are computed separately for each group.
          *
