@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-alpha.4 (2026-05-08)
+
+Full Changelog: [v2.0.0-alpha.3...v2.0.0-alpha.4](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.3...v2.0.0-alpha.4)
+
 ## 2.0.0-alpha.3 (2026-05-08)
 
 Full Changelog: [v2.0.0-alpha.2...v2.0.0-alpha.3](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.2...v2.0.0-alpha.3)
