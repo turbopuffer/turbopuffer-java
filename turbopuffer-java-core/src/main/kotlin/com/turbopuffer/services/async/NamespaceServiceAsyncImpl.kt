@@ -186,7 +186,12 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                         ),
                     )
                     .putQueryParam("stainless_overload", "branchFrom")
-                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .body(
+                        json(
+                            clientOptions.jsonMapper,
+                            mapOf("branch_from_namespace" to params._body()),
+                        )
+                    )
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
@@ -227,7 +232,12 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                         ),
                     )
                     .putQueryParam("stainless_overload", "copyFrom")
-                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .body(
+                        json(
+                            clientOptions.jsonMapper,
+                            mapOf("copy_from_namespace" to params._body()),
+                        )
+                    )
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
