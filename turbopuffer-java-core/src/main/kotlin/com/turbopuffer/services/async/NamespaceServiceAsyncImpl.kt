@@ -131,7 +131,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         params: NamespaceUpdateMetadataParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<NamespaceMetadata> =
-        // patch /v2/namespaces/{namespace}/metadata
+        // patch /v1/namespaces/{namespace}/metadata
         withRawResponse().updateMetadata(params, requestOptions).thenApply { it.parse() }
 
     override fun updateSchema(
@@ -581,7 +581,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                     .method(HttpMethod.PATCH)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
-                        "v2",
+                        "v1",
                         "namespaces",
                         checkRequired(
                             "namespace",

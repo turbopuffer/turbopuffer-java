@@ -130,7 +130,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         params: NamespaceUpdateMetadataParams,
         requestOptions: RequestOptions,
     ): NamespaceMetadata =
-        // patch /v2/namespaces/{namespace}/metadata
+        // patch /v1/namespaces/{namespace}/metadata
         withRawResponse().updateMetadata(params, requestOptions).parse()
 
     override fun updateSchema(
@@ -550,7 +550,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .method(HttpMethod.PATCH)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
-                        "v2",
+                        "v1",
                         "namespaces",
                         checkRequired(
                             "namespace",
