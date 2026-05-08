@@ -83,6 +83,42 @@ changes.
   );
   ```
 
+- The `encryption` parameter on `NamespaceWriteParams` now takes a top-level
+  `Encryption` discriminated union (with `Encryption.CustomerManaged` and a
+  `default` variant) rather than `NamespaceWriteParams.Encryption` with a
+  nested `Cmek` builder. The new `default` variant lets you explicitly opt
+  out of CMEK on writes to a CMEK-enabled namespace.
+
+  Old:
+
+  ```java
+  ns.write(
+    NamespaceWriteParams.builder()
+      .addUpsertRow(/* ... */)
+      .encryption(
+        NamespaceWriteParams.Encryption.builder()
+          .cmek(NamespaceWriteParams.Encryption.Cmek.builder().keyName("...").build())
+          .build()
+      )
+      .build()
+  );
+  ```
+
+  New:
+
+  ```java
+  ns.write(
+    NamespaceWriteParams.builder()
+      .addUpsertRow(/* ... */)
+      .encryption(
+        Encryption.ofCustomerManaged(
+          Encryption.CustomerManaged.builder().keyName("...").build()
+        )
+      )
+      .build()
+  );
+  ```
+
 ## v1.0
 
 No significant changes.
