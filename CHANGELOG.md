@@ -1,5 +1,32 @@
 # Changelog
 
+## 2.0.0-alpha.3 (2026-05-08)
+
+Full Changelog: [v2.0.0-alpha.2...v2.0.0-alpha.3](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.2...v2.0.0-alpha.3)
+
+### Features
+
+* **client:** improve logging ([e75ddad](https://github.com/turbopuffer/turbopuffer-java/commit/e75ddad9fc7b4ffecdf4e43ff1b6368f65bd45f8))
+* **client:** more robust error parsing ([15dc7b1](https://github.com/turbopuffer/turbopuffer-java/commit/15dc7b1767840db37eca2f736c733bd864b8f09b))
+* **client:** support proxy authentication ([6b3684f](https://github.com/turbopuffer/turbopuffer-java/commit/6b3684fde080e7a3993b503dc6b4db46731f0c30))
+* spec: move update_metadata to v1 ([0106991](https://github.com/turbopuffer/turbopuffer-java/commit/0106991248e5db15f4a0649425fe69e16c071d09))
+
+
+### Performance Improvements
+
+* **client:** create one json mapper ([2131baa](https://github.com/turbopuffer/turbopuffer-java/commit/2131baa3f8f4b119de7843effc2482f184beda41))
+
+
+### Chores
+
+* redact api-key headers in debug logs ([3ba4f8b](https://github.com/turbopuffer/turbopuffer-java/commit/3ba4f8b90e26e6c98d1951ccb1cc5da93698dfdf))
+* remove duplicated dokka setup ([72b69c5](https://github.com/turbopuffer/turbopuffer-java/commit/72b69c514fadf68b0c3e3afea8687468b1b6328f))
+
+
+### Documentation
+
+* clarify forwards compat behavior ([b3cc7f4](https://github.com/turbopuffer/turbopuffer-java/commit/b3cc7f465ca75294a222eb13a83779a57d575250))
+
 ## 2.0.0-alpha.2 (2026-04-29)
 
 Full Changelog: [v2.0.0-alpha.1...v2.0.0-alpha.2](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.1...v2.0.0-alpha.2)
