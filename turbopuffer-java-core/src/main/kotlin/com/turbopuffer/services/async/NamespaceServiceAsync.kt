@@ -548,7 +548,7 @@ interface NamespaceServiceAsync {
             schema(NamespaceSchemaParams.none(), requestOptions)
 
         /**
-         * Returns a raw HTTP response for `patch /v2/namespaces/{namespace}/metadata`, but is
+         * Returns a raw HTTP response for `patch /v1/namespaces/{namespace}/metadata`, but is
          * otherwise the same as [NamespaceServiceAsync.updateMetadata].
          */
         fun updateMetadata(): CompletableFuture<HttpResponseFor<NamespaceMetadata>> =
