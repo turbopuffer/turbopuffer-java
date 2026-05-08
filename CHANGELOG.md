@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0-alpha.5 (2026-05-08)
+
+Full Changelog: [v2.0.0-alpha.4...v2.0.0-alpha.5](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.4...v2.0.0-alpha.5)
+
+### Bug Fixes
+
+* add missing _filters accessor method ([96145ac](https://github.com/turbopuffer/turbopuffer-java/commit/96145ac733772da93f67c5b928c64aadb2040076))
+
 ## 2.0.0-alpha.4 (2026-05-08)
 
 Full Changelog: [v2.0.0-alpha.3...v2.0.0-alpha.4](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.3...v2.0.0-alpha.4)
