@@ -113,7 +113,3 @@ changes.
 
   A new `default` variant lets you explicitly opt out of CMEK on writes to a
   CMEK-enabled namespace.
-
-## v1.0
-
-No significant changes.
