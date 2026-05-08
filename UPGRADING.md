@@ -83,8 +83,7 @@ changes.
   );
   ```
 
-- The `encryption` parameter has been restructured. A new `default` variant
-  lets you explicitly opt out of CMEK on writes to a CMEK-enabled namespace.
+- The `encryption` parameter has been restructured.
 
   Old:
 
@@ -111,6 +110,9 @@ changes.
       .build()
   );
   ```
+
+  A new `default` variant lets you explicitly opt out of CMEK on writes to a
+  CMEK-enabled namespace.
 
 ## v1.0
 
