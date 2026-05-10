@@ -26,7 +26,7 @@ sealed class AggregateBy() {
         @JvmStatic public fun sum(attr: String): AggregateBySum = AggregateBySum.create(attr)
 
         @JvmStatic
-        public fun countDeprecated(attr: String): AggregateByCountDeprecated =
+        public fun count(attr: String): AggregateByCountDeprecated =
             AggregateByCountDeprecated.create(attr)
     }
 
@@ -204,13 +204,13 @@ sealed class Filter() : RankByText() {
             FilterContainsAllTokens.create(attr, value)
 
         @JvmStatic
-        public fun containsAllTokensArray(
+        public fun containsAllTokens(
             attr: String,
             value: List<String>,
         ): FilterContainsAllTokensArray = FilterContainsAllTokensArray.create(attr, value)
 
         @JvmStatic
-        public fun containsAllTokensWithParams(
+        public fun containsAllTokens(
             attr: String,
             value: String,
             params: ContainsAllTokensFilterParams,
@@ -218,7 +218,7 @@ sealed class Filter() : RankByText() {
             FilterContainsAllTokensWithParams.create(attr, value, params)
 
         @JvmStatic
-        public fun containsAllTokensArrayWithParams(
+        public fun containsAllTokens(
             attr: String,
             value: List<String>,
             params: ContainsAllTokensFilterParams,
@@ -230,13 +230,13 @@ sealed class Filter() : RankByText() {
             FilterContainsAnyToken.create(attr, value)
 
         @JvmStatic
-        public fun containsAnyTokenArray(
+        public fun containsAnyToken(
             attr: String,
             value: List<String>,
         ): FilterContainsAnyTokenArray = FilterContainsAnyTokenArray.create(attr, value)
 
         @JvmStatic
-        public fun containsAnyTokenWithParams(
+        public fun containsAnyToken(
             attr: String,
             value: String,
             params: ContainsAnyTokenFilterParams,
@@ -244,7 +244,7 @@ sealed class Filter() : RankByText() {
             FilterContainsAnyTokenWithParams.create(attr, value, params)
 
         @JvmStatic
-        public fun containsAnyTokenArrayWithParams(
+        public fun containsAnyToken(
             attr: String,
             value: List<String>,
             params: ContainsAnyTokenFilterParams,
@@ -256,7 +256,7 @@ sealed class Filter() : RankByText() {
             FilterContainsTokenSequence.create(attr, value)
 
         @JvmStatic
-        public fun containsTokenSequenceArray(
+        public fun containsTokenSequence(
             attr: String,
             value: List<String>,
         ): FilterContainsTokenSequenceArray = FilterContainsTokenSequenceArray.create(attr, value)
@@ -1161,18 +1161,18 @@ sealed class RankByText() : RankBy() {
             RankByTextBM25.create(attr, value)
 
         @JvmStatic
-        public fun bm25Array(attr: String, value: List<String>): RankByTextBM25Array =
+        public fun bm25(attr: String, value: List<String>): RankByTextBM25Array =
             RankByTextBM25Array.create(attr, value)
 
         @JvmStatic
-        public fun bm25WithParams(
+        public fun bm25(
             attr: String,
             value: String,
             params: Bm25ClauseParams,
         ): RankByTextBM25WithParams = RankByTextBM25WithParams.create(attr, value, params)
 
         @JvmStatic
-        public fun bm25ArrayWithParams(
+        public fun bm25(
             attr: String,
             value: List<String>,
             params: Bm25ClauseParams,
