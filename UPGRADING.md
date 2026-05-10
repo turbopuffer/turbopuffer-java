@@ -60,29 +60,6 @@ changes.
   );
   ```
 
-- The top-level `Query` builder used by `multiQuery` has been moved to
-  `NamespaceMultiQueryParams.Query`.
-
-  Old:
-
-  ```java
-  ns.multiQuery(
-    NamespaceMultiQueryParams.builder()
-      .addQuery(Query.builder().rankBy(/* ... */).build())
-      .build()
-  );
-  ```
-
-  New:
-
-  ```java
-  ns.multiQuery(
-    NamespaceMultiQueryParams.builder()
-      .addQuery(NamespaceMultiQueryParams.Query.builder().rankBy(/* ... */).build())
-      .build()
-  );
-  ```
-
 - The `encryption` parameter has been restructured.
 
   Old:
