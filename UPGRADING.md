@@ -28,6 +28,29 @@ changes.
   );
   ```
 
+- `NamespaceQueryParams.builder().groupBy()` now takes `List<GroupBy>` instead
+  of `List<String>`. Wrap plain attribute names with `GroupBy.attr`.
+
+  Old:
+
+  ```java
+  ns.query(
+    NamespaceQueryParams.builder()
+      .groupBy(List.of("color", "size"))
+      .build()
+  );
+  ```
+
+  New:
+
+  ```java
+  ns.query(
+    NamespaceQueryParams.builder()
+      .groupBy(List.of(GroupBy.attr("color"), GroupBy.attr("size")))
+      .build()
+  );
+  ```
+
 - The `encryption` parameter has been restructured.
 
   Old:
@@ -109,29 +132,6 @@ changes.
   ns.branchFrom(
     NamespaceBranchFromParams.builder()
       .sourceNamespace("src")
-      .build()
-  );
-  ```
-
-- `NamespaceQueryParams.builder().groupBy()` now takes `List<GroupBy>` instead
-  of `List<String>`. Wrap plain attribute names with `GroupBy.attr`.
-
-  Old:
-
-  ```java
-  ns.query(
-    NamespaceQueryParams.builder()
-      .groupBy(List.of("color", "size"))
-      .build()
-  );
-  ```
-
-  New:
-
-  ```java
-  ns.query(
-    NamespaceQueryParams.builder()
-      .groupBy(List.of(GroupBy.attr("color"), GroupBy.attr("size")))
       .build()
   );
   ```
