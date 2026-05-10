@@ -103,7 +103,7 @@ public class WriteAndQueryAsync {
         // Set up to run a vector query and schema inspection concurrently.
         var queryFuture = client.namespace(namespace)
                 .query(NamespaceQueryParams.builder()
-                        .rankBy(RankBy.vector("vector", List.of(3.0f, 4.0f, 5.0f)))
+                        .rankBy(RankBy.ann("vector", List.of(3.0f, 4.0f, 5.0f)))
                         .topK(10)
                         .includeAttributes(true)
                         .filters(Filter.and(Filter.gt("age", 30), Filter.lt("age", 35)))
