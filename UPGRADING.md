@@ -83,9 +83,7 @@ changes.
   encryption.
 
 - The `copyFromNamespace` parameter on `NamespaceWriteParams` has been removed
-  in favor of a dedicated `copyFrom` method. The nested
-  `CopyFromNamespaceConfig` builder has been replaced by a flat
-  `NamespaceCopyFromParams` builder.
+  in favor of a dedicated `copyFrom` method.
 
   Old:
 
