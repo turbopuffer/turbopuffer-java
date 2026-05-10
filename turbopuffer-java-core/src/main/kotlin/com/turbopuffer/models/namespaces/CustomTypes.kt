@@ -933,19 +933,110 @@ class FilterRegex private constructor(attr: String, value: String) : Filter() {
     }
 }
 
+@JsonDeserialize(using = GroupBy.Deserializer::class)
+sealed class GroupBy() {
+    companion object {
+        @JvmStatic public fun attr(value: String): GroupByAttr = GroupByAttr.create(value)
+
+        @JvmStatic
+        public fun expr(name: String, value: GroupByFunction): GroupByExpr =
+            GroupByExpr.create(name, value)
+    }
+
+    class Deserializer : BaseDeserializer<GroupBy>(GroupBy::class) {
+        override fun ObjectCodec.deserialize(node: JsonNode): GroupBy {
+            return GroupByRaw(JsonValue.fromJsonNode(node))
+        }
+    }
+}
+
+class GroupByRaw internal constructor(value: JsonValue) : GroupBy() {
+    @JsonValueAnnotation private val value: JsonValue = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
+    }
+}
+
+class GroupByAttr private constructor(value: String) : GroupBy() {
+    @JsonValueAnnotation private val value: String = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
+    }
+
+    companion object {
+        @JvmSynthetic internal fun create(value: String): GroupByAttr = GroupByAttr(value)
+    }
+}
+
+class GroupByExpr private constructor(name: String, value: GroupByFunction) : GroupBy() {
+    @JsonValueAnnotation private val data: Map<String, GroupByFunction> = mapOf(name to value)
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(data)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(name: String, value: GroupByFunction): GroupByExpr =
+            GroupByExpr(name, value)
+    }
+}
+
+@JsonDeserialize(using = GroupByFunction.Deserializer::class)
+sealed class GroupByFunction() {
+    companion object {
+        @JvmStatic
+        public fun forEachUnique(attr: String): GroupByFunctionForEachUnique =
+            GroupByFunctionForEachUnique.create(attr)
+    }
+
+    class Deserializer : BaseDeserializer<GroupByFunction>(GroupByFunction::class) {
+        override fun ObjectCodec.deserialize(node: JsonNode): GroupByFunction {
+            return GroupByFunctionRaw(JsonValue.fromJsonNode(node))
+        }
+    }
+}
+
+class GroupByFunctionRaw internal constructor(value: JsonValue) : GroupByFunction() {
+    @JsonValueAnnotation private val value: JsonValue = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "attr")
+class GroupByFunctionForEachUnique private constructor(attr: String) : GroupByFunction() {
+    private val f0: String = "ForEachUnique"
+    private val attr: String = attr
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String): GroupByFunctionForEachUnique =
+            GroupByFunctionForEachUnique(attr)
+    }
+}
+
 @JsonDeserialize(using = RankBy.Deserializer::class)
 sealed class RankBy() {
     companion object {
         @JvmStatic
-        public fun vector(attr: String, value: List<Float>): RankByVector =
-            RankByVector.create(attr, value)
+        public fun ann(attr: String, value: List<Float>): RankByAnn = RankByAnn.create(attr, value)
 
         @JvmStatic
         public fun knn(attr: String, value: List<Float>): RankByKnn = RankByKnn.create(attr, value)
 
         @JvmStatic
-        public fun sparseVector(attr: String, value: Map<String, Double>): RankBySparseVector =
-            RankBySparseVector.create(attr, value)
+        public fun sparseKnn(attr: String, value: Map<String, Double>): RankBySparseKnn =
+            RankBySparseKnn.create(attr, value)
 
         @JvmStatic
         public fun attribute(attr: String, order: RankByAttributeOrder): RankByAttribute =
@@ -968,6 +1059,24 @@ class RankByRaw internal constructor(value: JsonValue) : RankBy() {
 
     override fun toString(): String {
         return jsonMapper.writeValueAsString(value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class RankByAnn private constructor(attr: String, value: List<Float>) : RankBy() {
+    private val attr: String = attr
+    private val f0: String = "ANN"
+    private val value: List<Float> = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: List<Float>): RankByAnn = RankByAnn(attr, value)
     }
 }
 
@@ -1028,7 +1137,7 @@ class RankByKnn private constructor(attr: String, value: List<Float>) : RankBy()
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder("attr", "f0", "value")
-class RankBySparseVector private constructor(attr: String, value: Map<String, Double>) : RankBy() {
+class RankBySparseKnn private constructor(attr: String, value: Map<String, Double>) : RankBy() {
     private val attr: String = attr
     private val f0: String = "SparseKNN"
     private val value: Map<String, Double> = value
@@ -1039,8 +1148,8 @@ class RankBySparseVector private constructor(attr: String, value: Map<String, Do
 
     companion object {
         @JvmSynthetic
-        internal fun create(attr: String, value: Map<String, Double>): RankBySparseVector =
-            RankBySparseVector(attr, value)
+        internal fun create(attr: String, value: Map<String, Double>): RankBySparseKnn =
+            RankBySparseKnn(attr, value)
     }
 }
 
@@ -1347,24 +1456,5 @@ class RankByTextSum private constructor(subqueries: List<RankByText>) : RankByTe
     companion object {
         @JvmSynthetic
         internal fun create(subqueries: List<RankByText>): RankByTextSum = RankByTextSum(subqueries)
-    }
-}
-
-@JsonAutoDetect(fieldVisibility = Visibility.ANY)
-@JsonFormat(shape = JsonFormat.Shape.ARRAY)
-@JsonPropertyOrder("attr", "f0", "value")
-class RankByVector private constructor(attr: String, value: List<Float>) : RankBy() {
-    private val attr: String = attr
-    private val f0: String = "ANN"
-    private val value: List<Float> = value
-
-    override fun toString(): String {
-        return jsonMapper.writeValueAsString(this)
-    }
-
-    companion object {
-        @JvmSynthetic
-        internal fun create(attr: String, value: List<Float>): RankByVector =
-            RankByVector(attr, value)
     }
 }
