@@ -609,7 +609,7 @@ private constructor(
         private val distanceMetric: JsonField<DistanceMetric>,
         private val excludeAttributes: JsonField<List<String>>,
         private val filters: JsonField<Filter>,
-        private val groupBy: JsonField<List<String>>,
+        private val groupBy: JsonField<List<GroupBy>>,
         private val includeAttributes: JsonField<IncludeAttributes>,
         private val limit: JsonField<Limit>,
         private val rankBy: JsonField<RankBy>,
@@ -631,7 +631,7 @@ private constructor(
             @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filter> = JsonMissing.of(),
             @JsonProperty("group_by")
             @ExcludeMissing
-            groupBy: JsonField<List<String>> = JsonMissing.of(),
+            groupBy: JsonField<List<JsonValue>> = JsonMissing.of(),
             @JsonProperty("include_attributes")
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
@@ -703,7 +703,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun groupBy(): Optional<List<String>> = groupBy.getOptional("group_by")
+        fun groupBy(): Optional<List<JsonValue>> = groupBy.getOptional("group_by")
 
         /**
          * Whether to include attributes in the response.
@@ -780,7 +780,9 @@ private constructor(
          *
          * Unlike [groupBy], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("group_by") @ExcludeMissing fun _groupBy(): JsonField<List<String>> = groupBy
+        @JsonProperty("group_by")
+        @ExcludeMissing
+        fun _groupBy(): JsonField<List<JsonValue>> = groupBy
 
         /**
          * Returns the raw JSON value of [includeAttributes].
@@ -831,7 +833,7 @@ private constructor(
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var excludeAttributes: JsonField<MutableList<String>>? = null
             private var filters: JsonField<Filter> = JsonMissing.of()
-            private var groupBy: JsonField<MutableList<String>>? = null
+            private var groupBy: JsonField<MutableList<GroupBy>>? = null
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
             private var limit: JsonField<Limit> = JsonMissing.of()
             private var rankBy: JsonField<RankBy> = JsonMissing.of()
@@ -933,25 +935,25 @@ private constructor(
              * Groups documents by the specified attributes (the "group key") before computing
              * aggregates. Aggregates are computed separately for each group.
              */
-            fun groupBy(groupBy: List<String>) = groupBy(JsonField.of(groupBy))
+            fun groupBy(groupBy: List<JsonValue>) = groupBy(JsonField.of(groupBy))
 
             /**
              * Sets [Builder.groupBy] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.groupBy] with a well-typed `List<String>` value
+             * You should usually call [Builder.groupBy] with a well-typed `List<JsonValue>` value
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun groupBy(groupBy: JsonField<List<String>>) = apply {
+            fun groupBy(groupBy: JsonField<List<JsonValue>>) = apply {
                 this.groupBy = groupBy.map { it.toMutableList() }
             }
 
             /**
-             * Adds a single [String] to [Builder.groupBy].
+             * Adds a single [JsonValue] to [Builder.groupBy].
              *
              * @throws IllegalStateException if the field was previously set to a non-list.
              */
-            fun addGroupBy(groupBy: String) = apply {
+            fun addGroupBy(groupBy: JsonValue) = apply {
                 this.groupBy =
                     (this.groupBy ?: JsonField.of(mutableListOf())).also {
                         checkKnown("groupBy", it).add(groupBy)
