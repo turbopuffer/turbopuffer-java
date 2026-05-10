@@ -90,3 +90,35 @@ changes.
 
   A new `default` variant lets you migrate a namespace from CMEK to default
   encryption.
+
+- The `RankBy.vector` and `RankBy.sparseVector` factories have been renamed
+  to `RankBy.ann` and `RankBy.sparseKnn`.
+
+- The `Query` builder used by `multiQuery` has been moved out of
+  `NamespaceMultiQueryParams` into a top-level class at
+  `com.turbopuffer.models.namespaces.Query`. The nested
+  `NamespaceMultiQueryParams.Query` is retained as a typealias for
+  compatibility.
+
+- `NamespaceQueryParams.builder().groupBy()` now takes `List<GroupBy>` instead
+  of `List<String>`. Wrap plain attribute names with `GroupBy.attr`.
+
+  Old:
+
+  ```java
+  ns.query(
+    NamespaceQueryParams.builder()
+      .groupBy(List.of("color", "size"))
+      .build()
+  );
+  ```
+
+  New:
+
+  ```java
+  ns.query(
+    NamespaceQueryParams.builder()
+      .groupBy(List.of(GroupBy.attr("color"), GroupBy.attr("size")))
+      .build()
+  );
+  ```
