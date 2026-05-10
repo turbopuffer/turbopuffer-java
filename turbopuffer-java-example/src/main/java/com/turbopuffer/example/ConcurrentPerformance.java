@@ -118,7 +118,7 @@ public class ConcurrentPerformance {
         var namespace = getNamespace(namespaceIndex);
         var queryResult = client.namespace(namespace)
                 .query(NamespaceQueryParams.builder()
-                        .rankBy(RankBy.vector("vector", generateRandomVector()))
+                        .rankBy(RankBy.ann("vector", generateRandomVector()))
                         .topK(2)
                         .includeAttributes(true)
                         .build())
