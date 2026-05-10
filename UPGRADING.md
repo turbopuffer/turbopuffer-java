@@ -91,8 +91,27 @@ changes.
   A new `default` variant lets you migrate a namespace from CMEK to default
   encryption.
 
-- The `RankBy.vector` and `RankBy.sparseVector` factories have been renamed
-  to `RankBy.ann` and `RankBy.sparseKnn`.
+- The `RankBy.vector` factory has been renamed to `RankBy.ann`.
+
+  Old:
+
+  ```java
+  ns.query(
+    NamespaceQueryParams.builder()
+      .rankBy(RankBy.vector("vector", List.of(0.1f, 0.2f)))
+      .build()
+  );
+  ```
+
+  New:
+
+  ```java
+  ns.query(
+    NamespaceQueryParams.builder()
+      .rankBy(RankBy.ann("vector", List.of(0.1f, 0.2f)))
+      .build()
+  );
+  ```
 
 - The `Query` builder used by `multiQuery` has been moved out of
   `NamespaceMultiQueryParams` into a top-level class at
