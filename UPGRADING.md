@@ -113,12 +113,6 @@ changes.
   );
   ```
 
-- The `Query` builder used by `multiQuery` has been moved out of
-  `NamespaceMultiQueryParams` into a top-level class at
-  `com.turbopuffer.models.namespaces.Query`. The nested
-  `NamespaceMultiQueryParams.Query` is retained as a typealias for
-  compatibility.
-
 - `NamespaceQueryParams.builder().groupBy()` now takes `List<GroupBy>` instead
   of `List<String>`. Wrap plain attribute names with `GroupBy.attr`.
 
