@@ -1,5 +1,26 @@
 # Changelog
 
+## 2.0.0-alpha.6 (2026-05-10)
+
+Full Changelog: [v2.0.0-alpha.5...v2.0.0-alpha.6](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.5...v2.0.0-alpha.6)
+
+### Features
+
+* expose Query as top-level com.turbopuffer.models.namespaces.Query ([1549cc1](https://github.com/turbopuffer/turbopuffer-java/commit/1549cc12d28fbee61e6dc3d1d8038fbee397b87e))
+* spec: rename RankByVector/RankBySparseVector to RankByAnn/RankBySparseKnn ([9a064c3](https://github.com/turbopuffer/turbopuffer-java/commit/9a064c332cfd2427d06bcc0417d9a88798160d5f))
+
+
+### Bug Fixes
+
+* **ci:** bump ProGuard to 7.9.1 for Kotlin 2.3 metadata support ([c49254b](https://github.com/turbopuffer/turbopuffer-java/commit/c49254b3f53d0f9ec0f063896a4b477f63a6df6e))
+* hand-patch Stainless codegen for GroupBy and RankBy.ann ([d3c6eca](https://github.com/turbopuffer/turbopuffer-java/commit/d3c6eca73fe78896d9d7829de2d6524ff22d236a))
+
+
+### Chores
+
+* regenerate custom types ([f291f06](https://github.com/turbopuffer/turbopuffer-java/commit/f291f06ff0b40d17f67559f6f56204080f79ae48))
+* regenerate custom types ([6037ad3](https://github.com/turbopuffer/turbopuffer-java/commit/6037ad323c7b4088da359fff3fcb19e13ccc6494))
+
 ## 2.0.0-alpha.5 (2026-05-08)
 
 Full Changelog: [v2.0.0-alpha.4...v2.0.0-alpha.5](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.4...v2.0.0-alpha.5)
