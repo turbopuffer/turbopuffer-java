@@ -24,9 +24,12 @@ kotlin {
             "-nowarn",
         )
         jvmTarget.set(JvmTarget.JVM_1_8)
-        languageVersion.set(KotlinVersion.KOTLIN_1_8)
-        apiVersion.set(KotlinVersion.KOTLIN_1_8)
-        coreLibrariesVersion = "1.8.0"
+        // languageVersion bumped to 2.3 so nested typealiases (used by the
+        // build-time Query extraction in turbopuffer-java-core) are stable.
+        // apiVersion is pinned to the lowest value Kotlin 2.3 still accepts.
+        languageVersion.set(KotlinVersion.KOTLIN_2_3)
+        apiVersion.set(KotlinVersion.KOTLIN_1_9)
+        coreLibrariesVersion = "1.9.0"
     }
 }
 
