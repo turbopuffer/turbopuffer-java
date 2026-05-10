@@ -6,6 +6,59 @@ changes.
 
 ## v2.0
 
+- The `RankBy.vector` factory has been renamed to `RankBy.ann`.
+
+  Old:
+
+  ```java
+  ns.query(
+    NamespaceQueryParams.builder()
+      .rankBy(RankBy.vector("vector", List.of(0.1f, 0.2f)))
+      .build()
+  );
+  ```
+
+  New:
+
+  ```java
+  ns.query(
+    NamespaceQueryParams.builder()
+      .rankBy(RankBy.ann("vector", List.of(0.1f, 0.2f)))
+      .build()
+  );
+  ```
+
+- The `encryption` parameter has been restructured.
+
+  Old:
+
+  ```java
+  ns.write(
+    NamespaceWriteParams.builder()
+      .addUpsertRow(/* ... */)
+      .encryption(
+        NamespaceWriteParams.Encryption.builder()
+          .cmek(NamespaceWriteParams.Encryption.Cmek.builder().keyName("...").build())
+          .build()
+      )
+      .build()
+  );
+  ```
+
+  New:
+
+  ```java
+  ns.write(
+    NamespaceWriteParams.builder()
+      .addUpsertRow(/* ... */)
+      .encryption(Encryption.CustomerManaged.builder().keyName("...").build())
+      .build()
+  );
+  ```
+
+  A new `default` variant lets you migrate a namespace from CMEK to default
+  encryption.
+
 - The `copyFromNamespace` parameter on `NamespaceWriteParams` has been removed
   in favor of a dedicated `copyFrom` method. The nested
   `CopyFromNamespaceConfig` builder has been replaced by a flat
@@ -56,59 +109,6 @@ changes.
   ns.branchFrom(
     NamespaceBranchFromParams.builder()
       .sourceNamespace("src")
-      .build()
-  );
-  ```
-
-- The `encryption` parameter has been restructured.
-
-  Old:
-
-  ```java
-  ns.write(
-    NamespaceWriteParams.builder()
-      .addUpsertRow(/* ... */)
-      .encryption(
-        NamespaceWriteParams.Encryption.builder()
-          .cmek(NamespaceWriteParams.Encryption.Cmek.builder().keyName("...").build())
-          .build()
-      )
-      .build()
-  );
-  ```
-
-  New:
-
-  ```java
-  ns.write(
-    NamespaceWriteParams.builder()
-      .addUpsertRow(/* ... */)
-      .encryption(Encryption.CustomerManaged.builder().keyName("...").build())
-      .build()
-  );
-  ```
-
-  A new `default` variant lets you migrate a namespace from CMEK to default
-  encryption.
-
-- The `RankBy.vector` factory has been renamed to `RankBy.ann`.
-
-  Old:
-
-  ```java
-  ns.query(
-    NamespaceQueryParams.builder()
-      .rankBy(RankBy.vector("vector", List.of(0.1f, 0.2f)))
-      .build()
-  );
-  ```
-
-  New:
-
-  ```java
-  ns.query(
-    NamespaceQueryParams.builder()
-      .rankBy(RankBy.ann("vector", List.of(0.1f, 0.2f)))
       .build()
   );
   ```
