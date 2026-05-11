@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0-alpha.8 (2026-05-11)
+
+Full Changelog: [v2.0.0-alpha.7...v2.0.0-alpha.8](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.7...v2.0.0-alpha.8)
+
+### Bug Fixes
+
+* **build:** attach extractQueryClass to source set via builtBy ([e61b775](https://github.com/turbopuffer/turbopuffer-java/commit/e61b7755981ea7f06a780b35f4a052ed26356003))
+
 ## 2.0.0-alpha.7 (2026-05-11)
 
 Full Changelog: [v2.0.0-alpha.6...v2.0.0-alpha.7](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.6...v2.0.0-alpha.7)
