@@ -84,8 +84,6 @@ val extractQueryClass by tasks.registering {
 
 tasks.named("compileKotlin") { dependsOn(extractQueryClass) }
 tasks.named("compileTestKotlin") { dependsOn(extractQueryClass) }
-tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach { dependsOn(extractQueryClass) }
-tasks.withType<Jar>().configureEach { dependsOn(extractQueryClass) }
 
 kotlin {
     sourceSets {
@@ -103,7 +101,7 @@ kotlin {
                 exclude("com/turbopuffer/models/namespaces/NamespaceUpdateSchemaResponse.kt")
                 // Replaced by the build-time extractQueryClass task.
                 exclude("com/turbopuffer/models/namespaces/NamespaceMultiQueryParams.kt")
-                srcDir(layout.buildDirectory.dir("generated/sources/extractQueryClass/main/kotlin"))
+                srcDir(files(layout.buildDirectory.dir("generated/sources/extractQueryClass/main/kotlin")).builtBy(extractQueryClass))
             }
         }
 
