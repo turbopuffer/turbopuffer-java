@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0 (2026-05-11)
+
+Full Changelog: [v2.0.0-alpha.8...v2.0.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.8...v2.0.0)
+
+### Documentation
+
+* reflow UPGRADING.md intro ([c874b2e](https://github.com/turbopuffer/turbopuffer-java/commit/c874b2eba48cb0eb57c67d00d1486fd21955f05d))
+
 ## 2.0.0-alpha.8 (2026-05-11)
 
 Full Changelog: [v2.0.0-alpha.7...v2.0.0-alpha.8](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.7...v2.0.0-alpha.8)
