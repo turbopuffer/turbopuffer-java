@@ -84,6 +84,8 @@ val extractQueryClass by tasks.registering {
 
 tasks.named("compileKotlin") { dependsOn(extractQueryClass) }
 tasks.named("compileTestKotlin") { dependsOn(extractQueryClass) }
+tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach { dependsOn(extractQueryClass) }
+tasks.withType<Jar>().configureEach { dependsOn(extractQueryClass) }
 
 kotlin {
     sourceSets {
