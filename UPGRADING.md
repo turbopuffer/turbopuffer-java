@@ -1,8 +1,8 @@
 # Upgrade guide
 
-This document describes the notable breaking changes, if any, in each version of
-the Java client. See [CHANGELOG.md](./CHANGELOG.md) for a comprehensive list of
-changes.
+This document describes the notable breaking changes, if any, in each version
+of the Java client. See [CHANGELOG.md](./CHANGELOG.md) for a comprehensive list
+of changes.
 
 ## v2.0
 
