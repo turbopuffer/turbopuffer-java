@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.0.0-alpha.7 (2026-05-11)
+
+Full Changelog: [v2.0.0-alpha.6...v2.0.0-alpha.7](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.6...v2.0.0-alpha.7)
+
+### Bug Fixes
+
+* **build:** wire extractQueryClass into dokka and jar tasks ([cab9b71](https://github.com/turbopuffer/turbopuffer-java/commit/cab9b719a0a0b361da805f78c0e073aabe10f10c))
+
+
+### Documentation
+
+* document v2.0 breaking changes in UPGRADING.md ([cd13a70](https://github.com/turbopuffer/turbopuffer-java/commit/cd13a700865153056be2197408784221541ea0bb))
+
 ## 2.0.0-alpha.6 (2026-05-10)
 
 Full Changelog: [v2.0.0-alpha.5...v2.0.0-alpha.6](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0-alpha.5...v2.0.0-alpha.6)
