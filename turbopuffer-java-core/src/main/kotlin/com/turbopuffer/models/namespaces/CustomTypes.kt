@@ -200,6 +200,10 @@ sealed class Filter() : RankByText() {
         public fun regex(attr: String, value: String): FilterRegex = FilterRegex.create(attr, value)
 
         @JvmStatic
+        public fun fuzzy(attr: String, value: String, params: FuzzyParams): FilterFuzzy =
+            FilterFuzzy.create(attr, value, params)
+
+        @JvmStatic
         public fun containsAllTokens(attr: String, value: String): FilterContainsAllTokens =
             FilterContainsAllTokens.create(attr, value)
 
@@ -643,6 +647,26 @@ class FilterEq private constructor(attr: String, value: Any) : Filter() {
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: Any): FilterEq = FilterEq(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value", "params")
+class FilterFuzzy private constructor(attr: String, value: String, params: FuzzyParams) : Filter() {
+    private val attr: String = attr
+    private val f0: String = "Fuzzy"
+    private val value: String = value
+    private val params: FuzzyParams = params
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: String, params: FuzzyParams): FilterFuzzy =
+            FilterFuzzy(attr, value, params)
     }
 }
 
