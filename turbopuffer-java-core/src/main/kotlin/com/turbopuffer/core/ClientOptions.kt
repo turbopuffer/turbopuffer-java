@@ -9,6 +9,7 @@ import com.turbopuffer.core.http.HttpClient
 import com.turbopuffer.core.http.LoggingHttpClient
 import com.turbopuffer.core.http.PhantomReachableClosingHttpClient
 import com.turbopuffer.core.http.QueryParams
+import com.turbopuffer.core.http.RespondAsyncHttpClient
 import com.turbopuffer.core.http.RetryingHttpClient
 import java.time.Clock
 import java.time.Duration
@@ -564,27 +565,33 @@ private constructor(
                 }
             }
 
+            val clientHeaders = headers.build()
             return ClientOptions(
                 httpClient,
-                RetryingHttpClient.builder()
-                    .httpClient(
-                        LoggingHttpClient.builder()
-                            .httpClient(httpClient)
-                            .clock(clock)
-                            .level(logLevel)
-                            .build()
-                    )
-                    .sleeper(sleeper)
-                    .clock(clock)
-                    .maxRetries(maxRetries)
-                    .build(),
+                RespondAsyncHttpClient(
+                    RetryingHttpClient.builder()
+                        .httpClient(
+                            LoggingHttpClient.builder()
+                                .httpClient(httpClient)
+                                .clock(clock)
+                                .level(logLevel)
+                                .build()
+                        )
+                        .sleeper(sleeper)
+                        .clock(clock)
+                        .maxRetries(maxRetries)
+                        .build(),
+                    sleeper,
+                    jsonMapper,
+                    clientHeaders,
+                ),
                 checkJacksonVersionCompatibility,
                 jsonMapper,
                 streamHandlerExecutor,
                 sleeper,
                 clock,
                 baseUrl,
-                headers.build(),
+                clientHeaders,
                 queryParams.build(),
                 responseValidation,
                 timeout,
