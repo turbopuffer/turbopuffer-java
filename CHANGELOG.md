@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.1.0 (2026-05-28)
+
+Full Changelog: [v2.0.1...v2.1.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.1...v2.1.0)
+
+### Features
+
+* spec: force generation of FuzzyParams stainless models ([bd9cafe](https://github.com/turbopuffer/turbopuffer-java/commit/bd9cafeb774c4dea3f203416bde25d90940a0757))
+* transparent async polling ([d8ca7f8](https://github.com/turbopuffer/turbopuffer-java/commit/d8ca7f8e562b2b7480c717a3f37716e7cd583725))
+
+
+### Bug Fixes
+
+* no async polling deadline on zero timeout ([755bad5](https://github.com/turbopuffer/turbopuffer-java/commit/755bad53510ad7ef05c7a5081173495ac4e9cdb8))
+
 ## 2.0.1 (2026-05-17)
 
 Full Changelog: [v2.0.0...v2.0.1](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.0...v2.0.1)
