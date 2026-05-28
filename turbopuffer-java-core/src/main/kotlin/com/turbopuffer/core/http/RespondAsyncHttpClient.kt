@@ -170,9 +170,12 @@ class RespondAsyncHttpClient(
 /** Tracks a polling-loop timeout. */
 private class Deadline(requestOptions: RequestOptions) {
 
-    private val deadlineNs: Long =
-        requestOptions.timeout?.request()?.let { System.nanoTime() + it.toNanos() }
-            ?: Long.MAX_VALUE
+    // `Timeout.request()` uses `Duration.ZERO` to mean "no timeout".
+    private val deadlineNs: Long = run {
+        val request = requestOptions.timeout?.request()
+        if (request == null || request.isZero) Long.MAX_VALUE
+        else System.nanoTime() + request.toNanos()
+    }
 
     fun remaining(): Duration = Duration.ofNanos(maxOf(0L, deadlineNs - System.nanoTime()))
 

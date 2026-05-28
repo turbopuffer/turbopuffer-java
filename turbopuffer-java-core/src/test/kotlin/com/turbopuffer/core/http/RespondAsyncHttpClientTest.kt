@@ -20,6 +20,7 @@ import com.github.tomakehurst.wiremock.stubbing.Scenario
 import com.turbopuffer.client.okhttp.OkHttpClient
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.Sleeper
+import com.turbopuffer.core.Timeout
 import com.turbopuffer.core.jsonMapper
 import com.turbopuffer.errors.TurbopufferException
 import com.turbopuffer.errors.TurbopufferIoException
@@ -332,6 +333,56 @@ internal class RespondAsyncHttpClientTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
+    fun zeroRequestTimeoutMeansNoDeadline(async: Boolean) {
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(202)
+                        .withHeader("Preference-Applied", "respond-async")
+                        .withHeader("Location", "/v1/namespaces/test/operations/op-zero")
+                )
+        )
+        stubFor(
+            get(urlPathEqualTo("/v1/namespaces/test/operations/op-zero"))
+                .inScenario("poll-zero")
+                .whenScenarioStateIs(Scenario.STARTED)
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("""{"status":"running"}""")
+                )
+                .willSetStateTo("FINISHED")
+        )
+        stubFor(
+            get(urlPathEqualTo("/v1/namespaces/test/operations/op-zero"))
+                .inScenario("poll-zero")
+                .whenScenarioStateIs("FINISHED")
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("""{"status":"finished","result":{"success":{"ok":true}}}""")
+                )
+        )
+        val sleeper = RecordingSleeper()
+        val client = respondAsyncClient(sleeper)
+
+        val opts =
+            RequestOptions.builder()
+                .timeout(Timeout.builder().request(Duration.ZERO).build())
+                .build()
+
+        client.execute(simplePost(), opts, async).use { response ->
+            assertThat(response.statusCode()).isEqualTo(200)
+            assertThat(response.bodyAsString()).isEqualTo("""{"ok":true}""")
+        }
+        assertThat(sleeper.sleeps).isEqualTo(1)
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
     fun retainsCallerSuppliedPreferHeader(async: Boolean) {
         stubFor(
             post(urlPathEqualTo("/something"))
@@ -413,6 +464,12 @@ internal class RespondAsyncHttpClientTest {
 
     private fun HttpClient.execute(request: HttpRequest, async: Boolean): HttpResponse =
         if (async) executeAsync(request).get() else execute(request)
+
+    private fun HttpClient.execute(
+        request: HttpRequest,
+        opts: RequestOptions,
+        async: Boolean,
+    ): HttpResponse = if (async) executeAsync(request, opts).get() else execute(request, opts)
 
     private fun HttpResponse.bodyAsString(): String =
         body().use { it.readBytes().toString(Charsets.UTF_8) }
