@@ -20,6 +20,7 @@ internal class NamespaceUpdateSchemaResponseTest {
                         mapOf(
                             "type" to "string",
                             "ann" to true,
+                            "embed" to "string",
                             "filterable" to true,
                             "full_text_search" to true,
                             "fuzzy" to true,
@@ -43,6 +44,7 @@ internal class NamespaceUpdateSchemaResponseTest {
                         mapOf(
                             "type" to "string",
                             "ann" to true,
+                            "embed" to "string",
                             "filterable" to true,
                             "full_text_search" to true,
                             "fuzzy" to true,

@@ -28,6 +28,7 @@ internal class NamespaceMetadataTest {
                                 mapOf(
                                     "type" to "string",
                                     "ann" to true,
+                                    "embed" to "string",
                                     "filterable" to true,
                                     "full_text_search" to true,
                                     "fuzzy" to true,
@@ -74,6 +75,7 @@ internal class NamespaceMetadataTest {
                             mapOf(
                                 "type" to "string",
                                 "ann" to true,
+                                "embed" to "string",
                                 "filterable" to true,
                                 "full_text_search" to true,
                                 "fuzzy" to true,
@@ -120,6 +122,7 @@ internal class NamespaceMetadataTest {
                                 mapOf(
                                     "type" to "string",
                                     "ann" to true,
+                                    "embed" to "string",
                                     "filterable" to true,
                                     "full_text_search" to true,
                                     "fuzzy" to true,

@@ -15,6 +15,7 @@ internal class AttributeSchemaConfigTest {
             AttributeSchemaConfig.builder()
                 .type("string")
                 .ann(true)
+                .embed("string")
                 .filterable(true)
                 .fullTextSearch(true)
                 .fuzzy(true)
@@ -29,6 +30,7 @@ internal class AttributeSchemaConfigTest {
 
         assertThat(attributeSchemaConfig.type()).isEqualTo("string")
         assertThat(attributeSchemaConfig.ann()).contains(AttributeSchemaConfig.Ann.ofBool(true))
+        assertThat(attributeSchemaConfig.embed()).contains(AttributeEmbed.ofString("string"))
         assertThat(attributeSchemaConfig.filterable()).contains(true)
         assertThat(attributeSchemaConfig.fullTextSearch()).contains(FullTextSearch.ofBool(true))
         assertThat(attributeSchemaConfig.fuzzy()).contains(true)
@@ -49,6 +51,7 @@ internal class AttributeSchemaConfigTest {
             AttributeSchemaConfig.builder()
                 .type("string")
                 .ann(true)
+                .embed("string")
                 .filterable(true)
                 .fullTextSearch(true)
                 .fuzzy(true)

@@ -98,6 +98,12 @@ class AggregateBySum private constructor(attr: String) : AggregateBy() {
 sealed class Expr() {
     companion object {
         @JvmStatic public fun refNew(refNew: String): ExprRefNew = ExprRefNew.create(refNew)
+
+        @JvmStatic public fun embed(value: String): ExprEmbed = ExprEmbed.create(value)
+
+        @JvmStatic
+        public fun embed(value: String, params: EmbedParams): ExprEmbedWithParams =
+            ExprEmbedWithParams.create(value, params)
     }
 
     class Deserializer : BaseDeserializer<Expr>(Expr::class) {
@@ -112,6 +118,41 @@ class ExprRaw internal constructor(value: JsonValue) : Expr() {
 
     override fun toString(): String {
         return jsonMapper.writeValueAsString(value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "value")
+class ExprEmbed private constructor(value: String) : Expr() {
+    private val f0: String = "Embed"
+    private val value: String = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic internal fun create(value: String): ExprEmbed = ExprEmbed(value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "value", "params")
+class ExprEmbedWithParams private constructor(value: String, params: EmbedParams) : Expr() {
+    private val f0: String = "Embed"
+    private val value: String = value
+    private val params: EmbedParams = params
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(value: String, params: EmbedParams): ExprEmbedWithParams =
+            ExprEmbedWithParams(value, params)
     }
 }
 
@@ -1056,7 +1097,15 @@ sealed class RankBy() {
         public fun ann(attr: String, value: List<Float>): RankByAnn = RankByAnn.create(attr, value)
 
         @JvmStatic
+        public fun annExpr(attr: String, expr: Expr): RankByAnnExpr =
+            RankByAnnExpr.create(attr, expr)
+
+        @JvmStatic
         public fun knn(attr: String, value: List<Float>): RankByKnn = RankByKnn.create(attr, value)
+
+        @JvmStatic
+        public fun knnExpr(attr: String, expr: Expr): RankByKnnExpr =
+            RankByKnnExpr.create(attr, expr)
 
         @JvmStatic
         public fun sparseKnn(attr: String, value: Map<String, Double>): RankBySparseKnn =
@@ -1101,6 +1150,24 @@ class RankByAnn private constructor(attr: String, value: List<Float>) : RankBy()
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: List<Float>): RankByAnn = RankByAnn(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "expr")
+class RankByAnnExpr private constructor(attr: String, expr: Expr) : RankBy() {
+    private val attr: String = attr
+    private val f0: String = "ANN"
+    private val expr: Expr = expr
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, expr: Expr): RankByAnnExpr = RankByAnnExpr(attr, expr)
     }
 }
 
@@ -1155,6 +1222,24 @@ class RankByKnn private constructor(attr: String, value: List<Float>) : RankBy()
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, value: List<Float>): RankByKnn = RankByKnn(attr, value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "expr")
+class RankByKnnExpr private constructor(attr: String, expr: Expr) : RankBy() {
+    private val attr: String = attr
+    private val f0: String = "kNN"
+    private val expr: Expr = expr
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, expr: Expr): RankByKnnExpr = RankByKnnExpr(attr, expr)
     }
 }
 
