@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.jsonMapper
 import com.turbopuffer.models.NamespaceSummary
-import com.turbopuffer.models.namespaces.AttributeSchema
+import com.turbopuffer.models.namespaces.AttributeEmbed
 import com.turbopuffer.models.namespaces.DistanceMetric
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.javaMethod
@@ -67,17 +67,17 @@ internal class ProGuardCompatibilityTest {
     }
 
     @Test
-    fun attributeSchemaRoundtrip() {
+    fun attributeEmbedRoundtrip() {
         val jsonMapper = jsonMapper()
-        val attributeSchema = AttributeSchema.ofType("string")
+        val attributeEmbed = AttributeEmbed.ofString("string")
 
-        val roundtrippedAttributeSchema =
+        val roundtrippedAttributeEmbed =
             jsonMapper.readValue(
-                jsonMapper.writeValueAsString(attributeSchema),
-                jacksonTypeRef<AttributeSchema>(),
+                jsonMapper.writeValueAsString(attributeEmbed),
+                jacksonTypeRef<AttributeEmbed>(),
             )
 
-        assertThat(roundtrippedAttributeSchema).isEqualTo(attributeSchema)
+        assertThat(roundtrippedAttributeEmbed).isEqualTo(attributeEmbed)
     }
 
     @Test
