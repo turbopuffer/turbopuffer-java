@@ -34,6 +34,7 @@ class AttributeSchemaConfig
 private constructor(
     private val type: JsonField<String>,
     private val ann: JsonField<Ann>,
+    private val embed: JsonField<AttributeEmbed>,
     private val filterable: JsonField<Boolean>,
     private val fullTextSearch: JsonField<FullTextSearch>,
     private val fuzzy: JsonField<Boolean>,
@@ -47,6 +48,7 @@ private constructor(
     private constructor(
         @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
         @JsonProperty("ann") @ExcludeMissing ann: JsonField<Ann> = JsonMissing.of(),
+        @JsonProperty("embed") @ExcludeMissing embed: JsonField<AttributeEmbed> = JsonMissing.of(),
         @JsonProperty("filterable")
         @ExcludeMissing
         filterable: JsonField<Boolean> = JsonMissing.of(),
@@ -59,7 +61,18 @@ private constructor(
         @JsonProperty("sparse_knn")
         @ExcludeMissing
         sparseKnn: JsonField<SparseKnn> = JsonMissing.of(),
-    ) : this(type, ann, filterable, fullTextSearch, fuzzy, glob, regex, sparseKnn, mutableMapOf())
+    ) : this(
+        type,
+        ann,
+        embed,
+        filterable,
+        fullTextSearch,
+        fuzzy,
+        glob,
+        regex,
+        sparseKnn,
+        mutableMapOf(),
+    )
 
     /**
      * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
@@ -78,6 +91,16 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun ann(): Optional<Ann> = ann.getOptional("ann")
+
+    /**
+     * Whether to automatically embed this string attribute into a vector attribute. Can be a model
+     * name, a detailed configuration object, or `null` to remove an existing embedding
+     * configuration.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun embed(): Optional<AttributeEmbed> = embed.getOptional("embed")
 
     /**
      * Whether or not the attributes can be used in filters.
@@ -142,6 +165,13 @@ private constructor(
      * Unlike [ann], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("ann") @ExcludeMissing fun _ann(): JsonField<Ann> = ann
+
+    /**
+     * Returns the raw JSON value of [embed].
+     *
+     * Unlike [embed], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("embed") @ExcludeMissing fun _embed(): JsonField<AttributeEmbed> = embed
 
     /**
      * Returns the raw JSON value of [filterable].
@@ -217,6 +247,7 @@ private constructor(
 
         private var type: JsonField<String>? = null
         private var ann: JsonField<Ann> = JsonMissing.of()
+        private var embed: JsonField<AttributeEmbed> = JsonMissing.of()
         private var filterable: JsonField<Boolean> = JsonMissing.of()
         private var fullTextSearch: JsonField<FullTextSearch> = JsonMissing.of()
         private var fuzzy: JsonField<Boolean> = JsonMissing.of()
@@ -229,6 +260,7 @@ private constructor(
         internal fun from(attributeSchemaConfig: AttributeSchemaConfig) = apply {
             type = attributeSchemaConfig.type
             ann = attributeSchemaConfig.ann
+            embed = attributeSchemaConfig.embed
             filterable = attributeSchemaConfig.filterable
             fullTextSearch = attributeSchemaConfig.fullTextSearch
             fuzzy = attributeSchemaConfig.fuzzy
@@ -272,6 +304,31 @@ private constructor(
 
         /** Alias for calling [ann] with `Ann.ofConfig(config)`. */
         fun ann(config: Ann.AnnConfig) = ann(Ann.ofConfig(config))
+
+        /**
+         * Whether to automatically embed this string attribute into a vector attribute. Can be a
+         * model name, a detailed configuration object, or `null` to remove an existing embedding
+         * configuration.
+         */
+        fun embed(embed: AttributeEmbed?) = embed(JsonField.ofNullable(embed))
+
+        /** Alias for calling [Builder.embed] with `embed.orElse(null)`. */
+        fun embed(embed: Optional<AttributeEmbed>) = embed(embed.getOrNull())
+
+        /**
+         * Sets [Builder.embed] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.embed] with a well-typed [AttributeEmbed] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun embed(embed: JsonField<AttributeEmbed>) = apply { this.embed = embed }
+
+        /** Alias for calling [embed] with `AttributeEmbed.ofString(string)`. */
+        fun embed(string: String) = embed(AttributeEmbed.ofString(string))
+
+        /** Alias for calling [embed] with `AttributeEmbed.ofConfig(config)`. */
+        fun embed(config: AttributeEmbedConfig) = embed(AttributeEmbed.ofConfig(config))
 
         /** Whether or not the attributes can be used in filters. */
         fun filterable(filterable: Boolean) = filterable(JsonField.of(filterable))
@@ -391,6 +448,7 @@ private constructor(
             AttributeSchemaConfig(
                 checkRequired("type", type),
                 ann,
+                embed,
                 filterable,
                 fullTextSearch,
                 fuzzy,
@@ -418,6 +476,7 @@ private constructor(
 
         type()
         ann().ifPresent { it.validate() }
+        embed().ifPresent { it.validate() }
         filterable()
         fullTextSearch().ifPresent { it.validate() }
         fuzzy()
@@ -444,6 +503,7 @@ private constructor(
     internal fun validity(): Int =
         (if (type.asKnown().isPresent) 1 else 0) +
             (ann.asKnown().getOrNull()?.validity() ?: 0) +
+            (embed.asKnown().getOrNull()?.validity() ?: 0) +
             (if (filterable.asKnown().isPresent) 1 else 0) +
             (fullTextSearch.asKnown().getOrNull()?.validity() ?: 0) +
             (if (fuzzy.asKnown().isPresent) 1 else 0) +
@@ -1017,6 +1077,7 @@ private constructor(
         return other is AttributeSchemaConfig &&
             type == other.type &&
             ann == other.ann &&
+            embed == other.embed &&
             filterable == other.filterable &&
             fullTextSearch == other.fullTextSearch &&
             fuzzy == other.fuzzy &&
@@ -1030,6 +1091,7 @@ private constructor(
         Objects.hash(
             type,
             ann,
+            embed,
             filterable,
             fullTextSearch,
             fuzzy,
@@ -1043,5 +1105,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AttributeSchemaConfig{type=$type, ann=$ann, filterable=$filterable, fullTextSearch=$fullTextSearch, fuzzy=$fuzzy, glob=$glob, regex=$regex, sparseKnn=$sparseKnn, additionalProperties=$additionalProperties}"
+        "AttributeSchemaConfig{type=$type, ann=$ann, embed=$embed, filterable=$filterable, fullTextSearch=$fullTextSearch, fuzzy=$fuzzy, glob=$glob, regex=$regex, sparseKnn=$sparseKnn, additionalProperties=$additionalProperties}"
 }
