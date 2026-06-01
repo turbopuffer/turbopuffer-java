@@ -112,12 +112,38 @@ class RespondAsyncHttpClient(
 
     /** Reads the `Location` header and resolves it against the given request URL. */
     private fun extractLocation(response: HttpResponse, requestUrl: String): String {
-        val location =
+        val rawLocation =
             response.headers().values(LOCATION_HEADER).firstOrNull()
                 ?: throw TurbopufferException(
                     "server returned async response without a `Location` header"
                 )
-        return URI.create(requestUrl).resolve(location).toString()
+        val origUri = URI.create(requestUrl)
+        val resolved =
+            try {
+                origUri.resolve(rawLocation)
+            } catch (e: IllegalArgumentException) {
+                throw TurbopufferException("malformed `Location` header: $rawLocation", e)
+            }
+        // Reject a Location pointing at a different origin, to prevent API key exfiltration.
+        if (origin(resolved) != origin(origUri)) {
+            throw TurbopufferException(
+                "`Location` origin does not match request origin: $rawLocation"
+            )
+        }
+        return resolved.toString()
+    }
+
+    /** `(scheme, host, port)` triple with the scheme's default port substituted when omitted. */
+    private fun origin(uri: URI): Triple<String?, String?, Int> {
+        val port =
+            if (uri.port != -1) uri.port
+            else
+                when (uri.scheme) {
+                    "http" -> 80
+                    "https" -> 443
+                    else -> -1
+                }
+        return Triple(uri.scheme, uri.host, port)
     }
 
     private fun pollRequest(location: String): HttpRequest =
