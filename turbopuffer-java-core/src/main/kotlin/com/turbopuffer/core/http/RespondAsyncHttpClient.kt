@@ -125,16 +125,25 @@ class RespondAsyncHttpClient(
                 throw TurbopufferException("malformed `Location` header: $rawLocation", e)
             }
         // Reject a Location pointing at a different origin, to prevent API key exfiltration.
-        if (
-            resolved.scheme != origUri.scheme ||
-                resolved.host != origUri.host ||
-                resolved.port != origUri.port
-        ) {
+        if (origin(resolved) != origin(origUri)) {
             throw TurbopufferException(
                 "`Location` origin does not match request origin: $rawLocation"
             )
         }
         return resolved.toString()
+    }
+
+    /** `(scheme, host, port)` triple with the scheme's default port substituted when omitted. */
+    private fun origin(uri: URI): Triple<String?, String?, Int> {
+        val port =
+            if (uri.port != -1) uri.port
+            else
+                when (uri.scheme) {
+                    "http" -> 80
+                    "https" -> 443
+                    else -> -1
+                }
+        return Triple(uri.scheme, uri.host, port)
     }
 
     private fun pollRequest(location: String): HttpRequest =
