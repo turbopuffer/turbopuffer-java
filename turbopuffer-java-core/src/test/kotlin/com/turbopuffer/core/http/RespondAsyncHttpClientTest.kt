@@ -35,6 +35,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
 
 @WireMockTest
@@ -247,6 +249,27 @@ internal class RespondAsyncHttpClientTest {
         assertThatThrownBy { client.execute(simplePost(), async) }
             .matches { unwrap(it) is TurbopufferException }
             .hasMessageContaining("Location")
+    }
+
+    @ParameterizedTest
+    @MethodSource("badLocationArgs")
+    fun rejectsBadLocation(badLocation: String, async: Boolean) {
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(202)
+                        .withHeader("Preference-Applied", "respond-async")
+                        .withHeader("Location", badLocation)
+                )
+        )
+        val sleeper = RecordingSleeper()
+        val client = respondAsyncClient(sleeper)
+
+        assertThatThrownBy { client.execute(simplePost(), async) }
+            .matches { unwrap(it) is TurbopufferException }
+            .hasMessageContaining("Location")
+        assertThat(sleeper.sleeps).isEqualTo(0)
     }
 
     @ParameterizedTest
@@ -477,4 +500,20 @@ internal class RespondAsyncHttpClientTest {
     private fun unwrap(t: Throwable): Throwable =
         if ((t is CompletionException || t is ExecutionException) && t.cause != null) t.cause!!
         else t
+
+    companion object {
+        @JvmStatic
+        fun badLocationArgs(): List<Arguments> {
+            val badLocations =
+                listOf(
+                    "https://evil.example.com/v1/ops/op-x",
+                    "//evil.example.com/v1/ops/op-x",
+                    "http://api.turbopuffer.com/v1/ops/op-x",
+                    "http://host:notaport/x",
+                )
+            return badLocations.flatMap { loc ->
+                listOf(Arguments.of(loc, false), Arguments.of(loc, true))
+            }
+        }
+    }
 }
