@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.2.0-alpha.1 (2026-06-02)
+
+Full Changelog: [v2.1.0...v2.2.0-alpha.1](https://github.com/turbopuffer/turbopuffer-java/compare/v2.1.0...v2.2.0-alpha.1)
+
+### Features
+
+* openapi: spec for `rerank_by: ["RRF"]` ([695302d](https://github.com/turbopuffer/turbopuffer-java/commit/695302dcf4ab32a753a41b7009adac5e46904d90))
+* rename /docs/auth to /docs/overview ([73ffab5](https://github.com/turbopuffer/turbopuffer-java/commit/73ffab5669f700e050ca4fe38b3b178e1784887f))
+* spec: add SDK support for native embedding ([c3fb143](https://github.com/turbopuffer/turbopuffer-java/commit/c3fb143ad0b532f1e5acfdb5e406d9de07a96e86))
+
+
+### Bug Fixes
+
+* reject malicious poll locations ([#236](https://github.com/turbopuffer/turbopuffer-java/issues/236)) ([2111db1](https://github.com/turbopuffer/turbopuffer-java/commit/2111db1f9169dffb0c41ded2f1b61233adea14f8))
+* type rerank_by parameter as RerankBy ([#239](https://github.com/turbopuffer/turbopuffer-java/issues/239)) ([d637312](https://github.com/turbopuffer/turbopuffer-java/commit/d637312110623c7158172a7003bc0ed4f86fc87d))
+
+
+### Chores
+
+* bump apigen ([65969ef](https://github.com/turbopuffer/turbopuffer-java/commit/65969ef8e51b3337bb522166b9c5180ba41639f1))
+* fix API docs links ([db0dbfd](https://github.com/turbopuffer/turbopuffer-java/commit/db0dbfd29069bbb4585635b1bf262f8c0d86efea))
+
 ## 2.1.0 (2026-05-28)
 
 Full Changelog: [v2.0.1...v2.1.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.0.1...v2.1.0)
