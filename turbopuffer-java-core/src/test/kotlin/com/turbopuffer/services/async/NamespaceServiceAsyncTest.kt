@@ -159,6 +159,7 @@ internal class NamespaceServiceAsyncTest {
                             .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
                             .build()
                     )
+                    .rerankBy(JsonValue.from(mapOf<String, Any>()))
                     .vectorEncoding(VectorEncoding.FLOAT)
                     .build()
             )
