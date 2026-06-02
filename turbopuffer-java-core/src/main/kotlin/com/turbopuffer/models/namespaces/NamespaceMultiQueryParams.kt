@@ -49,6 +49,16 @@ private constructor(
     fun consistency(): Optional<Consistency> = body.consistency()
 
     /**
+     * How to combine the rows returned by each sub-query into a single ranked list.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = namespaceMultiQueryParams.rerankBy().convert(MyClass.class);
+     * ```
+     */
+    fun _rerankBy(): JsonValue = body._rerankBy()
+
+    /**
      * The encoding to use for vectors in the response.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -128,6 +138,7 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [queries]
          * - [consistency]
+         * - [rerankBy]
          * - [vectorEncoding]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -163,6 +174,9 @@ private constructor(
         fun consistency(consistency: JsonField<Consistency>) = apply {
             body.consistency(consistency)
         }
+
+        /** How to combine the rows returned by each sub-query into a single ranked list. */
+        fun rerankBy(rerankBy: JsonValue) = apply { body.rerankBy(rerankBy) }
 
         /** The encoding to use for vectors in the response. */
         fun vectorEncoding(vectorEncoding: VectorEncoding) = apply {
@@ -336,6 +350,7 @@ private constructor(
     private constructor(
         private val queries: JsonField<List<Query>>,
         private val consistency: JsonField<Consistency>,
+        private val rerankBy: JsonValue,
         private val vectorEncoding: JsonField<VectorEncoding>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -348,10 +363,11 @@ private constructor(
             @JsonProperty("consistency")
             @ExcludeMissing
             consistency: JsonField<Consistency> = JsonMissing.of(),
+            @JsonProperty("rerank_by") @ExcludeMissing rerankBy: JsonValue = JsonMissing.of(),
             @JsonProperty("vector_encoding")
             @ExcludeMissing
             vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of(),
-        ) : this(queries, consistency, vectorEncoding, mutableMapOf())
+        ) : this(queries, consistency, rerankBy, vectorEncoding, mutableMapOf())
 
         /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
@@ -366,6 +382,16 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun consistency(): Optional<Consistency> = consistency.getOptional("consistency")
+
+        /**
+         * How to combine the rows returned by each sub-query into a single ranked list.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.rerankBy().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("rerank_by") @ExcludeMissing fun _rerankBy(): JsonValue = rerankBy
 
         /**
          * The encoding to use for vectors in the response.
@@ -432,6 +458,7 @@ private constructor(
 
             private var queries: JsonField<MutableList<Query>>? = null
             private var consistency: JsonField<Consistency> = JsonMissing.of()
+            private var rerankBy: JsonValue = JsonMissing.of()
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -439,6 +466,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 queries = body.queries.map { it.toMutableList() }
                 consistency = body.consistency
+                rerankBy = body.rerankBy
                 vectorEncoding = body.vectorEncoding
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -481,6 +509,9 @@ private constructor(
             fun consistency(consistency: JsonField<Consistency>) = apply {
                 this.consistency = consistency
             }
+
+            /** How to combine the rows returned by each sub-query into a single ranked list. */
+            fun rerankBy(rerankBy: JsonValue) = apply { this.rerankBy = rerankBy }
 
             /** The encoding to use for vectors in the response. */
             fun vectorEncoding(vectorEncoding: VectorEncoding) =
@@ -532,6 +563,7 @@ private constructor(
                 Body(
                     checkRequired("queries", queries).map { it.toImmutable() },
                     consistency,
+                    rerankBy,
                     vectorEncoding,
                     additionalProperties.toMutableMap(),
                 )
@@ -587,18 +619,19 @@ private constructor(
             return other is Body &&
                 queries == other.queries &&
                 consistency == other.consistency &&
+                rerankBy == other.rerankBy &&
                 vectorEncoding == other.vectorEncoding &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(queries, consistency, vectorEncoding, additionalProperties)
+            Objects.hash(queries, consistency, rerankBy, vectorEncoding, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{queries=$queries, consistency=$consistency, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{queries=$queries, consistency=$consistency, rerankBy=$rerankBy, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** Query, filter, full-text search and vector search documents. */

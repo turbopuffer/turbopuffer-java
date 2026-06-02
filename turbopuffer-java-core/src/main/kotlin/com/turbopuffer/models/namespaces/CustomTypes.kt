@@ -1565,3 +1565,59 @@ class RankByTextSum private constructor(subqueries: List<RankByText>) : RankByTe
         internal fun create(subqueries: List<RankByText>): RankByTextSum = RankByTextSum(subqueries)
     }
 }
+
+@JsonDeserialize(using = RerankBy.Deserializer::class)
+sealed class RerankBy() {
+    companion object {
+        @JvmStatic public fun rrf(): RerankByRrf = RerankByRrf.create()
+
+        @JvmStatic
+        public fun rrf(f1: RrfParams): RerankByRrfWithParams = RerankByRrfWithParams.create(f1)
+    }
+
+    class Deserializer : BaseDeserializer<RerankBy>(RerankBy::class) {
+        override fun ObjectCodec.deserialize(node: JsonNode): RerankBy {
+            return RerankByRaw(JsonValue.fromJsonNode(node))
+        }
+    }
+}
+
+class RerankByRaw internal constructor(value: JsonValue) : RerankBy() {
+    @JsonValueAnnotation private val value: JsonValue = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0")
+class RerankByRrf private constructor() : RerankBy() {
+    private val f0: String = "RRF"
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic internal fun create(): RerankByRrf = RerankByRrf()
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "f1")
+class RerankByRrfWithParams private constructor(f1: RrfParams) : RerankBy() {
+    private val f0: String = "RRF"
+    private val f1: RrfParams = f1
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(f1: RrfParams): RerankByRrfWithParams = RerankByRrfWithParams(f1)
+    }
+}
