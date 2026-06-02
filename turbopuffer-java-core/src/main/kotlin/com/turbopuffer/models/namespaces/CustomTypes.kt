@@ -1097,15 +1097,13 @@ sealed class RankBy() {
         public fun ann(attr: String, value: List<Float>): RankByAnn = RankByAnn.create(attr, value)
 
         @JvmStatic
-        public fun annExpr(attr: String, expr: Expr): RankByAnnExpr =
-            RankByAnnExpr.create(attr, expr)
+        public fun ann(attr: String, expr: Expr): RankByAnnExpr = RankByAnnExpr.create(attr, expr)
 
         @JvmStatic
         public fun knn(attr: String, value: List<Float>): RankByKnn = RankByKnn.create(attr, value)
 
         @JvmStatic
-        public fun knnExpr(attr: String, expr: Expr): RankByKnnExpr =
-            RankByKnnExpr.create(attr, expr)
+        public fun knn(attr: String, expr: Expr): RankByKnnExpr = RankByKnnExpr.create(attr, expr)
 
         @JvmStatic
         public fun sparseKnn(attr: String, value: Map<String, Double>): RankBySparseKnn =
