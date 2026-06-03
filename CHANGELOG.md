@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.0 (2026-06-03)
+
+Full Changelog: [v2.2.0-alpha.1...v2.2.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.2.0-alpha.1...v2.2.0)
+
+### Features
+
+* spec: add support for word_v4 tokenizer ([e0516b0](https://github.com/turbopuffer/turbopuffer-java/commit/e0516b05932c3d8ad98c8738541ed138ce7dfa41))
+
 ## 2.2.0-alpha.1 (2026-06-02)
 
 Full Changelog: [v2.1.0...v2.2.0-alpha.1](https://github.com/turbopuffer/turbopuffer-java/compare/v2.1.0...v2.2.0-alpha.1)
