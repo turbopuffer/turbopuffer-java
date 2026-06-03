@@ -7,7 +7,7 @@ import com.turbopuffer.core.Enum
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 
-/** The tokenizer to use for full-text search on an attribute. Defaults to `word_v3`. */
+/** The tokenizer to use for full-text search on an attribute. Defaults to `word_v4`. */
 class Tokenizer @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
     /**
@@ -31,6 +31,8 @@ class Tokenizer @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val WORD_V3 = of("word_v3")
 
+        @JvmField val WORD_V4 = of("word_v4")
+
         @JvmStatic fun of(value: String) = Tokenizer(JsonField.of(value))
     }
 
@@ -41,6 +43,7 @@ class Tokenizer @JsonCreator private constructor(private val value: JsonField<St
         WORD_V1,
         WORD_V2,
         WORD_V3,
+        WORD_V4,
     }
 
     /**
@@ -58,6 +61,7 @@ class Tokenizer @JsonCreator private constructor(private val value: JsonField<St
         WORD_V1,
         WORD_V2,
         WORD_V3,
+        WORD_V4,
         /** An enum member indicating that [Tokenizer] was instantiated with an unknown value. */
         _UNKNOWN,
     }
@@ -76,6 +80,7 @@ class Tokenizer @JsonCreator private constructor(private val value: JsonField<St
             WORD_V1 -> Value.WORD_V1
             WORD_V2 -> Value.WORD_V2
             WORD_V3 -> Value.WORD_V3
+            WORD_V4 -> Value.WORD_V4
             else -> Value._UNKNOWN
         }
 
@@ -95,6 +100,7 @@ class Tokenizer @JsonCreator private constructor(private val value: JsonField<St
             WORD_V1 -> Known.WORD_V1
             WORD_V2 -> Known.WORD_V2
             WORD_V3 -> Known.WORD_V3
+            WORD_V4 -> Known.WORD_V4
             else -> throw TurbopufferInvalidDataException("Unknown Tokenizer: $value")
         }
 
