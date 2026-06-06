@@ -56,6 +56,14 @@ private constructor(
     fun sourceRegion(): Optional<String> = body.sourceRegion()
 
     /**
+     * The encryption configuration for a namespace.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun encryption(): Optional<Encryption> = body.encryption()
+
+    /**
      * Returns the raw JSON value of [sourceNamespace].
      *
      * Unlike [sourceNamespace], this method doesn't throw if the JSON field has an unexpected type.
@@ -75,6 +83,13 @@ private constructor(
      * Unlike [sourceRegion], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _sourceRegion(): JsonField<String> = body._sourceRegion()
+
+    /**
+     * Returns the raw JSON value of [encryption].
+     *
+     * Unlike [encryption], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _encryption(): JsonField<Encryption> = body._encryption()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -128,6 +143,7 @@ private constructor(
          * - [sourceNamespace]
          * - [sourceApiKey]
          * - [sourceRegion]
+         * - [encryption]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -174,6 +190,26 @@ private constructor(
         fun sourceRegion(sourceRegion: JsonField<String>) = apply {
             body.sourceRegion(sourceRegion)
         }
+
+        /** The encryption configuration for a namespace. */
+        fun encryption(encryption: Encryption) = apply { body.encryption(encryption) }
+
+        /**
+         * Sets [Builder.encryption] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.encryption] with a well-typed [Encryption] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun encryption(encryption: JsonField<Encryption>) = apply { body.encryption(encryption) }
+
+        /** Alias for calling [encryption] with `Encryption.ofCustomerManaged(customerManaged)`. */
+        fun encryption(customerManaged: Encryption.CustomerManaged) = apply {
+            body.encryption(customerManaged)
+        }
+
+        /** Alias for calling [encryption] with `Encryption.ofDefault()`. */
+        fun encryptionDefault() = apply { body.encryptionDefault() }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -331,6 +367,7 @@ private constructor(
         private val sourceNamespace: JsonField<String>,
         private val sourceApiKey: JsonField<String>,
         private val sourceRegion: JsonField<String>,
+        private val encryption: JsonField<Encryption>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -345,7 +382,10 @@ private constructor(
             @JsonProperty("source_region")
             @ExcludeMissing
             sourceRegion: JsonField<String> = JsonMissing.of(),
-        ) : this(sourceNamespace, sourceApiKey, sourceRegion, mutableMapOf())
+            @JsonProperty("encryption")
+            @ExcludeMissing
+            encryption: JsonField<Encryption> = JsonMissing.of(),
+        ) : this(sourceNamespace, sourceApiKey, sourceRegion, encryption, mutableMapOf())
 
         /**
          * The namespace to copy documents from.
@@ -370,6 +410,14 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun sourceRegion(): Optional<String> = sourceRegion.getOptional("source_region")
+
+        /**
+         * The encryption configuration for a namespace.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun encryption(): Optional<Encryption> = encryption.getOptional("encryption")
 
         /**
          * Returns the raw JSON value of [sourceNamespace].
@@ -400,6 +448,15 @@ private constructor(
         @JsonProperty("source_region")
         @ExcludeMissing
         fun _sourceRegion(): JsonField<String> = sourceRegion
+
+        /**
+         * Returns the raw JSON value of [encryption].
+         *
+         * Unlike [encryption], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("encryption")
+        @ExcludeMissing
+        fun _encryption(): JsonField<Encryption> = encryption
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -432,6 +489,7 @@ private constructor(
             private var sourceNamespace: JsonField<String>? = null
             private var sourceApiKey: JsonField<String> = JsonMissing.of()
             private var sourceRegion: JsonField<String> = JsonMissing.of()
+            private var encryption: JsonField<Encryption> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -439,6 +497,7 @@ private constructor(
                 sourceNamespace = body.sourceNamespace
                 sourceApiKey = body.sourceApiKey
                 sourceRegion = body.sourceRegion
+                encryption = body.encryption
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -485,6 +544,29 @@ private constructor(
                 this.sourceRegion = sourceRegion
             }
 
+            /** The encryption configuration for a namespace. */
+            fun encryption(encryption: Encryption) = encryption(JsonField.of(encryption))
+
+            /**
+             * Sets [Builder.encryption] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.encryption] with a well-typed [Encryption] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun encryption(encryption: JsonField<Encryption>) = apply {
+                this.encryption = encryption
+            }
+
+            /**
+             * Alias for calling [encryption] with `Encryption.ofCustomerManaged(customerManaged)`.
+             */
+            fun encryption(customerManaged: Encryption.CustomerManaged) =
+                encryption(Encryption.ofCustomerManaged(customerManaged))
+
+            /** Alias for calling [encryption] with `Encryption.ofDefault()`. */
+            fun encryptionDefault() = encryption(Encryption.ofDefault())
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -521,6 +603,7 @@ private constructor(
                     checkRequired("sourceNamespace", sourceNamespace),
                     sourceApiKey,
                     sourceRegion,
+                    encryption,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -544,6 +627,7 @@ private constructor(
             sourceNamespace()
             sourceApiKey()
             sourceRegion()
+            encryption().ifPresent { it.validate() }
             validated = true
         }
 
@@ -565,7 +649,8 @@ private constructor(
         internal fun validity(): Int =
             (if (sourceNamespace.asKnown().isPresent) 1 else 0) +
                 (if (sourceApiKey.asKnown().isPresent) 1 else 0) +
-                (if (sourceRegion.asKnown().isPresent) 1 else 0)
+                (if (sourceRegion.asKnown().isPresent) 1 else 0) +
+                (encryption.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -576,17 +661,24 @@ private constructor(
                 sourceNamespace == other.sourceNamespace &&
                 sourceApiKey == other.sourceApiKey &&
                 sourceRegion == other.sourceRegion &&
+                encryption == other.encryption &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(sourceNamespace, sourceApiKey, sourceRegion, additionalProperties)
+            Objects.hash(
+                sourceNamespace,
+                sourceApiKey,
+                sourceRegion,
+                encryption,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{sourceNamespace=$sourceNamespace, sourceApiKey=$sourceApiKey, sourceRegion=$sourceRegion, additionalProperties=$additionalProperties}"
+            "Body{sourceNamespace=$sourceNamespace, sourceApiKey=$sourceApiKey, sourceRegion=$sourceRegion, encryption=$encryption, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
