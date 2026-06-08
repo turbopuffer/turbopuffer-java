@@ -16,10 +16,12 @@ internal class FuzzyParamsTest {
                 .addMaxEditDistance(
                     FuzzyMaxEditDistance.builder().distance(0L).minQueryChars(0L).build()
                 )
+                .caseSensitive(true)
                 .build()
 
         assertThat(fuzzyParams.maxEditDistance())
             .containsExactly(FuzzyMaxEditDistance.builder().distance(0L).minQueryChars(0L).build())
+        assertThat(fuzzyParams.caseSensitive()).contains(true)
     }
 
     @Test
@@ -30,6 +32,7 @@ internal class FuzzyParamsTest {
                 .addMaxEditDistance(
                     FuzzyMaxEditDistance.builder().distance(0L).minQueryChars(0L).build()
                 )
+                .caseSensitive(true)
                 .build()
 
         val roundtrippedFuzzyParams =
