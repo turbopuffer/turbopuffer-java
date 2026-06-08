@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.0 (2026-06-08)
+
+Full Changelog: [v2.2.0...v2.3.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.2.0...v2.3.0)
+
+### Features
+
+* stainless: update sdks to support case-insensitive fuzzy filter ([de8fd29](https://github.com/turbopuffer/turbopuffer-java/commit/de8fd291b48f9332c357833c613911391f1bd3d8))
+
 ## 2.2.0 (2026-06-03)
 
 Full Changelog: [v2.2.0-alpha.1...v2.2.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.2.0-alpha.1...v2.2.0)
