@@ -12,6 +12,7 @@ internal class NamespaceCopyFromParamsTest {
         NamespaceCopyFromParams.builder()
             .namespace("namespace")
             .sourceNamespace("source_namespace")
+            .destEncryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
             .sourceApiKey("source_api_key")
             .sourceRegion("source_region")
             .build()
@@ -32,6 +33,7 @@ internal class NamespaceCopyFromParamsTest {
             NamespaceCopyFromParams.builder()
                 .namespace("namespace")
                 .sourceNamespace("source_namespace")
+                .destEncryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
                 .sourceApiKey("source_api_key")
                 .sourceRegion("source_region")
                 .build()
@@ -39,6 +41,12 @@ internal class NamespaceCopyFromParamsTest {
         val body = params._body()
 
         assertThat(body.sourceNamespace()).isEqualTo("source_namespace")
+        assertThat(body.destEncryption())
+            .contains(
+                Encryption.ofCustomerManaged(
+                    Encryption.CustomerManaged.builder().keyName("key_name").build()
+                )
+            )
         assertThat(body.sourceApiKey()).contains("source_api_key")
         assertThat(body.sourceRegion()).contains("source_region")
     }

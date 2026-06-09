@@ -58,6 +58,9 @@ internal class NamespaceServiceAsyncTest {
                 NamespaceCopyFromParams.builder()
                     .namespace("namespace")
                     .sourceNamespace("source_namespace")
+                    .destEncryption(
+                        Encryption.CustomerManaged.builder().keyName("key_name").build()
+                    )
                     .sourceApiKey("source_api_key")
                     .sourceRegion("source_region")
                     .build()
