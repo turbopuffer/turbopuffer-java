@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.4.0 (2026-06-09)
+
+Full Changelog: [v2.3.0...v2.4.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.3.0...v2.4.0)
+
+### Features
+
+* tpuf-engine: support dest_encryption in copy_from_namespace ([5c016f0](https://github.com/turbopuffer/turbopuffer-java/commit/5c016f0455991991fceceafdaa9fa2217bda80b9))
+
 ## 2.3.0 (2026-06-08)
 
 Full Changelog: [v2.2.0...v2.3.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.2.0...v2.3.0)
