@@ -40,6 +40,14 @@ private constructor(
     fun sourceNamespace(): String = body.sourceNamespace()
 
     /**
+     * (Optional) The encryption configuration for the destination namespace.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun destEncryption(): Optional<Encryption> = body.destEncryption()
+
+    /**
      * (Optional) An API key for the organization containing the source namespace
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -61,6 +69,13 @@ private constructor(
      * Unlike [sourceNamespace], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _sourceNamespace(): JsonField<String> = body._sourceNamespace()
+
+    /**
+     * Returns the raw JSON value of [destEncryption].
+     *
+     * Unlike [destEncryption], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _destEncryption(): JsonField<Encryption> = body._destEncryption()
 
     /**
      * Returns the raw JSON value of [sourceApiKey].
@@ -126,6 +141,7 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [sourceNamespace]
+         * - [destEncryption]
          * - [sourceApiKey]
          * - [sourceRegion]
          */
@@ -146,6 +162,32 @@ private constructor(
         fun sourceNamespace(sourceNamespace: JsonField<String>) = apply {
             body.sourceNamespace(sourceNamespace)
         }
+
+        /** (Optional) The encryption configuration for the destination namespace. */
+        fun destEncryption(destEncryption: Encryption) = apply {
+            body.destEncryption(destEncryption)
+        }
+
+        /**
+         * Sets [Builder.destEncryption] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.destEncryption] with a well-typed [Encryption] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun destEncryption(destEncryption: JsonField<Encryption>) = apply {
+            body.destEncryption(destEncryption)
+        }
+
+        /**
+         * Alias for calling [destEncryption] with `Encryption.ofCustomerManaged(customerManaged)`.
+         */
+        fun destEncryption(customerManaged: Encryption.CustomerManaged) = apply {
+            body.destEncryption(customerManaged)
+        }
+
+        /** Alias for calling [destEncryption] with `Encryption.ofDefault()`. */
+        fun destEncryptionDefault() = apply { body.destEncryptionDefault() }
 
         /** (Optional) An API key for the organization containing the source namespace */
         fun sourceApiKey(sourceApiKey: String) = apply { body.sourceApiKey(sourceApiKey) }
@@ -329,6 +371,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val sourceNamespace: JsonField<String>,
+        private val destEncryption: JsonField<Encryption>,
         private val sourceApiKey: JsonField<String>,
         private val sourceRegion: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -339,13 +382,16 @@ private constructor(
             @JsonProperty("source_namespace")
             @ExcludeMissing
             sourceNamespace: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("dest_encryption")
+            @ExcludeMissing
+            destEncryption: JsonField<Encryption> = JsonMissing.of(),
             @JsonProperty("source_api_key")
             @ExcludeMissing
             sourceApiKey: JsonField<String> = JsonMissing.of(),
             @JsonProperty("source_region")
             @ExcludeMissing
             sourceRegion: JsonField<String> = JsonMissing.of(),
-        ) : this(sourceNamespace, sourceApiKey, sourceRegion, mutableMapOf())
+        ) : this(sourceNamespace, destEncryption, sourceApiKey, sourceRegion, mutableMapOf())
 
         /**
          * The namespace to copy documents from.
@@ -354,6 +400,14 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun sourceNamespace(): String = sourceNamespace.getRequired("source_namespace")
+
+        /**
+         * (Optional) The encryption configuration for the destination namespace.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun destEncryption(): Optional<Encryption> = destEncryption.getOptional("dest_encryption")
 
         /**
          * (Optional) An API key for the organization containing the source namespace
@@ -380,6 +434,16 @@ private constructor(
         @JsonProperty("source_namespace")
         @ExcludeMissing
         fun _sourceNamespace(): JsonField<String> = sourceNamespace
+
+        /**
+         * Returns the raw JSON value of [destEncryption].
+         *
+         * Unlike [destEncryption], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("dest_encryption")
+        @ExcludeMissing
+        fun _destEncryption(): JsonField<Encryption> = destEncryption
 
         /**
          * Returns the raw JSON value of [sourceApiKey].
@@ -430,6 +494,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var sourceNamespace: JsonField<String>? = null
+            private var destEncryption: JsonField<Encryption> = JsonMissing.of()
             private var sourceApiKey: JsonField<String> = JsonMissing.of()
             private var sourceRegion: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -437,6 +502,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 sourceNamespace = body.sourceNamespace
+                destEncryption = body.destEncryption
                 sourceApiKey = body.sourceApiKey
                 sourceRegion = body.sourceRegion
                 additionalProperties = body.additionalProperties.toMutableMap()
@@ -456,6 +522,31 @@ private constructor(
             fun sourceNamespace(sourceNamespace: JsonField<String>) = apply {
                 this.sourceNamespace = sourceNamespace
             }
+
+            /** (Optional) The encryption configuration for the destination namespace. */
+            fun destEncryption(destEncryption: Encryption) =
+                destEncryption(JsonField.of(destEncryption))
+
+            /**
+             * Sets [Builder.destEncryption] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.destEncryption] with a well-typed [Encryption] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun destEncryption(destEncryption: JsonField<Encryption>) = apply {
+                this.destEncryption = destEncryption
+            }
+
+            /**
+             * Alias for calling [destEncryption] with
+             * `Encryption.ofCustomerManaged(customerManaged)`.
+             */
+            fun destEncryption(customerManaged: Encryption.CustomerManaged) =
+                destEncryption(Encryption.ofCustomerManaged(customerManaged))
+
+            /** Alias for calling [destEncryption] with `Encryption.ofDefault()`. */
+            fun destEncryptionDefault() = destEncryption(Encryption.ofDefault())
 
             /** (Optional) An API key for the organization containing the source namespace */
             fun sourceApiKey(sourceApiKey: String) = sourceApiKey(JsonField.of(sourceApiKey))
@@ -519,6 +610,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     checkRequired("sourceNamespace", sourceNamespace),
+                    destEncryption,
                     sourceApiKey,
                     sourceRegion,
                     additionalProperties.toMutableMap(),
@@ -542,6 +634,7 @@ private constructor(
             }
 
             sourceNamespace()
+            destEncryption().ifPresent { it.validate() }
             sourceApiKey()
             sourceRegion()
             validated = true
@@ -564,6 +657,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (sourceNamespace.asKnown().isPresent) 1 else 0) +
+                (destEncryption.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (sourceApiKey.asKnown().isPresent) 1 else 0) +
                 (if (sourceRegion.asKnown().isPresent) 1 else 0)
 
@@ -574,19 +668,26 @@ private constructor(
 
             return other is Body &&
                 sourceNamespace == other.sourceNamespace &&
+                destEncryption == other.destEncryption &&
                 sourceApiKey == other.sourceApiKey &&
                 sourceRegion == other.sourceRegion &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(sourceNamespace, sourceApiKey, sourceRegion, additionalProperties)
+            Objects.hash(
+                sourceNamespace,
+                destEncryption,
+                sourceApiKey,
+                sourceRegion,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{sourceNamespace=$sourceNamespace, sourceApiKey=$sourceApiKey, sourceRegion=$sourceRegion, additionalProperties=$additionalProperties}"
+            "Body{sourceNamespace=$sourceNamespace, destEncryption=$destEncryption, sourceApiKey=$sourceApiKey, sourceRegion=$sourceRegion, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
