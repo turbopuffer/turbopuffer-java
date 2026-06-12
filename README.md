@@ -7,7 +7,7 @@
 
 <!-- x-release-please-end -->
 
-The turbopuffer Java SDK provides convenient access to the [turbopuffer HTTP API](https://turbopuffer.com/docs/overview) from applications written in Java.
+The turbopuffer Java SDK provides convenient access to the [turbopuffer HTTP API](https://turbopuffer.com/docs/api-overview) from applications written in Java.
 
 It is generated with [Stainless](https://www.stainless.com/).
 
@@ -22,7 +22,7 @@ Use the turbopuffer MCP Server to enable AI assistants to interact with this API
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found at [turbopuffer.com/docs/overview](https://turbopuffer.com/docs/overview). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/2.4.0).
+The REST API documentation can be found at [turbopuffer.com/docs/api-overview](https://turbopuffer.com/docs/api-overview). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/2.4.0).
 
 <!-- x-release-please-end -->
 
