@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.4.1 (2026-06-25)
+
+Full Changelog: [v2.4.0...v2.4.1](https://github.com/turbopuffer/turbopuffer-java/compare/v2.4.0...v2.4.1)
+
+### Chores
+
+* remove unused MCP package ([02f453d](https://github.com/turbopuffer/turbopuffer-java/commit/02f453d3f82e646636e4cb05b0ee67241e0f2d56))
+
+
+### Documentation
+
+* rename /docs/overview to /docs/api-overview ([43263a8](https://github.com/turbopuffer/turbopuffer-java/commit/43263a8d1c0c97e03f1fe1fb872c2da818f3ae66))
+
 ## 2.4.0 (2026-06-09)
 
 Full Changelog: [v2.3.0...v2.4.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.3.0...v2.4.0)
