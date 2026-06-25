@@ -1097,6 +1097,10 @@ sealed class RankBy() {
         public fun ann(attr: String, value: List<Float>): RankByAnn = RankByAnn.create(attr, value)
 
         @JvmStatic
+        public fun ann(attr: String, value: List<List<Float>>): RankByAnnMulti =
+            RankByAnnMulti.create(attr, value)
+
+        @JvmStatic
         public fun ann(attr: String, expr: Expr): RankByAnnExpr = RankByAnnExpr.create(attr, expr)
 
         @JvmStatic
@@ -1166,6 +1170,25 @@ class RankByAnnExpr private constructor(attr: String, expr: Expr) : RankBy() {
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, expr: Expr): RankByAnnExpr = RankByAnnExpr(attr, expr)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class RankByAnnMulti private constructor(attr: String, value: List<List<Float>>) : RankBy() {
+    private val attr: String = attr
+    private val f0: String = "ANN"
+    private val value: List<List<Float>> = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: List<List<Float>>): RankByAnnMulti =
+            RankByAnnMulti(attr, value)
     }
 }
 
