@@ -1107,6 +1107,10 @@ sealed class RankBy() {
         public fun knn(attr: String, value: List<Float>): RankByKnn = RankByKnn.create(attr, value)
 
         @JvmStatic
+        public fun knn(attr: String, value: List<List<Float>>): RankByKnnMulti =
+            RankByKnnMulti.create(attr, value)
+
+        @JvmStatic
         public fun knn(attr: String, expr: Expr): RankByKnnExpr = RankByKnnExpr.create(attr, expr)
 
         @JvmStatic
@@ -1261,6 +1265,25 @@ class RankByKnnExpr private constructor(attr: String, expr: Expr) : RankBy() {
     companion object {
         @JvmSynthetic
         internal fun create(attr: String, expr: Expr): RankByKnnExpr = RankByKnnExpr(attr, expr)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class RankByKnnMulti private constructor(attr: String, value: List<List<Float>>) : RankBy() {
+    private val attr: String = attr
+    private val f0: String = "kNN"
+    private val value: List<List<Float>> = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: List<List<Float>>): RankByKnnMulti =
+            RankByKnnMulti(attr, value)
     }
 }
 
