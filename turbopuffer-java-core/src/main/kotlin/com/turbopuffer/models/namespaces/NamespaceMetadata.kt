@@ -42,6 +42,7 @@ private constructor(
     private val schema: JsonField<Schema>,
     private val updatedAt: JsonField<OffsetDateTime>,
     private val pinning: JsonField<Pinning>,
+    private val sharding: JsonField<ShardingConfig>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -65,6 +66,9 @@ private constructor(
         @ExcludeMissing
         updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
         @JsonProperty("pinning") @ExcludeMissing pinning: JsonField<Pinning> = JsonMissing.of(),
+        @JsonProperty("sharding")
+        @ExcludeMissing
+        sharding: JsonField<ShardingConfig> = JsonMissing.of(),
     ) : this(
         approxLogicalBytes,
         approxRowCount,
@@ -74,6 +78,7 @@ private constructor(
         schema,
         updatedAt,
         pinning,
+        sharding,
         mutableMapOf(),
     )
 
@@ -138,6 +143,17 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun pinning(): Optional<Pinning> = pinning.getOptional("pinning")
+
+    /**
+     * Configuration for namespace sharding, which partitions a namespace's documents across
+     * multiple internal shards to scale indexing and query throughput beyond a single machine.
+     * Sharding can only be configured on a namespace's inaugural write, and cannot be added to or
+     * changed on an existing namespace.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun sharding(): Optional<ShardingConfig> = sharding.getOptional("sharding")
 
     /**
      * Returns the raw JSON value of [approxLogicalBytes].
@@ -206,6 +222,13 @@ private constructor(
      */
     @JsonProperty("pinning") @ExcludeMissing fun _pinning(): JsonField<Pinning> = pinning
 
+    /**
+     * Returns the raw JSON value of [sharding].
+     *
+     * Unlike [sharding], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sharding") @ExcludeMissing fun _sharding(): JsonField<ShardingConfig> = sharding
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -248,6 +271,7 @@ private constructor(
         private var schema: JsonField<Schema>? = null
         private var updatedAt: JsonField<OffsetDateTime>? = null
         private var pinning: JsonField<Pinning> = JsonMissing.of()
+        private var sharding: JsonField<ShardingConfig> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -260,6 +284,7 @@ private constructor(
             schema = namespaceMetadata.schema
             updatedAt = namespaceMetadata.updatedAt
             pinning = namespaceMetadata.pinning
+            sharding = namespaceMetadata.sharding
             additionalProperties = namespaceMetadata.additionalProperties.toMutableMap()
         }
 
@@ -376,6 +401,23 @@ private constructor(
          */
         fun pinning(pinning: JsonField<Pinning>) = apply { this.pinning = pinning }
 
+        /**
+         * Configuration for namespace sharding, which partitions a namespace's documents across
+         * multiple internal shards to scale indexing and query throughput beyond a single machine.
+         * Sharding can only be configured on a namespace's inaugural write, and cannot be added to
+         * or changed on an existing namespace.
+         */
+        fun sharding(sharding: ShardingConfig) = sharding(JsonField.of(sharding))
+
+        /**
+         * Sets [Builder.sharding] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sharding] with a well-typed [ShardingConfig] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun sharding(sharding: JsonField<ShardingConfig>) = apply { this.sharding = sharding }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -423,6 +465,7 @@ private constructor(
                 checkRequired("schema", schema),
                 checkRequired("updatedAt", updatedAt),
                 pinning,
+                sharding,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -450,6 +493,7 @@ private constructor(
         schema().validate()
         updatedAt()
         pinning().ifPresent { it.validate() }
+        sharding().ifPresent { it.validate() }
         validated = true
     }
 
@@ -475,7 +519,8 @@ private constructor(
             (index.asKnown().getOrNull()?.validity() ?: 0) +
             (schema.asKnown().getOrNull()?.validity() ?: 0) +
             (if (updatedAt.asKnown().isPresent) 1 else 0) +
-            (pinning.asKnown().getOrNull()?.validity() ?: 0)
+            (pinning.asKnown().getOrNull()?.validity() ?: 0) +
+            (sharding.asKnown().getOrNull()?.validity() ?: 0)
 
     @JsonDeserialize(using = Index.Deserializer::class)
     @JsonSerialize(using = Index.Serializer::class)
@@ -1515,6 +1560,7 @@ private constructor(
             schema == other.schema &&
             updatedAt == other.updatedAt &&
             pinning == other.pinning &&
+            sharding == other.sharding &&
             additionalProperties == other.additionalProperties
     }
 
@@ -1528,6 +1574,7 @@ private constructor(
             schema,
             updatedAt,
             pinning,
+            sharding,
             additionalProperties,
         )
     }
@@ -1535,5 +1582,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, encryption=$encryption, index=$index, schema=$schema, updatedAt=$updatedAt, pinning=$pinning, additionalProperties=$additionalProperties}"
+        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, encryption=$encryption, index=$index, schema=$schema, updatedAt=$updatedAt, pinning=$pinning, sharding=$sharding, additionalProperties=$additionalProperties}"
 }

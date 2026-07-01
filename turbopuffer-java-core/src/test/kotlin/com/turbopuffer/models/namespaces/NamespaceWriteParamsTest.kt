@@ -52,6 +52,7 @@ internal class NamespaceWriteParamsTest {
                     .put("foo", AttributeSchemaConfig.builder().type("string").build())
                     .build()
             )
+            .sharding(ShardingConfig.builder().numShards(1).build())
             .upsertColumns(
                 Columns.builder()
                     .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -121,6 +122,7 @@ internal class NamespaceWriteParamsTest {
                         .put("foo", AttributeSchemaConfig.builder().type("string").build())
                         .build()
                 )
+                .sharding(ShardingConfig.builder().numShards(1).build())
                 .upsertColumns(
                     Columns.builder()
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
@@ -188,6 +190,7 @@ internal class NamespaceWriteParamsTest {
                     .put("foo", AttributeSchemaConfig.builder().type("string").build())
                     .build()
             )
+        assertThat(body.sharding()).contains(ShardingConfig.builder().numShards(1).build())
         assertThat(body.upsertColumns())
             .contains(
                 Columns.builder()

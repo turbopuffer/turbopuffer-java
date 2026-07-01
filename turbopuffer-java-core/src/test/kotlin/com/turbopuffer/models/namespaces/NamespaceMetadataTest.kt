@@ -53,6 +53,7 @@ internal class NamespaceMetadataTest {
                         )
                         .build()
                 )
+                .sharding(ShardingConfig.builder().numShards(1).build())
                 .build()
 
         assertThat(namespaceMetadata.approxLogicalBytes()).isEqualTo(0L)
@@ -102,6 +103,8 @@ internal class NamespaceMetadataTest {
                     )
                     .build()
             )
+        assertThat(namespaceMetadata.sharding())
+            .contains(ShardingConfig.builder().numShards(1).build())
     }
 
     @Test
@@ -147,6 +150,7 @@ internal class NamespaceMetadataTest {
                         )
                         .build()
                 )
+                .sharding(ShardingConfig.builder().numShards(1).build())
                 .build()
 
         val roundtrippedNamespaceMetadata =
