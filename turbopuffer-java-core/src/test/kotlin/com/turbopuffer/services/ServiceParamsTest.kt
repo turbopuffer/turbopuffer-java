@@ -23,6 +23,7 @@ import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.Encryption
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Row
+import com.turbopuffer.models.namespaces.ShardingConfig
 import com.turbopuffer.models.namespaces.Vector
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
@@ -112,6 +113,7 @@ internal class ServiceParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .sharding(ShardingConfig.builder().numShards(1).build())
                 .upsertColumns(
                     Columns.builder()
                         .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")

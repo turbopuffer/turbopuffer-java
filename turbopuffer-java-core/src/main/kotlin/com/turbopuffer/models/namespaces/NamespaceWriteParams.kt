@@ -168,6 +168,17 @@ private constructor(
     fun schema(): Optional<Schema> = body.schema()
 
     /**
+     * Configuration for namespace sharding, which partitions a namespace's documents across
+     * multiple internal shards to scale indexing and query throughput beyond a single machine.
+     * Sharding can only be configured on a namespace's inaugural write, and cannot be added to or
+     * changed on an existing namespace.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun sharding(): Optional<ShardingConfig> = body.sharding()
+
+    /**
      * A list of documents in columnar format. Each key is a column name, mapped to an array of
      * values for that column.
      *
@@ -289,6 +300,13 @@ private constructor(
      * Unlike [schema], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _schema(): JsonField<Schema> = body._schema()
+
+    /**
+     * Returns the raw JSON value of [sharding].
+     *
+     * Unlike [sharding], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _sharding(): JsonField<ShardingConfig> = body._sharding()
 
     /**
      * Returns the raw JSON value of [upsertColumns].
@@ -627,6 +645,23 @@ private constructor(
         fun schema(schema: JsonField<Schema>) = apply { body.schema(schema) }
 
         /**
+         * Configuration for namespace sharding, which partitions a namespace's documents across
+         * multiple internal shards to scale indexing and query throughput beyond a single machine.
+         * Sharding can only be configured on a namespace's inaugural write, and cannot be added to
+         * or changed on an existing namespace.
+         */
+        fun sharding(sharding: ShardingConfig) = apply { body.sharding(sharding) }
+
+        /**
+         * Sets [Builder.sharding] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sharding] with a well-typed [ShardingConfig] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun sharding(sharding: JsonField<ShardingConfig>) = apply { body.sharding(sharding) }
+
+        /**
          * A list of documents in columnar format. Each key is a column name, mapped to an array of
          * values for that column.
          */
@@ -832,6 +867,7 @@ private constructor(
         private val patchRows: JsonField<List<Row>>,
         private val returnAffectedIds: JsonField<Boolean>,
         private val schema: JsonField<Schema>,
+        private val sharding: JsonField<ShardingConfig>,
         private val upsertColumns: JsonField<Columns>,
         private val upsertCondition: JsonValue,
         private val upsertRows: JsonField<List<Row>>,
@@ -886,6 +922,9 @@ private constructor(
             @ExcludeMissing
             returnAffectedIds: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("schema") @ExcludeMissing schema: JsonField<Schema> = JsonMissing.of(),
+            @JsonProperty("sharding")
+            @ExcludeMissing
+            sharding: JsonField<ShardingConfig> = JsonMissing.of(),
             @JsonProperty("upsert_columns")
             @ExcludeMissing
             upsertColumns: JsonField<Columns> = JsonMissing.of(),
@@ -912,6 +951,7 @@ private constructor(
             patchRows,
             returnAffectedIds,
             schema,
+            sharding,
             upsertColumns,
             upsertCondition,
             upsertRows,
@@ -1066,6 +1106,17 @@ private constructor(
         fun schema(): Optional<Schema> = schema.getOptional("schema")
 
         /**
+         * Configuration for namespace sharding, which partitions a namespace's documents across
+         * multiple internal shards to scale indexing and query throughput beyond a single machine.
+         * Sharding can only be configured on a namespace's inaugural write, and cannot be added to
+         * or changed on an existing namespace.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun sharding(): Optional<ShardingConfig> = sharding.getOptional("sharding")
+
+        /**
          * A list of documents in columnar format. Each key is a column name, mapped to an array of
          * values for that column.
          *
@@ -1216,6 +1267,15 @@ private constructor(
         @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
 
         /**
+         * Returns the raw JSON value of [sharding].
+         *
+         * Unlike [sharding], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("sharding")
+        @ExcludeMissing
+        fun _sharding(): JsonField<ShardingConfig> = sharding
+
+        /**
          * Returns the raw JSON value of [upsertColumns].
          *
          * Unlike [upsertColumns], this method doesn't throw if the JSON field has an unexpected
@@ -1271,6 +1331,7 @@ private constructor(
             private var patchRows: JsonField<MutableList<Row>>? = null
             private var returnAffectedIds: JsonField<Boolean> = JsonMissing.of()
             private var schema: JsonField<Schema> = JsonMissing.of()
+            private var sharding: JsonField<ShardingConfig> = JsonMissing.of()
             private var upsertColumns: JsonField<Columns> = JsonMissing.of()
             private var upsertCondition: JsonValue = JsonMissing.of()
             private var upsertRows: JsonField<MutableList<Row>>? = null
@@ -1294,6 +1355,7 @@ private constructor(
                 patchRows = body.patchRows.map { it.toMutableList() }
                 returnAffectedIds = body.returnAffectedIds
                 schema = body.schema
+                sharding = body.sharding
                 upsertColumns = body.upsertColumns
                 upsertCondition = body.upsertCondition
                 upsertRows = body.upsertRows.map { it.toMutableList() }
@@ -1583,6 +1645,23 @@ private constructor(
             fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
 
             /**
+             * Configuration for namespace sharding, which partitions a namespace's documents across
+             * multiple internal shards to scale indexing and query throughput beyond a single
+             * machine. Sharding can only be configured on a namespace's inaugural write, and cannot
+             * be added to or changed on an existing namespace.
+             */
+            fun sharding(sharding: ShardingConfig) = sharding(JsonField.of(sharding))
+
+            /**
+             * Sets [Builder.sharding] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sharding] with a well-typed [ShardingConfig] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun sharding(sharding: JsonField<ShardingConfig>) = apply { this.sharding = sharding }
+
+            /**
              * A list of documents in columnar format. Each key is a column name, mapped to an array
              * of values for that column.
              */
@@ -1674,6 +1753,7 @@ private constructor(
                     (patchRows ?: JsonMissing.of()).map { it.toImmutable() },
                     returnAffectedIds,
                     schema,
+                    sharding,
                     upsertColumns,
                     upsertCondition,
                     (upsertRows ?: JsonMissing.of()).map { it.toImmutable() },
@@ -1710,6 +1790,7 @@ private constructor(
             patchRows().ifPresent { it.forEach { it.validate() } }
             returnAffectedIds()
             schema().ifPresent { it.validate() }
+            sharding().ifPresent { it.validate() }
             upsertColumns().ifPresent { it.validate() }
             upsertRows().ifPresent { it.forEach { it.validate() } }
             validated = true
@@ -1744,6 +1825,7 @@ private constructor(
                 (patchRows.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (if (returnAffectedIds.asKnown().isPresent) 1 else 0) +
                 (schema.asKnown().getOrNull()?.validity() ?: 0) +
+                (sharding.asKnown().getOrNull()?.validity() ?: 0) +
                 (upsertColumns.asKnown().getOrNull()?.validity() ?: 0) +
                 (upsertRows.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
@@ -1769,6 +1851,7 @@ private constructor(
                 patchRows == other.patchRows &&
                 returnAffectedIds == other.returnAffectedIds &&
                 schema == other.schema &&
+                sharding == other.sharding &&
                 upsertColumns == other.upsertColumns &&
                 upsertCondition == other.upsertCondition &&
                 upsertRows == other.upsertRows &&
@@ -1793,6 +1876,7 @@ private constructor(
                 patchRows,
                 returnAffectedIds,
                 schema,
+                sharding,
                 upsertColumns,
                 upsertCondition,
                 upsertRows,
@@ -1803,7 +1887,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{branchFromNamespace=$branchFromNamespace, copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+            "Body{branchFromNamespace=$branchFromNamespace, copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, sharding=$sharding, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
     }
 
     /** The patch and filter specifying which documents to patch. */
