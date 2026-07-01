@@ -24,6 +24,7 @@ import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Row
+import com.turbopuffer.models.namespaces.ShardingConfig
 import com.turbopuffer.models.namespaces.Schema
 import com.turbopuffer.models.namespaces.VectorEncoding
 import org.junit.jupiter.api.Disabled
@@ -307,6 +308,7 @@ internal class NamespaceServiceTest {
                             .put("age", AttributeSchemaConfig.builder().type("uint").build())
                             .build()
                     )
+                    .sharding(ShardingConfig.builder().numShards(1).build())
                     .upsertColumns(
                         Columns.builder()
                             .put("id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
