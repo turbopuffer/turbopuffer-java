@@ -729,6 +729,7 @@ private constructor(
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val distanceMetric: JsonField<DistanceMetric>,
+            private val lateInteraction: JsonField<Boolean>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -736,8 +737,11 @@ private constructor(
             private constructor(
                 @JsonProperty("distance_metric")
                 @ExcludeMissing
-                distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
-            ) : this(distanceMetric, mutableMapOf())
+                distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
+                @JsonProperty("late_interaction")
+                @ExcludeMissing
+                lateInteraction: JsonField<Boolean> = JsonMissing.of(),
+            ) : this(distanceMetric, lateInteraction, mutableMapOf())
 
             /**
              * A function used to calculate vector similarity.
@@ -749,6 +753,17 @@ private constructor(
                 distanceMetric.getOptional("distance_metric")
 
             /**
+             * Opt in to late-interaction (MUVERA) indexing. Only valid on fixed-dim `[][N]f32`
+             * vector array attributes, and is required to enable an ANN index on such attributes.
+             * Defaults to `false`.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
+             *   (e.g. if the server responded with an unexpected value).
+             */
+            fun lateInteraction(): Optional<Boolean> =
+                lateInteraction.getOptional("late_interaction")
+
+            /**
              * Returns the raw JSON value of [distanceMetric].
              *
              * Unlike [distanceMetric], this method doesn't throw if the JSON field has an
@@ -757,6 +772,16 @@ private constructor(
             @JsonProperty("distance_metric")
             @ExcludeMissing
             fun _distanceMetric(): JsonField<DistanceMetric> = distanceMetric
+
+            /**
+             * Returns the raw JSON value of [lateInteraction].
+             *
+             * Unlike [lateInteraction], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("late_interaction")
+            @ExcludeMissing
+            fun _lateInteraction(): JsonField<Boolean> = lateInteraction
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -780,11 +805,13 @@ private constructor(
             class Builder internal constructor() {
 
                 private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
+                private var lateInteraction: JsonField<Boolean> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(annConfig: AnnConfig) = apply {
                     distanceMetric = annConfig.distanceMetric
+                    lateInteraction = annConfig.lateInteraction
                     additionalProperties = annConfig.additionalProperties.toMutableMap()
                 }
 
@@ -801,6 +828,25 @@ private constructor(
                  */
                 fun distanceMetric(distanceMetric: JsonField<DistanceMetric>) = apply {
                     this.distanceMetric = distanceMetric
+                }
+
+                /**
+                 * Opt in to late-interaction (MUVERA) indexing. Only valid on fixed-dim `[][N]f32`
+                 * vector array attributes, and is required to enable an ANN index on such
+                 * attributes. Defaults to `false`.
+                 */
+                fun lateInteraction(lateInteraction: Boolean) =
+                    lateInteraction(JsonField.of(lateInteraction))
+
+                /**
+                 * Sets [Builder.lateInteraction] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.lateInteraction] with a well-typed [Boolean]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun lateInteraction(lateInteraction: JsonField<Boolean>) = apply {
+                    this.lateInteraction = lateInteraction
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -831,7 +877,7 @@ private constructor(
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
                 fun build(): AnnConfig =
-                    AnnConfig(distanceMetric, additionalProperties.toMutableMap())
+                    AnnConfig(distanceMetric, lateInteraction, additionalProperties.toMutableMap())
             }
 
             private var validated: Boolean = false
@@ -852,6 +898,7 @@ private constructor(
                 }
 
                 distanceMetric().ifPresent { it.validate() }
+                lateInteraction()
                 validated = true
             }
 
@@ -870,7 +917,9 @@ private constructor(
              * Used for best match union deserialization.
              */
             @JvmSynthetic
-            internal fun validity(): Int = (distanceMetric.asKnown().getOrNull()?.validity() ?: 0)
+            internal fun validity(): Int =
+                (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
+                    (if (lateInteraction.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -879,15 +928,18 @@ private constructor(
 
                 return other is AnnConfig &&
                     distanceMetric == other.distanceMetric &&
+                    lateInteraction == other.lateInteraction &&
                     additionalProperties == other.additionalProperties
             }
 
-            private val hashCode: Int by lazy { Objects.hash(distanceMetric, additionalProperties) }
+            private val hashCode: Int by lazy {
+                Objects.hash(distanceMetric, lateInteraction, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "AnnConfig{distanceMetric=$distanceMetric, additionalProperties=$additionalProperties}"
+                "AnnConfig{distanceMetric=$distanceMetric, lateInteraction=$lateInteraction, additionalProperties=$additionalProperties}"
         }
     }
 
