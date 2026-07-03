@@ -25,8 +25,8 @@ import com.turbopuffer.models.namespaces.Encryption
 import com.turbopuffer.models.namespaces.Filter
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Row
-import com.turbopuffer.models.namespaces.ShardingConfig
 import com.turbopuffer.models.namespaces.Schema
+import com.turbopuffer.models.namespaces.ShardingConfig
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
