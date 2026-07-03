@@ -24,8 +24,8 @@ import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Row
-import com.turbopuffer.models.namespaces.ShardingConfig
 import com.turbopuffer.models.namespaces.Schema
+import com.turbopuffer.models.namespaces.ShardingConfig
 import com.turbopuffer.models.namespaces.VectorEncoding
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
