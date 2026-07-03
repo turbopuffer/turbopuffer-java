@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.5.0 (2026-07-03)
+
+Full Changelog: [v2.4.1...v2.5.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.4.1...v2.5.0)
+
+### Features
+
+* spec: add sharding config to the openapi spec ([80ab39d](https://github.com/turbopuffer/turbopuffer-java/commit/80ab39dc6139b94e054f2863f610a7a13aa58b8e))
+* support late_interaction parameter in sdks ([3ad0e51](https://github.com/turbopuffer/turbopuffer-java/commit/3ad0e51302ae70de600465b800ac9398bb055b62))
+
+
+### Chores
+
+* fix import ordering in generated tests ([#247](https://github.com/turbopuffer/turbopuffer-java/issues/247)) ([1e75734](https://github.com/turbopuffer/turbopuffer-java/commit/1e75734881ca2b8042608ace48450880a5dd03fd))
+
 ## 2.4.1 (2026-06-25)
 
 Full Changelog: [v2.4.0...v2.4.1](https://github.com/turbopuffer/turbopuffer-java/compare/v2.4.0...v2.4.1)
