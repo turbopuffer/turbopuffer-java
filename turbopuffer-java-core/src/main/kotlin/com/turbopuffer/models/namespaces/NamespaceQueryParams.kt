@@ -42,6 +42,15 @@ private constructor(
     fun aggregateBy(): Optional<MutableMap<String, AggregateBy>> = body.aggregateBy()
 
     /**
+     * Computes additional values on documents returned by a query. Each key is the name of the
+     * computed attribute; each value is an expression describing how to compute it.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun computeAttributes(): Optional<ComputeAttributes> = body.computeAttributes()
+
+    /**
      * The consistency level for a query.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -143,6 +152,14 @@ private constructor(
      * Unlike [aggregateBy], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _aggregateBy(): JsonField<MutableMap<String, AggregateBy>> = body._aggregateBy()
+
+    /**
+     * Returns the raw JSON value of [computeAttributes].
+     *
+     * Unlike [computeAttributes], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _computeAttributes(): JsonField<ComputeAttributes> = body._computeAttributes()
 
     /**
      * Returns the raw JSON value of [consistency].
@@ -247,10 +264,10 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [aggregateBy]
+         * - [computeAttributes]
          * - [consistency]
          * - [distanceMetric]
          * - [excludeAttributes]
-         * - [filters]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -269,6 +286,25 @@ private constructor(
          */
         fun aggregateBy(aggregateBy: JsonField<MutableMap<String, AggregateBy>>) = apply {
             body.aggregateBy(aggregateBy)
+        }
+
+        /**
+         * Computes additional values on documents returned by a query. Each key is the name of the
+         * computed attribute; each value is an expression describing how to compute it.
+         */
+        fun computeAttributes(computeAttributes: ComputeAttributes) = apply {
+            body.computeAttributes(computeAttributes)
+        }
+
+        /**
+         * Sets [Builder.computeAttributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.computeAttributes] with a well-typed [ComputeAttributes]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun computeAttributes(computeAttributes: JsonField<ComputeAttributes>) = apply {
+            body.computeAttributes(computeAttributes)
         }
 
         /** The consistency level for a query. */
@@ -593,7 +629,11 @@ private constructor(
         private constructor(
             @JsonProperty("aggregate_by")
             @ExcludeMissing
+            @ExcludeMissing
             aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of(),
+            @JsonProperty("compute_attributes")
+            @ExcludeMissing
+            computeAttributes: JsonField<ComputeAttributes> = JsonMissing.of(),
             @JsonProperty("consistency")
             @ExcludeMissing
             consistency: JsonField<Consistency> = JsonMissing.of(),
@@ -618,6 +658,7 @@ private constructor(
             vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of(),
         ) : this(
             aggregateBy,
+            computeAttributes,
             consistency,
             distanceMetric,
             excludeAttributes,
@@ -639,6 +680,16 @@ private constructor(
          */
         fun aggregateBy(): Optional<MutableMap<String, AggregateBy>> =
             aggregateBy.getOptional("aggregate_by")
+
+        /**
+         * Computes additional values on documents returned by a query. Each key is the name of the
+         * computed attribute; each value is an expression describing how to compute it.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun computeAttributes(): Optional<ComputeAttributes> =
+            computeAttributes.getOptional("compute_attributes")
 
         /**
          * The consistency level for a query.
@@ -753,6 +804,16 @@ private constructor(
         fun _aggregateBy(): JsonField<MutableMap<String, AggregateBy>> = aggregateBy
 
         /**
+         * Returns the raw JSON value of [computeAttributes].
+         *
+         * Unlike [computeAttributes], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("compute_attributes")
+        @ExcludeMissing
+        fun _computeAttributes(): JsonField<ComputeAttributes> = computeAttributes
+
+        /**
          * Returns the raw JSON value of [consistency].
          *
          * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
@@ -859,6 +920,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 aggregateBy = body.aggregateBy
+                computeAttributes = body.computeAttributes
                 consistency = body.consistency
                 distanceMetric = body.distanceMetric
                 excludeAttributes = body.excludeAttributes.map { it.toMutableList() }
@@ -887,6 +949,24 @@ private constructor(
              */
             fun aggregateBy(aggregateBy: JsonField<MutableMap<String, AggregateBy>>) = apply {
                 this.aggregateBy = aggregateBy
+            }
+
+            /**
+             * Computes additional values on documents returned by a query. Each key is the name of
+             * the computed attribute; each value is an expression describing how to compute it.
+             */
+            fun computeAttributes(computeAttributes: ComputeAttributes) =
+                computeAttributes(JsonField.of(computeAttributes))
+
+            /**
+             * Sets [Builder.computeAttributes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.computeAttributes] with a well-typed
+             * [ComputeAttributes] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun computeAttributes(computeAttributes: JsonField<ComputeAttributes>) = apply {
+                this.computeAttributes = computeAttributes
             }
 
             /** The consistency level for a query. */
@@ -1097,6 +1177,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     aggregateBy,
+                    computeAttributes,
                     consistency,
                     distanceMetric,
                     (excludeAttributes ?: JsonMissing.of()).map { it.toImmutable() },
@@ -1127,7 +1208,9 @@ private constructor(
                 return@apply
             }
 
+
             aggregateBy()
+            computeAttributes().ifPresent { it.validate() }
             consistency().ifPresent { it.validate() }
             distanceMetric().ifPresent { it.validate() }
             excludeAttributes()
@@ -1171,6 +1254,7 @@ private constructor(
 
             return other is Body &&
                 aggregateBy == other.aggregateBy &&
+                computeAttributes == other.computeAttributes &&
                 consistency == other.consistency &&
                 distanceMetric == other.distanceMetric &&
                 excludeAttributes == other.excludeAttributes &&
@@ -1187,6 +1271,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 aggregateBy,
+                computeAttributes,
                 consistency,
                 distanceMetric,
                 excludeAttributes,
@@ -1204,8 +1289,9 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{aggregateBy=$aggregateBy, consistency=$consistency, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, consistency=$consistency, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
+
 
     /** The consistency level for a query. */
     class Consistency

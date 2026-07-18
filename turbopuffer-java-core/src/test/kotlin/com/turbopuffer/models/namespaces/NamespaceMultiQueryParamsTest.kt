@@ -19,6 +19,14 @@ internal class NamespaceMultiQueryParamsTest {
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
+                    .computeAttributes(
+                        NamespaceMultiQueryParams.Query.ComputeAttributes.builder()
+                            .putAdditionalProperty(
+                                "foo",
+                                JsonValue.from(listOf(mapOf<String, Any>())),
+                            )
+                            .build()
+                    )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .addExcludeAttribute("string")
                     .filters(JsonValue.from(mapOf<String, Any>()))
@@ -63,6 +71,14 @@ internal class NamespaceMultiQueryParamsTest {
                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                 .build()
                         )
+                        .computeAttributes(
+                            NamespaceMultiQueryParams.Query.ComputeAttributes.builder()
+                                .putAdditionalProperty(
+                                    "foo",
+                                    JsonValue.from(listOf(mapOf<String, Any>())),
+                                )
+                                .build()
+                        )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                         .addExcludeAttribute("string")
                         .filters(JsonValue.from(mapOf<String, Any>()))
@@ -90,6 +106,14 @@ internal class NamespaceMultiQueryParamsTest {
                     .aggregateBy(
                         NamespaceMultiQueryParams.Query.AggregateBy.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .computeAttributes(
+                        NamespaceMultiQueryParams.Query.ComputeAttributes.builder()
+                            .putAdditionalProperty(
+                                "foo",
+                                JsonValue.from(listOf(mapOf<String, Any>())),
+                            )
                             .build()
                     )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)

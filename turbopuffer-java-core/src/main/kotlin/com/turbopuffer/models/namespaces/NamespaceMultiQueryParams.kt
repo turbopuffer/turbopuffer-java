@@ -685,7 +685,11 @@ private constructor(
         private constructor(
             @JsonProperty("aggregate_by")
             @ExcludeMissing
+            @ExcludeMissing
             aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of(),
+            @JsonProperty("compute_attributes")
+            @ExcludeMissing
+            computeAttributes: JsonField<ComputeAttributes> = JsonMissing.of(),
             @JsonProperty("distance_metric")
             @ExcludeMissing
             distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
@@ -704,6 +708,7 @@ private constructor(
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
         ) : this(
             aggregateBy,
+            computeAttributes,
             distanceMetric,
             excludeAttributes,
             filters,
@@ -723,6 +728,16 @@ private constructor(
          */
         fun aggregateBy(): Optional<MutableMap<String, AggregateBy>> =
             aggregateBy.getOptional("aggregate_by")
+
+        /**
+         * Computes additional values on documents returned by a query. Each key is the name of the
+         * computed attribute; each value is an expression describing how to compute it.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun computeAttributes(): Optional<ComputeAttributes> =
+            computeAttributes.getOptional("compute_attributes")
 
         /**
          * A function used to calculate vector similarity.
@@ -820,6 +835,16 @@ private constructor(
         fun _aggregateBy(): JsonField<MutableMap<String, AggregateBy>> = aggregateBy
 
         /**
+         * Returns the raw JSON value of [computeAttributes].
+         *
+         * Unlike [computeAttributes], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("compute_attributes")
+        @ExcludeMissing
+        fun _computeAttributes(): JsonField<ComputeAttributes> = computeAttributes
+
+        /**
          * Returns the raw JSON value of [distanceMetric].
          *
          * Unlike [distanceMetric], this method doesn't throw if the JSON field has an unexpected
@@ -905,6 +930,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(query: Query) = apply {
                 aggregateBy = query.aggregateBy
+                computeAttributes = query.computeAttributes
                 distanceMetric = query.distanceMetric
                 excludeAttributes = query.excludeAttributes.map { it.toMutableList() }
                 filters = query.filters
@@ -931,6 +957,24 @@ private constructor(
              */
             fun aggregateBy(aggregateBy: JsonField<MutableMap<String, AggregateBy>>) = apply {
                 this.aggregateBy = aggregateBy
+            }
+
+            /**
+             * Computes additional values on documents returned by a query. Each key is the name of
+             * the computed attribute; each value is an expression describing how to compute it.
+             */
+            fun computeAttributes(computeAttributes: ComputeAttributes) =
+                computeAttributes(JsonField.of(computeAttributes))
+
+            /**
+             * Sets [Builder.computeAttributes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.computeAttributes] with a well-typed
+             * [ComputeAttributes] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun computeAttributes(computeAttributes: JsonField<ComputeAttributes>) = apply {
+                this.computeAttributes = computeAttributes
             }
 
             /** A function used to calculate vector similarity. */
@@ -1118,6 +1162,7 @@ private constructor(
             fun build(): Query =
                 Query(
                     aggregateBy,
+                    computeAttributes,
                     distanceMetric,
                     (excludeAttributes ?: JsonMissing.of()).map { it.toImmutable() },
                     filters,
@@ -1146,7 +1191,9 @@ private constructor(
                 return@apply
             }
 
+
             aggregateBy()
+            computeAttributes().ifPresent { it.validate() }
             distanceMetric().ifPresent { it.validate() }
             excludeAttributes()
             groupBy()
@@ -1180,6 +1227,7 @@ private constructor(
                 (limit.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0)
 
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1187,6 +1235,7 @@ private constructor(
 
             return other is Query &&
                 aggregateBy == other.aggregateBy &&
+                computeAttributes == other.computeAttributes &&
                 distanceMetric == other.distanceMetric &&
                 excludeAttributes == other.excludeAttributes &&
                 filters == other.filters &&
@@ -1201,6 +1250,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 aggregateBy,
+                computeAttributes,
                 distanceMetric,
                 excludeAttributes,
                 filters,
@@ -1216,7 +1266,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Query{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
+            "Query{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
