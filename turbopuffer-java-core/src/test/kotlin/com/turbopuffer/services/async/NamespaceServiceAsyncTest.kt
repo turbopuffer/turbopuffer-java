@@ -101,6 +101,14 @@ internal class NamespaceServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
+                    .computeAttributes(
+                        NamespaceExplainQueryParams.ComputeAttributes.builder()
+                            .putAdditionalProperty(
+                                "foo",
+                                JsonValue.from(listOf(mapOf<String, Any>())),
+                            )
+                            .build()
+                    )
                     .consistency(
                         NamespaceExplainQueryParams.Consistency.builder()
                             .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
@@ -169,6 +177,14 @@ internal class NamespaceServiceAsyncTest {
                                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
+                            .computeAttributes(
+                                NamespaceMultiQueryParams.Query.ComputeAttributes.builder()
+                                    .putAdditionalProperty(
+                                        "foo",
+                                        JsonValue.from(listOf(mapOf<String, Any>())),
+                                    )
+                                    .build()
+                            )
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .addExcludeAttribute("string")
                             .filters(JsonValue.from(mapOf<String, Any>()))
@@ -206,6 +222,14 @@ internal class NamespaceServiceAsyncTest {
                     .aggregateBy(
                         NamespaceQueryParams.AggregateBy.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .computeAttributes(
+                        NamespaceQueryParams.ComputeAttributes.builder()
+                            .putAdditionalProperty(
+                                "foo",
+                                JsonValue.from(listOf(mapOf<String, Any>())),
+                            )
                             .build()
                     )
                     .consistency(

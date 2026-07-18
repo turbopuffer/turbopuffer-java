@@ -650,6 +650,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val aggregateBy: JsonField<AggregateBy>,
+        private val computeAttributes: JsonField<ComputeAttributes>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val excludeAttributes: JsonField<List<String>>,
         private val filters: JsonValue,
@@ -666,6 +667,9 @@ private constructor(
             @JsonProperty("aggregate_by")
             @ExcludeMissing
             aggregateBy: JsonField<AggregateBy> = JsonMissing.of(),
+            @JsonProperty("compute_attributes")
+            @ExcludeMissing
+            computeAttributes: JsonField<ComputeAttributes> = JsonMissing.of(),
             @JsonProperty("distance_metric")
             @ExcludeMissing
             distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
@@ -684,6 +688,7 @@ private constructor(
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
         ) : this(
             aggregateBy,
+            computeAttributes,
             distanceMetric,
             excludeAttributes,
             filters,
@@ -702,6 +707,16 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun aggregateBy(): Optional<AggregateBy> = aggregateBy.getOptional("aggregate_by")
+
+        /**
+         * Computes additional values on documents returned by a query. Each key is the name of the
+         * computed attribute; each value is an expression describing how to compute it.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun computeAttributes(): Optional<ComputeAttributes> =
+            computeAttributes.getOptional("compute_attributes")
 
         /**
          * A function used to calculate vector similarity.
@@ -787,6 +802,16 @@ private constructor(
         fun _aggregateBy(): JsonField<AggregateBy> = aggregateBy
 
         /**
+         * Returns the raw JSON value of [computeAttributes].
+         *
+         * Unlike [computeAttributes], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("compute_attributes")
+        @ExcludeMissing
+        fun _computeAttributes(): JsonField<ComputeAttributes> = computeAttributes
+
+        /**
          * Returns the raw JSON value of [distanceMetric].
          *
          * Unlike [distanceMetric], this method doesn't throw if the JSON field has an unexpected
@@ -861,6 +886,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var aggregateBy: JsonField<AggregateBy> = JsonMissing.of()
+            private var computeAttributes: JsonField<ComputeAttributes> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var excludeAttributes: JsonField<MutableList<String>>? = null
             private var filters: JsonValue = JsonMissing.of()
@@ -874,6 +900,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(query: Query) = apply {
                 aggregateBy = query.aggregateBy
+                computeAttributes = query.computeAttributes
                 distanceMetric = query.distanceMetric
                 excludeAttributes = query.excludeAttributes.map { it.toMutableList() }
                 filters = query.filters
@@ -899,6 +926,24 @@ private constructor(
              */
             fun aggregateBy(aggregateBy: JsonField<AggregateBy>) = apply {
                 this.aggregateBy = aggregateBy
+            }
+
+            /**
+             * Computes additional values on documents returned by a query. Each key is the name of
+             * the computed attribute; each value is an expression describing how to compute it.
+             */
+            fun computeAttributes(computeAttributes: ComputeAttributes) =
+                computeAttributes(JsonField.of(computeAttributes))
+
+            /**
+             * Sets [Builder.computeAttributes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.computeAttributes] with a well-typed
+             * [ComputeAttributes] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun computeAttributes(computeAttributes: JsonField<ComputeAttributes>) = apply {
+                this.computeAttributes = computeAttributes
             }
 
             /** A function used to calculate vector similarity. */
@@ -1065,6 +1110,7 @@ private constructor(
             fun build(): Query =
                 Query(
                     aggregateBy,
+                    computeAttributes,
                     distanceMetric,
                     (excludeAttributes ?: JsonMissing.of()).map { it.toImmutable() },
                     filters,
@@ -1094,6 +1140,7 @@ private constructor(
             }
 
             aggregateBy().ifPresent { it.validate() }
+            computeAttributes().ifPresent { it.validate() }
             distanceMetric().ifPresent { it.validate() }
             excludeAttributes()
             groupBy()
@@ -1120,6 +1167,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (aggregateBy.asKnown().getOrNull()?.validity() ?: 0) +
+                (computeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (excludeAttributes.asKnown().getOrNull()?.size ?: 0) +
                 (groupBy.asKnown().getOrNull()?.size ?: 0) +
@@ -1238,6 +1286,127 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() = "AggregateBy{additionalProperties=$additionalProperties}"
+        }
+
+        /**
+         * Computes additional values on documents returned by a query. Each key is the name of the
+         * computed attribute; each value is an expression describing how to compute it.
+         */
+        class ComputeAttributes
+        @JsonCreator
+        private constructor(
+            @com.fasterxml.jackson.annotation.JsonValue
+            private val additionalProperties: Map<String, JsonValue>
+        ) {
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [ComputeAttributes].
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [ComputeAttributes]. */
+            class Builder internal constructor() {
+
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(computeAttributes: ComputeAttributes) = apply {
+                    additionalProperties = computeAttributes.additionalProperties.toMutableMap()
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [ComputeAttributes].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): ComputeAttributes =
+                    ComputeAttributes(additionalProperties.toImmutable())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws TurbopufferInvalidDataException if any value type in this object doesn't
+             *   match its expected type.
+             */
+            fun validate(): ComputeAttributes = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is ComputeAttributes &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "ComputeAttributes{additionalProperties=$additionalProperties}"
         }
 
         /** Limits the documents returned by a query. */
@@ -1463,6 +1632,7 @@ private constructor(
 
             return other is Query &&
                 aggregateBy == other.aggregateBy &&
+                computeAttributes == other.computeAttributes &&
                 distanceMetric == other.distanceMetric &&
                 excludeAttributes == other.excludeAttributes &&
                 filters == other.filters &&
@@ -1477,6 +1647,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 aggregateBy,
+                computeAttributes,
                 distanceMetric,
                 excludeAttributes,
                 filters,
@@ -1492,7 +1663,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Query{aggregateBy=$aggregateBy, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
+            "Query{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
