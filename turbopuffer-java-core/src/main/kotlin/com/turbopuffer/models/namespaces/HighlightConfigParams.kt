@@ -17,7 +17,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Additional (optional) parameters for the Highlight compute expression. */
-class HighlightConfig
+class HighlightConfigParams
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val fragmentBy: JsonField<HighlightFragmentBy>,
@@ -74,7 +74,7 @@ private constructor(
      *
      * This arbitrary value can be deserialized into a custom type using the `convert` method:
      * ```java
-     * MyClass myObject = highlightConfig.rankFragmentsBy().convert(MyClass.class);
+     * MyClass myObject = highlightConfigParams.rankFragmentsBy().convert(MyClass.class);
      * ```
      */
     @JsonProperty("rank_fragments_by")
@@ -122,11 +122,11 @@ private constructor(
 
     companion object {
 
-        /** Returns a mutable builder for constructing an instance of [HighlightConfig]. */
+        /** Returns a mutable builder for constructing an instance of [HighlightConfigParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [HighlightConfig]. */
+    /** A builder for [HighlightConfigParams]. */
     class Builder internal constructor() {
 
         private var fragmentBy: JsonField<HighlightFragmentBy> = JsonMissing.of()
@@ -136,12 +136,12 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(highlightConfig: HighlightConfig) = apply {
-            fragmentBy = highlightConfig.fragmentBy
-            fragmentLimit = highlightConfig.fragmentLimit
-            includeOffsets = highlightConfig.includeOffsets
-            rankFragmentsBy = highlightConfig.rankFragmentsBy
-            additionalProperties = highlightConfig.additionalProperties.toMutableMap()
+        internal fun from(highlightConfigParams: HighlightConfigParams) = apply {
+            fragmentBy = highlightConfigParams.fragmentBy
+            fragmentLimit = highlightConfigParams.fragmentLimit
+            includeOffsets = highlightConfigParams.includeOffsets
+            rankFragmentsBy = highlightConfigParams.rankFragmentsBy
+            additionalProperties = highlightConfigParams.additionalProperties.toMutableMap()
         }
 
         /** How to split a text attribute into fragments for highlighting. */
@@ -215,12 +215,12 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [HighlightConfig].
+         * Returns an immutable instance of [HighlightConfigParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): HighlightConfig =
-            HighlightConfig(
+        fun build(): HighlightConfigParams =
+            HighlightConfigParams(
                 fragmentBy,
                 fragmentLimit,
                 includeOffsets,
@@ -239,7 +239,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if any value type in this object doesn't match its
      *   expected type.
      */
-    fun validate(): HighlightConfig = apply {
+    fun validate(): HighlightConfigParams = apply {
         if (validated) {
             return@apply
         }
@@ -274,7 +274,7 @@ private constructor(
             return true
         }
 
-        return other is HighlightConfig &&
+        return other is HighlightConfigParams &&
             fragmentBy == other.fragmentBy &&
             fragmentLimit == other.fragmentLimit &&
             includeOffsets == other.includeOffsets &&
@@ -295,5 +295,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "HighlightConfig{fragmentBy=$fragmentBy, fragmentLimit=$fragmentLimit, includeOffsets=$includeOffsets, rankFragmentsBy=$rankFragmentsBy, additionalProperties=$additionalProperties}"
+        "HighlightConfigParams{fragmentBy=$fragmentBy, fragmentLimit=$fragmentLimit, includeOffsets=$includeOffsets, rankFragmentsBy=$rankFragmentsBy, additionalProperties=$additionalProperties}"
 }

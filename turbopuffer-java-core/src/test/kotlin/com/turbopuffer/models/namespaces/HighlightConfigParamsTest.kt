@@ -8,42 +8,42 @@ import com.turbopuffer.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-internal class HighlightConfigTest {
+internal class HighlightConfigParamsTest {
 
     @Test
     fun create() {
-        val highlightConfig =
-            HighlightConfig.builder()
+        val highlightConfigParams =
+            HighlightConfigParams.builder()
                 .fragmentBy(HighlightFragmentBy.NONE)
                 .fragmentLimit(0L)
                 .includeOffsets(HighlightOffsetUnits.UTF_8)
                 .rankFragmentsBy(JsonValue.from(mapOf<String, Any>()))
                 .build()
 
-        assertThat(highlightConfig.fragmentBy()).contains(HighlightFragmentBy.NONE)
-        assertThat(highlightConfig.fragmentLimit()).contains(0L)
-        assertThat(highlightConfig.includeOffsets()).contains(HighlightOffsetUnits.UTF_8)
-        assertThat(highlightConfig._rankFragmentsBy())
+        assertThat(highlightConfigParams.fragmentBy()).contains(HighlightFragmentBy.NONE)
+        assertThat(highlightConfigParams.fragmentLimit()).contains(0L)
+        assertThat(highlightConfigParams.includeOffsets()).contains(HighlightOffsetUnits.UTF_8)
+        assertThat(highlightConfigParams._rankFragmentsBy())
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val highlightConfig =
-            HighlightConfig.builder()
+        val highlightConfigParams =
+            HighlightConfigParams.builder()
                 .fragmentBy(HighlightFragmentBy.NONE)
                 .fragmentLimit(0L)
                 .includeOffsets(HighlightOffsetUnits.UTF_8)
                 .rankFragmentsBy(JsonValue.from(mapOf<String, Any>()))
                 .build()
 
-        val roundtrippedHighlightConfig =
+        val roundtrippedHighlightConfigParams =
             jsonMapper.readValue(
-                jsonMapper.writeValueAsString(highlightConfig),
-                jacksonTypeRef<HighlightConfig>(),
+                jsonMapper.writeValueAsString(highlightConfigParams),
+                jacksonTypeRef<HighlightConfigParams>(),
             )
 
-        assertThat(roundtrippedHighlightConfig).isEqualTo(highlightConfig)
+        assertThat(roundtrippedHighlightConfigParams).isEqualTo(highlightConfigParams)
     }
 }
