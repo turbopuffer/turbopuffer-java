@@ -103,10 +103,7 @@ internal class NamespaceServiceAsyncTest {
                     )
                     .computeAttributes(
                         NamespaceExplainQueryParams.ComputeAttributes.builder()
-                            .putAdditionalProperty(
-                                "foo",
-                                JsonValue.from(listOf(mapOf<String, Any>())),
-                            )
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
                     .consistency(
@@ -179,10 +176,7 @@ internal class NamespaceServiceAsyncTest {
                             )
                             .computeAttributes(
                                 NamespaceMultiQueryParams.Query.ComputeAttributes.builder()
-                                    .putAdditionalProperty(
-                                        "foo",
-                                        JsonValue.from(listOf(mapOf<String, Any>())),
-                                    )
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -226,10 +220,7 @@ internal class NamespaceServiceAsyncTest {
                     )
                     .computeAttributes(
                         NamespaceQueryParams.ComputeAttributes.builder()
-                            .putAdditionalProperty(
-                                "foo",
-                                JsonValue.from(listOf(mapOf<String, Any>())),
-                            )
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
                     .consistency(
