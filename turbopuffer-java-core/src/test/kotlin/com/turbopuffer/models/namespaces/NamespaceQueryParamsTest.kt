@@ -20,7 +20,7 @@ internal class NamespaceQueryParamsTest {
             )
             .computeAttributes(
                 NamespaceQueryParams.ComputeAttributes.builder()
-                    .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf<String, Any>())))
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
             .consistency(
@@ -61,7 +61,7 @@ internal class NamespaceQueryParamsTest {
                 )
                 .computeAttributes(
                     NamespaceQueryParams.ComputeAttributes.builder()
-                        .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf<String, Any>())))
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
                 .consistency(
@@ -91,7 +91,7 @@ internal class NamespaceQueryParamsTest {
         assertThat(body.computeAttributes())
             .contains(
                 NamespaceQueryParams.ComputeAttributes.builder()
-                    .putAdditionalProperty("foo", JsonValue.from(listOf(mapOf<String, Any>())))
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
         assertThat(body.consistency())

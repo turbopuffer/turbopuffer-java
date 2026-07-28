@@ -21,10 +21,7 @@ internal class NamespaceMultiQueryParamsTest {
                     )
                     .computeAttributes(
                         NamespaceMultiQueryParams.Query.ComputeAttributes.builder()
-                            .putAdditionalProperty(
-                                "foo",
-                                JsonValue.from(listOf(mapOf<String, Any>())),
-                            )
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -73,10 +70,7 @@ internal class NamespaceMultiQueryParamsTest {
                         )
                         .computeAttributes(
                             NamespaceMultiQueryParams.Query.ComputeAttributes.builder()
-                                .putAdditionalProperty(
-                                    "foo",
-                                    JsonValue.from(listOf(mapOf<String, Any>())),
-                                )
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
                                 .build()
                         )
                         .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -110,10 +104,7 @@ internal class NamespaceMultiQueryParamsTest {
                     )
                     .computeAttributes(
                         NamespaceMultiQueryParams.Query.ComputeAttributes.builder()
-                            .putAdditionalProperty(
-                                "foo",
-                                JsonValue.from(listOf(mapOf<String, Any>())),
-                            )
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
