@@ -1192,7 +1192,6 @@ private constructor(
                 return@apply
             }
 
-
             aggregateBy()
             computeAttributes().ifPresent { it.validate() }
             distanceMetric().ifPresent { it.validate() }
@@ -1227,7 +1226,6 @@ private constructor(
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (limit.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0)
-
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1268,6 +1266,7 @@ private constructor(
 
         override fun toString() =
             "Query{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
+
         /**
          * Computes additional values on documents returned by a query. Each key is the name of the
          * computed attribute; each value is an expression describing how to compute it.
@@ -1388,7 +1387,6 @@ private constructor(
             override fun toString() =
                 "ComputeAttributes{additionalProperties=$additionalProperties}"
         }
-
     }
 
     /** The consistency level for a query. */

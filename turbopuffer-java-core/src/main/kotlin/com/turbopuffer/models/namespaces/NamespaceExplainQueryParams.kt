@@ -1216,7 +1216,6 @@ private constructor(
                 return@apply
             }
 
-
             aggregateBy()
             computeAttributes().ifPresent { it.validate() }
             consistency().ifPresent { it.validate() }
@@ -1299,7 +1298,6 @@ private constructor(
         override fun toString() =
             "Body{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, consistency=$consistency, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
-
 
     /**
      * Computes additional values on documents returned by a query. Each key is the name of the
