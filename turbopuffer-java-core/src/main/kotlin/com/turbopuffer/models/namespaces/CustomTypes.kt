@@ -94,6 +94,100 @@ class AggregateBySum private constructor(attr: String) : AggregateBy() {
     }
 }
 
+@JsonDeserialize(using = ComputeAttributes.Deserializer::class)
+sealed class ComputeAttributes() {
+    companion object {
+        @JvmStatic
+        public fun vectorDist(attr: String, value: List<Float>): ComputeAttributesVectorDist =
+            ComputeAttributesVectorDist.create(attr, value)
+
+        @JvmStatic
+        public fun highlight(attr: String): ComputeAttributesHighlight =
+            ComputeAttributesHighlight.create(attr)
+
+        @JvmStatic
+        public fun highlight(
+            attr: String,
+            config: HighlightConfigParams,
+        ): ComputeAttributesHighlightWithConfig =
+            ComputeAttributesHighlightWithConfig.create(attr, config)
+    }
+
+    class Deserializer : BaseDeserializer<ComputeAttributes>(ComputeAttributes::class) {
+        override fun ObjectCodec.deserialize(node: JsonNode): ComputeAttributes {
+            return ComputeAttributesRaw(JsonValue.fromJsonNode(node))
+        }
+    }
+}
+
+class ComputeAttributesRaw internal constructor(value: JsonValue) : ComputeAttributes() {
+    @JsonValueAnnotation private val value: JsonValue = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "attr")
+class ComputeAttributesHighlight private constructor(attr: String) : ComputeAttributes() {
+    private val f0: String = "Highlight"
+    private val attr: String = attr
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String): ComputeAttributesHighlight =
+            ComputeAttributesHighlight(attr)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("f0", "attr", "config")
+class ComputeAttributesHighlightWithConfig
+private constructor(attr: String, config: HighlightConfigParams) : ComputeAttributes() {
+    private val f0: String = "Highlight"
+    private val attr: String = attr
+    private val config: HighlightConfigParams = config
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(
+            attr: String,
+            config: HighlightConfigParams,
+        ): ComputeAttributesHighlightWithConfig = ComputeAttributesHighlightWithConfig(attr, config)
+    }
+}
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder("attr", "f0", "value")
+class ComputeAttributesVectorDist private constructor(attr: String, value: List<Float>) :
+    ComputeAttributes() {
+    private val attr: String = attr
+    private val f0: String = "VectorDist"
+    private val value: List<Float> = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(this)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(attr: String, value: List<Float>): ComputeAttributesVectorDist =
+            ComputeAttributesVectorDist(attr, value)
+    }
+}
+
 @JsonDeserialize(using = Expr.Deserializer::class)
 sealed class Expr() {
     companion object {
@@ -1091,7 +1185,7 @@ class GroupByFunctionForEachUnique private constructor(attr: String) : GroupByFu
 }
 
 @JsonDeserialize(using = RankBy.Deserializer::class)
-sealed class RankBy() {
+sealed class RankBy() : ComputeAttributes() {
     companion object {
         @JvmStatic
         public fun ann(attr: String, value: List<Float>): RankByAnn = RankByAnn.create(attr, value)

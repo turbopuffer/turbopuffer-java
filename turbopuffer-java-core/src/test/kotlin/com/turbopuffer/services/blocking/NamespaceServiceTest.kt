@@ -95,7 +95,6 @@ internal class NamespaceServiceTest {
             namespaceService.explainQuery(
                 NamespaceExplainQueryParams.builder()
                     .namespace("namespace")
-
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .addExcludeAttribute("string")
                     .includeAttributes(true)
@@ -145,7 +144,6 @@ internal class NamespaceServiceTest {
                     .namespace("namespace")
                     .addQuery(
                         NamespaceMultiQueryParams.Query.builder()
-
                             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                             .addExcludeAttribute("string")
                             .includeAttributes(true)
@@ -176,7 +174,6 @@ internal class NamespaceServiceTest {
             namespaceService.query(
                 NamespaceQueryParams.builder()
                     .namespace("namespace")
-
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                     .addExcludeAttribute("string")
                     .includeAttributes(true)
