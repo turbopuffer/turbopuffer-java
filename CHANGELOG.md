@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.6.0 (2026-07-30)
+
+Full Changelog: [v2.5.0...v2.6.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.5.0...v2.6.0)
+
+### Features
+
+* openapi: add RRF `weights` parameter ([a7a280e](https://github.com/turbopuffer/turbopuffer-java/commit/a7a280e392880e2ad2dc7b1276b5868437a6888b))
+* spec: expose computed attributes ([b0dcf7a](https://github.com/turbopuffer/turbopuffer-java/commit/b0dcf7a8e279878d10b0e3c5f493ee890ae9c54c))
+* spec: hide HighlightConfig.rank_fragments_by's RankBy ref from Stainless ([e5e324d](https://github.com/turbopuffer/turbopuffer-java/commit/e5e324d45385e68f9b6bc14dc08a0a6565823bb8))
+* spec: make compute_attributes value x-stainless-any ([90820e1](https://github.com/turbopuffer/turbopuffer-java/commit/90820e10b05530cd0f32ab78e175d97b7b88f7f0))
+* spec: rename HighlightConfig -&gt; HighlightConfigParams ([8143231](https://github.com/turbopuffer/turbopuffer-java/commit/814323167fe7a746eae3b1926315fb3bf360b674))
+* **stlc:** configurable CI runner and private-production-repo support in workflow templates ([dc80c12](https://github.com/turbopuffer/turbopuffer-java/commit/dc80c1274f370abd0d38427a071c13a2da4ee758))
+* type compute_attributes as the Expr union (turbopuffer[#10694](https://github.com/turbopuffer/turbopuffer-java/issues/10694)) ([#252](https://github.com/turbopuffer/turbopuffer-java/issues/252)) ([b6e2196](https://github.com/turbopuffer/turbopuffer-java/commit/b6e21963bcffe99fa65e87ae29f0114fae5da15f))
+
 ## 2.5.0 (2026-07-03)
 
 Full Changelog: [v2.4.1...v2.5.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.4.1...v2.5.0)
