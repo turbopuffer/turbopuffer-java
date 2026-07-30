@@ -670,7 +670,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val aggregateBy: JsonField<MutableMap<String, AggregateBy>>,
-        private val computeAttributes: JsonField<MutableMap<String, ComputeAttributes>>,
+        private val computeAttributes: JsonField<MutableMap<String, Expr>>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val excludeAttributes: JsonField<List<String>>,
         private val filters: JsonField<Filter>,
@@ -689,7 +689,7 @@ private constructor(
             aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of(),
             @JsonProperty("compute_attributes")
             @ExcludeMissing
-            computeAttributes: JsonField<MutableMap<String, ComputeAttributes>> = JsonMissing.of(),
+            computeAttributes: JsonField<MutableMap<String, Expr>> = JsonMissing.of(),
             @JsonProperty("distance_metric")
             @ExcludeMissing
             distanceMetric: JsonField<DistanceMetric> = JsonMissing.of(),
@@ -736,7 +736,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun computeAttributes(): Optional<MutableMap<String, ComputeAttributes>> =
+        fun computeAttributes(): Optional<MutableMap<String, Expr>> =
             computeAttributes.getOptional("compute_attributes")
 
         /**
@@ -842,8 +842,7 @@ private constructor(
          */
         @JsonProperty("compute_attributes")
         @ExcludeMissing
-        fun _computeAttributes(): JsonField<MutableMap<String, ComputeAttributes>> =
-            computeAttributes
+        fun _computeAttributes(): JsonField<MutableMap<String, Expr>> = computeAttributes
 
         /**
          * Returns the raw JSON value of [distanceMetric].
@@ -918,8 +917,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of()
-            private var computeAttributes: JsonField<MutableMap<String, ComputeAttributes>> =
-                JsonMissing.of()
+            private var computeAttributes: JsonField<MutableMap<String, Expr>> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var excludeAttributes: JsonField<MutableList<String>>? = null
             private var filters: JsonField<Filter> = JsonMissing.of()
@@ -966,19 +964,19 @@ private constructor(
              * Computes additional values on documents returned by a query. Each key is the name of
              * the computed attribute; each value is an expression describing how to compute it.
              */
-            fun computeAttributes(computeAttributes: MutableMap<String, ComputeAttributes>) =
+            fun computeAttributes(computeAttributes: MutableMap<String, Expr>) =
                 computeAttributes(JsonField.of(computeAttributes))
 
             /**
              * Sets [Builder.computeAttributes] to an arbitrary JSON value.
              *
              * You should usually call [Builder.computeAttributes] with a well-typed
-             * `MutableMap<String, ComputeAttributes>` value instead. This method is primarily for
-             * setting the field to an undocumented or not yet supported value.
+             * `MutableMap<String, Expr>` value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
              */
-            fun computeAttributes(
-                computeAttributes: JsonField<MutableMap<String, ComputeAttributes>>
-            ) = apply { this.computeAttributes = computeAttributes }
+            fun computeAttributes(computeAttributes: JsonField<MutableMap<String, Expr>>) = apply {
+                this.computeAttributes = computeAttributes
+            }
 
             /** A function used to calculate vector similarity. */
             fun distanceMetric(distanceMetric: DistanceMetric) =

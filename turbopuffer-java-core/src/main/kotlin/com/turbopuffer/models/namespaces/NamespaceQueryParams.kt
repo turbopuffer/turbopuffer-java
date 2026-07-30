@@ -48,8 +48,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun computeAttributes(): Optional<MutableMap<String, ComputeAttributes>> =
-        body.computeAttributes()
+    fun computeAttributes(): Optional<MutableMap<String, Expr>> = body.computeAttributes()
 
     /**
      * The consistency level for a query.
@@ -160,8 +159,7 @@ private constructor(
      * Unlike [computeAttributes], this method doesn't throw if the JSON field has an unexpected
      * type.
      */
-    fun _computeAttributes(): JsonField<MutableMap<String, ComputeAttributes>> =
-        body._computeAttributes()
+    fun _computeAttributes(): JsonField<MutableMap<String, Expr>> = body._computeAttributes()
 
     /**
      * Returns the raw JSON value of [consistency].
@@ -294,21 +292,20 @@ private constructor(
          * Computes additional values on documents returned by a query. Each key is the name of the
          * computed attribute; each value is an expression describing how to compute it.
          */
-        fun computeAttributes(computeAttributes: MutableMap<String, ComputeAttributes>) = apply {
+        fun computeAttributes(computeAttributes: MutableMap<String, Expr>) = apply {
             body.computeAttributes(computeAttributes)
         }
 
         /**
          * Sets [Builder.computeAttributes] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.computeAttributes] with a well-typed [ComputeAttributes]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
+         * You should usually call [Builder.computeAttributes] with a well-typed [Expr] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun computeAttributes(computeAttributes: JsonField<MutableMap<String, ComputeAttributes>>) =
-            apply {
-                body.computeAttributes(computeAttributes)
-            }
+        fun computeAttributes(computeAttributes: JsonField<MutableMap<String, Expr>>) = apply {
+            body.computeAttributes(computeAttributes)
+        }
 
         /** The consistency level for a query. */
         fun consistency(consistency: Consistency) = apply { body.consistency(consistency) }
@@ -615,7 +612,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val aggregateBy: JsonField<MutableMap<String, AggregateBy>>,
-        private val computeAttributes: JsonField<MutableMap<String, ComputeAttributes>>,
+        private val computeAttributes: JsonField<MutableMap<String, Expr>>,
         private val consistency: JsonField<Consistency>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val excludeAttributes: JsonField<List<String>>,
@@ -636,7 +633,7 @@ private constructor(
             aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of(),
             @JsonProperty("compute_attributes")
             @ExcludeMissing
-            computeAttributes: JsonField<MutableMap<String, ComputeAttributes>> = JsonMissing.of(),
+            computeAttributes: JsonField<MutableMap<String, Expr>> = JsonMissing.of(),
             @JsonProperty("consistency")
             @ExcludeMissing
             consistency: JsonField<Consistency> = JsonMissing.of(),
@@ -691,7 +688,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun computeAttributes(): Optional<MutableMap<String, ComputeAttributes>> =
+        fun computeAttributes(): Optional<MutableMap<String, Expr>> =
             computeAttributes.getOptional("compute_attributes")
 
         /**
@@ -814,8 +811,7 @@ private constructor(
          */
         @JsonProperty("compute_attributes")
         @ExcludeMissing
-        fun _computeAttributes(): JsonField<MutableMap<String, ComputeAttributes>> =
-            computeAttributes
+        fun _computeAttributes(): JsonField<MutableMap<String, Expr>> = computeAttributes
 
         /**
          * Returns the raw JSON value of [consistency].
@@ -909,8 +905,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var aggregateBy: JsonField<MutableMap<String, AggregateBy>> = JsonMissing.of()
-            private var computeAttributes: JsonField<MutableMap<String, ComputeAttributes>> =
-                JsonMissing.of()
+            private var computeAttributes: JsonField<MutableMap<String, Expr>> = JsonMissing.of()
             private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var excludeAttributes: JsonField<MutableList<String>>? = null
@@ -961,19 +956,19 @@ private constructor(
              * Computes additional values on documents returned by a query. Each key is the name of
              * the computed attribute; each value is an expression describing how to compute it.
              */
-            fun computeAttributes(computeAttributes: MutableMap<String, ComputeAttributes>) =
+            fun computeAttributes(computeAttributes: MutableMap<String, Expr>) =
                 computeAttributes(JsonField.of(computeAttributes))
 
             /**
              * Sets [Builder.computeAttributes] to an arbitrary JSON value.
              *
              * You should usually call [Builder.computeAttributes] with a well-typed
-             * `MutableMap<String, ComputeAttributes>` value instead. This method is primarily for
-             * setting the field to an undocumented or not yet supported value.
+             * `MutableMap<String, Expr>` value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
              */
-            fun computeAttributes(
-                computeAttributes: JsonField<MutableMap<String, ComputeAttributes>>
-            ) = apply { this.computeAttributes = computeAttributes }
+            fun computeAttributes(computeAttributes: JsonField<MutableMap<String, Expr>>) = apply {
+                this.computeAttributes = computeAttributes
+            }
 
             /** The consistency level for a query. */
             fun consistency(consistency: Consistency) = consistency(JsonField.of(consistency))
