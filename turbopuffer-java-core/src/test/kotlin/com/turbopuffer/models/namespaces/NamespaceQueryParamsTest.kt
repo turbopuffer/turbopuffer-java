@@ -18,11 +18,7 @@ internal class NamespaceQueryParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-            .computeAttributes(
-                NamespaceQueryParams.ComputeAttributes.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                    .build()
-            )
+            .computeAttributes(mutableMapOf("foo" to Expr.highlight("bar")))
             .consistency(
                 NamespaceQueryParams.Consistency.builder()
                     .level(NamespaceQueryParams.Consistency.Level.STRONG)
@@ -59,11 +55,7 @@ internal class NamespaceQueryParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
-                .computeAttributes(
-                    NamespaceQueryParams.ComputeAttributes.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
+                .computeAttributes(mutableMapOf("foo" to Expr.highlight("bar")))
                 .consistency(
                     NamespaceQueryParams.Consistency.builder()
                         .level(NamespaceQueryParams.Consistency.Level.STRONG)
@@ -88,12 +80,7 @@ internal class NamespaceQueryParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-        assertThat(body.computeAttributes())
-            .contains(
-                NamespaceQueryParams.ComputeAttributes.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                    .build()
-            )
+        assertThat(body.computeAttributes()).contains(mutableMapOf("foo" to Expr.highlight("bar")))
         assertThat(body.consistency())
             .contains(
                 NamespaceQueryParams.Consistency.builder()
