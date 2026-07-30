@@ -10,16 +10,20 @@ import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
+import com.turbopuffer.core.checkKnown
+import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Configuration options for RRF. */
 class RrfParams
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val rankConstant: JsonField<Long>,
+    private val weights: JsonField<List<Float>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -27,8 +31,9 @@ private constructor(
     private constructor(
         @JsonProperty("rank_constant")
         @ExcludeMissing
-        rankConstant: JsonField<Long> = JsonMissing.of()
-    ) : this(rankConstant, mutableMapOf())
+        rankConstant: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("weights") @ExcludeMissing weights: JsonField<List<Float>> = JsonMissing.of(),
+    ) : this(rankConstant, weights, mutableMapOf())
 
     /**
      * RRF rank constant (`k`). Must be greater than zero. Defaults to `60`.
@@ -39,6 +44,15 @@ private constructor(
     fun rankConstant(): Optional<Long> = rankConstant.getOptional("rank_constant")
 
     /**
+     * A positive weight for each subquery, in the same order as `queries`. The number of weights
+     * must match the number of subqueries. When omitted, every subquery has a weight of `1`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun weights(): Optional<List<Float>> = weights.getOptional("weights")
+
+    /**
      * Returns the raw JSON value of [rankConstant].
      *
      * Unlike [rankConstant], this method doesn't throw if the JSON field has an unexpected type.
@@ -46,6 +60,13 @@ private constructor(
     @JsonProperty("rank_constant")
     @ExcludeMissing
     fun _rankConstant(): JsonField<Long> = rankConstant
+
+    /**
+     * Returns the raw JSON value of [weights].
+     *
+     * Unlike [weights], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("weights") @ExcludeMissing fun _weights(): JsonField<List<Float>> = weights
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -69,11 +90,13 @@ private constructor(
     class Builder internal constructor() {
 
         private var rankConstant: JsonField<Long> = JsonMissing.of()
+        private var weights: JsonField<MutableList<Float>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(rrfParams: RrfParams) = apply {
             rankConstant = rrfParams.rankConstant
+            weights = rrfParams.weights.map { it.toMutableList() }
             additionalProperties = rrfParams.additionalProperties.toMutableMap()
         }
 
@@ -88,6 +111,36 @@ private constructor(
          * value.
          */
         fun rankConstant(rankConstant: JsonField<Long>) = apply { this.rankConstant = rankConstant }
+
+        /**
+         * A positive weight for each subquery, in the same order as `queries`. The number of
+         * weights must match the number of subqueries. When omitted, every subquery has a weight of
+         * `1`.
+         */
+        fun weights(weights: List<Float>) = weights(JsonField.of(weights))
+
+        /**
+         * Sets [Builder.weights] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.weights] with a well-typed `List<Float>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun weights(weights: JsonField<List<Float>>) = apply {
+            this.weights = weights.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Float] to [weights].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addWeight(weight: Float) = apply {
+            weights =
+                (weights ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("weights", it).add(weight)
+                }
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -113,7 +166,12 @@ private constructor(
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): RrfParams = RrfParams(rankConstant, additionalProperties.toMutableMap())
+        fun build(): RrfParams =
+            RrfParams(
+                rankConstant,
+                (weights ?: JsonMissing.of()).map { it.toImmutable() },
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -132,6 +190,7 @@ private constructor(
         }
 
         rankConstant()
+        weights()
         validated = true
     }
 
@@ -148,7 +207,10 @@ private constructor(
      *
      * Used for best match union deserialization.
      */
-    @JvmSynthetic internal fun validity(): Int = (if (rankConstant.asKnown().isPresent) 1 else 0)
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (rankConstant.asKnown().isPresent) 1 else 0) +
+            (weights.asKnown().getOrNull()?.size ?: 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -157,13 +219,14 @@ private constructor(
 
         return other is RrfParams &&
             rankConstant == other.rankConstant &&
+            weights == other.weights &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy { Objects.hash(rankConstant, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(rankConstant, weights, additionalProperties) }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RrfParams{rankConstant=$rankConstant, additionalProperties=$additionalProperties}"
+        "RrfParams{rankConstant=$rankConstant, weights=$weights, additionalProperties=$additionalProperties}"
 }
