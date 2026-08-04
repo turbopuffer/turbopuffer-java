@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.7.0 (2026-08-04)
+
+Full Changelog: [v2.6.0...v2.7.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.6.0...v2.7.0)
+
+### Features
+
+* spec: no-op change to Stainless spec ([1dc9bda](https://github.com/turbopuffer/turbopuffer-java/commit/1dc9bda4ee729d1d98af8408a37027ebb7450794))
+
+
+### Chores
+
+* **internal:** codegen related update ([9ce72cf](https://github.com/turbopuffer/turbopuffer-java/commit/9ce72cf1fa2d418641c76be7f6975c4e4ca065db))
+
 ## 2.6.0 (2026-07-30)
 
 Full Changelog: [v2.5.0...v2.6.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.5.0...v2.6.0)
