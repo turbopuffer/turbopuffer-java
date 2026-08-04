@@ -119,7 +119,7 @@ private constructor(
      * Defaults to [LogLevel.fromEnv].
      */
     @get:JvmName("logLevel") val logLevel: LogLevel,
-    /** API key used for authentication */
+    /** API key used for authentication. */
     @get:JvmName("apiKey") val apiKey: String,
     private val region: String?,
     private val defaultNamespace: String?,
@@ -339,7 +339,7 @@ private constructor(
          */
         fun logLevel(logLevel: LogLevel) = apply { this.logLevel = logLevel }
 
-        /** API key used for authentication */
+        /** API key used for authentication. */
         fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
 
         /** The turbopuffer region to use. */
