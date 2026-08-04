@@ -304,7 +304,7 @@ class TurbopufferOkHttpClientAsync private constructor() {
          */
         fun logLevel(logLevel: LogLevel) = apply { clientOptions.logLevel(logLevel) }
 
-        /** API key used for authentication */
+        /** API key used for authentication. */
         fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
 
         /** The turbopuffer region to use. */
