@@ -60,6 +60,14 @@ private constructor(
     fun consistency(): Optional<Consistency> = body.consistency()
 
     /**
+     * Limits the total number of reranked documents returned.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun limit(): Optional<Limit> = body.limit()
+
+    /**
      * How to combine the rows returned by each sub-query into a single ranked list.
      *
      * This arbitrary value can be deserialized into a custom type using the `convert` method:
@@ -90,6 +98,13 @@ private constructor(
      * Unlike [consistency], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _consistency(): JsonField<Consistency> = body._consistency()
+
+    /**
+     * Returns the raw JSON value of [limit].
+     *
+     * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _limit(): JsonField<Limit> = body._limit()
 
     /**
      * Returns the raw JSON value of [vectorEncoding].
@@ -149,8 +164,10 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [queries]
          * - [consistency]
+         * - [limit]
          * - [rerankBy]
          * - [vectorEncoding]
+         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -185,6 +202,23 @@ private constructor(
         fun consistency(consistency: JsonField<Consistency>) = apply {
             body.consistency(consistency)
         }
+
+        /** Limits the total number of reranked documents returned. */
+        fun limit(limit: Limit) = apply { body.limit(limit) }
+
+        /**
+         * Sets [Builder.limit] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.limit] with a well-typed [Limit] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun limit(limit: JsonField<Limit>) = apply { body.limit(limit) }
+
+        /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
+        fun limit(integer: Long) = apply { body.limit(integer) }
+
+        /** Alias for calling [limit] with `Limit.ofTotal(total)`. */
+        fun limit(total: Limit.Total) = apply { body.limit(total) }
 
         /** How to combine the rows returned by each sub-query into a single ranked list. */
         fun rerankBy(rerankBy: JsonValue) = apply { body.rerankBy(rerankBy) }
@@ -361,6 +395,7 @@ private constructor(
     private constructor(
         private val queries: JsonField<List<Query>>,
         private val consistency: JsonField<Consistency>,
+        private val limit: JsonField<Limit>,
         private val rerankBy: JsonValue,
         private val vectorEncoding: JsonField<VectorEncoding>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -374,11 +409,12 @@ private constructor(
             @JsonProperty("consistency")
             @ExcludeMissing
             consistency: JsonField<Consistency> = JsonMissing.of(),
+            @JsonProperty("limit") @ExcludeMissing limit: JsonField<Limit> = JsonMissing.of(),
             @JsonProperty("rerank_by") @ExcludeMissing rerankBy: JsonValue = JsonMissing.of(),
             @JsonProperty("vector_encoding")
             @ExcludeMissing
             vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of(),
-        ) : this(queries, consistency, rerankBy, vectorEncoding, mutableMapOf())
+        ) : this(queries, consistency, limit, rerankBy, vectorEncoding, mutableMapOf())
 
         /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
@@ -393,6 +429,14 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun consistency(): Optional<Consistency> = consistency.getOptional("consistency")
+
+        /**
+         * Limits the total number of reranked documents returned.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun limit(): Optional<Limit> = limit.getOptional("limit")
 
         /**
          * How to combine the rows returned by each sub-query into a single ranked list.
@@ -428,6 +472,13 @@ private constructor(
         @JsonProperty("consistency")
         @ExcludeMissing
         fun _consistency(): JsonField<Consistency> = consistency
+
+        /**
+         * Returns the raw JSON value of [limit].
+         *
+         * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Limit> = limit
 
         /**
          * Returns the raw JSON value of [vectorEncoding].
@@ -469,6 +520,7 @@ private constructor(
 
             private var queries: JsonField<MutableList<Query>>? = null
             private var consistency: JsonField<Consistency> = JsonMissing.of()
+            private var limit: JsonField<Limit> = JsonMissing.of()
             private var rerankBy: JsonValue = JsonMissing.of()
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -477,6 +529,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 queries = body.queries.map { it.toMutableList() }
                 consistency = body.consistency
+                limit = body.limit
                 rerankBy = body.rerankBy
                 vectorEncoding = body.vectorEncoding
                 additionalProperties = body.additionalProperties.toMutableMap()
@@ -520,6 +573,24 @@ private constructor(
             fun consistency(consistency: JsonField<Consistency>) = apply {
                 this.consistency = consistency
             }
+
+            /** Limits the total number of reranked documents returned. */
+            fun limit(limit: Limit) = limit(JsonField.of(limit))
+
+            /**
+             * Sets [Builder.limit] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.limit] with a well-typed [Limit] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun limit(limit: JsonField<Limit>) = apply { this.limit = limit }
+
+            /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
+            fun limit(integer: Long) = limit(Limit.ofInteger(integer))
+
+            /** Alias for calling [limit] with `Limit.ofTotal(total)`. */
+            fun limit(total: Limit.Total) = limit(Limit.ofTotal(total))
 
             /** How to combine the rows returned by each sub-query into a single ranked list. */
             fun rerankBy(rerankBy: JsonValue) = apply { this.rerankBy = rerankBy }
@@ -574,6 +645,7 @@ private constructor(
                 Body(
                     checkRequired("queries", queries).map { it.toImmutable() },
                     consistency,
+                    limit,
                     rerankBy,
                     vectorEncoding,
                     additionalProperties.toMutableMap(),
@@ -598,6 +670,7 @@ private constructor(
 
             queries().forEach { it.validate() }
             consistency().ifPresent { it.validate() }
+            limit().ifPresent { it.validate() }
             vectorEncoding().ifPresent { it.validate() }
             validated = true
         }
@@ -620,6 +693,7 @@ private constructor(
         internal fun validity(): Int =
             (queries.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (consistency.asKnown().getOrNull()?.validity() ?: 0) +
+                (limit.asKnown().getOrNull()?.validity() ?: 0) +
                 (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -630,19 +704,27 @@ private constructor(
             return other is Body &&
                 queries == other.queries &&
                 consistency == other.consistency &&
+                limit == other.limit &&
                 rerankBy == other.rerankBy &&
                 vectorEncoding == other.vectorEncoding &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(queries, consistency, rerankBy, vectorEncoding, additionalProperties)
+            Objects.hash(
+                queries,
+                consistency,
+                limit,
+                rerankBy,
+                vectorEncoding,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{queries=$queries, consistency=$consistency, rerankBy=$rerankBy, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{queries=$queries, consistency=$consistency, limit=$limit, rerankBy=$rerankBy, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** Query, filter, full-text search and vector search documents. */
@@ -1979,6 +2061,381 @@ private constructor(
 
         override fun toString() =
             "Consistency{level=$level, additionalProperties=$additionalProperties}"
+    }
+
+    /** Limits the total number of reranked documents returned. */
+    @JsonDeserialize(using = Limit.Deserializer::class)
+    @JsonSerialize(using = Limit.Serializer::class)
+    class Limit
+    private constructor(
+        private val integer: Long? = null,
+        private val total: Total? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        fun integer(): Optional<Long> = Optional.ofNullable(integer)
+
+        fun total(): Optional<Total> = Optional.ofNullable(total)
+
+        fun isInteger(): Boolean = integer != null
+
+        fun isTotal(): Boolean = total != null
+
+        fun asInteger(): Long = integer.getOrThrow("integer")
+
+        fun asTotal(): Total = total.getOrThrow("total")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.turbopuffer.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = limit.accept(new Limit.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitInteger(Long integer) {
+         *         return Optional.of(integer.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws TurbopufferInvalidDataException if [Visitor.unknown] is not overridden in
+         *   [visitor] and the current variant is unknown.
+         */
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                integer != null -> visitor.visitInteger(integer)
+                total != null -> visitor.visitTotal(total)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws TurbopufferInvalidDataException if any value type in this object doesn't match
+         *   its expected type.
+         */
+        fun validate(): Limit = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitInteger(integer: Long) {}
+
+                    override fun visitTotal(total: Total) {
+                        total.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitInteger(integer: Long) = 1
+
+                    override fun visitTotal(total: Total) = total.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Limit && integer == other.integer && total == other.total
+        }
+
+        override fun hashCode(): Int = Objects.hash(integer, total)
+
+        override fun toString(): String =
+            when {
+                integer != null -> "Limit{integer=$integer}"
+                total != null -> "Limit{total=$total}"
+                _json != null -> "Limit{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Limit")
+            }
+
+        companion object {
+
+            @JvmStatic fun ofInteger(integer: Long) = Limit(integer = integer)
+
+            @JvmStatic fun ofTotal(total: Total) = Limit(total = total)
+        }
+
+        /** An interface that defines how to map each variant of [Limit] to a value of type [T]. */
+        interface Visitor<out T> {
+
+            fun visitInteger(integer: Long): T
+
+            fun visitTotal(total: Total): T
+
+            /**
+             * Maps an unknown variant of [Limit] to a value of type [T].
+             *
+             * An instance of [Limit] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws TurbopufferInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw TurbopufferInvalidDataException("Unknown Limit: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Limit>(Limit::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Limit {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<Total>())?.let {
+                                Limit(total = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                Limit(integer = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Limit(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Limit>(Limit::class) {
+
+            override fun serialize(
+                value: Limit,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.integer != null -> generator.writeObject(value.integer)
+                    value.total != null -> generator.writeObject(value.total)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Limit")
+                }
+            }
+        }
+
+        class Total
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val total: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("total") @ExcludeMissing total: JsonField<Long> = JsonMissing.of()
+            ) : this(total, mutableMapOf())
+
+            /**
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun total(): Long = total.getRequired("total")
+
+            /**
+             * Returns the raw JSON value of [total].
+             *
+             * Unlike [total], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Total].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .total()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Total]. */
+            class Builder internal constructor() {
+
+                private var total: JsonField<Long>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(total: Total) = apply {
+                    this.total = total.total
+                    additionalProperties = total.additionalProperties.toMutableMap()
+                }
+
+                fun total(total: Long) = total(JsonField.of(total))
+
+                /**
+                 * Sets [Builder.total] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.total] with a well-typed [Long] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun total(total: JsonField<Long>) = apply { this.total = total }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Total].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .total()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Total =
+                    Total(checkRequired("total", total), additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws TurbopufferInvalidDataException if any value type in this object doesn't
+             *   match its expected type.
+             */
+            fun validate(): Total = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                total()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = (if (total.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Total &&
+                    total == other.total &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(total, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Total{total=$total, additionalProperties=$additionalProperties}"
+        }
     }
 
     override fun equals(other: Any?): Boolean {

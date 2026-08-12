@@ -39,6 +39,7 @@ internal class NamespaceMultiQueryParamsTest {
                     .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
                     .build()
             )
+            .limit(0L)
             .rerankBy(JsonValue.from(mapOf<String, Any>()))
             .vectorEncoding(VectorEncoding.FLOAT)
             .build()
@@ -88,6 +89,7 @@ internal class NamespaceMultiQueryParamsTest {
                         .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
                         .build()
                 )
+                .limit(0L)
                 .rerankBy(JsonValue.from(mapOf<String, Any>()))
                 .vectorEncoding(VectorEncoding.FLOAT)
                 .build()
@@ -123,6 +125,7 @@ internal class NamespaceMultiQueryParamsTest {
                     .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
                     .build()
             )
+        assertThat(body.limit()).contains(NamespaceMultiQueryParams.Limit.ofInteger(0L))
         assertThat(body._rerankBy()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.vectorEncoding()).contains(VectorEncoding.FLOAT)
     }
