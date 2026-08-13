@@ -3,7 +3,7 @@
 <!-- x-release-please-start-version -->
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.turbopuffer/turbopuffer-java)](https://central.sonatype.com/artifact/com.turbopuffer/turbopuffer-java/2.6.0)
-[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/2.6.0/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/2.6.0)
+[![javadoc](https://javadoc.io/badge2/com.turbopuffer/turbopuffer-java/javadoc.svg)](https://javadoc.io/doc/com.turbopuffer/turbopuffer-java/2.6.0)
 
 <!-- x-release-please-end -->
 
