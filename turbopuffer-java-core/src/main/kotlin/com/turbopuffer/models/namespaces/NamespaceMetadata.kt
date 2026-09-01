@@ -1253,6 +1253,7 @@ private constructor(
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val readyReplicas: JsonField<Long>,
+            private val replicas: JsonField<Long>,
             private val updatedAt: JsonField<OffsetDateTime>,
             private val utilization: JsonField<Double>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1263,13 +1264,16 @@ private constructor(
                 @JsonProperty("ready_replicas")
                 @ExcludeMissing
                 readyReplicas: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("replicas")
+                @ExcludeMissing
+                replicas: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("updated_at")
                 @ExcludeMissing
                 updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
                 @JsonProperty("utilization")
                 @ExcludeMissing
                 utilization: JsonField<Double> = JsonMissing.of(),
-            ) : this(readyReplicas, updatedAt, utilization, mutableMapOf())
+            ) : this(readyReplicas, replicas, updatedAt, utilization, mutableMapOf())
 
             /**
              * The number of replicas that are warm and serving traffic.
@@ -1279,6 +1283,17 @@ private constructor(
              *   value).
              */
             fun readyReplicas(): Long = readyReplicas.getRequired("ready_replicas")
+
+            /**
+             * The number of running replicas for the namespace. Replicas are billed once running,
+             * even before they finish warming their caches and become ready to serve traffic. This
+             * count is updated independently and may briefly disagree with the other status fields.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun replicas(): Long = replicas.getRequired("replicas")
 
             /**
              * The timestamp of the latest pinning status snapshot.
@@ -1308,6 +1323,14 @@ private constructor(
             @JsonProperty("ready_replicas")
             @ExcludeMissing
             fun _readyReplicas(): JsonField<Long> = readyReplicas
+
+            /**
+             * Returns the raw JSON value of [replicas].
+             *
+             * Unlike [replicas], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("replicas") @ExcludeMissing fun _replicas(): JsonField<Long> = replicas
 
             /**
              * Returns the raw JSON value of [updatedAt].
@@ -1349,6 +1372,7 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .readyReplicas()
+                 * .replicas()
                  * .updatedAt()
                  * .utilization()
                  * ```
@@ -1360,6 +1384,7 @@ private constructor(
             class Builder internal constructor() {
 
                 private var readyReplicas: JsonField<Long>? = null
+                private var replicas: JsonField<Long>? = null
                 private var updatedAt: JsonField<OffsetDateTime>? = null
                 private var utilization: JsonField<Double>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1367,6 +1392,7 @@ private constructor(
                 @JvmSynthetic
                 internal fun from(status: Status) = apply {
                     readyReplicas = status.readyReplicas
+                    replicas = status.replicas
                     updatedAt = status.updatedAt
                     utilization = status.utilization
                     additionalProperties = status.additionalProperties.toMutableMap()
@@ -1385,6 +1411,23 @@ private constructor(
                 fun readyReplicas(readyReplicas: JsonField<Long>) = apply {
                     this.readyReplicas = readyReplicas
                 }
+
+                /**
+                 * The number of running replicas for the namespace. Replicas are billed once
+                 * running, even before they finish warming their caches and become ready to serve
+                 * traffic. This count is updated independently and may briefly disagree with the
+                 * other status fields.
+                 */
+                fun replicas(replicas: Long) = replicas(JsonField.of(replicas))
+
+                /**
+                 * Sets [Builder.replicas] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.replicas] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun replicas(replicas: JsonField<Long>) = apply { this.replicas = replicas }
 
                 /** The timestamp of the latest pinning status snapshot. */
                 fun updatedAt(updatedAt: OffsetDateTime) = updatedAt(JsonField.of(updatedAt))
@@ -1447,6 +1490,7 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .readyReplicas()
+                 * .replicas()
                  * .updatedAt()
                  * .utilization()
                  * ```
@@ -1456,6 +1500,7 @@ private constructor(
                 fun build(): Status =
                     Status(
                         checkRequired("readyReplicas", readyReplicas),
+                        checkRequired("replicas", replicas),
                         checkRequired("updatedAt", updatedAt),
                         checkRequired("utilization", utilization),
                         additionalProperties.toMutableMap(),
@@ -1480,6 +1525,7 @@ private constructor(
                 }
 
                 readyReplicas()
+                replicas()
                 updatedAt()
                 utilization()
                 validated = true
@@ -1502,6 +1548,7 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (if (readyReplicas.asKnown().isPresent) 1 else 0) +
+                    (if (replicas.asKnown().isPresent) 1 else 0) +
                     (if (updatedAt.asKnown().isPresent) 1 else 0) +
                     (if (utilization.asKnown().isPresent) 1 else 0)
 
@@ -1512,19 +1559,20 @@ private constructor(
 
                 return other is Status &&
                     readyReplicas == other.readyReplicas &&
+                    replicas == other.replicas &&
                     updatedAt == other.updatedAt &&
                     utilization == other.utilization &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(readyReplicas, updatedAt, utilization, additionalProperties)
+                Objects.hash(readyReplicas, replicas, updatedAt, utilization, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Status{readyReplicas=$readyReplicas, updatedAt=$updatedAt, utilization=$utilization, additionalProperties=$additionalProperties}"
+                "Status{readyReplicas=$readyReplicas, replicas=$replicas, updatedAt=$updatedAt, utilization=$utilization, additionalProperties=$additionalProperties}"
         }
 
         override fun equals(other: Any?): Boolean {

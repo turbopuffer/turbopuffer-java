@@ -47,6 +47,7 @@ internal class NamespaceMetadataTest {
                         .status(
                             NamespaceMetadata.Pinning.Status.builder()
                                 .readyReplicas(0L)
+                                .replicas(0L)
                                 .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                                 .utilization(0.0)
                                 .build()
@@ -97,6 +98,7 @@ internal class NamespaceMetadataTest {
                     .status(
                         NamespaceMetadata.Pinning.Status.builder()
                             .readyReplicas(0L)
+                            .replicas(0L)
                             .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                             .utilization(0.0)
                             .build()
@@ -144,6 +146,7 @@ internal class NamespaceMetadataTest {
                         .status(
                             NamespaceMetadata.Pinning.Status.builder()
                                 .readyReplicas(0L)
+                                .replicas(0L)
                                 .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                                 .utilization(0.0)
                                 .build()
