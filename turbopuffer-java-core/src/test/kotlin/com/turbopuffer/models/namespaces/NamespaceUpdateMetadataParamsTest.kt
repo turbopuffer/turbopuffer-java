@@ -12,7 +12,9 @@ internal class NamespaceUpdateMetadataParamsTest {
     fun create() {
         NamespaceUpdateMetadataParams.builder()
             .namespace("namespace")
-            .namespaceMetadataPatch(NamespaceMetadataPatch.builder().pinning(true).build())
+            .namespaceMetadataPatch(
+                NamespaceMetadataPatch.builder().pinning(true).readOnly(true).build()
+            )
             .build()
     }
 
@@ -30,12 +32,15 @@ internal class NamespaceUpdateMetadataParamsTest {
         val params =
             NamespaceUpdateMetadataParams.builder()
                 .namespace("namespace")
-                .namespaceMetadataPatch(NamespaceMetadataPatch.builder().pinning(true).build())
+                .namespaceMetadataPatch(
+                    NamespaceMetadataPatch.builder().pinning(true).readOnly(true).build()
+                )
                 .build()
 
         val body = params._body().getOrNull()
 
-        assertThat(body).isEqualTo(NamespaceMetadataPatch.builder().pinning(true).build())
+        assertThat(body)
+            .isEqualTo(NamespaceMetadataPatch.builder().pinning(true).readOnly(true).build())
     }
 
     @Test

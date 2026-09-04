@@ -42,6 +42,7 @@ private constructor(
     private val schema: JsonField<Schema>,
     private val updatedAt: JsonField<OffsetDateTime>,
     private val pinning: JsonField<Pinning>,
+    private val readOnly: JsonField<Boolean>,
     private val sharding: JsonField<ShardingConfig>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -66,6 +67,7 @@ private constructor(
         @ExcludeMissing
         updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
         @JsonProperty("pinning") @ExcludeMissing pinning: JsonField<Pinning> = JsonMissing.of(),
+        @JsonProperty("read_only") @ExcludeMissing readOnly: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("sharding")
         @ExcludeMissing
         sharding: JsonField<ShardingConfig> = JsonMissing.of(),
@@ -78,6 +80,7 @@ private constructor(
         schema,
         updatedAt,
         pinning,
+        readOnly,
         sharding,
         mutableMapOf(),
     )
@@ -143,6 +146,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun pinning(): Optional<Pinning> = pinning.getOptional("pinning")
+
+    /**
+     * Whether document and schema writes are rejected. Omitted when `false`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
 
     /**
      * Configuration for namespace sharding, which partitions a namespace's documents across
@@ -223,6 +234,13 @@ private constructor(
     @JsonProperty("pinning") @ExcludeMissing fun _pinning(): JsonField<Pinning> = pinning
 
     /**
+     * Returns the raw JSON value of [readOnly].
+     *
+     * Unlike [readOnly], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("read_only") @ExcludeMissing fun _readOnly(): JsonField<Boolean> = readOnly
+
+    /**
      * Returns the raw JSON value of [sharding].
      *
      * Unlike [sharding], this method doesn't throw if the JSON field has an unexpected type.
@@ -271,6 +289,7 @@ private constructor(
         private var schema: JsonField<Schema>? = null
         private var updatedAt: JsonField<OffsetDateTime>? = null
         private var pinning: JsonField<Pinning> = JsonMissing.of()
+        private var readOnly: JsonField<Boolean> = JsonMissing.of()
         private var sharding: JsonField<ShardingConfig> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -284,6 +303,7 @@ private constructor(
             schema = namespaceMetadata.schema
             updatedAt = namespaceMetadata.updatedAt
             pinning = namespaceMetadata.pinning
+            readOnly = namespaceMetadata.readOnly
             sharding = namespaceMetadata.sharding
             additionalProperties = namespaceMetadata.additionalProperties.toMutableMap()
         }
@@ -401,6 +421,18 @@ private constructor(
          */
         fun pinning(pinning: JsonField<Pinning>) = apply { this.pinning = pinning }
 
+        /** Whether document and schema writes are rejected. Omitted when `false`. */
+        fun readOnly(readOnly: Boolean) = readOnly(JsonField.of(readOnly))
+
+        /**
+         * Sets [Builder.readOnly] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.readOnly] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun readOnly(readOnly: JsonField<Boolean>) = apply { this.readOnly = readOnly }
+
         /**
          * Configuration for namespace sharding, which partitions a namespace's documents across
          * multiple internal shards to scale indexing and query throughput beyond a single machine.
@@ -465,6 +497,7 @@ private constructor(
                 checkRequired("schema", schema),
                 checkRequired("updatedAt", updatedAt),
                 pinning,
+                readOnly,
                 sharding,
                 additionalProperties.toMutableMap(),
             )
@@ -493,6 +526,7 @@ private constructor(
         schema().validate()
         updatedAt()
         pinning().ifPresent { it.validate() }
+        readOnly()
         sharding().ifPresent { it.validate() }
         validated = true
     }
@@ -520,6 +554,7 @@ private constructor(
             (schema.asKnown().getOrNull()?.validity() ?: 0) +
             (if (updatedAt.asKnown().isPresent) 1 else 0) +
             (pinning.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (readOnly.asKnown().isPresent) 1 else 0) +
             (sharding.asKnown().getOrNull()?.validity() ?: 0)
 
     @JsonDeserialize(using = Index.Deserializer::class)
@@ -1608,6 +1643,7 @@ private constructor(
             schema == other.schema &&
             updatedAt == other.updatedAt &&
             pinning == other.pinning &&
+            readOnly == other.readOnly &&
             sharding == other.sharding &&
             additionalProperties == other.additionalProperties
     }
@@ -1622,6 +1658,7 @@ private constructor(
             schema,
             updatedAt,
             pinning,
+            readOnly,
             sharding,
             additionalProperties,
         )
@@ -1630,5 +1667,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, encryption=$encryption, index=$index, schema=$schema, updatedAt=$updatedAt, pinning=$pinning, sharding=$sharding, additionalProperties=$additionalProperties}"
+        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, encryption=$encryption, index=$index, schema=$schema, updatedAt=$updatedAt, pinning=$pinning, readOnly=$readOnly, sharding=$sharding, additionalProperties=$additionalProperties}"
 }

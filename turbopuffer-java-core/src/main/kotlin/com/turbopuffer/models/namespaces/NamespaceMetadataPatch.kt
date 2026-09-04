@@ -32,13 +32,15 @@ class NamespaceMetadataPatch
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val pinning: JsonField<Pinning>,
+    private val readOnly: JsonField<Boolean>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("pinning") @ExcludeMissing pinning: JsonField<Pinning> = JsonMissing.of()
-    ) : this(pinning, mutableMapOf())
+        @JsonProperty("pinning") @ExcludeMissing pinning: JsonField<Pinning> = JsonMissing.of(),
+        @JsonProperty("read_only") @ExcludeMissing readOnly: JsonField<Boolean> = JsonMissing.of(),
+    ) : this(pinning, readOnly, mutableMapOf())
 
     /**
      * Configuration for namespace pinning.
@@ -53,11 +55,27 @@ private constructor(
     fun pinning(): Optional<Pinning> = pinning.getOptional("pinning")
 
     /**
+     * Set to `true` to reject document and schema writes, or `false` to allow them. Writes already
+     * in progress may still commit. Metadata updates remain available.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
+
+    /**
      * Returns the raw JSON value of [pinning].
      *
      * Unlike [pinning], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("pinning") @ExcludeMissing fun _pinning(): JsonField<Pinning> = pinning
+
+    /**
+     * Returns the raw JSON value of [readOnly].
+     *
+     * Unlike [readOnly], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("read_only") @ExcludeMissing fun _readOnly(): JsonField<Boolean> = readOnly
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -81,11 +99,13 @@ private constructor(
     class Builder internal constructor() {
 
         private var pinning: JsonField<Pinning> = JsonMissing.of()
+        private var readOnly: JsonField<Boolean> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(namespaceMetadataPatch: NamespaceMetadataPatch) = apply {
             pinning = namespaceMetadataPatch.pinning
+            readOnly = namespaceMetadataPatch.readOnly
             additionalProperties = namespaceMetadataPatch.additionalProperties.toMutableMap()
         }
 
@@ -115,6 +135,21 @@ private constructor(
         /** Alias for calling [pinning] with `Pinning.ofConfig(config)`. */
         fun pinning(config: PinningConfig) = pinning(Pinning.ofConfig(config))
 
+        /**
+         * Set to `true` to reject document and schema writes, or `false` to allow them. Writes
+         * already in progress may still commit. Metadata updates remain available.
+         */
+        fun readOnly(readOnly: Boolean) = readOnly(JsonField.of(readOnly))
+
+        /**
+         * Sets [Builder.readOnly] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.readOnly] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun readOnly(readOnly: JsonField<Boolean>) = apply { this.readOnly = readOnly }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -140,7 +175,7 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): NamespaceMetadataPatch =
-            NamespaceMetadataPatch(pinning, additionalProperties.toMutableMap())
+            NamespaceMetadataPatch(pinning, readOnly, additionalProperties.toMutableMap())
     }
 
     private var validated: Boolean = false
@@ -159,6 +194,7 @@ private constructor(
         }
 
         pinning().ifPresent { it.validate() }
+        readOnly()
         validated = true
     }
 
@@ -175,7 +211,10 @@ private constructor(
      *
      * Used for best match union deserialization.
      */
-    @JvmSynthetic internal fun validity(): Int = (pinning.asKnown().getOrNull()?.validity() ?: 0)
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (pinning.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (readOnly.asKnown().isPresent) 1 else 0)
 
     /**
      * Configuration for namespace pinning.
@@ -404,13 +443,14 @@ private constructor(
 
         return other is NamespaceMetadataPatch &&
             pinning == other.pinning &&
+            readOnly == other.readOnly &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy { Objects.hash(pinning, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(pinning, readOnly, additionalProperties) }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceMetadataPatch{pinning=$pinning, additionalProperties=$additionalProperties}"
+        "NamespaceMetadataPatch{pinning=$pinning, readOnly=$readOnly, additionalProperties=$additionalProperties}"
 }
