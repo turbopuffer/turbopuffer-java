@@ -54,6 +54,7 @@ internal class NamespaceMetadataTest {
                         )
                         .build()
                 )
+                .readOnly(true)
                 .sharding(ShardingConfig.builder().numShards(1).build())
                 .build()
 
@@ -105,6 +106,7 @@ internal class NamespaceMetadataTest {
                     )
                     .build()
             )
+        assertThat(namespaceMetadata.readOnly()).contains(true)
         assertThat(namespaceMetadata.sharding())
             .contains(ShardingConfig.builder().numShards(1).build())
     }
@@ -153,6 +155,7 @@ internal class NamespaceMetadataTest {
                         )
                         .build()
                 )
+                .readOnly(true)
                 .sharding(ShardingConfig.builder().numShards(1).build())
                 .build()
 

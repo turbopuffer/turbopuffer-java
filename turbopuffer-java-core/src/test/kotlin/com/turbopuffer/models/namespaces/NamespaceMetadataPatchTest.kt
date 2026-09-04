@@ -11,16 +11,19 @@ internal class NamespaceMetadataPatchTest {
 
     @Test
     fun create() {
-        val namespaceMetadataPatch = NamespaceMetadataPatch.builder().pinning(true).build()
+        val namespaceMetadataPatch =
+            NamespaceMetadataPatch.builder().pinning(true).readOnly(true).build()
 
         assertThat(namespaceMetadataPatch.pinning())
             .contains(NamespaceMetadataPatch.Pinning.ofBool(true))
+        assertThat(namespaceMetadataPatch.readOnly()).contains(true)
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val namespaceMetadataPatch = NamespaceMetadataPatch.builder().pinning(true).build()
+        val namespaceMetadataPatch =
+            NamespaceMetadataPatch.builder().pinning(true).readOnly(true).build()
 
         val roundtrippedNamespaceMetadataPatch =
             jsonMapper.readValue(
