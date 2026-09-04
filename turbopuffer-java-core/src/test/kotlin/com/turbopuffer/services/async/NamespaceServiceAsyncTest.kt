@@ -240,7 +240,9 @@ internal class NamespaceServiceAsyncTest {
             namespaceServiceAsync.updateMetadata(
                 NamespaceUpdateMetadataParams.builder()
                     .namespace("namespace")
-                    .namespaceMetadataPatch(NamespaceMetadataPatch.builder().pinning(true).build())
+                    .namespaceMetadataPatch(
+                        NamespaceMetadataPatch.builder().pinning(true).readOnly(true).build()
+                    )
                     .build()
             )
 
