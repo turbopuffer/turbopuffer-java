@@ -68,6 +68,15 @@ private constructor(
     fun limit(): Optional<Limit> = body.limit()
 
     /**
+     * Number of reranked documents to skip before returning results. Requires `rerank_by` and
+     * `limit`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun offset(): Optional<Long> = body.offset()
+
+    /**
      * How to combine the rows returned by each sub-query into a single ranked list.
      *
      * This arbitrary value can be deserialized into a custom type using the `convert` method:
@@ -105,6 +114,13 @@ private constructor(
      * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _limit(): JsonField<Limit> = body._limit()
+
+    /**
+     * Returns the raw JSON value of [offset].
+     *
+     * Unlike [offset], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _offset(): JsonField<Long> = body._offset()
 
     /**
      * Returns the raw JSON value of [vectorEncoding].
@@ -165,8 +181,8 @@ private constructor(
          * - [queries]
          * - [consistency]
          * - [limit]
+         * - [offset]
          * - [rerankBy]
-         * - [vectorEncoding]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -219,6 +235,20 @@ private constructor(
 
         /** Alias for calling [limit] with `Limit.ofTotal(total)`. */
         fun limit(total: Limit.Total) = apply { body.limit(total) }
+
+        /**
+         * Number of reranked documents to skip before returning results. Requires `rerank_by` and
+         * `limit`.
+         */
+        fun offset(offset: Long) = apply { body.offset(offset) }
+
+        /**
+         * Sets [Builder.offset] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.offset] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun offset(offset: JsonField<Long>) = apply { body.offset(offset) }
 
         /** How to combine the rows returned by each sub-query into a single ranked list. */
         fun rerankBy(rerankBy: JsonValue) = apply { body.rerankBy(rerankBy) }
@@ -396,6 +426,7 @@ private constructor(
         private val queries: JsonField<List<Query>>,
         private val consistency: JsonField<Consistency>,
         private val limit: JsonField<Limit>,
+        private val offset: JsonField<Long>,
         private val rerankBy: JsonValue,
         private val vectorEncoding: JsonField<VectorEncoding>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -410,11 +441,12 @@ private constructor(
             @ExcludeMissing
             consistency: JsonField<Consistency> = JsonMissing.of(),
             @JsonProperty("limit") @ExcludeMissing limit: JsonField<Limit> = JsonMissing.of(),
+            @JsonProperty("offset") @ExcludeMissing offset: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("rerank_by") @ExcludeMissing rerankBy: JsonValue = JsonMissing.of(),
             @JsonProperty("vector_encoding")
             @ExcludeMissing
             vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of(),
-        ) : this(queries, consistency, limit, rerankBy, vectorEncoding, mutableMapOf())
+        ) : this(queries, consistency, limit, offset, rerankBy, vectorEncoding, mutableMapOf())
 
         /**
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
@@ -437,6 +469,15 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun limit(): Optional<Limit> = limit.getOptional("limit")
+
+        /**
+         * Number of reranked documents to skip before returning results. Requires `rerank_by` and
+         * `limit`.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun offset(): Optional<Long> = offset.getOptional("offset")
 
         /**
          * How to combine the rows returned by each sub-query into a single ranked list.
@@ -481,6 +522,13 @@ private constructor(
         @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Limit> = limit
 
         /**
+         * Returns the raw JSON value of [offset].
+         *
+         * Unlike [offset], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("offset") @ExcludeMissing fun _offset(): JsonField<Long> = offset
+
+        /**
          * Returns the raw JSON value of [vectorEncoding].
          *
          * Unlike [vectorEncoding], this method doesn't throw if the JSON field has an unexpected
@@ -521,6 +569,7 @@ private constructor(
             private var queries: JsonField<MutableList<Query>>? = null
             private var consistency: JsonField<Consistency> = JsonMissing.of()
             private var limit: JsonField<Limit> = JsonMissing.of()
+            private var offset: JsonField<Long> = JsonMissing.of()
             private var rerankBy: JsonValue = JsonMissing.of()
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -530,6 +579,7 @@ private constructor(
                 queries = body.queries.map { it.toMutableList() }
                 consistency = body.consistency
                 limit = body.limit
+                offset = body.offset
                 rerankBy = body.rerankBy
                 vectorEncoding = body.vectorEncoding
                 additionalProperties = body.additionalProperties.toMutableMap()
@@ -592,6 +642,21 @@ private constructor(
             /** Alias for calling [limit] with `Limit.ofTotal(total)`. */
             fun limit(total: Limit.Total) = limit(Limit.ofTotal(total))
 
+            /**
+             * Number of reranked documents to skip before returning results. Requires `rerank_by`
+             * and `limit`.
+             */
+            fun offset(offset: Long) = offset(JsonField.of(offset))
+
+            /**
+             * Sets [Builder.offset] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.offset] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun offset(offset: JsonField<Long>) = apply { this.offset = offset }
+
             /** How to combine the rows returned by each sub-query into a single ranked list. */
             fun rerankBy(rerankBy: JsonValue) = apply { this.rerankBy = rerankBy }
 
@@ -646,6 +711,7 @@ private constructor(
                     checkRequired("queries", queries).map { it.toImmutable() },
                     consistency,
                     limit,
+                    offset,
                     rerankBy,
                     vectorEncoding,
                     additionalProperties.toMutableMap(),
@@ -671,6 +737,7 @@ private constructor(
             queries().forEach { it.validate() }
             consistency().ifPresent { it.validate() }
             limit().ifPresent { it.validate() }
+            offset()
             vectorEncoding().ifPresent { it.validate() }
             validated = true
         }
@@ -694,6 +761,7 @@ private constructor(
             (queries.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (consistency.asKnown().getOrNull()?.validity() ?: 0) +
                 (limit.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (offset.asKnown().isPresent) 1 else 0) +
                 (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -705,6 +773,7 @@ private constructor(
                 queries == other.queries &&
                 consistency == other.consistency &&
                 limit == other.limit &&
+                offset == other.offset &&
                 rerankBy == other.rerankBy &&
                 vectorEncoding == other.vectorEncoding &&
                 additionalProperties == other.additionalProperties
@@ -715,6 +784,7 @@ private constructor(
                 queries,
                 consistency,
                 limit,
+                offset,
                 rerankBy,
                 vectorEncoding,
                 additionalProperties,
@@ -724,7 +794,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{queries=$queries, consistency=$consistency, limit=$limit, rerankBy=$rerankBy, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{queries=$queries, consistency=$consistency, limit=$limit, offset=$offset, rerankBy=$rerankBy, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** Query, filter, full-text search and vector search documents. */
@@ -739,6 +809,7 @@ private constructor(
         private val groupBy: JsonField<List<JsonValue>>,
         private val includeAttributes: JsonField<IncludeAttributes>,
         private val limit: JsonField<Limit>,
+        private val offset: JsonField<Long>,
         private val rankBy: JsonValue,
         private val topK: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -766,6 +837,7 @@ private constructor(
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
             @JsonProperty("limit") @ExcludeMissing limit: JsonField<Limit> = JsonMissing.of(),
+            @JsonProperty("offset") @ExcludeMissing offset: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonValue = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
         ) : this(
@@ -777,6 +849,7 @@ private constructor(
             groupBy,
             includeAttributes,
             limit,
+            offset,
             rankBy,
             topK,
             mutableMapOf(),
@@ -855,6 +928,15 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun limit(): Optional<Limit> = limit.getOptional("limit")
+
+        /**
+         * Number of documents to skip before returning results. Supported only in v2 queries with
+         * an explicit `rank_by` and `top_k` or `limit`.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun offset(): Optional<Long> = offset.getOptional("offset")
 
         /**
          * How to rank the documents in the namespace.
@@ -940,6 +1022,13 @@ private constructor(
         @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Limit> = limit
 
         /**
+         * Returns the raw JSON value of [offset].
+         *
+         * Unlike [offset], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("offset") @ExcludeMissing fun _offset(): JsonField<Long> = offset
+
+        /**
          * Returns the raw JSON value of [topK].
          *
          * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
@@ -975,6 +1064,7 @@ private constructor(
             private var groupBy: JsonField<MutableList<JsonValue>>? = null
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
             private var limit: JsonField<Limit> = JsonMissing.of()
+            private var offset: JsonField<Long> = JsonMissing.of()
             private var rankBy: JsonValue = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -989,6 +1079,7 @@ private constructor(
                 groupBy = query.groupBy.map { it.toMutableList() }
                 includeAttributes = query.includeAttributes
                 limit = query.limit
+                offset = query.offset
                 rankBy = query.rankBy
                 topK = query.topK
                 additionalProperties = query.additionalProperties.toMutableMap()
@@ -1150,6 +1241,21 @@ private constructor(
             /** Alias for calling [Builder.limit] with `Limit.ofLimit(limit)`. */
             fun limit(limit: Limit) = limit(Limit.ofLimit(limit))
 
+            /**
+             * Number of documents to skip before returning results. Supported only in v2 queries
+             * with an explicit `rank_by` and `top_k` or `limit`.
+             */
+            fun offset(offset: Long) = offset(JsonField.of(offset))
+
+            /**
+             * Sets [Builder.offset] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.offset] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun offset(offset: JsonField<Long>) = apply { this.offset = offset }
+
             /** How to rank the documents in the namespace. */
             fun rankBy(rankBy: JsonValue) = apply { this.rankBy = rankBy }
 
@@ -1199,6 +1305,7 @@ private constructor(
                     (groupBy ?: JsonMissing.of()).map { it.toImmutable() },
                     includeAttributes,
                     limit,
+                    offset,
                     rankBy,
                     topK,
                     additionalProperties.toMutableMap(),
@@ -1228,6 +1335,7 @@ private constructor(
             groupBy()
             includeAttributes().ifPresent { it.validate() }
             limit().ifPresent { it.validate() }
+            offset()
             topK()
             validated = true
         }
@@ -1255,6 +1363,7 @@ private constructor(
                 (groupBy.asKnown().getOrNull()?.size ?: 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (limit.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (offset.asKnown().isPresent) 1 else 0) +
                 (if (topK.asKnown().isPresent) 1 else 0)
 
         /** Aggregations to compute over all documents in the namespace that match the filters. */
@@ -1721,6 +1830,7 @@ private constructor(
                 groupBy == other.groupBy &&
                 includeAttributes == other.includeAttributes &&
                 limit == other.limit &&
+                offset == other.offset &&
                 rankBy == other.rankBy &&
                 topK == other.topK &&
                 additionalProperties == other.additionalProperties
@@ -1736,6 +1846,7 @@ private constructor(
                 groupBy,
                 includeAttributes,
                 limit,
+                offset,
                 rankBy,
                 topK,
                 additionalProperties,
@@ -1745,7 +1856,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Query{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
+            "Query{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, offset=$offset, rankBy=$rankBy, topK=$topK, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
