@@ -118,6 +118,15 @@ private constructor(
     fun limit(): Optional<Limit> = body.limit()
 
     /**
+     * Number of documents to skip before returning results. Supported only in v2 queries with an
+     * explicit `rank_by` and `top_k` or `limit`.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun offset(): Optional<Long> = body.offset()
+
+    /**
      * How to rank the documents in the namespace.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -206,6 +215,13 @@ private constructor(
      * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _limit(): JsonField<Limit> = body._limit()
+
+    /**
+     * Returns the raw JSON value of [offset].
+     *
+     * Unlike [offset], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _offset(): JsonField<Long> = body._offset()
 
     /**
      * Returns the raw JSON value of [topK].
@@ -435,6 +451,20 @@ private constructor(
         /** Alias for calling [limit] with the given total limit. */
         fun limit(integer: Long) = apply { body.limit(integer) }
 
+        /**
+         * Number of documents to skip before returning results. Supported only in v2 queries with
+         * an explicit `rank_by` and `top_k` or `limit`.
+         */
+        fun offset(offset: Long) = apply { body.offset(offset) }
+
+        /**
+         * Sets [Builder.offset] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.offset] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun offset(offset: JsonField<Long>) = apply { body.offset(offset) }
+
         /** How to rank the documents in the namespace. */
         fun rankBy(rankBy: RankBy) = apply { body.rankBy(rankBy) }
 
@@ -621,6 +651,7 @@ private constructor(
         private val groupBy: JsonField<List<GroupBy>>,
         private val includeAttributes: JsonField<IncludeAttributes>,
         private val limit: JsonField<Limit>,
+        private val offset: JsonField<Long>,
         private val rankBy: JsonField<RankBy>,
         private val topK: JsonField<Long>,
         private val vectorEncoding: JsonField<VectorEncoding>,
@@ -652,6 +683,7 @@ private constructor(
             @ExcludeMissing
             includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of(),
             @JsonProperty("limit") @ExcludeMissing limit: JsonField<Limit> = JsonMissing.of(),
+            @JsonProperty("offset") @ExcludeMissing offset: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonField<RankBy> = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("vector_encoding")
@@ -667,6 +699,7 @@ private constructor(
             groupBy,
             includeAttributes,
             limit,
+            offset,
             rankBy,
             topK,
             vectorEncoding,
@@ -761,6 +794,15 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun limit(): Optional<Limit> = limit.getOptional("limit")
+
+        /**
+         * Number of documents to skip before returning results. Supported only in v2 queries with
+         * an explicit `rank_by` and `top_k` or `limit`.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun offset(): Optional<Long> = offset.getOptional("offset")
 
         /**
          * How to rank the documents in the namespace.
@@ -868,6 +910,13 @@ private constructor(
         @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Limit> = limit
 
         /**
+         * Returns the raw JSON value of [offset].
+         *
+         * Unlike [offset], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("offset") @ExcludeMissing fun _offset(): JsonField<Long> = offset
+
+        /**
          * Returns the raw JSON value of [topK].
          *
          * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
@@ -914,6 +963,7 @@ private constructor(
             private var groupBy: JsonField<MutableList<GroupBy>>? = null
             private var includeAttributes: JsonField<IncludeAttributes> = JsonMissing.of()
             private var limit: JsonField<Limit> = JsonMissing.of()
+            private var offset: JsonField<Long> = JsonMissing.of()
             private var rankBy: JsonField<RankBy> = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
@@ -930,6 +980,7 @@ private constructor(
                 groupBy = body.groupBy.map { it.toMutableList() }
                 includeAttributes = body.includeAttributes
                 limit = body.limit
+                offset = body.offset
                 rankBy = body.rankBy
                 topK = body.topK
                 vectorEncoding = body.vectorEncoding
@@ -1123,6 +1174,21 @@ private constructor(
             fun rankBy(rankBy: RankBy) = rankBy(JsonField.of(rankBy))
 
             /**
+             * Number of documents to skip before returning results. Supported only in v2 queries
+             * with an explicit `rank_by` and `top_k` or `limit`.
+             */
+            fun offset(offset: Long) = offset(JsonField.of(offset))
+
+            /**
+             * Sets [Builder.offset] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.offset] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun offset(offset: JsonField<Long>) = apply { this.offset = offset }
+
+            /**
              * Sets [Builder.rankBy] to an arbitrary JSON value.
              *
              * You should usually call [Builder.rankBy] with a well-typed [RankBy] value instead.
@@ -1193,6 +1259,7 @@ private constructor(
                     (groupBy ?: JsonMissing.of()).map { it.toImmutable() },
                     includeAttributes,
                     limit,
+                    offset,
                     rankBy,
                     topK,
                     vectorEncoding,
@@ -1224,6 +1291,7 @@ private constructor(
 
             includeAttributes().ifPresent { it.validate() }
             limit().ifPresent { it.validate() }
+            offset()
             topK()
             vectorEncoding().ifPresent { it.validate() }
             validated = true
@@ -1252,6 +1320,7 @@ private constructor(
                 (excludeAttributes.asKnown().getOrNull()?.size ?: 0) +
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (limit.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (offset.asKnown().isPresent) 1 else 0) +
                 (if (topK.asKnown().isPresent) 1 else 0) +
                 (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
 
@@ -1270,6 +1339,7 @@ private constructor(
                 groupBy == other.groupBy &&
                 includeAttributes == other.includeAttributes &&
                 limit == other.limit &&
+                offset == other.offset &&
                 rankBy == other.rankBy &&
                 topK == other.topK &&
                 vectorEncoding == other.vectorEncoding &&
@@ -1287,6 +1357,7 @@ private constructor(
                 groupBy,
                 includeAttributes,
                 limit,
+                offset,
                 rankBy,
                 topK,
                 vectorEncoding,
@@ -1297,7 +1368,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, consistency=$consistency, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, consistency=$consistency, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, offset=$offset, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
