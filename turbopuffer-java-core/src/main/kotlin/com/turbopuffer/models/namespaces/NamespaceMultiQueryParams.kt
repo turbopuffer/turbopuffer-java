@@ -233,8 +233,8 @@ private constructor(
         /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
         fun limit(integer: Long) = apply { body.limit(integer) }
 
-        /** Alias for calling [limit] with `Limit.ofTotal(total)`. */
-        fun limit(total: Limit.Total) = apply { body.limit(total) }
+        /** Alias for calling [limit] with `Limit.ofRerank(rerank)`. */
+        fun limit(rerank: RerankLimit) = apply { body.limit(rerank) }
 
         /**
          * Number of reranked documents to skip before returning results. Requires `rerank_by` and
@@ -639,8 +639,8 @@ private constructor(
             /** Alias for calling [limit] with `Limit.ofInteger(integer)`. */
             fun limit(integer: Long) = limit(Limit.ofInteger(integer))
 
-            /** Alias for calling [limit] with `Limit.ofTotal(total)`. */
-            fun limit(total: Limit.Total) = limit(Limit.ofTotal(total))
+            /** Alias for calling [limit] with `Limit.ofRerank(rerank)`. */
+            fun limit(rerank: RerankLimit) = limit(Limit.ofRerank(rerank))
 
             /**
              * Number of reranked documents to skip before returning results. Requires `rerank_by`
@@ -2180,21 +2180,23 @@ private constructor(
     class Limit
     private constructor(
         private val integer: Long? = null,
-        private val total: Total? = null,
+        private val rerank: RerankLimit? = null,
         private val _json: JsonValue? = null,
     ) {
 
         fun integer(): Optional<Long> = Optional.ofNullable(integer)
 
-        fun total(): Optional<Total> = Optional.ofNullable(total)
+        /** Limits the total number of reranked documents returned. */
+        fun rerank(): Optional<RerankLimit> = Optional.ofNullable(rerank)
 
         fun isInteger(): Boolean = integer != null
 
-        fun isTotal(): Boolean = total != null
+        fun isRerank(): Boolean = rerank != null
 
         fun asInteger(): Long = integer.getOrThrow("integer")
 
-        fun asTotal(): Total = total.getOrThrow("total")
+        /** Limits the total number of reranked documents returned. */
+        fun asRerank(): RerankLimit = rerank.getOrThrow("rerank")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -2230,7 +2232,7 @@ private constructor(
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 integer != null -> visitor.visitInteger(integer)
-                total != null -> visitor.visitTotal(total)
+                rerank != null -> visitor.visitRerank(rerank)
                 else -> visitor.unknown(_json)
             }
 
@@ -2254,8 +2256,8 @@ private constructor(
                 object : Visitor<Unit> {
                     override fun visitInteger(integer: Long) {}
 
-                    override fun visitTotal(total: Total) {
-                        total.validate()
+                    override fun visitRerank(rerank: RerankLimit) {
+                        rerank.validate()
                     }
                 }
             )
@@ -2282,7 +2284,7 @@ private constructor(
                 object : Visitor<Int> {
                     override fun visitInteger(integer: Long) = 1
 
-                    override fun visitTotal(total: Total) = total.validity()
+                    override fun visitRerank(rerank: RerankLimit) = rerank.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -2293,15 +2295,15 @@ private constructor(
                 return true
             }
 
-            return other is Limit && integer == other.integer && total == other.total
+            return other is Limit && integer == other.integer && rerank == other.rerank
         }
 
-        override fun hashCode(): Int = Objects.hash(integer, total)
+        override fun hashCode(): Int = Objects.hash(integer, rerank)
 
         override fun toString(): String =
             when {
                 integer != null -> "Limit{integer=$integer}"
-                total != null -> "Limit{total=$total}"
+                rerank != null -> "Limit{rerank=$rerank}"
                 _json != null -> "Limit{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Limit")
             }
@@ -2310,7 +2312,8 @@ private constructor(
 
             @JvmStatic fun ofInteger(integer: Long) = Limit(integer = integer)
 
-            @JvmStatic fun ofTotal(total: Total) = Limit(total = total)
+            /** Limits the total number of reranked documents returned. */
+            @JvmStatic fun ofRerank(rerank: RerankLimit) = Limit(rerank = rerank)
         }
 
         /** An interface that defines how to map each variant of [Limit] to a value of type [T]. */
@@ -2318,7 +2321,8 @@ private constructor(
 
             fun visitInteger(integer: Long): T
 
-            fun visitTotal(total: Total): T
+            /** Limits the total number of reranked documents returned. */
+            fun visitRerank(rerank: RerankLimit): T
 
             /**
              * Maps an unknown variant of [Limit] to a value of type [T].
@@ -2342,8 +2346,8 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<Total>())?.let {
-                                Limit(total = it, _json = json)
+                            tryDeserialize(node, jacksonTypeRef<RerankLimit>())?.let {
+                                Limit(rerank = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<Long>())?.let {
                                 Limit(integer = it, _json = json)
@@ -2374,178 +2378,11 @@ private constructor(
             ) {
                 when {
                     value.integer != null -> generator.writeObject(value.integer)
-                    value.total != null -> generator.writeObject(value.total)
+                    value.rerank != null -> generator.writeObject(value.rerank)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Limit")
                 }
             }
-        }
-
-        class Total
-        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-        private constructor(
-            private val total: JsonField<Long>,
-            private val additionalProperties: MutableMap<String, JsonValue>,
-        ) {
-
-            @JsonCreator
-            private constructor(
-                @JsonProperty("total") @ExcludeMissing total: JsonField<Long> = JsonMissing.of()
-            ) : this(total, mutableMapOf())
-
-            /**
-             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
-             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
-             */
-            fun total(): Long = total.getRequired("total")
-
-            /**
-             * Returns the raw JSON value of [total].
-             *
-             * Unlike [total], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
-
-            @JsonAnySetter
-            private fun putAdditionalProperty(key: String, value: JsonValue) {
-                additionalProperties.put(key, value)
-            }
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /**
-                 * Returns a mutable builder for constructing an instance of [Total].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .total()
-                 * ```
-                 */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Total]. */
-            class Builder internal constructor() {
-
-                private var total: JsonField<Long>? = null
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(total: Total) = apply {
-                    this.total = total.total
-                    additionalProperties = total.additionalProperties.toMutableMap()
-                }
-
-                fun total(total: Long) = total(JsonField.of(total))
-
-                /**
-                 * Sets [Builder.total] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.total] with a well-typed [Long] value instead.
-                 * This method is primarily for setting the field to an undocumented or not yet
-                 * supported value.
-                 */
-                fun total(total: JsonField<Long>) = apply { this.total = total }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [Total].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .total()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
-                 */
-                fun build(): Total =
-                    Total(checkRequired("total", total), additionalProperties.toMutableMap())
-            }
-
-            private var validated: Boolean = false
-
-            /**
-             * Validates that the types of all values in this object match their expected types
-             * recursively.
-             *
-             * This method is _not_ forwards compatible with new types from the API for existing
-             * fields.
-             *
-             * @throws TurbopufferInvalidDataException if any value type in this object doesn't
-             *   match its expected type.
-             */
-            fun validate(): Total = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                total()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: TurbopufferInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic internal fun validity(): Int = (if (total.asKnown().isPresent) 1 else 0)
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Total &&
-                    total == other.total &&
-                    additionalProperties == other.additionalProperties
-            }
-
-            private val hashCode: Int by lazy { Objects.hash(total, additionalProperties) }
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Total{total=$total, additionalProperties=$additionalProperties}"
         }
     }
 
