@@ -15,9 +15,11 @@ import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
 import com.turbopuffer.models.namespaces.NamespaceMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceMetadataPatch
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
+import com.turbopuffer.models.namespaces.NamespacePollCopyFromParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceStartCopyFromParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
@@ -209,6 +211,21 @@ internal class NamespaceServiceAsyncTest {
 
     @Disabled("Mock server tests are disabled")
     @Test
+    fun pollCopyFrom() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespaces()
+
+        val copyFromNamespaceOperationFuture =
+            namespaceServiceAsync.pollCopyFrom(
+                NamespacePollCopyFromParams.builder().namespace("namespace").token("token").build()
+            )
+
+        val copyFromNamespaceOperation = copyFromNamespaceOperationFuture.get()
+        copyFromNamespaceOperation.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
     fun query() {
         val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
         val namespaceServiceAsync = client.namespaces()
@@ -280,6 +297,29 @@ internal class NamespaceServiceAsyncTest {
         val responseFuture =
             namespaceServiceAsync.schema(
                 NamespaceSchemaParams.builder().namespace("namespace").build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun startCopyFrom() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespaces()
+
+        val responseFuture =
+            namespaceServiceAsync.startCopyFrom(
+                NamespaceStartCopyFromParams.builder()
+                    .namespace("namespace")
+                    .sourceNamespace("source_namespace")
+                    .destEncryption(
+                        Encryption.CustomerManaged.builder().keyName("key_name").build()
+                    )
+                    .sourceApiKey("source_api_key")
+                    .sourceRegion("source_region")
+                    .build()
             )
 
         val response = responseFuture.get()

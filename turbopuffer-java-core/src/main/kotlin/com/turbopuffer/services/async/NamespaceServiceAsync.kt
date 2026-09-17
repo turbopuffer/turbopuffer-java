@@ -5,6 +5,7 @@ package com.turbopuffer.services.async
 import com.turbopuffer.core.ClientOptions
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.http.HttpResponseFor
+import com.turbopuffer.models.namespaces.CopyFromNamespaceOperation
 import com.turbopuffer.models.namespaces.NamespaceBranchFromParams
 import com.turbopuffer.models.namespaces.NamespaceBranchFromResponse
 import com.turbopuffer.models.namespaces.NamespaceCopyFromParams
@@ -20,12 +21,15 @@ import com.turbopuffer.models.namespaces.NamespaceMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceMetadataPatch
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
+import com.turbopuffer.models.namespaces.NamespacePollCopyFromParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceRecallResponse
 import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceStartCopyFromParams
+import com.turbopuffer.models.namespaces.NamespaceStartCopyFromResponse
 import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
@@ -161,6 +165,43 @@ interface NamespaceServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceMultiQueryResponse>
 
+    /** Retrieve the current status of a copy operation. */
+    fun pollCopyFrom(token: String): CompletableFuture<CopyFromNamespaceOperation> =
+        pollCopyFrom(token, NamespacePollCopyFromParams.none())
+
+    /** @see pollCopyFrom */
+    fun pollCopyFrom(
+        token: String,
+        params: NamespacePollCopyFromParams = NamespacePollCopyFromParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<CopyFromNamespaceOperation> =
+        pollCopyFrom(params.toBuilder().token(token).build(), requestOptions)
+
+    /** @see pollCopyFrom */
+    fun pollCopyFrom(
+        token: String,
+        params: NamespacePollCopyFromParams = NamespacePollCopyFromParams.none(),
+    ): CompletableFuture<CopyFromNamespaceOperation> =
+        pollCopyFrom(token, params, RequestOptions.none())
+
+    /** @see pollCopyFrom */
+    fun pollCopyFrom(
+        params: NamespacePollCopyFromParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<CopyFromNamespaceOperation>
+
+    /** @see pollCopyFrom */
+    fun pollCopyFrom(
+        params: NamespacePollCopyFromParams
+    ): CompletableFuture<CopyFromNamespaceOperation> = pollCopyFrom(params, RequestOptions.none())
+
+    /** @see pollCopyFrom */
+    fun pollCopyFrom(
+        token: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<CopyFromNamespaceOperation> =
+        pollCopyFrom(token, NamespacePollCopyFromParams.none(), requestOptions)
+
     /** Query, filter, full-text search and vector search documents. */
     fun query(): CompletableFuture<NamespaceQueryResponse> = query(NamespaceQueryParams.none())
 
@@ -214,6 +255,21 @@ interface NamespaceServiceAsync {
     /** @see schema */
     fun schema(requestOptions: RequestOptions): CompletableFuture<NamespaceSchemaResponse> =
         schema(NamespaceSchemaParams.none(), requestOptions)
+
+    /**
+     * Start copying all documents from another namespace into this one. Returns an operation token
+     * without waiting for the copy to finish. Use the token to poll for progress and the result.
+     */
+    fun startCopyFrom(
+        params: NamespaceStartCopyFromParams
+    ): CompletableFuture<NamespaceStartCopyFromResponse> =
+        startCopyFrom(params, RequestOptions.none())
+
+    /** @see startCopyFrom */
+    fun startCopyFrom(
+        params: NamespaceStartCopyFromParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<NamespaceStartCopyFromResponse>
 
     /** Update metadata configuration for a namespace. */
     fun updateMetadata(): CompletableFuture<NamespaceMetadata> =
@@ -468,6 +524,50 @@ interface NamespaceServiceAsync {
         ): CompletableFuture<HttpResponseFor<NamespaceMultiQueryResponse>>
 
         /**
+         * Returns a raw HTTP response for `get
+         * /v1/namespaces/{namespace}/operations/{token}?stainless_overload=pollCopyFrom`, but is
+         * otherwise the same as [NamespaceServiceAsync.pollCopyFrom].
+         */
+        fun pollCopyFrom(
+            token: String
+        ): CompletableFuture<HttpResponseFor<CopyFromNamespaceOperation>> =
+            pollCopyFrom(token, NamespacePollCopyFromParams.none())
+
+        /** @see pollCopyFrom */
+        fun pollCopyFrom(
+            token: String,
+            params: NamespacePollCopyFromParams = NamespacePollCopyFromParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<CopyFromNamespaceOperation>> =
+            pollCopyFrom(params.toBuilder().token(token).build(), requestOptions)
+
+        /** @see pollCopyFrom */
+        fun pollCopyFrom(
+            token: String,
+            params: NamespacePollCopyFromParams = NamespacePollCopyFromParams.none(),
+        ): CompletableFuture<HttpResponseFor<CopyFromNamespaceOperation>> =
+            pollCopyFrom(token, params, RequestOptions.none())
+
+        /** @see pollCopyFrom */
+        fun pollCopyFrom(
+            params: NamespacePollCopyFromParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<CopyFromNamespaceOperation>>
+
+        /** @see pollCopyFrom */
+        fun pollCopyFrom(
+            params: NamespacePollCopyFromParams
+        ): CompletableFuture<HttpResponseFor<CopyFromNamespaceOperation>> =
+            pollCopyFrom(params, RequestOptions.none())
+
+        /** @see pollCopyFrom */
+        fun pollCopyFrom(
+            token: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<CopyFromNamespaceOperation>> =
+            pollCopyFrom(token, NamespacePollCopyFromParams.none(), requestOptions)
+
+        /**
          * Returns a raw HTTP response for `post /v2/namespaces/{namespace}/query`, but is otherwise
          * the same as [NamespaceServiceAsync.query].
          */
@@ -541,6 +641,22 @@ interface NamespaceServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<NamespaceSchemaResponse>> =
             schema(NamespaceSchemaParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post
+         * /v2/namespaces/{namespace}/async?stainless_overload=startCopyFrom`, but is otherwise the
+         * same as [NamespaceServiceAsync.startCopyFrom].
+         */
+        fun startCopyFrom(
+            params: NamespaceStartCopyFromParams
+        ): CompletableFuture<HttpResponseFor<NamespaceStartCopyFromResponse>> =
+            startCopyFrom(params, RequestOptions.none())
+
+        /** @see startCopyFrom */
+        fun startCopyFrom(
+            params: NamespaceStartCopyFromParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<NamespaceStartCopyFromResponse>>
 
         /**
          * Returns a raw HTTP response for `patch /v1/namespaces/{namespace}/metadata`, but is
