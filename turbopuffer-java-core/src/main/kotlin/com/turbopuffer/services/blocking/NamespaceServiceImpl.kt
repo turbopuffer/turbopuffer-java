@@ -17,6 +17,7 @@ import com.turbopuffer.core.http.HttpResponseFor
 import com.turbopuffer.core.http.json
 import com.turbopuffer.core.http.parseable
 import com.turbopuffer.core.prepare
+import com.turbopuffer.models.namespaces.CopyFromNamespaceOperation
 import com.turbopuffer.models.namespaces.NamespaceBranchFromParams
 import com.turbopuffer.models.namespaces.NamespaceBranchFromResponse
 import com.turbopuffer.models.namespaces.NamespaceCopyFromParams
@@ -31,12 +32,15 @@ import com.turbopuffer.models.namespaces.NamespaceMetadata
 import com.turbopuffer.models.namespaces.NamespaceMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryResponse
+import com.turbopuffer.models.namespaces.NamespacePollCopyFromParams
 import com.turbopuffer.models.namespaces.NamespaceQueryParams
 import com.turbopuffer.models.namespaces.NamespaceQueryResponse
 import com.turbopuffer.models.namespaces.NamespaceRecallParams
 import com.turbopuffer.models.namespaces.NamespaceRecallResponse
 import com.turbopuffer.models.namespaces.NamespaceSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceSchemaResponse
+import com.turbopuffer.models.namespaces.NamespaceStartCopyFromParams
+import com.turbopuffer.models.namespaces.NamespaceStartCopyFromResponse
 import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
@@ -108,6 +112,13 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         // post /v2/namespaces/{namespace}/query?stainless_overload=multiQuery
         withRawResponse().multiQuery(params, requestOptions).parse()
 
+    override fun pollCopyFrom(
+        params: NamespacePollCopyFromParams,
+        requestOptions: RequestOptions,
+    ): CopyFromNamespaceOperation =
+        // get /v1/namespaces/{namespace}/operations/{token}?stainless_overload=pollCopyFrom
+        withRawResponse().pollCopyFrom(params, requestOptions).parse()
+
     override fun query(
         params: NamespaceQueryParams,
         requestOptions: RequestOptions,
@@ -128,6 +139,13 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
     ): NamespaceSchemaResponse =
         // get /v1/namespaces/{namespace}/schema
         withRawResponse().schema(params, requestOptions).parse()
+
+    override fun startCopyFrom(
+        params: NamespaceStartCopyFromParams,
+        requestOptions: RequestOptions,
+    ): NamespaceStartCopyFromResponse =
+        // post /v2/namespaces/{namespace}/async?stainless_overload=startCopyFrom
+        withRawResponse().startCopyFrom(params, requestOptions).parse()
 
     override fun updateMetadata(
         params: NamespaceUpdateMetadataParams,
@@ -442,6 +460,48 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
             }
         }
 
+        private val pollCopyFromHandler: Handler<CopyFromNamespaceOperation> =
+            jsonHandler<CopyFromNamespaceOperation>(clientOptions.jsonMapper)
+
+        override fun pollCopyFrom(
+            params: NamespacePollCopyFromParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<CopyFromNamespaceOperation> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("token", params.token().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v1",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "operations",
+                        params._pathParam(1),
+                    )
+                    .putQueryParam("stainless_overload", "pollCopyFrom")
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { pollCopyFromHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
         private val queryHandler: Handler<NamespaceQueryResponse> =
             jsonHandler<NamespaceQueryResponse>(clientOptions.jsonMapper)
 
@@ -551,6 +611,45 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.values.forEach { it.validate() }
+                        }
+                    }
+            }
+        }
+
+        private val startCopyFromHandler: Handler<NamespaceStartCopyFromResponse> =
+            jsonHandler<NamespaceStartCopyFromResponse>(clientOptions.jsonMapper)
+
+        override fun startCopyFrom(
+            params: NamespaceStartCopyFromParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<NamespaceStartCopyFromResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "v2",
+                        "namespaces",
+                        checkRequired(
+                            "namespace",
+                            params._pathParam(0).ifBlank {
+                                clientOptions.defaultNamespace().getOrNull()
+                            },
+                        ),
+                        "async",
+                    )
+                    .putQueryParam("stainless_overload", "startCopyFrom")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { startCopyFromHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
                         }
                     }
             }
