@@ -52,9 +52,9 @@ internal class WriteResultTest {
         assertThat(writeResult.message()).isEqualTo("message")
         assertThat(writeResult.rowsAffected()).isEqualTo(0L)
         assertThat(writeResult.deletedIds().getOrNull())
-            .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+            .containsExactly(Id.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
         assertThat(writeResult.patchedIds().getOrNull())
-            .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+            .containsExactly(Id.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
         assertThat(writeResult.performance())
             .contains(WritePerformance.builder().serverTotalMs(0L).build())
         assertThat(writeResult.rowsDeleted()).contains(0L)
@@ -62,7 +62,7 @@ internal class WriteResultTest {
         assertThat(writeResult.rowsRemaining()).contains(true)
         assertThat(writeResult.rowsUpserted()).contains(0L)
         assertThat(writeResult.upsertedIds().getOrNull())
-            .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+            .containsExactly(Id.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
     }
 
     @Test
