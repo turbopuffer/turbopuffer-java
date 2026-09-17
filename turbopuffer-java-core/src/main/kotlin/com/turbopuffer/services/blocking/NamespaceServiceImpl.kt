@@ -639,7 +639,12 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                         "async",
                     )
                     .putQueryParam("stainless_overload", "startCopyFrom")
-                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .body(
+                        json(
+                            clientOptions.jsonMapper,
+                            mapOf("copy_from_namespace" to params._body()),
+                        )
+                    )
                     .build()
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
