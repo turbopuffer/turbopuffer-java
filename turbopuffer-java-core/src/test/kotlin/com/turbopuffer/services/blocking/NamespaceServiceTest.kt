@@ -174,7 +174,7 @@ internal class NamespaceServiceTest {
     @Test
     fun pollCopyFrom() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("namespace")
 
         val copyFromNamespaceOperation =
             namespaceService.pollCopyFrom(
@@ -242,7 +242,7 @@ internal class NamespaceServiceTest {
     @Test
     fun startCopyFrom() {
         val client = TurbopufferOkHttpClient.builder().apiKey("tpuf_A1...").build()
-        val namespaceService = client.namespaces()
+        val namespaceService = client.namespace("namespace")
 
         val response =
             namespaceService.startCopyFrom(
