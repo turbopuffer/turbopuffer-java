@@ -1,5 +1,33 @@
 # Changelog
 
+## 2.7.0 (2026-09-18)
+
+Full Changelog: [v2.6.0...v2.7.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.6.0...v2.7.0)
+
+### Features
+
+* Add `read_only` namespace field ([2a59cf6](https://github.com/turbopuffer/turbopuffer-java/commit/2a59cf669f173d21e5adcae00434cb220ce3909c))
+* **api:** Merge remote-tracking branch 'origin/preview/benesch/named-rerank-limit-schema' ([6b873c9](https://github.com/turbopuffer/turbopuffer-java/commit/6b873c963414c4ae06e02673e49f3be05e471e58))
+* Apply limit on rerank_by when provided ([fe818e1](https://github.com/turbopuffer/turbopuffer-java/commit/fe818e16bd48b757c6b3d83dd8f8596034e30154))
+* engine,openapi: async copy_from_namespace endpoints ([1c1f896](https://github.com/turbopuffer/turbopuffer-java/commit/1c1f896cb0232bd6da7cff6db19b9cf6375c2521))
+* spec: no-op change to Stainless spec ([1dc9bda](https://github.com/turbopuffer/turbopuffer-java/commit/1dc9bda4ee729d1d98af8408a37027ebb7450794))
+* tpuf-engine: Adding pagination through `offset` ([dc17c0b](https://github.com/turbopuffer/turbopuffer-java/commit/dc17c0bd7cbc23875defba441ae1c02d1ce8a63b))
+* tpuf-engine: expose billed_replicas in pinning metadata ([ae7e0ab](https://github.com/turbopuffer/turbopuffer-java/commit/ae7e0ab12f09e039dbf215903aa472bf6a10659c))
+
+
+### Bug Fixes
+
+* adapt write result IDs to custom JsonValue type ([41e1293](https://github.com/turbopuffer/turbopuffer-java/commit/41e1293073aa03fa0fb679564e67de51d7bc98bf))
+* **docs:** link the javadoc badge so the version stays current after release ([e406cf5](https://github.com/turbopuffer/turbopuffer-java/commit/e406cf5a9d9e5a311b0cc03b3dae26b41cef176b))
+* use namespace accessor in async copy tests ([5b0a377](https://github.com/turbopuffer/turbopuffer-java/commit/5b0a377547efad26600f904a04f08961345f5e06))
+* wrap start copy request bodies ([f1d277f](https://github.com/turbopuffer/turbopuffer-java/commit/f1d277f4b4be0d506806d6d0d12feb9a9a5354e4))
+
+
+### Chores
+
+* **internal:** codegen related update ([6e39f78](https://github.com/turbopuffer/turbopuffer-java/commit/6e39f78b3e38bcb4f589281d084937a97da227f8))
+* **internal:** codegen related update ([9ce72cf](https://github.com/turbopuffer/turbopuffer-java/commit/9ce72cf1fa2d418641c76be7f6975c4e4ca065db))
+
 ## 2.6.0 (2026-07-30)
 
 Full Changelog: [v2.5.0...v2.6.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.5.0...v2.6.0)
