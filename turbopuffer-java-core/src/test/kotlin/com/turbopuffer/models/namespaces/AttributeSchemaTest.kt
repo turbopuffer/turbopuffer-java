@@ -22,6 +22,7 @@ internal class AttributeSchemaTest {
 
         assertThat(attributeSchema.type()).contains(type)
         assertThat(attributeSchema.config()).isEmpty
+        assertThat(attributeSchema.drop()).isEmpty
     }
 
     @Test
@@ -61,6 +62,7 @@ internal class AttributeSchemaTest {
 
         assertThat(attributeSchema.type()).isEmpty
         assertThat(attributeSchema.config()).contains(config)
+        assertThat(attributeSchema.drop()).isEmpty
     }
 
     @Test
@@ -84,6 +86,32 @@ internal class AttributeSchemaTest {
                     )
                     .build()
             )
+
+        val roundtrippedAttributeSchema =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(attributeSchema),
+                jacksonTypeRef<AttributeSchema>(),
+            )
+
+        assertThat(roundtrippedAttributeSchema).isEqualTo(attributeSchema)
+    }
+
+    @Test
+    fun ofDrop() {
+        val drop = AttributeSchemaDrop.builder().drop(true).build()
+
+        val attributeSchema = AttributeSchema.ofDrop(drop)
+
+        assertThat(attributeSchema.type()).isEmpty
+        assertThat(attributeSchema.config()).isEmpty
+        assertThat(attributeSchema.drop()).contains(drop)
+    }
+
+    @Test
+    fun ofDropRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val attributeSchema =
+            AttributeSchema.ofDrop(AttributeSchemaDrop.builder().drop(true).build())
 
         val roundtrippedAttributeSchema =
             jsonMapper.readValue(
