@@ -25,6 +25,7 @@ class AttributeSchema
 private constructor(
     private val type: String? = null,
     private val config: AttributeSchemaConfig? = null,
+    private val drop: AttributeSchemaDrop? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -37,9 +38,14 @@ private constructor(
     /** Detailed configuration for an attribute attached to a document. */
     fun config(): Optional<AttributeSchemaConfig> = Optional.ofNullable(config)
 
+    /** Drops the attribute from the namespace. Cannot be combined with other schema settings. */
+    fun drop(): Optional<AttributeSchemaDrop> = Optional.ofNullable(drop)
+
     fun isType(): Boolean = type != null
 
     fun isConfig(): Boolean = config != null
+
+    fun isDrop(): Boolean = drop != null
 
     /**
      * The data type of the attribute. Valid values: string, int, uint, float, uuid, datetime, bool,
@@ -49,6 +55,9 @@ private constructor(
 
     /** Detailed configuration for an attribute attached to a document. */
     fun asConfig(): AttributeSchemaConfig = config.getOrThrow("config")
+
+    /** Drops the attribute from the namespace. Cannot be combined with other schema settings. */
+    fun asDrop(): AttributeSchemaDrop = drop.getOrThrow("drop")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -85,6 +94,7 @@ private constructor(
         when {
             type != null -> visitor.visitType(type)
             config != null -> visitor.visitConfig(config)
+            drop != null -> visitor.visitDrop(drop)
             else -> visitor.unknown(_json)
         }
 
@@ -109,6 +119,10 @@ private constructor(
 
                 override fun visitConfig(config: AttributeSchemaConfig) {
                     config.validate()
+                }
+
+                override fun visitDrop(drop: AttributeSchemaDrop) {
+                    drop.validate()
                 }
             }
         )
@@ -136,6 +150,8 @@ private constructor(
 
                 override fun visitConfig(config: AttributeSchemaConfig) = config.validity()
 
+                override fun visitDrop(drop: AttributeSchemaDrop) = drop.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -145,15 +161,19 @@ private constructor(
             return true
         }
 
-        return other is AttributeSchema && type == other.type && config == other.config
+        return other is AttributeSchema &&
+            type == other.type &&
+            config == other.config &&
+            drop == other.drop
     }
 
-    override fun hashCode(): Int = Objects.hash(type, config)
+    override fun hashCode(): Int = Objects.hash(type, config, drop)
 
     override fun toString(): String =
         when {
             type != null -> "AttributeSchema{type=$type}"
             config != null -> "AttributeSchema{config=$config}"
+            drop != null -> "AttributeSchema{drop=$drop}"
             _json != null -> "AttributeSchema{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid AttributeSchema")
         }
@@ -169,6 +189,11 @@ private constructor(
 
         /** Detailed configuration for an attribute attached to a document. */
         @JvmStatic fun ofConfig(config: AttributeSchemaConfig) = AttributeSchema(config = config)
+
+        /**
+         * Drops the attribute from the namespace. Cannot be combined with other schema settings.
+         */
+        @JvmStatic fun ofDrop(drop: AttributeSchemaDrop) = AttributeSchema(drop = drop)
     }
 
     /**
@@ -186,6 +211,11 @@ private constructor(
 
         /** Detailed configuration for an attribute attached to a document. */
         fun visitConfig(config: AttributeSchemaConfig): T
+
+        /**
+         * Drops the attribute from the namespace. Cannot be combined with other schema settings.
+         */
+        fun visitDrop(drop: AttributeSchemaDrop): T
 
         /**
          * Maps an unknown variant of [AttributeSchema] to a value of type [T].
@@ -211,6 +241,9 @@ private constructor(
                 sequenceOf(
                         tryDeserialize(node, jacksonTypeRef<AttributeSchemaConfig>())?.let {
                             AttributeSchema(config = it, _json = json)
+                        },
+                        tryDeserialize(node, jacksonTypeRef<AttributeSchemaDrop>())?.let {
+                            AttributeSchema(drop = it, _json = json)
                         },
                         tryDeserialize(node, jacksonTypeRef<String>())?.let {
                             AttributeSchema(type = it, _json = json)
@@ -241,6 +274,7 @@ private constructor(
             when {
                 value.type != null -> generator.writeObject(value.type)
                 value.config != null -> generator.writeObject(value.config)
+                value.drop != null -> generator.writeObject(value.drop)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid AttributeSchema")
             }
