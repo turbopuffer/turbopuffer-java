@@ -327,6 +327,7 @@ internal class NamespaceServiceAsyncTest {
                     .namespace("namespace")
                     .branchFromNamespace("string")
                     .copyFromNamespace("string")
+                    .createNamespace(true)
                     .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .disableBackpressure(true)
