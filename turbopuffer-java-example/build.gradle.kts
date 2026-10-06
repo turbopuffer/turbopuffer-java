@@ -8,7 +8,8 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":turbopuffer-java"))
+    implementation(project(":turbopuffer-java-core"))
+    implementation(project(":turbopuffer-java-client-okhttp"))
 }
 
 tasks.withType<JavaCompile>().configureEach {
