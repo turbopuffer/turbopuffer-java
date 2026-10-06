@@ -356,6 +356,41 @@ internal class RespondAsyncHttpClientTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
+    fun throwsOnPollTimeoutWhileReadingBody(async: Boolean) {
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(202)
+                        .withHeader("Preference-Applied", "respond-async")
+                        .withHeader("Location", "/v1/namespaces/test/operations/op-slow-body")
+                )
+        )
+        // Headers arrive at once but the body trickles in past the deadline.
+        stubFor(
+            get(urlPathEqualTo("/v1/namespaces/test/operations/op-slow-body"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("""{"status":"running"}""")
+                        .withChunkedDribbleDelay(20, 3000)
+                )
+        )
+        val client = respondAsyncClient(RecordingSleeper())
+
+        val opts = RequestOptions.builder().timeout(Duration.ofSeconds(1)).build()
+
+        assertThatThrownBy {
+                if (async) client.executeAsync(simplePost(), opts).get()
+                else client.execute(simplePost(), opts)
+            }
+            .matches { unwrap(it) is TurbopufferIoException }
+            .hasMessageContaining("Request failed")
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
     fun zeroRequestTimeoutMeansNoDeadline(async: Boolean) {
         stubFor(
             post(urlPathEqualTo("/something"))

@@ -2,13 +2,16 @@ package com.turbopuffer.core.http
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.Sleeper
 import com.turbopuffer.core.Timeout
 import com.turbopuffer.errors.TurbopufferException
+import com.turbopuffer.errors.TurbopufferIoException
 import java.io.ByteArrayInputStream
+import java.io.IOException
 import java.io.InputStream
 import java.net.URI
 import java.time.Duration
@@ -164,8 +167,11 @@ class RespondAsyncHttpClient(
         val body =
             try {
                 jsonMapper.readValue(response.body(), PollBody::class.java)
-            } catch (t: Throwable) {
-                throw TurbopufferException("malformed poll response", t)
+            } catch (e: JsonProcessingException) {
+                throw TurbopufferException("malformed poll response", e)
+            } catch (e: IOException) {
+                // The request timeout can fire while the body is still being read.
+                throw TurbopufferIoException("Request failed", e)
             }
         if (body.status == "running") return null
         if (body.status != "finished" || body.result == null) {
