@@ -1,4 +1,4 @@
-// A simple example that lists all extant namespaces.
+// A simple example that lists the first few namespaces.
 //
 // Run this example with: ./gradlew run -Pcom.turbopuffer.example=ListNamespaces
 package com.turbopuffer.example;
@@ -15,8 +15,7 @@ public class ListNamespaces {
                 .build();
 
         var namespaces = client.namespaces();
-        for (var namespace : namespaces.autoPager()) {
-            System.out.println(namespace.id());
-        }
+        // An org can hold a huge number of namespaces, so stop after the first few.
+        namespaces.autoPager().stream().limit(10).forEach(namespace -> System.out.println(namespace.id()));
     }
 }
