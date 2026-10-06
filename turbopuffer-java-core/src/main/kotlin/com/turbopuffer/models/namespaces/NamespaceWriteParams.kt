@@ -50,6 +50,17 @@ private constructor(
     fun copyFromNamespace(): Optional<CopyFromNamespaceParams> = body.copyFromNamespace()
 
     /**
+     * If `true`, ensures the namespace is created, even if the request writes no documents.
+     * Creating an empty namespace requires the `id` type to be declared in `schema`. If `false`, a
+     * namespace is never created, and a 404 is returned if it does not exist. If omitted, a
+     * namespace is created by the first request that writes documents.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun createNamespace(): Optional<Boolean> = body.createNamespace()
+
+    /**
      * The filter specifying which documents to delete.
      *
      * This arbitrary value can be deserialized into a custom type using the `convert` method:
@@ -221,6 +232,13 @@ private constructor(
     fun _copyFromNamespace(): JsonField<CopyFromNamespaceParams> = body._copyFromNamespace()
 
     /**
+     * Returns the raw JSON value of [createNamespace].
+     *
+     * Unlike [createNamespace], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _createNamespace(): JsonField<Boolean> = body._createNamespace()
+
+    /**
      * Returns the raw JSON value of [deleteByFilterAllowPartial].
      *
      * Unlike [deleteByFilterAllowPartial], this method doesn't throw if the JSON field has an
@@ -368,9 +386,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [branchFromNamespace]
          * - [copyFromNamespace]
+         * - [createNamespace]
          * - [deleteByFilter]
          * - [deleteByFilterAllowPartial]
-         * - [deleteCondition]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -432,6 +450,27 @@ private constructor(
          */
         fun copyFromNamespace(config: CopyFromNamespaceParams.CopyFromNamespaceConfig) = apply {
             body.copyFromNamespace(config)
+        }
+
+        /**
+         * If `true`, ensures the namespace is created, even if the request writes no documents.
+         * Creating an empty namespace requires the `id` type to be declared in `schema`. If
+         * `false`, a namespace is never created, and a 404 is returned if it does not exist. If
+         * omitted, a namespace is created by the first request that writes documents.
+         */
+        fun createNamespace(createNamespace: Boolean) = apply {
+            body.createNamespace(createNamespace)
+        }
+
+        /**
+         * Sets [Builder.createNamespace] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createNamespace] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun createNamespace(createNamespace: JsonField<Boolean>) = apply {
+            body.createNamespace(createNamespace)
         }
 
         /** The filter specifying which documents to delete. */
@@ -853,6 +892,7 @@ private constructor(
     private constructor(
         private val branchFromNamespace: JsonField<BranchFromNamespaceParams>,
         private val copyFromNamespace: JsonField<CopyFromNamespaceParams>,
+        private val createNamespace: JsonField<Boolean>,
         private val deleteByFilter: JsonValue,
         private val deleteByFilterAllowPartial: JsonField<Boolean>,
         private val deleteCondition: JsonValue,
@@ -882,6 +922,9 @@ private constructor(
             @JsonProperty("copy_from_namespace")
             @ExcludeMissing
             copyFromNamespace: JsonField<CopyFromNamespaceParams> = JsonMissing.of(),
+            @JsonProperty("create_namespace")
+            @ExcludeMissing
+            createNamespace: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("delete_by_filter")
             @ExcludeMissing
             deleteByFilter: JsonValue = JsonMissing.of(),
@@ -937,6 +980,7 @@ private constructor(
         ) : this(
             branchFromNamespace,
             copyFromNamespace,
+            createNamespace,
             deleteByFilter,
             deleteByFilterAllowPartial,
             deleteCondition,
@@ -975,6 +1019,17 @@ private constructor(
          */
         fun copyFromNamespace(): Optional<CopyFromNamespaceParams> =
             copyFromNamespace.getOptional("copy_from_namespace")
+
+        /**
+         * If `true`, ensures the namespace is created, even if the request writes no documents.
+         * Creating an empty namespace requires the `id` type to be declared in `schema`. If
+         * `false`, a namespace is never created, and a 404 is returned if it does not exist. If
+         * omitted, a namespace is created by the first request that writes documents.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun createNamespace(): Optional<Boolean> = createNamespace.getOptional("create_namespace")
 
         /**
          * The filter specifying which documents to delete.
@@ -1165,6 +1220,16 @@ private constructor(
         fun _copyFromNamespace(): JsonField<CopyFromNamespaceParams> = copyFromNamespace
 
         /**
+         * Returns the raw JSON value of [createNamespace].
+         *
+         * Unlike [createNamespace], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("create_namespace")
+        @ExcludeMissing
+        fun _createNamespace(): JsonField<Boolean> = createNamespace
+
+        /**
          * Returns the raw JSON value of [deleteByFilterAllowPartial].
          *
          * Unlike [deleteByFilterAllowPartial], this method doesn't throw if the JSON field has an
@@ -1317,6 +1382,7 @@ private constructor(
 
             private var branchFromNamespace: JsonField<BranchFromNamespaceParams> = JsonMissing.of()
             private var copyFromNamespace: JsonField<CopyFromNamespaceParams> = JsonMissing.of()
+            private var createNamespace: JsonField<Boolean> = JsonMissing.of()
             private var deleteByFilter: JsonValue = JsonMissing.of()
             private var deleteByFilterAllowPartial: JsonField<Boolean> = JsonMissing.of()
             private var deleteCondition: JsonValue = JsonMissing.of()
@@ -1341,6 +1407,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 branchFromNamespace = body.branchFromNamespace
                 copyFromNamespace = body.copyFromNamespace
+                createNamespace = body.createNamespace
                 deleteByFilter = body.deleteByFilter
                 deleteByFilterAllowPartial = body.deleteByFilterAllowPartial
                 deleteCondition = body.deleteCondition
@@ -1420,6 +1487,26 @@ private constructor(
              */
             fun copyFromNamespace(config: CopyFromNamespaceParams.CopyFromNamespaceConfig) =
                 copyFromNamespace(CopyFromNamespaceParams.ofConfig(config))
+
+            /**
+             * If `true`, ensures the namespace is created, even if the request writes no documents.
+             * Creating an empty namespace requires the `id` type to be declared in `schema`. If
+             * `false`, a namespace is never created, and a 404 is returned if it does not exist. If
+             * omitted, a namespace is created by the first request that writes documents.
+             */
+            fun createNamespace(createNamespace: Boolean) =
+                createNamespace(JsonField.of(createNamespace))
+
+            /**
+             * Sets [Builder.createNamespace] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.createNamespace] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun createNamespace(createNamespace: JsonField<Boolean>) = apply {
+                this.createNamespace = createNamespace
+            }
 
             /** The filter specifying which documents to delete. */
             fun deleteByFilter(deleteByFilter: JsonValue) = apply {
@@ -1739,6 +1826,7 @@ private constructor(
                 Body(
                     branchFromNamespace,
                     copyFromNamespace,
+                    createNamespace,
                     deleteByFilter,
                     deleteByFilterAllowPartial,
                     deleteCondition,
@@ -1779,6 +1867,7 @@ private constructor(
 
             branchFromNamespace().ifPresent { it.validate() }
             copyFromNamespace().ifPresent { it.validate() }
+            createNamespace()
             deleteByFilterAllowPartial()
             deletes().ifPresent { it.forEach { it.validate() } }
             disableBackpressure()
@@ -1814,6 +1903,7 @@ private constructor(
         internal fun validity(): Int =
             (branchFromNamespace.asKnown().getOrNull()?.validity() ?: 0) +
                 (copyFromNamespace.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (createNamespace.asKnown().isPresent) 1 else 0) +
                 (if (deleteByFilterAllowPartial.asKnown().isPresent) 1 else 0) +
                 (deletes.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (if (disableBackpressure.asKnown().isPresent) 1 else 0) +
@@ -1837,6 +1927,7 @@ private constructor(
             return other is Body &&
                 branchFromNamespace == other.branchFromNamespace &&
                 copyFromNamespace == other.copyFromNamespace &&
+                createNamespace == other.createNamespace &&
                 deleteByFilter == other.deleteByFilter &&
                 deleteByFilterAllowPartial == other.deleteByFilterAllowPartial &&
                 deleteCondition == other.deleteCondition &&
@@ -1862,6 +1953,7 @@ private constructor(
             Objects.hash(
                 branchFromNamespace,
                 copyFromNamespace,
+                createNamespace,
                 deleteByFilter,
                 deleteByFilterAllowPartial,
                 deleteCondition,
@@ -1887,7 +1979,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{branchFromNamespace=$branchFromNamespace, copyFromNamespace=$copyFromNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, sharding=$sharding, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+            "Body{branchFromNamespace=$branchFromNamespace, copyFromNamespace=$copyFromNamespace, createNamespace=$createNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, sharding=$sharding, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
     }
 
     /** The patch and filter specifying which documents to patch. */

@@ -380,6 +380,7 @@ internal class NamespaceServiceAsyncTest {
                     .namespace("namespace")
                     .branchFromNamespace("string")
                     .copyFromNamespace("string")
+                    .createNamespace(true)
                     .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
                     .deleteByFilterAllowPartial(true)
                     .deleteCondition(JsonValue.from(mapOf<String, Any>()))
