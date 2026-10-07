@@ -817,8 +817,7 @@ private constructor(
             fun unindexedBytes(): Long = unindexedBytes.getRequired("unindexed_bytes")
 
             /**
-             * The number of rows in the write-ahead log that have not yet been indexed. Write
-             * backpressure is applied when this exceeds the unindexed row limit.
+             * The number of rows in the write-ahead log that have not yet been indexed.
              *
              * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
              *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -920,10 +919,7 @@ private constructor(
                     this.unindexedBytes = unindexedBytes
                 }
 
-                /**
-                 * The number of rows in the write-ahead log that have not yet been indexed. Write
-                 * backpressure is applied when this exceeds the unindexed row limit.
-                 */
+                /** The number of rows in the write-ahead log that have not yet been indexed. */
                 fun unindexedRows(unindexedRows: Long) = unindexedRows(JsonField.of(unindexedRows))
 
                 /**
