@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.8.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.7.0...v2.8.0) (2026-10-06)
+
+
+### Features
+
+* stainless to stlc migration ([54f5a6e](https://github.com/turbopuffer/turbopuffer-java/commit/54f5a6e5919c44a4123f88dafd177abcb55dca05))
+
+
+### Bug Fixes
+
+* report poll body timeouts as request failures, not malformed responses ([0e96fd8](https://github.com/turbopuffer/turbopuffer-java/commit/0e96fd80d5179149d967e14bf2b886e4ad20c872))
+
 ## 2.7.0 (2026-09-18)
 
 Full Changelog: [v2.6.0...v2.7.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.6.0...v2.7.0)
