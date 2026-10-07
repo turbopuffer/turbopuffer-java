@@ -12,8 +12,10 @@ import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.errors.TurbopufferInvalidDataException
+import java.time.OffsetDateTime
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 
 /** The performance information for a query. */
 class QueryPerformance
@@ -25,6 +27,9 @@ private constructor(
     private val exhaustiveSearchCount: JsonField<Long>,
     private val queryExecutionMs: JsonField<Long>,
     private val serverTotalMs: JsonField<Long>,
+    private val embeddingMs: JsonField<Long>,
+    private val embeddingTokens: JsonField<Long>,
+    private val lastIncludedWriteAt: JsonField<OffsetDateTime>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -48,6 +53,15 @@ private constructor(
         @JsonProperty("server_total_ms")
         @ExcludeMissing
         serverTotalMs: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("embedding_ms")
+        @ExcludeMissing
+        embeddingMs: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("embedding_tokens")
+        @ExcludeMissing
+        embeddingTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("last_included_write_at")
+        @ExcludeMissing
+        lastIncludedWriteAt: JsonField<OffsetDateTime> = JsonMissing.of(),
     ) : this(
         approxNamespaceSize,
         cacheHitRatio,
@@ -55,6 +69,9 @@ private constructor(
         exhaustiveSearchCount,
         queryExecutionMs,
         serverTotalMs,
+        embeddingMs,
+        embeddingTokens,
+        lastIncludedWriteAt,
         mutableMapOf(),
     )
 
@@ -107,6 +124,31 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun serverTotalMs(): Long = serverTotalMs.getRequired("server_total_ms")
+
+    /**
+     * Time spent embedding text, in milliseconds. Only set when using a native embedding model.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun embeddingMs(): Optional<Long> = embeddingMs.getOptional("embedding_ms")
+
+    /**
+     * The number of tokens embedded. Only set when using a native embedding model.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun embeddingTokens(): Optional<Long> = embeddingTokens.getOptional("embedding_tokens")
+
+    /**
+     * The timestamp of the last write operation that the query observed.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun lastIncludedWriteAt(): Optional<OffsetDateTime> =
+        lastIncludedWriteAt.getOptional("last_included_write_at")
 
     /**
      * Returns the raw JSON value of [approxNamespaceSize].
@@ -166,6 +208,32 @@ private constructor(
     @ExcludeMissing
     fun _serverTotalMs(): JsonField<Long> = serverTotalMs
 
+    /**
+     * Returns the raw JSON value of [embeddingMs].
+     *
+     * Unlike [embeddingMs], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("embedding_ms") @ExcludeMissing fun _embeddingMs(): JsonField<Long> = embeddingMs
+
+    /**
+     * Returns the raw JSON value of [embeddingTokens].
+     *
+     * Unlike [embeddingTokens], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("embedding_tokens")
+    @ExcludeMissing
+    fun _embeddingTokens(): JsonField<Long> = embeddingTokens
+
+    /**
+     * Returns the raw JSON value of [lastIncludedWriteAt].
+     *
+     * Unlike [lastIncludedWriteAt], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("last_included_write_at")
+    @ExcludeMissing
+    fun _lastIncludedWriteAt(): JsonField<OffsetDateTime> = lastIncludedWriteAt
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -205,6 +273,9 @@ private constructor(
         private var exhaustiveSearchCount: JsonField<Long>? = null
         private var queryExecutionMs: JsonField<Long>? = null
         private var serverTotalMs: JsonField<Long>? = null
+        private var embeddingMs: JsonField<Long> = JsonMissing.of()
+        private var embeddingTokens: JsonField<Long> = JsonMissing.of()
+        private var lastIncludedWriteAt: JsonField<OffsetDateTime> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -215,6 +286,9 @@ private constructor(
             exhaustiveSearchCount = queryPerformance.exhaustiveSearchCount
             queryExecutionMs = queryPerformance.queryExecutionMs
             serverTotalMs = queryPerformance.serverTotalMs
+            embeddingMs = queryPerformance.embeddingMs
+            embeddingTokens = queryPerformance.embeddingTokens
+            lastIncludedWriteAt = queryPerformance.lastIncludedWriteAt
             additionalProperties = queryPerformance.additionalProperties.toMutableMap()
         }
 
@@ -312,6 +386,49 @@ private constructor(
             this.serverTotalMs = serverTotalMs
         }
 
+        /**
+         * Time spent embedding text, in milliseconds. Only set when using a native embedding model.
+         */
+        fun embeddingMs(embeddingMs: Long) = embeddingMs(JsonField.of(embeddingMs))
+
+        /**
+         * Sets [Builder.embeddingMs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.embeddingMs] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun embeddingMs(embeddingMs: JsonField<Long>) = apply { this.embeddingMs = embeddingMs }
+
+        /** The number of tokens embedded. Only set when using a native embedding model. */
+        fun embeddingTokens(embeddingTokens: Long) = embeddingTokens(JsonField.of(embeddingTokens))
+
+        /**
+         * Sets [Builder.embeddingTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.embeddingTokens] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun embeddingTokens(embeddingTokens: JsonField<Long>) = apply {
+            this.embeddingTokens = embeddingTokens
+        }
+
+        /** The timestamp of the last write operation that the query observed. */
+        fun lastIncludedWriteAt(lastIncludedWriteAt: OffsetDateTime) =
+            lastIncludedWriteAt(JsonField.of(lastIncludedWriteAt))
+
+        /**
+         * Sets [Builder.lastIncludedWriteAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.lastIncludedWriteAt] with a well-typed [OffsetDateTime]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun lastIncludedWriteAt(lastIncludedWriteAt: JsonField<OffsetDateTime>) = apply {
+            this.lastIncludedWriteAt = lastIncludedWriteAt
+        }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -356,6 +473,9 @@ private constructor(
                 checkRequired("exhaustiveSearchCount", exhaustiveSearchCount),
                 checkRequired("queryExecutionMs", queryExecutionMs),
                 checkRequired("serverTotalMs", serverTotalMs),
+                embeddingMs,
+                embeddingTokens,
+                lastIncludedWriteAt,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -381,6 +501,9 @@ private constructor(
         exhaustiveSearchCount()
         queryExecutionMs()
         serverTotalMs()
+        embeddingMs()
+        embeddingTokens()
+        lastIncludedWriteAt()
         validated = true
     }
 
@@ -404,7 +527,10 @@ private constructor(
             (if (cacheTemperature.asKnown().isPresent) 1 else 0) +
             (if (exhaustiveSearchCount.asKnown().isPresent) 1 else 0) +
             (if (queryExecutionMs.asKnown().isPresent) 1 else 0) +
-            (if (serverTotalMs.asKnown().isPresent) 1 else 0)
+            (if (serverTotalMs.asKnown().isPresent) 1 else 0) +
+            (if (embeddingMs.asKnown().isPresent) 1 else 0) +
+            (if (embeddingTokens.asKnown().isPresent) 1 else 0) +
+            (if (lastIncludedWriteAt.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -418,6 +544,9 @@ private constructor(
             exhaustiveSearchCount == other.exhaustiveSearchCount &&
             queryExecutionMs == other.queryExecutionMs &&
             serverTotalMs == other.serverTotalMs &&
+            embeddingMs == other.embeddingMs &&
+            embeddingTokens == other.embeddingTokens &&
+            lastIncludedWriteAt == other.lastIncludedWriteAt &&
             additionalProperties == other.additionalProperties
     }
 
@@ -429,6 +558,9 @@ private constructor(
             exhaustiveSearchCount,
             queryExecutionMs,
             serverTotalMs,
+            embeddingMs,
+            embeddingTokens,
+            lastIncludedWriteAt,
             additionalProperties,
         )
     }
@@ -436,5 +568,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "QueryPerformance{approxNamespaceSize=$approxNamespaceSize, cacheHitRatio=$cacheHitRatio, cacheTemperature=$cacheTemperature, exhaustiveSearchCount=$exhaustiveSearchCount, queryExecutionMs=$queryExecutionMs, serverTotalMs=$serverTotalMs, additionalProperties=$additionalProperties}"
+        "QueryPerformance{approxNamespaceSize=$approxNamespaceSize, cacheHitRatio=$cacheHitRatio, cacheTemperature=$cacheTemperature, exhaustiveSearchCount=$exhaustiveSearchCount, queryExecutionMs=$queryExecutionMs, serverTotalMs=$serverTotalMs, embeddingMs=$embeddingMs, embeddingTokens=$embeddingTokens, lastIncludedWriteAt=$lastIncludedWriteAt, additionalProperties=$additionalProperties}"
 }
