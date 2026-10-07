@@ -780,6 +780,7 @@ private constructor(
         private constructor(
             private val status: JsonValue,
             private val unindexedBytes: JsonField<Long>,
+            private val unindexedRows: JsonField<Long>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -789,7 +790,10 @@ private constructor(
                 @JsonProperty("unindexed_bytes")
                 @ExcludeMissing
                 unindexedBytes: JsonField<Long> = JsonMissing.of(),
-            ) : this(status, unindexedBytes, mutableMapOf())
+                @JsonProperty("unindexed_rows")
+                @ExcludeMissing
+                unindexedRows: JsonField<Long> = JsonMissing.of(),
+            ) : this(status, unindexedBytes, unindexedRows, mutableMapOf())
 
             /**
              * Expected to always return the following:
@@ -813,6 +817,16 @@ private constructor(
             fun unindexedBytes(): Long = unindexedBytes.getRequired("unindexed_bytes")
 
             /**
+             * The number of rows in the write-ahead log that have not yet been indexed. Write
+             * backpressure is applied when this exceeds the unindexed row limit.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or
+             *   is unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun unindexedRows(): Long = unindexedRows.getRequired("unindexed_rows")
+
+            /**
              * Returns the raw JSON value of [unindexedBytes].
              *
              * Unlike [unindexedBytes], this method doesn't throw if the JSON field has an
@@ -821,6 +835,16 @@ private constructor(
             @JsonProperty("unindexed_bytes")
             @ExcludeMissing
             fun _unindexedBytes(): JsonField<Long> = unindexedBytes
+
+            /**
+             * Returns the raw JSON value of [unindexedRows].
+             *
+             * Unlike [unindexedRows], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("unindexed_rows")
+            @ExcludeMissing
+            fun _unindexedRows(): JsonField<Long> = unindexedRows
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -842,6 +866,7 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .unindexedBytes()
+                 * .unindexedRows()
                  * ```
                  */
                 @JvmStatic fun builder() = Builder()
@@ -852,12 +877,14 @@ private constructor(
 
                 private var status: JsonValue = JsonValue.from("updating")
                 private var unindexedBytes: JsonField<Long>? = null
+                private var unindexedRows: JsonField<Long>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(indexUpdating: IndexUpdating) = apply {
                     status = indexUpdating.status
                     unindexedBytes = indexUpdating.unindexedBytes
+                    unindexedRows = indexUpdating.unindexedRows
                     additionalProperties = indexUpdating.additionalProperties.toMutableMap()
                 }
 
@@ -893,6 +920,23 @@ private constructor(
                     this.unindexedBytes = unindexedBytes
                 }
 
+                /**
+                 * The number of rows in the write-ahead log that have not yet been indexed. Write
+                 * backpressure is applied when this exceeds the unindexed row limit.
+                 */
+                fun unindexedRows(unindexedRows: Long) = unindexedRows(JsonField.of(unindexedRows))
+
+                /**
+                 * Sets [Builder.unindexedRows] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.unindexedRows] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun unindexedRows(unindexedRows: JsonField<Long>) = apply {
+                    this.unindexedRows = unindexedRows
+                }
+
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)
@@ -923,6 +967,7 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .unindexedBytes()
+                 * .unindexedRows()
                  * ```
                  *
                  * @throws IllegalStateException if any required field is unset.
@@ -931,6 +976,7 @@ private constructor(
                     IndexUpdating(
                         status,
                         checkRequired("unindexedBytes", unindexedBytes),
+                        checkRequired("unindexedRows", unindexedRows),
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -958,6 +1004,7 @@ private constructor(
                     }
                 }
                 unindexedBytes()
+                unindexedRows()
                 validated = true
             }
 
@@ -978,7 +1025,8 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 status.let { if (it == JsonValue.from("updating")) 1 else 0 } +
-                    (if (unindexedBytes.asKnown().isPresent) 1 else 0)
+                    (if (unindexedBytes.asKnown().isPresent) 1 else 0) +
+                    (if (unindexedRows.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -988,17 +1036,18 @@ private constructor(
                 return other is IndexUpdating &&
                     status == other.status &&
                     unindexedBytes == other.unindexedBytes &&
+                    unindexedRows == other.unindexedRows &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(status, unindexedBytes, additionalProperties)
+                Objects.hash(status, unindexedBytes, unindexedRows, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "IndexUpdating{status=$status, unindexedBytes=$unindexedBytes, additionalProperties=$additionalProperties}"
+                "IndexUpdating{status=$status, unindexedBytes=$unindexedBytes, unindexedRows=$unindexedRows, additionalProperties=$additionalProperties}"
         }
     }
 
