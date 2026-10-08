@@ -5,7 +5,6 @@ package com.turbopuffer.models.namespaces
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
-import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -31,7 +30,6 @@ internal class NamespaceMultiQueryResponseTest {
                         .serverTotalMs(0L)
                         .embeddingMs(0L)
                         .embeddingTokens(0L)
-                        .lastIncludedWriteAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                         .build()
                 )
                 .addResult(
@@ -74,7 +72,6 @@ internal class NamespaceMultiQueryResponseTest {
                     .serverTotalMs(0L)
                     .embeddingMs(0L)
                     .embeddingTokens(0L)
-                    .lastIncludedWriteAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                     .build()
             )
         assertThat(namespaceMultiQueryResponse.results())
@@ -121,7 +118,6 @@ internal class NamespaceMultiQueryResponseTest {
                         .serverTotalMs(0L)
                         .embeddingMs(0L)
                         .embeddingTokens(0L)
-                        .lastIncludedWriteAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                         .build()
                 )
                 .addResult(

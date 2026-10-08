@@ -4,7 +4,6 @@ package com.turbopuffer.models.namespaces
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.jsonMapper
-import java.time.OffsetDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -22,7 +21,6 @@ internal class QueryPerformanceTest {
                 .serverTotalMs(0L)
                 .embeddingMs(0L)
                 .embeddingTokens(0L)
-                .lastIncludedWriteAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .build()
 
         assertThat(queryPerformance.approxNamespaceSize()).isEqualTo(0L)
@@ -33,8 +31,6 @@ internal class QueryPerformanceTest {
         assertThat(queryPerformance.serverTotalMs()).isEqualTo(0L)
         assertThat(queryPerformance.embeddingMs()).contains(0L)
         assertThat(queryPerformance.embeddingTokens()).contains(0L)
-        assertThat(queryPerformance.lastIncludedWriteAt())
-            .contains(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
     }
 
     @Test
@@ -50,7 +46,6 @@ internal class QueryPerformanceTest {
                 .serverTotalMs(0L)
                 .embeddingMs(0L)
                 .embeddingTokens(0L)
-                .lastIncludedWriteAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
                 .build()
 
         val roundtrippedQueryPerformance =
