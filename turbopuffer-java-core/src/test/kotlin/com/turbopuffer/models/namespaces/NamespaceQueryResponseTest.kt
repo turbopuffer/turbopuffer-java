@@ -29,6 +29,8 @@ internal class NamespaceQueryResponseTest {
                         .exhaustiveSearchCount(0L)
                         .queryExecutionMs(0L)
                         .serverTotalMs(0L)
+                        .embeddingMs(0L)
+                        .embeddingTokens(0L)
                         .build()
                 )
                 .addAggregationGroup(
@@ -65,6 +67,8 @@ internal class NamespaceQueryResponseTest {
                     .exhaustiveSearchCount(0L)
                     .queryExecutionMs(0L)
                     .serverTotalMs(0L)
+                    .embeddingMs(0L)
+                    .embeddingTokens(0L)
                     .build()
             )
         assertThat(namespaceQueryResponse.aggregationGroups().getOrNull())
@@ -107,6 +111,8 @@ internal class NamespaceQueryResponseTest {
                         .exhaustiveSearchCount(0L)
                         .queryExecutionMs(0L)
                         .serverTotalMs(0L)
+                        .embeddingMs(0L)
+                        .embeddingTokens(0L)
                         .build()
                 )
                 .addAggregationGroup(

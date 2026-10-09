@@ -28,6 +28,8 @@ internal class NamespaceMultiQueryResponseTest {
                         .exhaustiveSearchCount(0L)
                         .queryExecutionMs(0L)
                         .serverTotalMs(0L)
+                        .embeddingMs(0L)
+                        .embeddingTokens(0L)
                         .build()
                 )
                 .addResult(
@@ -68,6 +70,8 @@ internal class NamespaceMultiQueryResponseTest {
                     .exhaustiveSearchCount(0L)
                     .queryExecutionMs(0L)
                     .serverTotalMs(0L)
+                    .embeddingMs(0L)
+                    .embeddingTokens(0L)
                     .build()
             )
         assertThat(namespaceMultiQueryResponse.results())
@@ -112,6 +116,8 @@ internal class NamespaceMultiQueryResponseTest {
                         .exhaustiveSearchCount(0L)
                         .queryExecutionMs(0L)
                         .serverTotalMs(0L)
+                        .embeddingMs(0L)
+                        .embeddingTokens(0L)
                         .build()
                 )
                 .addResult(

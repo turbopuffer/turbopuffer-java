@@ -11,15 +11,19 @@ internal class WritePerformanceTest {
 
     @Test
     fun create() {
-        val writePerformance = WritePerformance.builder().serverTotalMs(0L).build()
+        val writePerformance =
+            WritePerformance.builder().serverTotalMs(0L).embeddingMs(0L).embeddingTokens(0L).build()
 
         assertThat(writePerformance.serverTotalMs()).isEqualTo(0L)
+        assertThat(writePerformance.embeddingMs()).contains(0L)
+        assertThat(writePerformance.embeddingTokens()).contains(0L)
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val writePerformance = WritePerformance.builder().serverTotalMs(0L).build()
+        val writePerformance =
+            WritePerformance.builder().serverTotalMs(0L).embeddingMs(0L).embeddingTokens(0L).build()
 
         val roundtrippedWritePerformance =
             jsonMapper.readValue(
