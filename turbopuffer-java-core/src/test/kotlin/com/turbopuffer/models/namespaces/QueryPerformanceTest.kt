@@ -19,6 +19,8 @@ internal class QueryPerformanceTest {
                 .exhaustiveSearchCount(0L)
                 .queryExecutionMs(0L)
                 .serverTotalMs(0L)
+                .embeddingMs(0L)
+                .embeddingTokens(0L)
                 .build()
 
         assertThat(queryPerformance.approxNamespaceSize()).isEqualTo(0L)
@@ -27,6 +29,8 @@ internal class QueryPerformanceTest {
         assertThat(queryPerformance.exhaustiveSearchCount()).isEqualTo(0L)
         assertThat(queryPerformance.queryExecutionMs()).isEqualTo(0L)
         assertThat(queryPerformance.serverTotalMs()).isEqualTo(0L)
+        assertThat(queryPerformance.embeddingMs()).contains(0L)
+        assertThat(queryPerformance.embeddingTokens()).contains(0L)
     }
 
     @Test
@@ -40,6 +44,8 @@ internal class QueryPerformanceTest {
                 .exhaustiveSearchCount(0L)
                 .queryExecutionMs(0L)
                 .serverTotalMs(0L)
+                .embeddingMs(0L)
+                .embeddingTokens(0L)
                 .build()
 
         val roundtrippedQueryPerformance =
