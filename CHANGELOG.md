@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.9.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.8.0...v2.9.0) (2026-10-09)
+
+
+### Features
+
+* embedding: openapi embedding stats ([d062219](https://github.com/turbopuffer/turbopuffer-java/commit/d062219d61ce0c3fe18c2c6695973495d37faea0))
+* embedding: openapi embedding stats ([cadd721](https://github.com/turbopuffer/turbopuffer-java/commit/cadd721fa6dde441ee1c2304ba6c1bb34f97259e))
+* metadata: expose unindexed_rows in index status ([fe6c765](https://github.com/turbopuffer/turbopuffer-java/commit/fe6c7657c5fe597d2954e9d61efb0393c1af90ad))
+
+
+### Documentation
+
+* keep the generated version line in the readme ([433cdd9](https://github.com/turbopuffer/turbopuffer-java/commit/433cdd9a07096fd336c050d8ee8f2095224e1d1c))
+* keep the generated version line in the readme ([fb22d93](https://github.com/turbopuffer/turbopuffer-java/commit/fb22d9391ad879edd0ff07268b03ba2d067425e7))
+
 ## [2.8.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.7.0...v2.8.0) (2026-10-06)
 
 
