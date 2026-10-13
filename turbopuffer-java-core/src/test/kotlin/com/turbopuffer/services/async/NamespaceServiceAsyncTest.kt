@@ -23,6 +23,7 @@ import com.turbopuffer.models.namespaces.NamespaceStartCopyFromParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.RerankModelParams
 import com.turbopuffer.models.namespaces.Row
 import com.turbopuffer.models.namespaces.ShardingConfig
 import com.turbopuffer.models.namespaces.Vector
@@ -257,6 +258,13 @@ internal class NamespaceServiceAsyncTest {
                     .limit(0L)
                     .offset(0L)
                     .rankBy(JsonValue.from(mapOf<String, Any>()))
+                    .rerankBy(
+                        RerankModelParams.builder()
+                            .attribute("attribute")
+                            .model("model")
+                            .query("query")
+                            .build()
+                    )
                     .topK(0L)
                     .vectorEncoding(VectorEncoding.FLOAT)
                     .build()
