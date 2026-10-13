@@ -41,8 +41,7 @@ private constructor(
     fun attribute(): String = attribute.getRequired("attribute")
 
     /**
-     * The reranking model to use, for example `voyage/rerank-3`. See
-     * https://turbopuffer.com/docs/reranking#models for the available models.
+     * Which reranking model to use.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -135,10 +134,7 @@ private constructor(
          */
         fun attribute(attribute: JsonField<String>) = apply { this.attribute = attribute }
 
-        /**
-         * The reranking model to use, for example `voyage/rerank-3`. See
-         * https://turbopuffer.com/docs/reranking#models for the available models.
-         */
+        /** Which reranking model to use. */
         fun model(model: String) = model(JsonField.of(model))
 
         /**
