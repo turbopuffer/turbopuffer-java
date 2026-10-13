@@ -1684,6 +1684,9 @@ sealed class RerankBy() {
 
         @JvmStatic
         public fun rrf(f1: RrfParams): RerankByRrfWithParams = RerankByRrfWithParams.create(f1)
+
+        @JvmStatic
+        public fun model(value: RerankModelParams): RerankByModel = RerankByModel.create(value)
     }
 
     class Deserializer : BaseDeserializer<RerankBy>(RerankBy::class) {
@@ -1698,6 +1701,19 @@ class RerankByRaw internal constructor(value: JsonValue) : RerankBy() {
 
     override fun toString(): String {
         return jsonMapper.writeValueAsString(value)
+    }
+}
+
+class RerankByModel private constructor(value: RerankModelParams) : RerankBy() {
+    @JsonValueAnnotation private val value: RerankModelParams = value
+
+    override fun toString(): String {
+        return jsonMapper.writeValueAsString(value)
+    }
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(value: RerankModelParams): RerankByModel = RerankByModel(value)
     }
 }
 

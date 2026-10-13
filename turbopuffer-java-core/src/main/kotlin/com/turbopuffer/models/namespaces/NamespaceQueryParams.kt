@@ -140,6 +140,14 @@ private constructor(
     fun _rankBy(): JsonField<RankBy> = body._rankBy()
 
     /**
+     * Rerank retrieved candidates with a model.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun rerankBy(): Optional<RerankModelParams> = body.rerankBy()
+
+    /**
      * The number of results to return.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -220,6 +228,13 @@ private constructor(
      * Unlike [offset], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _offset(): JsonField<Long> = body._offset()
+
+    /**
+     * Returns the raw JSON value of [rerankBy].
+     *
+     * Unlike [rerankBy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _rerankBy(): JsonField<RerankModelParams> = body._rerankBy()
 
     /**
      * Returns the raw JSON value of [topK].
@@ -467,6 +482,18 @@ private constructor(
         /** How to rank the documents in the namespace. */
         fun rankBy(rankBy: RankBy) = apply { body.rankBy(rankBy) }
 
+        /** Rerank retrieved candidates with a model. */
+        fun rerankBy(rerankBy: RerankModelParams) = apply { body.rerankBy(rerankBy) }
+
+        /**
+         * Sets [Builder.rerankBy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.rerankBy] with a well-typed [RerankModelParams] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun rerankBy(rerankBy: JsonField<RerankModelParams>) = apply { body.rerankBy(rerankBy) }
+
         /** The number of results to return. */
         fun topK(topK: Long) = apply { body.topK(topK) }
 
@@ -652,6 +679,7 @@ private constructor(
         private val limit: JsonField<Limit>,
         private val offset: JsonField<Long>,
         private val rankBy: JsonField<RankBy>,
+        private val rerankBy: JsonField<RerankModelParams>,
         private val topK: JsonField<Long>,
         private val vectorEncoding: JsonField<VectorEncoding>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -684,6 +712,9 @@ private constructor(
             @JsonProperty("limit") @ExcludeMissing limit: JsonField<Limit> = JsonMissing.of(),
             @JsonProperty("offset") @ExcludeMissing offset: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("rank_by") @ExcludeMissing rankBy: JsonField<RankBy> = JsonMissing.of(),
+            @JsonProperty("rerank_by")
+            @ExcludeMissing
+            rerankBy: JsonField<RerankModelParams> = JsonMissing.of(),
             @JsonProperty("top_k") @ExcludeMissing topK: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("vector_encoding")
             @ExcludeMissing
@@ -700,6 +731,7 @@ private constructor(
             limit,
             offset,
             rankBy,
+            rerankBy,
             topK,
             vectorEncoding,
             mutableMapOf(),
@@ -820,6 +852,14 @@ private constructor(
         @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonField<RankBy> = rankBy
 
         /**
+         * Rerank retrieved candidates with a model.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun rerankBy(): Optional<RerankModelParams> = rerankBy.getOptional("rerank_by")
+
+        /**
          * The number of results to return.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -916,6 +956,15 @@ private constructor(
         @JsonProperty("offset") @ExcludeMissing fun _offset(): JsonField<Long> = offset
 
         /**
+         * Returns the raw JSON value of [rerankBy].
+         *
+         * Unlike [rerankBy], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("rerank_by")
+        @ExcludeMissing
+        fun _rerankBy(): JsonField<RerankModelParams> = rerankBy
+
+        /**
          * Returns the raw JSON value of [topK].
          *
          * Unlike [topK], this method doesn't throw if the JSON field has an unexpected type.
@@ -964,6 +1013,7 @@ private constructor(
             private var limit: JsonField<Limit> = JsonMissing.of()
             private var offset: JsonField<Long> = JsonMissing.of()
             private var rankBy: JsonField<RankBy> = JsonMissing.of()
+            private var rerankBy: JsonField<RerankModelParams> = JsonMissing.of()
             private var topK: JsonField<Long> = JsonMissing.of()
             private var vectorEncoding: JsonField<VectorEncoding> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -981,6 +1031,7 @@ private constructor(
                 limit = body.limit
                 offset = body.offset
                 rankBy = body.rankBy
+                rerankBy = body.rerankBy
                 topK = body.topK
                 vectorEncoding = body.vectorEncoding
                 additionalProperties = body.additionalProperties.toMutableMap()
@@ -1190,6 +1241,20 @@ private constructor(
              */
             fun rankBy(rankBy: JsonField<RankBy>) = apply { this.rankBy = rankBy }
 
+            /** Rerank retrieved candidates with a model. */
+            fun rerankBy(rerankBy: RerankModelParams) = rerankBy(JsonField.of(rerankBy))
+
+            /**
+             * Sets [Builder.rerankBy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rerankBy] with a well-typed [RerankModelParams]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun rerankBy(rerankBy: JsonField<RerankModelParams>) = apply {
+                this.rerankBy = rerankBy
+            }
+
             /** The number of results to return. */
             fun topK(topK: Long) = topK(JsonField.of(topK))
 
@@ -1254,6 +1319,7 @@ private constructor(
                     limit,
                     offset,
                     rankBy,
+                    rerankBy,
                     topK,
                     vectorEncoding,
                     additionalProperties.toMutableMap(),
@@ -1285,6 +1351,7 @@ private constructor(
             includeAttributes().ifPresent { it.validate() }
             limit().ifPresent { it.validate() }
             offset()
+            rerankBy().ifPresent { it.validate() }
             topK()
             vectorEncoding().ifPresent { it.validate() }
             validated = true
@@ -1314,6 +1381,7 @@ private constructor(
                 (includeAttributes.asKnown().getOrNull()?.validity() ?: 0) +
                 (limit.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (offset.asKnown().isPresent) 1 else 0) +
+                (rerankBy.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (topK.asKnown().isPresent) 1 else 0) +
                 (vectorEncoding.asKnown().getOrNull()?.validity() ?: 0)
 
@@ -1334,6 +1402,7 @@ private constructor(
                 limit == other.limit &&
                 offset == other.offset &&
                 rankBy == other.rankBy &&
+                rerankBy == other.rerankBy &&
                 topK == other.topK &&
                 vectorEncoding == other.vectorEncoding &&
                 additionalProperties == other.additionalProperties
@@ -1352,6 +1421,7 @@ private constructor(
                 limit,
                 offset,
                 rankBy,
+                rerankBy,
                 topK,
                 vectorEncoding,
                 additionalProperties,
@@ -1361,7 +1431,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, consistency=$consistency, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, offset=$offset, rankBy=$rankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
+            "Body{aggregateBy=$aggregateBy, computeAttributes=$computeAttributes, consistency=$consistency, distanceMetric=$distanceMetric, excludeAttributes=$excludeAttributes, filters=$filters, groupBy=$groupBy, includeAttributes=$includeAttributes, limit=$limit, offset=$offset, rankBy=$rankBy, rerankBy=$rerankBy, topK=$topK, vectorEncoding=$vectorEncoding, additionalProperties=$additionalProperties}"
     }
 
     /** The consistency level for a query. */
