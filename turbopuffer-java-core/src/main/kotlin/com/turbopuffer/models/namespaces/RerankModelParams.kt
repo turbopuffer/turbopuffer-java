@@ -33,7 +33,7 @@ private constructor(
     ) : this(attribute, model, query, mutableMapOf())
 
     /**
-     * The string attribute to score. Must be included in `include_attributes` in every query.
+     * Which string attribute to score. It must also be in `include_attributes` in every query.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -121,7 +121,7 @@ private constructor(
         }
 
         /**
-         * The string attribute to score. Must be included in `include_attributes` in every query.
+         * Which string attribute to score. It must also be in `include_attributes` in every query.
          */
         fun attribute(attribute: String) = attribute(JsonField.of(attribute))
 
