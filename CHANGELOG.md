@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.9.0...v2.10.0) (2026-10-13)
+
+
+### Features
+
+* rerank: support reranking with a model ([e1597a2](https://github.com/turbopuffer/turbopuffer-java/commit/e1597a2dcfbc9219ec9524564754b462d9e19de6))
+
 ## [2.9.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.8.0...v2.9.0) (2026-10-09)
 
 
