@@ -38,16 +38,20 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
+    /** The copy is still in progress. */
     fun running(): Optional<Running> = Optional.ofNullable(running)
 
+    /** The copy has finished, successfully or not. */
     fun finished(): Optional<Finished> = Optional.ofNullable(finished)
 
     fun isRunning(): Boolean = running != null
 
     fun isFinished(): Boolean = finished != null
 
+    /** The copy is still in progress. */
     fun asRunning(): Running = running.getOrThrow("running")
 
+    /** The copy has finished, successfully or not. */
     fun asFinished(): Finished = finished.getOrThrow("finished")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -164,8 +168,10 @@ private constructor(
 
     companion object {
 
+        /** The copy is still in progress. */
         @JvmStatic fun ofRunning(running: Running) = CopyFromNamespaceOperation(running = running)
 
+        /** The copy has finished, successfully or not. */
         @JvmStatic
         fun ofFinished(finished: Finished) = CopyFromNamespaceOperation(finished = finished)
     }
@@ -176,8 +182,10 @@ private constructor(
      */
     interface Visitor<out T> {
 
+        /** The copy is still in progress. */
         fun visitRunning(running: Running): T
 
+        /** The copy has finished, successfully or not. */
         fun visitFinished(finished: Finished): T
 
         /**
@@ -236,6 +244,7 @@ private constructor(
         }
     }
 
+    /** The copy is still in progress. */
     class Running
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -490,6 +499,7 @@ private constructor(
             "Running{startTime=$startTime, status=$status, progress=$progress, additionalProperties=$additionalProperties}"
     }
 
+    /** The copy has finished, successfully or not. */
     class Finished
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -523,6 +533,8 @@ private constructor(
         fun finishTime(): OffsetDateTime = finishTime.getRequired("finish_time")
 
         /**
+         * The result of the copy.
+         *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
@@ -633,6 +645,7 @@ private constructor(
                 this.finishTime = finishTime
             }
 
+            /** The result of the copy. */
             fun result(result: CopyFromNamespaceOperationResult) = result(JsonField.of(result))
 
             /**

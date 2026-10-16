@@ -40,6 +40,7 @@ private constructor(
     /** The namespace to copy documents from. */
     fun string(): Optional<String> = Optional.ofNullable(string)
 
+    /** Configuration for copying documents from another namespace. */
     fun config(): Optional<CopyFromNamespaceConfig> = Optional.ofNullable(config)
 
     fun isString(): Boolean = string != null
@@ -49,6 +50,7 @@ private constructor(
     /** The namespace to copy documents from. */
     fun asString(): String = string.getOrThrow("string")
 
+    /** Configuration for copying documents from another namespace. */
     fun asConfig(): CopyFromNamespaceConfig = config.getOrThrow("config")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -164,6 +166,7 @@ private constructor(
         /** The namespace to copy documents from. */
         @JvmStatic fun ofString(string: String) = CopyFromNamespaceParams(string = string)
 
+        /** Configuration for copying documents from another namespace. */
         @JvmStatic
         fun ofConfig(config: CopyFromNamespaceConfig) = CopyFromNamespaceParams(config = config)
     }
@@ -177,6 +180,7 @@ private constructor(
         /** The namespace to copy documents from. */
         fun visitString(string: String): T
 
+        /** Configuration for copying documents from another namespace. */
         fun visitConfig(config: CopyFromNamespaceConfig): T
 
         /**
@@ -241,6 +245,7 @@ private constructor(
         }
     }
 
+    /** Configuration for copying documents from another namespace. */
     class CopyFromNamespaceConfig
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

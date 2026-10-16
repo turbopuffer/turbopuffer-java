@@ -15,6 +15,7 @@ import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
 
+/** The response to a successful request to start a copy. */
 class NamespaceStartCopyFromResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(

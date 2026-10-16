@@ -113,7 +113,7 @@ private constructor(
     fun encryption(): Optional<Encryption> = body.encryption()
 
     /**
-     * The patch and filter specifying which documents to patch.
+     * Sets the attributes in `patch` on every document that matches `filters`.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -602,7 +602,7 @@ private constructor(
         /** Alias for calling [encryption] with `Encryption.ofDefault()`. */
         fun encryptionDefault() = apply { body.encryptionDefault() }
 
-        /** The patch and filter specifying which documents to patch. */
+        /** Sets the attributes in `patch` on every document that matches `filters`. */
         fun patchByFilter(patchByFilter: PatchByFilter) = apply {
             body.patchByFilter(patchByFilter)
         }
@@ -1134,7 +1134,7 @@ private constructor(
         fun encryption(): Optional<Encryption> = encryption.getOptional("encryption")
 
         /**
-         * The patch and filter specifying which documents to patch.
+         * Sets the attributes in `patch` on every document that matches `filters`.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
@@ -1703,7 +1703,7 @@ private constructor(
             /** Alias for calling [encryption] with `Encryption.ofDefault()`. */
             fun encryptionDefault() = encryption(Encryption.ofDefault())
 
-            /** The patch and filter specifying which documents to patch. */
+            /** Sets the attributes in `patch` on every document that matches `filters`. */
             fun patchByFilter(patchByFilter: PatchByFilter) =
                 patchByFilter(JsonField.of(patchByFilter))
 
@@ -2085,7 +2085,7 @@ private constructor(
             "Body{branchFromNamespace=$branchFromNamespace, copyFromNamespace=$copyFromNamespace, createNamespace=$createNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, sharding=$sharding, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
     }
 
-    /** The patch and filter specifying which documents to patch. */
+    /** Sets the attributes in `patch` on every document that matches `filters`. */
     class PatchByFilter
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

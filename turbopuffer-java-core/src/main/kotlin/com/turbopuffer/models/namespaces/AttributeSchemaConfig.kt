@@ -524,6 +524,7 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
+        /** Whether to create an ANN index with the default configuration. */
         fun bool(): Optional<Boolean> = Optional.ofNullable(bool)
 
         /** Configuration options for ANN (Approximate Nearest Neighbor) indexing. */
@@ -533,6 +534,7 @@ private constructor(
 
         fun isConfig(): Boolean = config != null
 
+        /** Whether to create an ANN index with the default configuration. */
         fun asBool(): Boolean = bool.getOrThrow("bool")
 
         /** Configuration options for ANN (Approximate Nearest Neighbor) indexing. */
@@ -650,6 +652,7 @@ private constructor(
 
         companion object {
 
+            /** Whether to create an ANN index with the default configuration. */
             @JvmStatic fun ofBool(bool: Boolean) = Ann(bool = bool)
 
             /** Configuration options for ANN (Approximate Nearest Neighbor) indexing. */
@@ -659,6 +662,7 @@ private constructor(
         /** An interface that defines how to map each variant of [Ann] to a value of type [T]. */
         interface Visitor<out T> {
 
+            /** Whether to create an ANN index with the default configuration. */
             fun visitBool(bool: Boolean): T
 
             /** Configuration options for ANN (Approximate Nearest Neighbor) indexing. */
