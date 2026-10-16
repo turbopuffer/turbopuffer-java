@@ -12,16 +12,16 @@ internal class RrfParamsTest {
 
     @Test
     fun create() {
-        val rrfParams = RrfParams.builder().rankConstant(0L).addWeight(1.0f).build()
+        val rrfParams = RrfParams.builder().rankConstant(1L).addWeight(1.0f).build()
 
-        assertThat(rrfParams.rankConstant()).contains(0L)
+        assertThat(rrfParams.rankConstant()).contains(1L)
         assertThat(rrfParams.weights().getOrNull()).containsExactly(1.0f)
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val rrfParams = RrfParams.builder().rankConstant(0L).addWeight(1.0f).build()
+        val rrfParams = RrfParams.builder().rankConstant(1L).addWeight(1.0f).build()
 
         val roundtrippedRrfParams =
             jsonMapper.readValue(
