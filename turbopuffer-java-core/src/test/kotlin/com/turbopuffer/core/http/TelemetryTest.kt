@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.github.tomakehurst.wiremock.client.WireMock.findAll
 import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.okJson
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
@@ -25,6 +26,7 @@ import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.Sleeper
 import com.turbopuffer.core.jsonMapper
 import com.turbopuffer.errors.NotFoundException
+import com.turbopuffer.errors.TurbopufferException
 import com.turbopuffer.errors.TurbopufferIoException
 import com.turbopuffer.errors.UnprocessableEntityException
 import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
@@ -461,6 +463,31 @@ internal class TelemetryRequestsTest {
         val records = sentRecords()
         assertThat(records.subList(0, 3)).containsExactly(null, null, null)
         assertThat(records[3]!!.single()["route"].asText()).isEqualTo(QUERY_ROUTE)
+    }
+
+    @Test
+    fun parseFailuresAreRecorded() {
+        stubFor(
+            post(urlPathEqualTo(QUERY_PATH))
+                .inScenario("parse failure")
+                .whenScenarioStateIs(Scenario.STARTED)
+                .willReturn(ok("not json").withHeader("Content-Type", "application/json"))
+                .willSetStateTo("ok")
+        )
+        stubFor(
+            post(urlPathEqualTo(QUERY_PATH))
+                .inScenario("parse failure")
+                .whenScenarioStateIs("ok")
+                .willReturn(okJson(QUERY_RESPONSE))
+        )
+        val ns = client().namespace("my-ns")
+
+        assertThatThrownBy { ns.query(queryParams()) }
+            .isInstanceOf(TurbopufferException::class.java)
+        ns.query(queryParams())
+
+        val record = sentRecords()[1]!!.single()
+        assertThat(record["status"].asInt() to record["error"].asText()).isEqualTo(200 to "other")
     }
 
     @Test

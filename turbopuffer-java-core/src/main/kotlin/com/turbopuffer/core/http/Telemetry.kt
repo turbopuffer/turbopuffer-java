@@ -316,6 +316,7 @@ private class TelemetryScope(private val buffer: TelemetryBuffer, private val in
             when (val kind = result.errorKind) {
                 null -> null
                 ErrorKind.CANCELED -> "canceled"
+                ErrorKind.OTHER -> "other"
                 else -> if (kind.value.endsWith("timeout")) "timeout" else "connect"
             }
         buffer.record(
