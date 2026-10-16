@@ -9,8 +9,12 @@ import com.turbopuffer.core.http.HttpClient
 import com.turbopuffer.core.http.LoggingHttpClient
 import com.turbopuffer.core.http.PhantomReachableClosingHttpClient
 import com.turbopuffer.core.http.QueryParams
+import com.turbopuffer.core.http.RequestObserver
 import com.turbopuffer.core.http.RespondAsyncHttpClient
 import com.turbopuffer.core.http.RetryingHttpClient
+import com.turbopuffer.core.http.TelemetryObserver
+import com.turbopuffer.core.http.resolveTelemetryEnabled
+import com.turbopuffer.core.http.telemetryBuffer
 import java.time.Clock
 import java.time.Duration
 import java.util.Optional
@@ -124,6 +128,7 @@ private constructor(
     @get:JvmName("apiKey") val apiKey: String,
     private val region: String?,
     private val defaultNamespace: String?,
+    private val requestObserver: RequestObserver?,
     /**
      * Whether to compress requests and responses with gzip.
      *
@@ -131,6 +136,12 @@ private constructor(
      * to enable compression.
      */
     @get:JvmName("compression") val compression: Boolean,
+    /**
+     * Whether to send client-side request timings to turbopuffer, piggybacked on later requests.
+     *
+     * Defaults to the `TURBOPUFFER_TELEMETRY` environment variable, or false if it's unset.
+     */
+    @get:JvmName("telemetry") val telemetry: Boolean,
 ) {
 
     init {
@@ -203,7 +214,9 @@ private constructor(
         private var apiKey: String? = null
         private var region: String? = null
         private var defaultNamespace: String? = null
+        private var requestObserver: RequestObserver? = null
         private var compression: Boolean = false
+        private var telemetry: Boolean? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -223,7 +236,9 @@ private constructor(
             apiKey = clientOptions.apiKey
             region = clientOptions.region
             defaultNamespace = clientOptions.defaultNamespace
+            requestObserver = clientOptions.requestObserver
             compression = clientOptions.compression
+            telemetry = clientOptions.telemetry
         }
 
         /**
@@ -373,6 +388,12 @@ private constructor(
         fun defaultNamespace(defaultNamespace: Optional<String>) =
             defaultNamespace(defaultNamespace.getOrNull())
 
+        /** Observes the requests the client makes, such as to record their timings. */
+        @JvmSynthetic
+        internal fun requestObserver(requestObserver: RequestObserver?) = apply {
+            this.requestObserver = requestObserver
+        }
+
         /**
          * Whether to compress requests and responses with gzip.
          *
@@ -380,6 +401,14 @@ private constructor(
          * want to enable compression.
          */
         fun compression(compression: Boolean) = apply { this.compression = compression }
+
+        /**
+         * Whether to send client-side request timings to turbopuffer, piggybacked on later
+         * requests.
+         *
+         * Defaults to the `TURBOPUFFER_TELEMETRY` environment variable, or false if it's unset.
+         */
+        fun telemetry(telemetry: Boolean) = apply { this.telemetry = telemetry }
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
@@ -566,6 +595,15 @@ private constructor(
             }
 
             val clientHeaders = headers.build()
+            // Copies keep the resolved setting rather than reading the environment again.
+            val telemetry = resolveTelemetryEnabled(this.telemetry)
+            // Telemetry is the only request observer, so it decides whether there is one.
+            val requestObserver =
+                if (telemetry)
+                    TelemetryObserver(
+                        telemetryBuffer(apiKey, finalBaseUrl.replace("{region}", region.orEmpty()))
+                    )
+                else null
             return ClientOptions(
                 httpClient,
                 RespondAsyncHttpClient(
@@ -580,6 +618,7 @@ private constructor(
                         .sleeper(sleeper)
                         .clock(clock)
                         .maxRetries(maxRetries)
+                        .requestObserver(requestObserver)
                         .build(),
                     sleeper,
                     jsonMapper,
@@ -600,7 +639,9 @@ private constructor(
                 apiKey,
                 region,
                 defaultNamespace,
+                requestObserver,
                 compression,
+                telemetry,
             )
         }
     }
