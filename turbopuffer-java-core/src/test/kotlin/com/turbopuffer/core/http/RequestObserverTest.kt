@@ -86,17 +86,17 @@ internal class RequestObserverTest {
         val timings = result.timings
         assertThat(timings.reused).isFalse()
         assertOrdered(
-            "attemptStart" to timings.attemptStart,
-            "serializeStart" to timings.serializeStart,
+            "attemptBegin" to timings.attemptBegin,
+            "serializeBegin" to timings.serializeBegin,
             "serializeEnd" to timings.serializeEnd,
             "requestReady" to timings.requestReady,
-            "connectStart" to timings.connectStart,
+            "connectBegin" to timings.connectBegin,
             "connectEnd" to timings.connectEnd,
-            "sendStart" to timings.sendStart,
+            "sendBegin" to timings.sendBegin,
             "sendEnd" to timings.sendEnd,
             "responseHeaders" to timings.responseHeaders,
             "bodyEnd" to timings.bodyEnd,
-            "deserializeStart" to timings.deserializeStart,
+            "deserializeBegin" to timings.deserializeBegin,
             "deserializeEnd" to timings.deserializeEnd,
         )
     }
@@ -131,16 +131,16 @@ internal class RequestObserverTest {
         assertThat(first.response?.statusCode()).isEqualTo(500)
         assertThat(first.reachedServer).isTrue()
         assertThat(first.timings.reused).isFalse()
-        assertThat(first.timings.connectStart).isNotNull()
+        assertThat(first.timings.connectBegin).isNotNull()
         assertThat(second.timings.reused).isTrue()
-        assertThat(second.timings.connectStart).isNull()
+        assertThat(second.timings.connectBegin).isNull()
         assertThat(second.timings.connectEnd).isNull()
-        assertThat(second.timings.serializeStart).isNull()
+        assertThat(second.timings.serializeBegin).isNull()
         assertOrdered(
             "first responseHeaders" to first.timings.responseHeaders,
-            "second attemptStart" to second.timings.attemptStart,
+            "second attemptBegin" to second.timings.attemptBegin,
             "second requestReady" to second.timings.requestReady,
-            "second sendStart" to second.timings.sendStart,
+            "second sendBegin" to second.timings.sendBegin,
             "second responseHeaders" to second.timings.responseHeaders,
         )
 
@@ -166,7 +166,7 @@ internal class RequestObserverTest {
         assertThat(result.response?.statusCode()).isEqualTo(404)
         assertThat(result.parsed).isNull()
         assertThat(result.timings.bodyEnd).isNotNull()
-        assertThat(result.timings.deserializeStart).isNull()
+        assertThat(result.timings.deserializeBegin).isNull()
     }
 
     @ParameterizedTest
@@ -265,7 +265,7 @@ internal class RequestObserverTest {
         assertThat(result.timings.bodyEnd).isEqualTo(drained)
         assertOrdered(
             "bodyEnd" to result.timings.bodyEnd,
-            "deserializeStart" to result.timings.deserializeStart,
+            "deserializeBegin" to result.timings.deserializeBegin,
             "deserializeEnd" to result.timings.deserializeEnd,
         )
 

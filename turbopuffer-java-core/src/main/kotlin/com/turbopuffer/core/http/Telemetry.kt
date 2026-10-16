@@ -81,39 +81,39 @@ internal fun routeTemplate(method: String, url: String): String {
 @JvmSynthetic
 internal fun computeDurations(timings: Timings, end: Long): Map<String, Long> {
     val durations = linkedMapOf<String, Long>()
-    val attemptStart = timings.attemptStart ?: return durations
-    durations["total"] = end - attemptStart
+    val attemptBegin = timings.attemptBegin ?: return durations
+    durations["total"] = end - attemptBegin
 
-    val serializeStart = timings.serializeStart
+    val serializeBegin = timings.serializeBegin
     val serializeEnd = timings.serializeEnd
-    if (serializeStart != null && serializeEnd != null) {
-        durations["serialize"] = serializeEnd - serializeStart
+    if (serializeBegin != null && serializeEnd != null) {
+        durations["serialize"] = serializeEnd - serializeBegin
     }
 
     // Set by HTTP clients that compress request bodies.
-    val compressStart = timings.extra["compress_start"]
+    val compressBegin = timings.extra["compress_begin"]
     val compressEnd = timings.extra["compress_end"]
-    if (compressStart != null && compressEnd != null) {
-        durations["compress"] = compressEnd - compressStart
+    if (compressBegin != null && compressEnd != null) {
+        durations["compress"] = compressEnd - compressBegin
     }
 
     // Waiting for a free connection, until connecting a new one or sending on a reused one.
-    val poolStart = compressEnd ?: timings.requestReady
-    val connectionReady = timings.connectStart ?: timings.sendStart
-    if (poolStart != null && connectionReady != null) {
-        durations["pool"] = maxOf(connectionReady - poolStart, 0)
+    val poolBegin = compressEnd ?: timings.requestReady
+    val connectionReady = timings.connectBegin ?: timings.sendBegin
+    if (poolBegin != null && connectionReady != null) {
+        durations["pool"] = maxOf(connectionReady - poolBegin, 0)
     }
 
-    val connectStart = timings.connectStart
+    val connectBegin = timings.connectBegin
     val connectEnd = timings.connectEnd
-    if (connectStart != null && connectEnd != null) {
-        durations["connect"] = connectEnd - connectStart
+    if (connectBegin != null && connectEnd != null) {
+        durations["connect"] = connectEnd - connectBegin
     }
 
-    val sendStart = timings.sendStart
+    val sendBegin = timings.sendBegin
     val sendEnd = timings.sendEnd
-    if (sendStart != null && sendEnd != null) {
-        durations["send"] = sendEnd - sendStart
+    if (sendBegin != null && sendEnd != null) {
+        durations["send"] = sendEnd - sendBegin
     }
 
     // Covers the network round trip and the server.
@@ -127,10 +127,10 @@ internal fun computeDurations(timings: Timings, end: Long): Map<String, Long> {
         durations["body_read"] = bodyEnd - responseHeaders
     }
 
-    val deserializeStart = timings.deserializeStart
+    val deserializeBegin = timings.deserializeBegin
     val deserializeEnd = timings.deserializeEnd
-    if (deserializeStart != null && deserializeEnd != null) {
-        durations["deserialize"] = deserializeEnd - deserializeStart
+    if (deserializeBegin != null && deserializeEnd != null) {
+        durations["deserialize"] = deserializeEnd - deserializeBegin
     }
 
     return durations

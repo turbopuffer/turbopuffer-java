@@ -47,7 +47,7 @@ private constructor(private val scope: RequestScope, start: Long) {
         } else {
             request.body?.let { body ->
                 // Bodies encode lazily, so encode up front to time it. Failures surface when sent.
-                timings.serializeStart = System.nanoTime()
+                timings.serializeBegin = System.nanoTime()
                 runCatching { body.contentLength() }
                 timings.serializeEnd = System.nanoTime()
             }
@@ -115,7 +115,7 @@ private constructor(private val scope: RequestScope, start: Long) {
         if (finished.get()) {
             return parse()
         }
-        timings.deserializeStart = System.nanoTime()
+        timings.deserializeBegin = System.nanoTime()
         response.buffering = true
         val parsed =
             try {
@@ -144,12 +144,12 @@ private constructor(private val scope: RequestScope, start: Long) {
         if (errorResponse) {
             bodyRead()
         }
-        timings.deserializeStart?.let { deserializeStart ->
+        timings.deserializeBegin?.let { deserializeBegin ->
             val deserializeEnd = System.nanoTime()
             timings.deserializeEnd = deserializeEnd
             // Parsing starts once the body is read, even when a handler closes it unread.
             timings.bodyEnd?.let {
-                timings.deserializeStart = maxOf(deserializeStart, minOf(it, deserializeEnd))
+                timings.deserializeBegin = maxOf(deserializeBegin, minOf(it, deserializeEnd))
             }
         }
         val bodyError = bodyError
@@ -160,7 +160,7 @@ private constructor(private val scope: RequestScope, start: Long) {
                 errorResponse -> null
                 bodyError != null -> errorKind(bodyError, Phase.READ)
                 // The body couldn't be parsed.
-                timings.deserializeStart != null -> ErrorKind.OTHER
+                timings.deserializeBegin != null -> ErrorKind.OTHER
                 // Failing after a response arrived, such as while polling for a result, isn't a
                 // read error.
                 response != null -> errorKind(error, Phase.UNKNOWN)
@@ -248,7 +248,7 @@ internal class ObservedHttpResponse(
         if (this.bytes == null) {
             this.bytes = bytes
             observation.bodyRead()
-            observation.timings.deserializeStart = System.nanoTime()
+            observation.timings.deserializeBegin = System.nanoTime()
         }
         return ByteArrayInputStream(bytes)
     }
@@ -260,9 +260,9 @@ internal class ObservedHttpResponse(
  * Records the progress of one attempt from HTTP client events. HTTP clients find it on the request
  * they send with [HttpRequest.trace].
  */
-internal class AttemptTrace(attemptStart: Long) {
+internal class AttemptTrace(attemptBegin: Long) {
 
-    val timings = Timings().apply { this.attemptStart = attemptStart }
+    val timings = Timings().apply { this.attemptBegin = attemptBegin }
 
     @Volatile private var started = false
     @Volatile private var dialing = false
@@ -270,18 +270,18 @@ internal class AttemptTrace(attemptStart: Long) {
     @Volatile private var connectEnded = false
     @Volatile private var responded = false
 
-    fun callStart() {
+    fun callBegin() {
         started = true
     }
 
     /** Called when opening a connection starts, from DNS lookup on. */
-    fun connectStart() {
+    fun connectBegin() {
         if (connected) {
             return
         }
         dialing = true
-        if (timings.connectStart == null) {
-            timings.connectStart = System.nanoTime()
+        if (timings.connectBegin == null) {
+            timings.connectBegin = System.nanoTime()
         }
     }
 
@@ -299,13 +299,13 @@ internal class AttemptTrace(attemptStart: Long) {
         val reused = !connectEnded
         timings.reused = reused
         if (reused) {
-            timings.connectStart = null
+            timings.connectBegin = null
             timings.connectEnd = null
         }
     }
 
-    fun sendStart() {
-        timings.sendStart = System.nanoTime()
+    fun sendBegin() {
+        timings.sendBegin = System.nanoTime()
     }
 
     fun sendEnd() {

@@ -286,12 +286,12 @@ internal class TelemetryTest {
     @Test
     fun computesDurations() {
         val newConnection =
-            timings(extra = mapOf("compress_start" to 60L, "compress_end" to 100L)) {
-                attemptStart = 0
+            timings(extra = mapOf("compress_begin" to 60L, "compress_end" to 100L)) {
+                attemptBegin = 0
                 requestReady = 50
-                connectStart = 150
+                connectBegin = 150
                 connectEnd = 400
-                sendStart = 410
+                sendBegin = 410
                 sendEnd = 500
                 responseHeaders = 900
             }
@@ -308,9 +308,9 @@ internal class TelemetryTest {
             )
 
         val reusedConnection = timings {
-            attemptStart = 0
+            attemptBegin = 0
             requestReady = 100
-            sendStart = 130
+            sendBegin = 130
             sendEnd = 160
             responseHeaders = 300
         }
@@ -323,7 +323,7 @@ internal class TelemetryTest {
         assertThat(computeDurations(reusedConnection, 400)["wait"]).isEqualTo(0)
 
         // Untraced requests, such as through a custom HTTP client.
-        assertThat(computeDurations(timings { attemptStart = 0 }, 400))
+        assertThat(computeDurations(timings { attemptBegin = 0 }, 400))
             .isEqualTo(mapOf("total" to 400L))
     }
 }

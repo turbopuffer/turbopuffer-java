@@ -102,24 +102,24 @@ internal enum class ErrorKind(val value: String) {
  */
 internal class Timings {
     /** The attempt began, before the request was built. */
-    @Volatile var attemptStart: Long? = null
+    @Volatile var attemptBegin: Long? = null
     /** Encoding the request body, which happens once before the first attempt. */
-    @Volatile var serializeStart: Long? = null
+    @Volatile var serializeBegin: Long? = null
     @Volatile var serializeEnd: Long? = null
     /** The request was built and handed to the HTTP client. */
     @Volatile var requestReady: Long? = null
     /** Opening a new connection: DNS, TCP and TLS. Null when a connection was reused. */
-    @Volatile var connectStart: Long? = null
+    @Volatile var connectBegin: Long? = null
     @Volatile var connectEnd: Long? = null
     /** Writing the request headers and body. */
-    @Volatile var sendStart: Long? = null
+    @Volatile var sendBegin: Long? = null
     @Volatile var sendEnd: Long? = null
     /** The response headers were received. */
     @Volatile var responseHeaders: Long? = null
     /** The response body was fully read. */
     @Volatile var bodyEnd: Long? = null
     /** Parsing the response body. Only on the final attempt. */
-    @Volatile var deserializeStart: Long? = null
+    @Volatile var deserializeBegin: Long? = null
     @Volatile var deserializeEnd: Long? = null
     /** Whether the attempt used an existing connection, or null when unknown. */
     @Volatile var reused: Boolean? = null

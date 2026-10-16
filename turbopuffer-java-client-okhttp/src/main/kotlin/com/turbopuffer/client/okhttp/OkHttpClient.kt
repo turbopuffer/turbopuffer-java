@@ -376,12 +376,12 @@ private fun okhttp3.Headers.toHeaders(): Headers {
 /** Records the progress of an observed attempt from OkHttp's events. */
 private class TracingEventListener(private val trace: AttemptTrace) : EventListener() {
 
-    override fun callStart(call: Call) = trace.callStart()
+    override fun callStart(call: Call) = trace.callBegin()
 
-    override fun dnsStart(call: Call, domainName: String) = trace.connectStart()
+    override fun dnsStart(call: Call, domainName: String) = trace.connectBegin()
 
     override fun connectStart(call: Call, inetSocketAddress: InetSocketAddress, proxy: Proxy) =
-        trace.connectStart()
+        trace.connectBegin()
 
     // Follows the TLS handshake, if any.
     override fun connectEnd(
@@ -393,7 +393,7 @@ private class TracingEventListener(private val trace: AttemptTrace) : EventListe
 
     override fun connectionAcquired(call: Call, connection: Connection) = trace.connectionAcquired()
 
-    override fun requestHeadersStart(call: Call) = trace.sendStart()
+    override fun requestHeadersStart(call: Call) = trace.sendBegin()
 
     override fun requestHeadersEnd(call: Call, request: Request) {
         if (request.body == null) {
