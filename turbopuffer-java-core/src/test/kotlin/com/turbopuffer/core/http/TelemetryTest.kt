@@ -157,6 +157,21 @@ internal class TelemetryTest {
     }
 
     @Test
+    fun recordsAreTakenWhenTheFirstAttemptBegins() {
+        val buffer = TelemetryBuffer()
+        addRecord(buffer)
+        val scope = TelemetryObserver(buffer).start(RequestInfo(HttpMethod.POST, QUERY_PATH))
+
+        // A request that fails before it's sent never takes them.
+        buffer.take()!!.also { buffer.restore(it) }
+
+        val request = HttpRequest.builder().method(HttpMethod.POST).baseUrl("http://localhost")
+        scope.attemptBegin(0, request)
+        assertThat(request.build().headers.values(TELEMETRY_HEADER)).hasSize(1)
+        assertThat(buffer.take()).isNull()
+    }
+
+    @Test
     fun durationsAreIntegerMicroseconds() {
         val buffer = TelemetryBuffer()
         buffer.record(

@@ -286,9 +286,14 @@ private class TelemetryScope(private val buffer: TelemetryBuffer, private val in
     RequestScope {
 
     // Kept for later attempts until one of them may have reached the server.
-    @Volatile private var batch: TelemetryBatch? = buffer.take()
+    @Volatile private var batch: TelemetryBatch? = null
 
     override fun attemptBegin(attempt: Int, request: HttpRequest.Builder) {
+        // Taken only once a request is about to be sent, so one that fails before then can't lose
+        // it.
+        if (attempt == 0) {
+            batch = buffer.take()
+        }
         batch?.let { request.replaceHeaders(TELEMETRY_HEADER, it.header) }
     }
 
