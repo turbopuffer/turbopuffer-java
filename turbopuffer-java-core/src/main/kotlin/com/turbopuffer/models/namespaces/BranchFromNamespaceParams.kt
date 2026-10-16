@@ -40,6 +40,7 @@ private constructor(
     /** The namespace to create an instant, copy-on-write clone of. */
     fun string(): Optional<String> = Optional.ofNullable(string)
 
+    /** Configuration for branching from another namespace. */
     fun config(): Optional<BranchFromNamespaceConfig> = Optional.ofNullable(config)
 
     fun isString(): Boolean = string != null
@@ -49,6 +50,7 @@ private constructor(
     /** The namespace to create an instant, copy-on-write clone of. */
     fun asString(): String = string.getOrThrow("string")
 
+    /** Configuration for branching from another namespace. */
     fun asConfig(): BranchFromNamespaceConfig = config.getOrThrow("config")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -166,6 +168,7 @@ private constructor(
         /** The namespace to create an instant, copy-on-write clone of. */
         @JvmStatic fun ofString(string: String) = BranchFromNamespaceParams(string = string)
 
+        /** Configuration for branching from another namespace. */
         @JvmStatic
         fun ofConfig(config: BranchFromNamespaceConfig) = BranchFromNamespaceParams(config = config)
     }
@@ -179,6 +182,7 @@ private constructor(
         /** The namespace to create an instant, copy-on-write clone of. */
         fun visitString(string: String): T
 
+        /** Configuration for branching from another namespace. */
         fun visitConfig(config: BranchFromNamespaceConfig): T
 
         /**
@@ -243,6 +247,7 @@ private constructor(
         }
     }
 
+    /** Configuration for branching from another namespace. */
     class BranchFromNamespaceConfig
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

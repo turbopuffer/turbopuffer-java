@@ -16,6 +16,7 @@ import java.util.Collections
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
+/** The error of an asynchronous operation that failed. */
 class OperationError
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
