@@ -32,6 +32,7 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
+    /** Whether to enable full-text search with the default configuration. */
     fun bool(): Optional<Boolean> = Optional.ofNullable(bool)
 
     /** Configuration options for full-text search. */
@@ -41,6 +42,7 @@ private constructor(
 
     fun isConfig(): Boolean = config != null
 
+    /** Whether to enable full-text search with the default configuration. */
     fun asBool(): Boolean = bool.getOrThrow("bool")
 
     /** Configuration options for full-text search. */
@@ -156,6 +158,7 @@ private constructor(
 
     companion object {
 
+        /** Whether to enable full-text search with the default configuration. */
         @JvmStatic fun ofBool(bool: Boolean) = FullTextSearch(bool = bool)
 
         /** Configuration options for full-text search. */
@@ -167,6 +170,7 @@ private constructor(
      */
     interface Visitor<out T> {
 
+        /** Whether to enable full-text search with the default configuration. */
         fun visitBool(bool: Boolean): T
 
         /** Configuration options for full-text search. */

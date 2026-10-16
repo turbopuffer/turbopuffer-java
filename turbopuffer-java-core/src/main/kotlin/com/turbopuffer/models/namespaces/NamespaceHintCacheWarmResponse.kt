@@ -44,6 +44,8 @@ private constructor(
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonValue = status
 
     /**
+     * A message describing the result of the request.
+     *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -106,6 +108,7 @@ private constructor(
          */
         fun status(status: JsonValue) = apply { this.status = status }
 
+        /** A message describing the result of the request. */
         fun message(message: String) = message(JsonField.of(message))
 
         /**

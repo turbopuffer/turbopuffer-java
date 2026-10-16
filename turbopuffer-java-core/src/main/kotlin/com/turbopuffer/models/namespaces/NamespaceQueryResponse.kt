@@ -19,7 +19,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** The result of a query. */
+/**
+ * The result of a query. With `aggregate_by`, `aggregations` maps each aggregation's label to its
+ * value. With `group_by` as well, `aggregation_groups` holds one object per group instead, with its
+ * group key and the value of each aggregation.
+ */
 class NamespaceQueryResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -78,6 +82,9 @@ private constructor(
     fun aggregations(): Optional<Aggregations> = aggregations.getOptional("aggregations")
 
     /**
+     * The documents that matched the query, ordered by `rank_by`. Only present when `rank_by` is
+     * set.
+     *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -236,6 +243,10 @@ private constructor(
             this.aggregations = aggregations
         }
 
+        /**
+         * The documents that matched the query, ordered by `rank_by`. Only present when `rank_by`
+         * is set.
+         */
         fun rows(rows: List<Row>) = rows(JsonField.of(rows))
 
         /**
