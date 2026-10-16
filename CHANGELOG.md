@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.11.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.10.0...v2.11.0) (2026-10-16)
+
+
+### Features
+
+* Bound document IDs to 0 so they become `u64` in Rust ([b0bef7e](https://github.com/turbopuffer/turbopuffer-java/commit/b0bef7e1963ef256128495df3ce5f90eef494525))
+* OpenAPI: Add missing descriptions to prettify docblocks in output SDKs ([8f543ef](https://github.com/turbopuffer/turbopuffer-java/commit/8f543ef1492fed3ab8ac93fa82ca29481a145a28))
+* OpenAPI: More unsigned ints for Rust to make `u64` ([f8f355a](https://github.com/turbopuffer/turbopuffer-java/commit/f8f355a57b1fd7b1a0b916d930b8fda316b47f68))
+
 ## [2.10.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.9.0...v2.10.0) (2026-10-13)
 
 
