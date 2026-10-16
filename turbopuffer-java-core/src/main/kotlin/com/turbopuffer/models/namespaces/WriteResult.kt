@@ -19,7 +19,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** The response to a successful write request. */
+/** The copy succeeded, with the result of its write. */
 class WriteResult
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(

@@ -265,6 +265,7 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
+    /** Configuration for branching from another namespace. */
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

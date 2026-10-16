@@ -232,6 +232,9 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
+        /**
+         * `true` to enable pinning with the default configuration, or `false` to remove pinning.
+         */
         fun bool(): Optional<Boolean> = Optional.ofNullable(bool)
 
         /** Configuration for namespace pinning. */
@@ -241,6 +244,9 @@ private constructor(
 
         fun isConfig(): Boolean = config != null
 
+        /**
+         * `true` to enable pinning with the default configuration, or `false` to remove pinning.
+         */
         fun asBool(): Boolean = bool.getOrThrow("bool")
 
         /** Configuration for namespace pinning. */
@@ -358,6 +364,10 @@ private constructor(
 
         companion object {
 
+            /**
+             * `true` to enable pinning with the default configuration, or `false` to remove
+             * pinning.
+             */
             @JvmStatic fun ofBool(bool: Boolean) = Pinning(bool = bool)
 
             /** Configuration for namespace pinning. */
@@ -369,6 +379,10 @@ private constructor(
          */
         interface Visitor<out T> {
 
+            /**
+             * `true` to enable pinning with the default configuration, or `false` to remove
+             * pinning.
+             */
             fun visitBool(bool: Boolean): T
 
             /** Configuration for namespace pinning. */

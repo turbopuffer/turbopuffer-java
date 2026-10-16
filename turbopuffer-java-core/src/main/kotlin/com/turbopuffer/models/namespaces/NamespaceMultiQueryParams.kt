@@ -2184,6 +2184,7 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
+        /** Limits the total number of reranked documents returned. */
         fun integer(): Optional<Long> = Optional.ofNullable(integer)
 
         /** Limits the total number of reranked documents returned. */
@@ -2193,6 +2194,7 @@ private constructor(
 
         fun isRerank(): Boolean = rerank != null
 
+        /** Limits the total number of reranked documents returned. */
         fun asInteger(): Long = integer.getOrThrow("integer")
 
         /** Limits the total number of reranked documents returned. */
@@ -2310,6 +2312,7 @@ private constructor(
 
         companion object {
 
+            /** Limits the total number of reranked documents returned. */
             @JvmStatic fun ofInteger(integer: Long) = Limit(integer = integer)
 
             /** Limits the total number of reranked documents returned. */
@@ -2319,6 +2322,7 @@ private constructor(
         /** An interface that defines how to map each variant of [Limit] to a value of type [T]. */
         interface Visitor<out T> {
 
+            /** Limits the total number of reranked documents returned. */
             fun visitInteger(integer: Long): T
 
             /** Limits the total number of reranked documents returned. */
