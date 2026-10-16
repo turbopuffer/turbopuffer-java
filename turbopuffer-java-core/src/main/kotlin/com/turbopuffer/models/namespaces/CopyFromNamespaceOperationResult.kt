@@ -28,6 +28,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/** The result of a finished copy operation. */
 @JsonDeserialize(using = CopyFromNamespaceOperationResult.Deserializer::class)
 @JsonSerialize(using = CopyFromNamespaceOperationResult.Serializer::class)
 class CopyFromNamespaceOperationResult
@@ -258,7 +259,7 @@ private constructor(
         ) : this(success, mutableMapOf())
 
         /**
-         * The response to a successful write request.
+         * The copy succeeded, with the result of its write.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -309,7 +310,7 @@ private constructor(
                 additionalProperties = success.additionalProperties.toMutableMap()
             }
 
-            /** The response to a successful write request. */
+            /** The copy succeeded, with the result of its write. */
             fun success(success: WriteResult) = success(JsonField.of(success))
 
             /**
@@ -426,6 +427,8 @@ private constructor(
         ) : this(error, mutableMapOf())
 
         /**
+         * The copy failed, with its error.
+         *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
@@ -475,6 +478,7 @@ private constructor(
                 additionalProperties = error.additionalProperties.toMutableMap()
             }
 
+            /** The copy failed, with its error. */
             fun error(error: OperationError) = error(JsonField.of(error))
 
             /**

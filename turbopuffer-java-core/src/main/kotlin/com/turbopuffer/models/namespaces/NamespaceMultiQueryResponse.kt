@@ -57,6 +57,9 @@ private constructor(
     fun performance(): QueryPerformance = performance.getRequired("performance")
 
     /**
+     * The results of each subquery, in the same order as `queries`. With `rerank_by`, a single
+     * result combining the subqueries' rows.
+     *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -154,6 +157,10 @@ private constructor(
             this.performance = performance
         }
 
+        /**
+         * The results of each subquery, in the same order as `queries`. With `rerank_by`, a single
+         * result combining the subqueries' rows.
+         */
         fun results(results: List<Result>) = results(JsonField.of(results))
 
         /**
@@ -261,6 +268,12 @@ private constructor(
             (performance.asKnown().getOrNull()?.validity() ?: 0) +
             (results.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
+    /**
+     * The result of a query, or of one subquery of a multi-query. With `aggregate_by`,
+     * `aggregations` maps each aggregation's label to its value. With `group_by` as well,
+     * `aggregation_groups` holds one object per group instead, with its group key and the value of
+     * each aggregation.
+     */
     class Result
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -295,6 +308,9 @@ private constructor(
         fun aggregations(): Optional<Aggregations> = aggregations.getOptional("aggregations")
 
         /**
+         * The documents that matched the query, ordered by `rank_by`. Only present when `rank_by`
+         * is set.
+         *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
@@ -400,6 +416,10 @@ private constructor(
                 this.aggregations = aggregations
             }
 
+            /**
+             * The documents that matched the query, ordered by `rank_by`. Only present when
+             * `rank_by` is set.
+             */
             fun rows(rows: List<Row>) = rows(JsonField.of(rows))
 
             /**

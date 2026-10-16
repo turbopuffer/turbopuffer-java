@@ -118,6 +118,8 @@ private constructor(
     fun encryption(): Encryption = encryption.getRequired("encryption")
 
     /**
+     * The state of the namespace's index.
+     *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -368,6 +370,7 @@ private constructor(
         /** Alias for calling [encryption] with `Encryption.ofDefault()`. */
         fun encryptionDefault() = encryption(Encryption.ofDefault())
 
+        /** The state of the namespace's index. */
         fun index(index: Index) = index(JsonField.of(index))
 
         /**
@@ -557,6 +560,7 @@ private constructor(
             (if (readOnly.asKnown().isPresent) 1 else 0) +
             (sharding.asKnown().getOrNull()?.validity() ?: 0)
 
+    /** The state of the namespace's index. */
     @JsonDeserialize(using = Index.Deserializer::class)
     @JsonSerialize(using = Index.Serializer::class)
     class Index
@@ -566,16 +570,20 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
+        /** Every document in the namespace is indexed. */
         fun upToDate(): Optional<JsonValue> = Optional.ofNullable(upToDate)
 
+        /** Some documents are in the write-ahead log and haven't been indexed yet. */
         fun updating(): Optional<IndexUpdating> = Optional.ofNullable(updating)
 
         fun isUpToDate(): Boolean = upToDate != null
 
         fun isUpdating(): Boolean = updating != null
 
+        /** Every document in the namespace is indexed. */
         fun asUpToDate(): JsonValue = upToDate.getOrThrow("upToDate")
 
+        /** Some documents are in the write-ahead log and haven't been indexed yet. */
         fun asUpdating(): IndexUpdating = updating.getOrThrow("updating")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -701,17 +709,21 @@ private constructor(
 
         companion object {
 
+            /** Every document in the namespace is indexed. */
             @JvmStatic
             fun ofUpToDate() = Index(upToDate = JsonValue.from(mapOf("status" to "up-to-date")))
 
+            /** Some documents are in the write-ahead log and haven't been indexed yet. */
             @JvmStatic fun ofUpdating(updating: IndexUpdating) = Index(updating = updating)
         }
 
         /** An interface that defines how to map each variant of [Index] to a value of type [T]. */
         interface Visitor<out T> {
 
+            /** Every document in the namespace is indexed. */
             fun visitUpToDate(upToDate: JsonValue): T
 
+            /** Some documents are in the write-ahead log and haven't been indexed yet. */
             fun visitUpdating(updating: IndexUpdating): T
 
             /**
@@ -775,6 +787,7 @@ private constructor(
             }
         }
 
+        /** Some documents are in the write-ahead log and haven't been indexed yet. */
         class IndexUpdating
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
