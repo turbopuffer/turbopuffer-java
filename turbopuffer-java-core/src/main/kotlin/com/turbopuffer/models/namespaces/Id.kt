@@ -31,7 +31,7 @@ private constructor(
     /** A string ID. */
     fun string(): Optional<String> = Optional.ofNullable(string)
 
-    /** An integer ID. */
+    /** An unsigned 64-bit integer ID. */
     fun integer(): Optional<Long> = Optional.ofNullable(integer)
 
     fun isString(): Boolean = string != null
@@ -41,7 +41,7 @@ private constructor(
     /** A string ID. */
     fun asString(): String = string.getOrThrow("string")
 
-    /** An integer ID. */
+    /** An unsigned 64-bit integer ID. */
     fun asInteger(): Long = integer.getOrThrow("integer")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -155,7 +155,7 @@ private constructor(
         /** A string ID. */
         @JvmStatic fun ofString(string: String) = Id(string = string)
 
-        /** An integer ID. */
+        /** An unsigned 64-bit integer ID. */
         @JvmStatic fun ofInteger(integer: Long) = Id(integer = integer)
     }
 
@@ -165,7 +165,7 @@ private constructor(
         /** A string ID. */
         fun visitString(string: String): T
 
-        /** An integer ID. */
+        /** An unsigned 64-bit integer ID. */
         fun visitInteger(integer: Long): T
 
         /**
