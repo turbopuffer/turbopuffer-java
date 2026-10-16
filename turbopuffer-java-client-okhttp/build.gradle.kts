@@ -12,3 +12,8 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.2")
 }
+
+// The client fills in request timings through the core module's internal observer API.
+tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
+    friendPaths.from(project(":turbopuffer-java-core").layout.buildDirectory.dir("classes/kotlin/main"))
+}

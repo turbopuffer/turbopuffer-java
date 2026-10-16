@@ -50,16 +50,23 @@ class RespondAsyncHttpClient(
             return initialRes
         }
 
-        val location = initialRes.use { extractLocation(it, initialReq.url()) }
-        val deadline = Deadline(requestOptions)
-        while (true) {
-            val pollReq = pollRequest(location)
-            val pollOpts = pollOptions(deadline)
-            val finalRes = httpClient.execute(pollReq, pollOpts).use { resolvePollResponse(it) }
-            if (finalRes != null) {
-                return finalRes
+        val observation = initialRes.observation()
+        try {
+            val location = initialRes.use { accepted(it, initialReq.url()) }
+            val deadline = Deadline(requestOptions)
+            while (true) {
+                val pollReq = pollRequest(location)
+                val pollOpts = pollOptions(deadline)
+                val finalRes = resolvePoll(httpClient.execute(pollReq, pollOpts))
+                if (finalRes != null) {
+                    return observation?.respond(finalRes) ?: finalRes
+                }
+                sleeper.sleep(deadline.sleepDuration())
             }
-            sleeper.sleep(deadline.sleepDuration())
+        } catch (e: Throwable) {
+            // Polling happens after the retry loop, which would otherwise end the request.
+            observation?.fail(e)
+            throw e
         }
     }
 
@@ -72,9 +79,19 @@ class RespondAsyncHttpClient(
             if (!respondAsyncApplied(initialRes)) {
                 CompletableFuture.completedFuture(initialRes)
             } else {
-                val location = initialRes.use { extractLocation(it, initialReq.url()) }
-                val deadline = Deadline(requestOptions)
-                pollAsync(location, deadline)
+                val observation = initialRes.observation()
+                val finalRes =
+                    try {
+                        val location = initialRes.use { accepted(it, initialReq.url()) }
+                        val deadline = Deadline(requestOptions)
+                        pollAsync(location, deadline)
+                    } catch (e: Throwable) {
+                        CompletableFuture<HttpResponse>().apply { completeExceptionally(e) }
+                    }
+                finalRes
+                    .thenApply { observation?.respond(it) ?: it }
+                    // Polling happens after the retry loop, which would otherwise end the request.
+                    .whenComplete { _, e -> e?.let { observation?.fail(it) } }
             }
         }
     }
@@ -85,7 +102,7 @@ class RespondAsyncHttpClient(
         val pollReq = pollRequest(location)
         val pollOpts = pollOptions(deadline)
         return httpClient.executeAsync(pollReq, pollOpts).thenCompose { resp ->
-            val finalRes = resp.use { resolvePollResponse(it) }
+            val finalRes = resolvePoll(resp)
             if (finalRes != null) {
                 CompletableFuture.completedFuture(finalRes)
             } else {
@@ -95,6 +112,20 @@ class RespondAsyncHttpClient(
             }
         }
     }
+
+    /** Returns the operation URL of an accepted request, reading its body if it's observed. */
+    private fun accepted(response: HttpResponse, requestUrl: String): String {
+        response.observation()?.let {
+            // The request's network timings come from this exchange, so they cover its body.
+            response.body().use { body -> body.readBytes() }
+            it.bodyRead()
+        }
+        return extractLocation(response, requestUrl)
+    }
+
+    /** Parses a poll like a generated service, so that it's observed as a request of its own. */
+    private fun resolvePoll(response: HttpResponse): HttpResponse? =
+        response.parseable { response.use { resolvePollResponse(it) } }.parse()
 
     private fun prepareHeaders(request: HttpRequest): HttpRequest {
         // Don't overwrite an existing `Prefer` header. Lets callers opt out per-request.

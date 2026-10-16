@@ -2,6 +2,7 @@ package com.turbopuffer.client.okhttp
 
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.Timeout
+import com.turbopuffer.core.http.AttemptTrace
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.HttpClient
 import com.turbopuffer.core.http.HttpMethod
@@ -13,6 +14,7 @@ import com.turbopuffer.errors.TurbopufferIoException
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.net.InetSocketAddress
 import java.net.Proxy
 import java.time.Duration
 import java.util.concurrent.CancellationException
@@ -25,12 +27,15 @@ import javax.net.ssl.X509TrustManager
 import kotlin.jvm.optionals.getOrNull
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Connection
 import okhttp3.ConnectionPool
 import okhttp3.Dispatcher
+import okhttp3.EventListener
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -177,6 +182,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                 okhttp3.OkHttpClient.Builder()
                     // `RetryingHttpClient` handles retries if the user enabled them.
                     .retryOnConnectionFailure(false)
+                    .eventListenerFactory(TracingEventListener.factory)
                     .connectTimeout(timeout.connect())
                     .readTimeout(timeout.read())
                     .writeTimeout(timeout.write())
@@ -251,6 +257,7 @@ private fun HttpRequest.toRequest(client: okhttp3.OkHttpClient?): Request {
 
     val builder = Request.Builder().url(toUrl()).method(method.name, body)
     headers.names().forEach { name -> headers.values(name).forEach { builder.addHeader(name, it) } }
+    trace?.let { builder.tag(AttemptTrace::class.java, it) }
 
     if (client != null) {
         if (
@@ -364,4 +371,47 @@ private fun okhttp3.Headers.toHeaders(): Headers {
     val headersBuilder = Headers.builder()
     forEach { (name, value) -> headersBuilder.put(name, value) }
     return headersBuilder.build()
+}
+
+/** Records the progress of an observed attempt from OkHttp's events. */
+private class TracingEventListener(private val trace: AttemptTrace) : EventListener() {
+
+    override fun callStart(call: Call) = trace.callStart()
+
+    override fun dnsStart(call: Call, domainName: String) = trace.connectStart()
+
+    override fun connectStart(call: Call, inetSocketAddress: InetSocketAddress, proxy: Proxy) =
+        trace.connectStart()
+
+    // Follows the TLS handshake, if any.
+    override fun connectEnd(
+        call: Call,
+        inetSocketAddress: InetSocketAddress,
+        proxy: Proxy,
+        protocol: Protocol?,
+    ) = trace.connectEnd()
+
+    override fun connectionAcquired(call: Call, connection: Connection) = trace.connectionAcquired()
+
+    override fun requestHeadersStart(call: Call) = trace.sendStart()
+
+    override fun requestHeadersEnd(call: Call, request: Request) {
+        if (request.body == null) {
+            trace.sendEnd()
+        }
+    }
+
+    override fun requestBodyEnd(call: Call, byteCount: Long) = trace.sendEnd()
+
+    override fun responseHeadersEnd(call: Call, response: Response) = trace.responseHeaders()
+
+    override fun responseBodyEnd(call: Call, byteCount: Long) = trace.responseBodyEnd()
+
+    companion object {
+
+        val factory =
+            EventListener.Factory { call ->
+                call.request().tag(AttemptTrace::class.java)?.let(::TracingEventListener) ?: NONE
+            }
+    }
 }

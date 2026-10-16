@@ -32,9 +32,26 @@ private constructor(
     private val clock: Clock,
     private val maxRetries: Int,
     private val idempotencyHeader: String?,
+    private val requestObserver: RequestObserver?,
 ) : HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
+        val observation =
+            RequestObservation.start(requestObserver, request)
+                ?: return execute(request, requestOptions, null)
+        return try {
+            observation.respond(execute(request, requestOptions, observation))
+        } catch (throwable: Throwable) {
+            observation.fail(throwable)
+            throw throwable
+        }
+    }
+
+    private fun execute(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observation: RequestObservation?,
+    ): HttpResponse {
         var modifiedRequest = maybeAddIdempotencyHeader(request)
 
         // Don't send the current retry count in the headers if the caller set their own value.
@@ -49,12 +66,13 @@ private constructor(
             }
 
             if (!isRetryable(modifiedRequest)) {
-                return httpClient.execute(modifiedRequest, requestOptions)
+                return executeAttempt(modifiedRequest, requestOptions, observation, retries)
             }
 
             val response =
                 try {
-                    val response = httpClient.execute(modifiedRequest, requestOptions)
+                    val response =
+                        executeAttempt(modifiedRequest, requestOptions, observation, retries)
                     if (++retries > maxRetries || !shouldRetry(response)) {
                         return response
                     }
@@ -79,6 +97,27 @@ private constructor(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
+        val observation =
+            RequestObservation.start(requestObserver, request)
+                ?: return executeAsync(request, requestOptions, null)
+        val future =
+            try {
+                executeAsync(request, requestOptions, observation)
+            } catch (throwable: Throwable) {
+                observation.fail(throwable)
+                throw throwable
+            }
+        val observed = future.thenApply(observation::respond)
+        // Also ends the request when the returned future is canceled.
+        observed.whenComplete { _, throwable -> throwable?.let(observation::fail) }
+        return observed
+    }
+
+    private fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observation: RequestObservation?,
+    ): CompletableFuture<HttpResponse> {
         val modifiedRequest = maybeAddIdempotencyHeader(request)
 
         // Don't send the current retry count in the headers if the caller set their own value.
@@ -94,7 +133,8 @@ private constructor(
             val requestWithRetryCount =
                 if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
 
-            val responseFuture = httpClient.executeAsync(requestWithRetryCount, requestOptions)
+            val responseFuture =
+                executeAttemptAsync(requestWithRetryCount, requestOptions, observation, retries)
             if (!isRetryable(requestWithRetryCount)) {
                 return responseFuture
             }
@@ -137,6 +177,47 @@ private constructor(
     override fun close() {
         httpClient.close()
         sleeper.close()
+    }
+
+    private fun executeAttempt(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observation: RequestObservation?,
+        attempt: Int,
+    ): HttpResponse {
+        if (observation == null) {
+            return httpClient.execute(request, requestOptions)
+        }
+        val response =
+            try {
+                httpClient.execute(observation.attemptBegin(attempt, request), requestOptions)
+            } catch (throwable: Throwable) {
+                observation.attemptEnd(null, throwable)
+                throw throwable
+            }
+        observation.attemptEnd(response, null)
+        return response
+    }
+
+    private fun executeAttemptAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observation: RequestObservation?,
+        attempt: Int,
+    ): CompletableFuture<HttpResponse> {
+        if (observation == null) {
+            return httpClient.executeAsync(request, requestOptions)
+        }
+        val future =
+            try {
+                httpClient.executeAsync(observation.attemptBegin(attempt, request), requestOptions)
+            } catch (throwable: Throwable) {
+                observation.attemptEnd(null, throwable)
+                throw throwable
+            }
+        return future.whenComplete { response, throwable ->
+            observation.attemptEnd(response, throwable)
+        }
     }
 
     private fun isRetryable(request: HttpRequest): Boolean =
@@ -246,6 +327,7 @@ private constructor(
         private var clock: Clock = Clock.systemUTC()
         private var maxRetries: Int = 4
         private var idempotencyHeader: String? = null
+        private var requestObserver: RequestObserver? = null
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
 
@@ -257,6 +339,11 @@ private constructor(
 
         fun idempotencyHeader(header: String) = apply { this.idempotencyHeader = header }
 
+        @JvmSynthetic
+        internal fun requestObserver(requestObserver: RequestObserver?) = apply {
+            this.requestObserver = requestObserver
+        }
+
         fun build(): HttpClient =
             RetryingHttpClient(
                 checkRequired("httpClient", httpClient),
@@ -264,6 +351,7 @@ private constructor(
                 clock,
                 maxRetries,
                 idempotencyHeader,
+                requestObserver,
             )
     }
 }
