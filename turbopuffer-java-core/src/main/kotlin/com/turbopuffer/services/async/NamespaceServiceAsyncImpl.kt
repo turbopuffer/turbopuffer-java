@@ -204,6 +204,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                         ),
                     )
                     .putQueryParam("stainless_overload", "branchFrom")
+                    .pathQuery("stainless_overload=branchFrom")
                     .body(
                         json(
                             clientOptions.jsonMapper,
@@ -250,6 +251,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                         ),
                     )
                     .putQueryParam("stainless_overload", "copyFrom")
+                    .pathQuery("stainless_overload=copyFrom")
                     .body(
                         json(
                             clientOptions.jsonMapper,
@@ -463,6 +465,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                         "query",
                     )
                     .putQueryParam("stainless_overload", "multiQuery")
+                    .pathQuery("stainless_overload=multiQuery")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params)
@@ -509,6 +512,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                         params._pathParam(1),
                     )
                     .putQueryParam("stainless_overload", "pollCopyFrom")
+                    .pathQuery("stainless_overload=pollCopyFrom")
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
@@ -673,6 +677,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
                         "async",
                     )
                     .putQueryParam("stainless_overload", "startCopyFrom")
+                    .pathQuery("stainless_overload=startCopyFrom")
                     .body(
                         json(
                             clientOptions.jsonMapper,

@@ -329,6 +329,14 @@ class TurbopufferOkHttpClientAsync private constructor() {
          */
         fun compression(compression: Boolean) = apply { clientOptions.compression(compression) }
 
+        /**
+         * Whether to send client-side request timings to turbopuffer, piggybacked on later
+         * requests.
+         *
+         * Defaults to the `TURBOPUFFER_TELEMETRY` environment variable, or false if it's unset.
+         */
+        fun telemetry(telemetry: Boolean) = apply { clientOptions.telemetry(telemetry) }
+
         fun headers(headers: Headers) = apply { clientOptions.headers(headers) }
 
         fun headers(headers: Map<String, Iterable<String>>) = apply {
