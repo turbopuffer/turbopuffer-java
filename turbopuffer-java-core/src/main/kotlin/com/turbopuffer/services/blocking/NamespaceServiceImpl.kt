@@ -200,6 +200,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                         ),
                     )
                     .putQueryParam("stainless_overload", "branchFrom")
+                    .pathQuery("stainless_overload=branchFrom")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params)
@@ -238,6 +239,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                         ),
                     )
                     .putQueryParam("stainless_overload", "copyFrom")
+                    .pathQuery("stainless_overload=copyFrom")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params)
@@ -426,6 +428,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                         "query",
                     )
                     .putQueryParam("stainless_overload", "multiQuery")
+                    .pathQuery("stainless_overload=multiQuery")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params)
@@ -469,6 +472,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                         params._pathParam(1),
                     )
                     .putQueryParam("stainless_overload", "pollCopyFrom")
+                    .pathQuery("stainless_overload=pollCopyFrom")
                     .build()
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
@@ -621,6 +625,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
                         "async",
                     )
                     .putQueryParam("stainless_overload", "startCopyFrom")
+                    .pathQuery("stainless_overload=startCopyFrom")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params)

@@ -12,6 +12,10 @@ private constructor(
     @get:JvmName("headers") val headers: Headers,
     @get:JvmName("queryParams") val queryParams: QueryParams,
     @get:JvmName("body") val body: HttpRequestBody?,
+    /** A query that's part of the endpoint's path, such as an overload marker, for observers. */
+    @get:JvmSynthetic internal val pathQuery: String?,
+    /** The trace of the attempt sending this request, if it's observed. */
+    @get:JvmSynthetic internal val trace: AttemptTrace?,
 ) {
 
     fun url(): String = buildString {
@@ -60,6 +64,8 @@ private constructor(
         private var headers: Headers.Builder = Headers.builder()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var body: HttpRequestBody? = null
+        private var pathQuery: String? = null
+        private var trace: AttemptTrace? = null
 
         @JvmSynthetic
         internal fun from(request: HttpRequest) = apply {
@@ -69,6 +75,8 @@ private constructor(
             headers = request.headers.toBuilder()
             queryParams = request.queryParams.toBuilder()
             body = request.body
+            pathQuery = request.pathQuery
+            trace = request.trace
         }
 
         fun method(method: HttpMethod) = apply { this.method = method }
@@ -163,6 +171,11 @@ private constructor(
 
         fun body(body: HttpRequestBody) = apply { this.body = body }
 
+        @JvmSynthetic
+        internal fun pathQuery(pathQuery: String) = apply { this.pathQuery = pathQuery }
+
+        @JvmSynthetic internal fun trace(trace: AttemptTrace?) = apply { this.trace = trace }
+
         fun build(): HttpRequest =
             HttpRequest(
                 checkRequired("method", method),
@@ -171,6 +184,8 @@ private constructor(
                 headers.build(),
                 queryParams.build(),
                 body,
+                pathQuery,
+                trace,
             )
     }
 }
