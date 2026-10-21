@@ -10,6 +10,7 @@ import com.turbopuffer.models.namespaces.QueryPerformance
 import com.turbopuffer.models.namespaces.WritePerformance
 import java.lang.ref.WeakReference
 import java.net.URI
+import java.security.SecureRandom
 import java.util.concurrent.ThreadLocalRandom
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
@@ -20,15 +21,31 @@ import kotlin.jvm.optionals.getOrNull
 // records to a later request in the `X-turbopuffer-Client-Telemetry` header. The server controls
 // how many requests are recorded by advertising a sample rate in the
 // `X-turbopuffer-Client-Telemetry-Sample-Rate` response header.
+//
+// Each recorded request is sent with an `X-Request-Id` that its record repeats, so the server can
+// show the client's timings in the same trace as its own.
 
 internal const val TELEMETRY_ENV_VAR = "TURBOPUFFER_TELEMETRY"
 internal const val TELEMETRY_HEADER = "X-turbopuffer-Client-Telemetry"
 internal const val SAMPLE_RATE_HEADER = "X-turbopuffer-Client-Telemetry-Sample-Rate"
+/** Sorted by ASCII value, so that encoded IDs sort like their bytes. */
+internal const val REQUEST_ID_ALPHABET = "234567abcdefghijklmnopqrstuvwxyz"
+/**
+ * The bytes in a request ID before it's encoded. The first [REQUEST_ID_RANDOM_BYTES] are random,
+ * and the rest hold the time it was generated.
+ */
+internal const val REQUEST_ID_BYTES = 18
+/** The request header that carries the IDs of recorded requests. */
+internal const val REQUEST_ID_HEADER = "X-Request-Id"
+/** The prefix of generated request IDs. */
+internal const val REQUEST_ID_PREFIX = "tpreq_"
+/** The random bytes at the start of a request ID. */
+internal const val REQUEST_ID_RANDOM_BYTES = 12
 
 private const val TELEMETRY_VERSION = 1
 
 // Keeps the header well under the 8 KB per-line limit of common proxies.
-internal const val MAX_RECORDS_PER_HEADER = 20
+internal const val MAX_RECORDS_PER_HEADER = 16
 internal const val MAX_BUFFERED_RECORDS = 1000
 
 private val TRUE_VALUES = setOf("1", "true", "yes", "on")
@@ -181,28 +198,38 @@ internal class TelemetryBuffer(
         }
     }
 
-    /** Samples and buffers a record for one request. [durations] are in nanoseconds. */
+    /**
+     * Decides whether to record a request that's starting, returning the sample rate it was
+     * recorded at, or null if it isn't recorded.
+     */
+    fun sample(): Double? {
+        val rate = sampleRate
+        if (rate <= 0.0 || (rate < 1.0 && random() >= rate)) {
+            return null
+        }
+        return rate
+    }
+
+    /** Buffers the record of a request sampled at [rate]. [durations] are in nanoseconds. */
     fun record(
         method: String,
         url: String,
         status: Int,
         retries: Int,
         durations: Map<String, Long>,
+        rate: Double,
         serverTotalMs: Double? = null,
         error: String? = null,
         reused: Boolean? = null,
+        requestId: String? = null,
     ) {
-        val rate = sampleRate
-        if (rate <= 0.0 || (rate < 1.0 && random() >= rate)) {
-            return
-        }
-
         val record =
             linkedMapOf<String, Any>("route" to routeTemplate(method, url), "status" to status)
         error?.let { record["error"] = it }
         if (retries != 0) {
             record["retries"] = retries
         }
+        requestId?.let { record["request_id"] = it }
         if (rate < 1.0) {
             record["sample_rate"] = rate
         }
@@ -276,6 +303,50 @@ internal fun telemetryBuffer(apiKey: String, baseUrl: String): TelemetryBuffer =
             ?: TelemetryBuffer().also { sharedBuffers[key] = WeakReference(it) }
     }
 
+/**
+ * Generates the random bytes of request IDs. Shared, since every instance seeds itself, and created
+ * on first use, so clients without telemetry never pay for it.
+ */
+private val secureRandom by lazy { SecureRandom() }
+
+/** Returns [bytes] in base32 with [REQUEST_ID_ALPHABET], in RFC 4648's bit order, unpadded. */
+@JvmSynthetic
+internal fun encodeBase32(bytes: ByteArray): String = buildString {
+    var buffer = 0
+    var bits = 0
+    for (byte in bytes) {
+        buffer = (buffer shl 8) or (byte.toInt() and 0xff)
+        bits += 8
+        while (bits >= 5) {
+            bits -= 5
+            append(REQUEST_ID_ALPHABET[(buffer ushr bits) and 31])
+        }
+        buffer = buffer and ((1 shl bits) - 1)
+    }
+    if (bits > 0) {
+        append(REQUEST_ID_ALPHABET[(buffer shl (5 - bits)) and 31])
+    }
+}
+
+/**
+ * Generates the ID of a request that will be recorded. Its format is private to turbopuffer, which
+ * only links IDs in the format it expects: 12 random bytes, then the 48-bit millisecond time they
+ * were generated XORed with the first 6 random bytes, in base32 after a prefix.
+ */
+@JvmSynthetic
+internal fun newRequestId(
+    millis: Long = System.currentTimeMillis(),
+    random: ByteArray = ByteArray(REQUEST_ID_RANDOM_BYTES).also { secureRandom.nextBytes(it) },
+): String {
+    val bytes = random.copyOf(REQUEST_ID_BYTES)
+    // The low bytes of the time, most significant first.
+    for (i in REQUEST_ID_RANDOM_BYTES until REQUEST_ID_BYTES) {
+        val byte = (millis ushr (8 * (REQUEST_ID_BYTES - 1 - i))).toInt()
+        bytes[i] = (byte xor random[i - REQUEST_ID_RANDOM_BYTES].toInt()).toByte()
+    }
+    return REQUEST_ID_PREFIX + encodeBase32(bytes)
+}
+
 /** Records telemetry for each request and sends buffered records on later requests. */
 internal class TelemetryObserver(private val buffer: TelemetryBuffer) : RequestObserver {
 
@@ -287,14 +358,24 @@ private class TelemetryScope(private val buffer: TelemetryBuffer, private val in
 
     // Kept for later attempts until one of them may have reached the server.
     @Volatile private var batch: TelemetryBatch? = null
+    // The rate the request is recorded at, or null if it isn't recorded. Sampled as the request
+    // starts, so only requests whose records the server will get are sent with request IDs.
+    private val sampleRate = buffer.sample()
+    // Sent with every attempt, so retries share the request's trace.
+    @Volatile private var requestId = sampleRate?.let { newRequestId() }
 
     override fun attemptBegin(attempt: Int, request: HttpRequest.Builder) {
         // Taken only once a request is about to be sent, so one that fails before then can't lose
         // it.
         if (attempt == 0) {
             batch = buffer.take()
+            // An ID set by the caller is theirs to use, so the request keeps it and isn't linked.
+            if (requestId != null && REQUEST_ID_HEADER in request.build().headers.names()) {
+                requestId = null
+            }
         }
         batch?.let { request.replaceHeaders(TELEMETRY_HEADER, it.header) }
+        requestId?.let { request.replaceHeaders(REQUEST_ID_HEADER, it) }
     }
 
     override fun attemptEnd(result: AttemptResult) {
@@ -309,6 +390,11 @@ private class TelemetryScope(private val buffer: TelemetryBuffer, private val in
         batch?.let {
             buffer.restore(it)
             batch = null
+        }
+        val rate = sampleRate ?: return
+        // A rate of zero asks clients to stop recording, even requests that were already sampled.
+        if (buffer.sampleRate <= 0.0) {
+            return
         }
 
         val timings = result.timings
@@ -325,9 +411,11 @@ private class TelemetryScope(private val buffer: TelemetryBuffer, private val in
             status = result.response?.statusCode() ?: 0,
             retries = result.retries,
             durations = computeDurations(timings, timings.deserializeEnd ?: System.nanoTime()),
+            rate = rate,
             serverTotalMs = serverTotalMs(result.parsed),
             error = error,
             reused = timings.reused,
+            requestId = requestId,
         )
     }
 }
