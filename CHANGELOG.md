@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.11.0...v2.12.0) (2026-10-22)
+
+
+### Features
+
+* Send client-generated request IDs ([#263](https://github.com/turbopuffer/turbopuffer-java/issues/263)) ([dfbce13](https://github.com/turbopuffer/turbopuffer-java/commit/dfbce13be512b8b795c245373b1d412d746892f0))
+
 ## [2.11.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.10.0...v2.11.0) (2026-10-20)
 
 
