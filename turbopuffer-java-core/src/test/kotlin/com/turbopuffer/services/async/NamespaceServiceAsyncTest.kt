@@ -63,7 +63,14 @@ internal class NamespaceServiceAsyncTest {
                     .namespace("namespace")
                     .sourceNamespace("source_namespace")
                     .destEncryption(
-                        Encryption.CustomerManaged.builder().keyName("key_name").build()
+                        Encryption.CustomerManaged.builder()
+                            .keyName("key_name")
+                            .encryptionContext(
+                                Encryption.CustomerManaged.EncryptionContext.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .build()
                     )
                     .sourceApiKey("source_api_key")
                     .sourceRegion("source_region")
@@ -326,7 +333,14 @@ internal class NamespaceServiceAsyncTest {
                     .namespace("namespace")
                     .sourceNamespace("source_namespace")
                     .destEncryption(
-                        Encryption.CustomerManaged.builder().keyName("key_name").build()
+                        Encryption.CustomerManaged.builder()
+                            .keyName("key_name")
+                            .encryptionContext(
+                                Encryption.CustomerManaged.EncryptionContext.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .build()
                     )
                     .sourceApiKey("source_api_key")
                     .sourceRegion("source_region")
@@ -398,7 +412,16 @@ internal class NamespaceServiceAsyncTest {
                     .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                     .disableBackpressure(true)
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
-                    .encryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
+                    .encryption(
+                        Encryption.CustomerManaged.builder()
+                            .keyName("key_name")
+                            .encryptionContext(
+                                Encryption.CustomerManaged.EncryptionContext.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .build()
+                    )
                     .patchByFilter(
                         NamespaceWriteParams.PatchByFilter.builder()
                             .filters(JsonValue.from(mapOf<String, Any>()))
