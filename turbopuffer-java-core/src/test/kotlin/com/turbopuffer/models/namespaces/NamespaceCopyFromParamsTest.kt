@@ -2,6 +2,7 @@
 
 package com.turbopuffer.models.namespaces
 
+import com.turbopuffer.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -12,7 +13,16 @@ internal class NamespaceCopyFromParamsTest {
         NamespaceCopyFromParams.builder()
             .namespace("namespace")
             .sourceNamespace("source_namespace")
-            .destEncryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
+            .destEncryption(
+                Encryption.CustomerManaged.builder()
+                    .keyName("key_name")
+                    .encryptionContext(
+                        Encryption.CustomerManaged.EncryptionContext.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .build()
+            )
             .sourceApiKey("source_api_key")
             .sourceRegion("source_region")
             .build()
@@ -33,7 +43,16 @@ internal class NamespaceCopyFromParamsTest {
             NamespaceCopyFromParams.builder()
                 .namespace("namespace")
                 .sourceNamespace("source_namespace")
-                .destEncryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
+                .destEncryption(
+                    Encryption.CustomerManaged.builder()
+                        .keyName("key_name")
+                        .encryptionContext(
+                            Encryption.CustomerManaged.EncryptionContext.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .build()
+                )
                 .sourceApiKey("source_api_key")
                 .sourceRegion("source_region")
                 .build()
@@ -44,7 +63,14 @@ internal class NamespaceCopyFromParamsTest {
         assertThat(body.destEncryption())
             .contains(
                 Encryption.ofCustomerManaged(
-                    Encryption.CustomerManaged.builder().keyName("key_name").build()
+                    Encryption.CustomerManaged.builder()
+                        .keyName("key_name")
+                        .encryptionContext(
+                            Encryption.CustomerManaged.EncryptionContext.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .build()
                 )
             )
         assertThat(body.sourceApiKey()).contains("source_api_key")
