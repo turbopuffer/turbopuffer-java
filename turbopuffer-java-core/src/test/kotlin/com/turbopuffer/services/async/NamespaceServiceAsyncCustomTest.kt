@@ -1,0 +1,370 @@
+package com.turbopuffer.services.async
+
+import com.turbopuffer.client.okhttp.TurbopufferOkHttpClientAsync
+import com.turbopuffer.core.JsonValue
+import com.turbopuffer.models.namespaces.AttributeSchemaConfig
+import com.turbopuffer.models.namespaces.Columns
+import com.turbopuffer.models.namespaces.Filter
+import com.turbopuffer.models.namespaces.NamespaceBranchFromParams
+import com.turbopuffer.models.namespaces.NamespaceCopyFromParams
+import com.turbopuffer.models.namespaces.NamespaceDeleteAllParams
+import com.turbopuffer.models.namespaces.NamespaceExplainQueryParams
+import com.turbopuffer.models.namespaces.NamespaceHintCacheWarmParams
+import com.turbopuffer.models.namespaces.NamespaceMetadataParams
+import com.turbopuffer.models.namespaces.NamespaceMetadataPatch
+import com.turbopuffer.models.namespaces.NamespaceMultiQueryParams
+import com.turbopuffer.models.namespaces.NamespacePollCopyFromParams
+import com.turbopuffer.models.namespaces.NamespaceQueryParams
+import com.turbopuffer.models.namespaces.NamespaceRecallParams
+import com.turbopuffer.models.namespaces.NamespaceSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceStartCopyFromParams
+import com.turbopuffer.models.namespaces.NamespaceUpdateMetadataParams
+import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
+import com.turbopuffer.models.namespaces.NamespaceWriteParams
+import com.turbopuffer.models.namespaces.Row
+import com.turbopuffer.models.namespaces.Schema
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
+
+internal class NamespaceServiceAsyncCustomTest {
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun branchFrom() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.branchFrom(
+                NamespaceBranchFromParams.builder()
+                    .namespace("namespace")
+                    .sourceNamespace("source_namespace")
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun copyFrom() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.copyFrom(
+                NamespaceCopyFromParams.builder()
+                    .namespace("namespace")
+                    .sourceNamespace("source_namespace")
+                    .sourceApiKey("source_api_key")
+                    .sourceRegion("source_region")
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun deleteAll() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.deleteAll(
+                NamespaceDeleteAllParams.builder().namespace("namespace").build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun explainQuery() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.explainQuery(
+                NamespaceExplainQueryParams.builder()
+                    .namespace("namespace")
+                    .addExcludeAttribute("string")
+                    .includeAttributes(true)
+                    .limit(0L)
+                    .offset(0L)
+                    .topK(0L)
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun hintCacheWarm() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.hintCacheWarm(
+                NamespaceHintCacheWarmParams.builder().namespace("namespace").build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun metadata() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val namespaceMetadataFuture =
+            namespaceServiceAsync.metadata(NamespaceMetadataParams.builder().build())
+
+        val namespaceMetadata = namespaceMetadataFuture.get()
+        namespaceMetadata.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun multiQuery() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.multiQuery(
+                NamespaceMultiQueryParams.builder()
+                    .namespace("namespace")
+                    .addQuery(
+                        NamespaceMultiQueryParams.Query.builder()
+                            .addExcludeAttribute("string")
+                            .includeAttributes(true)
+                            .limit(0L)
+                            .offset(0L)
+                            .topK(0L)
+                            .build()
+                    )
+                    .limit(0L)
+                    .offset(0L)
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun pollCopyFrom() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("namespace")
+
+        val copyFromNamespaceOperationFuture =
+            namespaceServiceAsync.pollCopyFrom(
+                NamespacePollCopyFromParams.builder().namespace("namespace").token("token").build()
+            )
+
+        val copyFromNamespaceOperation = copyFromNamespaceOperationFuture.get()
+        copyFromNamespaceOperation.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun query() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.query(
+                NamespaceQueryParams.builder()
+                    .namespace("namespace")
+                    .addExcludeAttribute("string")
+                    .includeAttributes(true)
+                    .limit(0L)
+                    .offset(0L)
+                    .topK(0L)
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun recall() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.recall(
+                NamespaceRecallParams.builder()
+                    .namespace("namespace")
+                    .num(0L)
+                    .includeGroundTruth(true)
+                    .topK(0L)
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun schema() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.schema(
+                NamespaceSchemaParams.builder().namespace("namespace").build()
+            )
+
+        val response = responseFuture.get()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun startCopyFrom() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("namespace")
+
+        val responseFuture =
+            namespaceServiceAsync.startCopyFrom(
+                NamespaceStartCopyFromParams.builder()
+                    .namespace("namespace")
+                    .sourceNamespace("source_namespace")
+                    .sourceApiKey("source_api_key")
+                    .sourceRegion("source_region")
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun updateMetadata() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val namespaceMetadataFuture =
+            namespaceServiceAsync.updateMetadata(
+                NamespaceUpdateMetadataParams.builder()
+                    .namespace("namespace")
+                    .namespaceMetadataPatch(
+                        NamespaceMetadataPatch.builder().pinning(true).readOnly(true).build()
+                    )
+                    .build()
+            )
+
+        val namespaceMetadata = namespaceMetadataFuture.get()
+        namespaceMetadata.validate()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun updateSchema() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.updateSchema(
+                NamespaceUpdateSchemaParams.builder()
+                    .namespace("namespace")
+                    .schema(
+                        Schema.builder()
+                            .put("foo", AttributeSchemaConfig.builder().type("string").build())
+                            .build()
+                    )
+                    .build()
+            )
+
+        val response = responseFuture.get()
+    }
+
+    @Disabled("Mock server tests are disabled")
+    @Test
+    fun write() {
+        val client = TurbopufferOkHttpClientAsync.builder().apiKey("tpuf_A1...").build()
+        val namespaceServiceAsync = client.namespace("ns")
+
+        val responseFuture =
+            namespaceServiceAsync.write(
+                NamespaceWriteParams.builder()
+                    .namespace("namespace")
+                    .branchFromNamespace("string")
+                    .copyFromNamespace("string")
+                    .createNamespace(true)
+                    .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                    .disableBackpressure(true)
+                    .patchByFilter(
+                        NamespaceWriteParams.PatchByFilter.builder()
+                            .filters(Filter.eq("attr", "value"))
+                            .patch(
+                                NamespaceWriteParams.PatchByFilter.Patch.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .patchByFilterAllowPartial(true)
+                    .patchColumns(
+                        Columns.builder()
+                            .put(
+                                "id",
+                                listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")),
+                            )
+                            .put("vector", listOf(JsonValue.from(listOf(0.0))))
+                            .build()
+                    )
+                    .patchCondition(JsonValue.from(mapOf<String, Any>()))
+                    .addPatchRow(
+                        Row.builder()
+                            .put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .put("vectorOfNumber", listOf(0.0))
+                            .build()
+                    )
+                    .returnAffectedIds(true)
+                    .schema(
+                        Schema.builder()
+                            .put("id", AttributeSchemaConfig.builder().type("uuid").build())
+                            .put(
+                                "name",
+                                AttributeSchemaConfig.builder()
+                                    .type("string")
+                                    .filterable(false)
+                                    .build(),
+                            )
+                            .put("age", AttributeSchemaConfig.builder().type("uint").build())
+                            .build()
+                    )
+                    .upsertColumns(
+                        Columns.builder()
+                            .put("id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                            .put("vector", listOf(listOf(0.0)))
+                            .build()
+                    )
+                    .upsertCondition(JsonValue.from(mapOf<String, Any>()))
+                    .addUpsertRow(
+                        Row.builder()
+                            .put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                            .put("vector", listOf(0.0))
+                            .build()
+                    )
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+}

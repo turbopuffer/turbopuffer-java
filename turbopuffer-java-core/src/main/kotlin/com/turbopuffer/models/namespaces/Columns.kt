@@ -25,7 +25,6 @@ import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
-import com.turbopuffer.models.namespaces.Vector as TurbopufferVector
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -244,26 +243,26 @@ private constructor(
     @JsonSerialize(using = Vector.Serializer::class)
     class Vector
     private constructor(
-        private val vectors: List<TurbopufferVector>? = null,
-        private val vector: TurbopufferVector? = null,
+        private val vectors: List<Vector>? = null,
+        private val vector: Vector? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** The vector embeddings of the documents. */
-        fun vectors(): Optional<List<TurbopufferVector>> = Optional.ofNullable(vectors)
+        fun vectors(): Optional<List<Vector>> = Optional.ofNullable(vectors)
 
         /** A vector embedding associated with a document. */
-        fun vector(): Optional<TurbopufferVector> = Optional.ofNullable(vector)
+        fun vector(): Optional<Vector> = Optional.ofNullable(vector)
 
         fun isVectors(): Boolean = vectors != null
 
         fun isVector(): Boolean = vector != null
 
         /** The vector embeddings of the documents. */
-        fun asVectors(): List<TurbopufferVector> = vectors.getOrThrow("vectors")
+        fun asVectors(): List<Vector> = vectors.getOrThrow("vectors")
 
         /** A vector embedding associated with a document. */
-        fun asVector(): TurbopufferVector = vector.getOrThrow("vector")
+        fun asVector(): Vector = vector.getOrThrow("vector")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -321,11 +320,11 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitVectors(vectors: List<TurbopufferVector>) {
+                    override fun visitVectors(vectors: List<Vector>) {
                         vectors.forEach { it.validate() }
                     }
 
-                    override fun visitVector(vector: TurbopufferVector) {
+                    override fun visitVector(vector: Vector) {
                         vector.validate()
                     }
                 }
@@ -351,10 +350,10 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitVectors(vectors: List<TurbopufferVector>) =
+                    override fun visitVectors(vectors: List<Vector>) =
                         vectors.sumOf { it.validity().toInt() }
 
-                    override fun visitVector(vector: TurbopufferVector) = vector.validity()
+                    override fun visitVector(vector: Vector) = vector.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -382,21 +381,20 @@ private constructor(
 
             /** The vector embeddings of the documents. */
             @JvmStatic
-            fun ofVectors(vectors: List<TurbopufferVector>) =
-                Vector(vectors = vectors.toImmutable())
+            fun ofVectors(vectors: List<Vector>) = Vector(vectors = vectors.toImmutable())
 
             /** A vector embedding associated with a document. */
-            @JvmStatic fun ofVector(vector: TurbopufferVector) = Vector(vector = vector)
+            @JvmStatic fun ofVector(vector: Vector) = Vector(vector = vector)
         }
 
         /** An interface that defines how to map each variant of [Vector] to a value of type [T]. */
         interface Visitor<out T> {
 
             /** The vector embeddings of the documents. */
-            fun visitVectors(vectors: List<TurbopufferVector>): T
+            fun visitVectors(vectors: List<Vector>): T
 
             /** A vector embedding associated with a document. */
-            fun visitVector(vector: TurbopufferVector): T
+            fun visitVector(vector: Vector): T
 
             /**
              * Maps an unknown variant of [Vector] to a value of type [T].
@@ -420,10 +418,10 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<TurbopufferVector>())?.let {
+                            tryDeserialize(node, jacksonTypeRef<Vector>())?.let {
                                 Vector(vector = it, _json = json)
                             },
-                            tryDeserialize(node, jacksonTypeRef<List<TurbopufferVector>>())?.let {
+                            tryDeserialize(node, jacksonTypeRef<List<Vector>>())?.let {
                                 Vector(vectors = it, _json = json)
                             },
                         )

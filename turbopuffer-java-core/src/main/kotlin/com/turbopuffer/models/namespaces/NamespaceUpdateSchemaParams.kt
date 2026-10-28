@@ -2,11 +2,16 @@
 
 package com.turbopuffer.models.namespaces
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.Params
 import com.turbopuffer.core.http.Headers
 import com.turbopuffer.core.http.QueryParams
 import com.turbopuffer.core.immutableEmptyMap
+import com.turbopuffer.core.toImmutable
+import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -15,7 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 class NamespaceUpdateSchemaParams
 private constructor(
     private val namespace: String?,
-    private val schema: Schema?,
+    private val schema: TopLevelSchema?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -23,7 +28,7 @@ private constructor(
     fun namespace(): Optional<String> = Optional.ofNullable(namespace)
 
     /** The desired schema for the namespace. */
-    fun schema(): Optional<Schema> = Optional.ofNullable(schema)
+    fun schema(): Optional<TopLevelSchema> = Optional.ofNullable(schema)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = immutableEmptyMap()
 
@@ -49,7 +54,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var namespace: String? = null
-        private var schema: Schema? = null
+        private var schema: TopLevelSchema? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -67,10 +72,10 @@ private constructor(
         fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
 
         /** The desired schema for the namespace. */
-        fun schema(schema: Schema?) = apply { this.schema = schema }
+        fun schema(schema: TopLevelSchema?) = apply { this.schema = schema }
 
         /** Alias for calling [Builder.schema] with `schema.orElse(null)`. */
-        fun schema(schema: Optional<Schema>) = schema(schema.getOrNull())
+        fun schema(schema: Optional<TopLevelSchema>) = schema(schema.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -184,7 +189,7 @@ private constructor(
             )
     }
 
-    fun _body(): Optional<Schema> = Optional.ofNullable(schema)
+    fun _body(): Optional<TopLevelSchema> = Optional.ofNullable(schema)
 
     fun _pathParam(index: Int): String =
         when (index) {
@@ -195,6 +200,115 @@ private constructor(
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
+
+    /** The desired schema for the namespace. */
+    class Schema
+    @JsonCreator
+    private constructor(
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
+    ) {
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Schema]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Schema]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(schema: Schema) = apply {
+                additionalProperties = schema.additionalProperties.toMutableMap()
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Schema].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Schema = Schema(additionalProperties.toImmutable())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws TurbopufferInvalidDataException if any value type in this object doesn't match
+         *   its expected type.
+         */
+        fun validate(): Schema = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Schema && additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Schema{additionalProperties=$additionalProperties}"
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

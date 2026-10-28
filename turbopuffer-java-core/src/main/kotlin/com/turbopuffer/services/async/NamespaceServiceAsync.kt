@@ -35,7 +35,6 @@ import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
-import com.turbopuffer.models.namespaces.Schema
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -330,13 +329,15 @@ interface NamespaceServiceAsync {
 
     /** @see updateSchema */
     fun updateSchema(
-        schema: Schema,
+        schema: com.turbopuffer.models.namespaces.Schema,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<NamespaceUpdateSchemaResponse> =
         updateSchema(NamespaceUpdateSchemaParams.builder().schema(schema).build(), requestOptions)
 
     /** @see updateSchema */
-    fun updateSchema(schema: Schema): CompletableFuture<NamespaceUpdateSchemaResponse> =
+    fun updateSchema(
+        schema: com.turbopuffer.models.namespaces.Schema
+    ): CompletableFuture<NamespaceUpdateSchemaResponse> =
         updateSchema(schema, RequestOptions.none())
 
     /** @see updateSchema */
@@ -727,7 +728,7 @@ interface NamespaceServiceAsync {
 
         /** @see updateSchema */
         fun updateSchema(
-            schema: Schema,
+            schema: com.turbopuffer.models.namespaces.Schema,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
             updateSchema(
@@ -737,7 +738,7 @@ interface NamespaceServiceAsync {
 
         /** @see updateSchema */
         fun updateSchema(
-            schema: Schema
+            schema: com.turbopuffer.models.namespaces.Schema
         ): CompletableFuture<HttpResponseFor<NamespaceUpdateSchemaResponse>> =
             updateSchema(schema, RequestOptions.none())
 

@@ -25,7 +25,7 @@ internal class NamespaceWriteParamsTest {
             .encryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
             .patchByFilter(
                 NamespaceWriteParams.PatchByFilter.builder()
-                    .filters(Filter.eq("attr", "value"))
+                    .filters(JsonValue.from(mapOf<String, Any>()))
                     .patch(
                         NamespaceWriteParams.PatchByFilter.Patch.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
@@ -49,8 +49,8 @@ internal class NamespaceWriteParamsTest {
             )
             .returnAffectedIds(true)
             .schema(
-                Schema.builder()
-                    .put("foo", AttributeSchemaConfig.builder().type("string").build())
+                NamespaceWriteParams.Schema.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
             .sharding(ShardingConfig.builder().numShards(1).build())
@@ -96,7 +96,7 @@ internal class NamespaceWriteParamsTest {
                 .encryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
                 .patchByFilter(
                     NamespaceWriteParams.PatchByFilter.builder()
-                        .filters(Filter.eq("attr", "value"))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .patch(
                             NamespaceWriteParams.PatchByFilter.Patch.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
@@ -120,8 +120,8 @@ internal class NamespaceWriteParamsTest {
                 )
                 .returnAffectedIds(true)
                 .schema(
-                    Schema.builder()
-                        .put("foo", AttributeSchemaConfig.builder().type("string").build())
+                    NamespaceWriteParams.Schema.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
                 .sharding(ShardingConfig.builder().numShards(1).build())
@@ -162,7 +162,7 @@ internal class NamespaceWriteParamsTest {
         assertThat(body.patchByFilter())
             .contains(
                 NamespaceWriteParams.PatchByFilter.builder()
-                    .filters(Filter.eq("attr", "value"))
+                    .filters(JsonValue.from(mapOf<String, Any>()))
                     .patch(
                         NamespaceWriteParams.PatchByFilter.Patch.builder()
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
@@ -189,8 +189,8 @@ internal class NamespaceWriteParamsTest {
         assertThat(body.returnAffectedIds()).contains(true)
         assertThat(body.schema())
             .contains(
-                Schema.builder()
-                    .put("foo", AttributeSchemaConfig.builder().type("string").build())
+                NamespaceWriteParams.Schema.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
         assertThat(body.sharding()).contains(ShardingConfig.builder().numShards(1).build())

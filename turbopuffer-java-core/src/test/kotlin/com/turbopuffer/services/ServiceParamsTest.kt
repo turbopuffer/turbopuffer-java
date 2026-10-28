@@ -18,15 +18,13 @@ import com.turbopuffer.client.TurbopufferClient
 import com.turbopuffer.client.okhttp.TurbopufferOkHttpClient
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.models.ClientNamespacesParams
-import com.turbopuffer.models.namespaces.AttributeSchemaConfig
 import com.turbopuffer.models.namespaces.Columns
 import com.turbopuffer.models.namespaces.DistanceMetric
 import com.turbopuffer.models.namespaces.Encryption
-import com.turbopuffer.models.namespaces.Filter
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.Row
-import com.turbopuffer.models.namespaces.Schema
 import com.turbopuffer.models.namespaces.ShardingConfig
+import com.turbopuffer.models.namespaces.Vector
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -70,21 +68,25 @@ internal class ServiceParamsTest {
     @Disabled("Mock server tests are disabled")
     @Test
     fun write() {
-        val namespaceService = client.namespace("ns")
+        val namespaceService = client.namespaces()
         stubFor(post(anyUrl()).willReturn(ok("{}")))
 
         namespaceService.write(
             NamespaceWriteParams.builder()
+                .namespace("namespace")
                 .branchFromNamespace("string")
                 .copyFromNamespace("string")
                 .createNamespace(true)
+                .deleteByFilter(JsonValue.from(mapOf<String, Any>()))
+                .deleteByFilterAllowPartial(true)
+                .deleteCondition(JsonValue.from(mapOf<String, Any>()))
                 .addDelete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .disableBackpressure(true)
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
                 .encryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
                 .patchByFilter(
                     NamespaceWriteParams.PatchByFilter.builder()
-                        .filters(Filter.eq("attr", "value"))
+                        .filters(JsonValue.from(mapOf<String, Any>()))
                         .patch(
                             NamespaceWriteParams.PatchByFilter.Patch.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
@@ -95,40 +97,35 @@ internal class ServiceParamsTest {
                 .patchByFilterAllowPartial(true)
                 .patchColumns(
                     Columns.builder()
-                        .put("id", listOf(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")))
-                        .put("vector", listOf(JsonValue.from(listOf(0.0))))
+                        .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
                 .patchCondition(JsonValue.from(mapOf<String, Any>()))
                 .addPatchRow(
                     Row.builder()
-                        .put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .put("vectorOfNumber", listOf(0.0))
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfNumber(listOf(0.0))
                         .build()
                 )
                 .returnAffectedIds(true)
                 .schema(
-                    Schema.builder()
-                        .put("id", AttributeSchemaConfig.builder().type("uuid").build())
-                        .put(
-                            "name",
-                            AttributeSchemaConfig.builder().type("string").filterable(false).build(),
-                        )
-                        .put("age", AttributeSchemaConfig.builder().type("uint").build())
+                    NamespaceWriteParams.Schema.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
                 .sharding(ShardingConfig.builder().numShards(1).build())
                 .upsertColumns(
                     Columns.builder()
-                        .put("id", listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-                        .put("vector", listOf(listOf(0.0)))
+                        .addId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfVectors(listOf(Vector.ofNumber(listOf(0.0))))
                         .build()
                 )
                 .upsertCondition(JsonValue.from(mapOf<String, Any>()))
                 .addUpsertRow(
                     Row.builder()
-                        .put("id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
-                        .put("vectorOfNumber", listOf(0.0))
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .vectorOfNumber(listOf(0.0))
                         .build()
                 )
                 .putAdditionalHeader("Secret-Header", "42")

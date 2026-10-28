@@ -2,6 +2,7 @@
 
 package com.turbopuffer.models.namespaces
 
+import com.turbopuffer.core.JsonValue
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -13,8 +14,8 @@ internal class NamespaceUpdateSchemaParamsTest {
         NamespaceUpdateSchemaParams.builder()
             .namespace("namespace")
             .schema(
-                Schema.builder()
-                    .put("foo", AttributeSchemaConfig.builder().type("string").build())
+                NamespaceUpdateSchemaParams.Schema.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
             .build()
@@ -35,8 +36,8 @@ internal class NamespaceUpdateSchemaParamsTest {
             NamespaceUpdateSchemaParams.builder()
                 .namespace("namespace")
                 .schema(
-                    Schema.builder()
-                        .put("foo", AttributeSchemaConfig.builder().type("string").build())
+                    NamespaceUpdateSchemaParams.Schema.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
                 .build()
@@ -45,8 +46,8 @@ internal class NamespaceUpdateSchemaParamsTest {
 
         assertThat(body)
             .isEqualTo(
-                Schema.builder()
-                    .put("foo", AttributeSchemaConfig.builder().type("string").build())
+                NamespaceUpdateSchemaParams.Schema.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
     }

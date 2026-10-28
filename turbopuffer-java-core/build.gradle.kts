@@ -125,6 +125,14 @@ kotlin {
                 exclude("com/turbopuffer/models/namespaces/NamespaceWriteParamsTest.kt")
                 exclude("com/turbopuffer/models/namespaces/QueryTest.kt")
                 exclude("com/turbopuffer/models/namespaces/RowTest.kt")
+                // Generated tests that only compile against the generated types. The
+                // *CustomTest.kt files beside them test the custom types instead.
+                exclude("com/turbopuffer/models/namespaces/NamespaceRecallResponseTest.kt")
+                exclude("com/turbopuffer/models/namespaces/NamespaceWriteResponseTest.kt")
+                exclude("com/turbopuffer/models/namespaces/WriteResultTest.kt")
+                exclude("com/turbopuffer/services/ServiceParamsTest.kt")
+                exclude("com/turbopuffer/services/async/NamespaceServiceAsyncTest.kt")
+                exclude("com/turbopuffer/services/blocking/NamespaceServiceTest.kt")
             }
         }
     }

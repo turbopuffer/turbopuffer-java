@@ -2,7 +2,6 @@
 
 package com.turbopuffer.services.async
 
-import com.turbopuffer.client.NamespaceAsync
 import com.turbopuffer.core.ClientOptions
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.checkRequired
@@ -51,7 +50,7 @@ import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
-    NamespaceAsync {
+    com.turbopuffer.client.NamespaceAsync {
 
     private val withRawResponse: NamespaceServiceAsync.WithRawResponse by lazy {
         WithRawResponseImpl(clientOptions)
@@ -170,7 +169,7 @@ class NamespaceServiceAsyncImpl internal constructor(private val clientOptions: 
         withRawResponse().write(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
-        NamespaceAsync.WithRawResponse {
+        com.turbopuffer.client.NamespaceAsync.WithRawResponse {
 
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))

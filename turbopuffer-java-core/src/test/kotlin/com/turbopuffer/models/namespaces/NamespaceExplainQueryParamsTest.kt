@@ -18,7 +18,11 @@ internal class NamespaceExplainQueryParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-            .computeAttributes(mutableMapOf("foo" to Expr.highlight("bar")))
+            .computeAttributes(
+                NamespaceExplainQueryParams.ComputeAttributes.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
             .consistency(
                 NamespaceExplainQueryParams.Consistency.builder()
                     .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
@@ -57,7 +61,11 @@ internal class NamespaceExplainQueryParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
-                .computeAttributes(mutableMapOf("foo" to Expr.highlight("bar")))
+                .computeAttributes(
+                    NamespaceExplainQueryParams.ComputeAttributes.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
                 .consistency(
                     NamespaceExplainQueryParams.Consistency.builder()
                         .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
@@ -84,7 +92,12 @@ internal class NamespaceExplainQueryParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-        assertThat(body.computeAttributes()).contains(mutableMapOf("foo" to Expr.highlight("bar")))
+        assertThat(body.computeAttributes())
+            .contains(
+                NamespaceExplainQueryParams.ComputeAttributes.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
         assertThat(body.consistency())
             .contains(
                 NamespaceExplainQueryParams.Consistency.builder()
