@@ -36,7 +36,6 @@ import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaParams
 import com.turbopuffer.models.namespaces.NamespaceUpdateSchemaResponse
 import com.turbopuffer.models.namespaces.NamespaceWriteParams
 import com.turbopuffer.models.namespaces.NamespaceWriteResponse
-import com.turbopuffer.models.namespaces.Schema
 import java.util.function.Consumer
 
 interface NamespaceService {
@@ -309,14 +308,15 @@ interface NamespaceService {
 
     /** @see updateSchema */
     fun updateSchema(
-        schema: Schema,
+        schema: com.turbopuffer.models.namespaces.Schema,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): NamespaceUpdateSchemaResponse =
         updateSchema(NamespaceUpdateSchemaParams.builder().schema(schema).build(), requestOptions)
 
     /** @see updateSchema */
-    fun updateSchema(schema: Schema): NamespaceUpdateSchemaResponse =
-        updateSchema(schema, RequestOptions.none())
+    fun updateSchema(
+        schema: com.turbopuffer.models.namespaces.Schema
+    ): NamespaceUpdateSchemaResponse = updateSchema(schema, RequestOptions.none())
 
     /** @see updateSchema */
     fun updateSchema(requestOptions: RequestOptions): NamespaceUpdateSchemaResponse =
@@ -725,7 +725,7 @@ interface NamespaceService {
         /** @see updateSchema */
         @MustBeClosed
         fun updateSchema(
-            schema: Schema,
+            schema: com.turbopuffer.models.namespaces.Schema,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
             updateSchema(
@@ -735,7 +735,9 @@ interface NamespaceService {
 
         /** @see updateSchema */
         @MustBeClosed
-        fun updateSchema(schema: Schema): HttpResponseFor<NamespaceUpdateSchemaResponse> =
+        fun updateSchema(
+            schema: com.turbopuffer.models.namespaces.Schema
+        ): HttpResponseFor<NamespaceUpdateSchemaResponse> =
             updateSchema(schema, RequestOptions.none())
 
         /** @see updateSchema */

@@ -9,6 +9,14 @@ typealias NamespaceUpdateSchemaResponse = Schema
 
 typealias Id = JsonValue
 
+// Generated params classes nest their own AggregateBy, Limit and Schema, which shadow these inside
+// them.
+internal typealias TopLevelAggregateBy = AggregateBy
+
+internal typealias TopLevelLimit = Limit
+
+internal typealias TopLevelSchema = Schema
+
 // Schema, Row, and Columns are morally type aliases for Map<String,
 // AttributeSchemaConfig>, Map<String, JsonValue>, and Map<String,
 // List<JsonValue>>, respectively, but we implement them as subclasses in order

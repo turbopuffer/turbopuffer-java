@@ -169,7 +169,7 @@ private constructor(
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun schema(): Optional<Schema> = body.schema()
+    fun schema(): Optional<TopLevelSchema> = body.schema()
 
     /**
      * Configuration for namespace sharding, which partitions a namespace's documents across
@@ -323,7 +323,7 @@ private constructor(
      *
      * Unlike [schema], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _schema(): JsonField<Schema> = body._schema()
+    fun _schema(): JsonField<TopLevelSchema> = body._schema()
 
     /**
      * Returns the raw JSON value of [sharding].
@@ -706,7 +706,7 @@ private constructor(
         }
 
         /** The schema of the attributes attached to the documents. */
-        fun schema(schema: Schema) = apply { body.schema(schema) }
+        fun schema(schema: TopLevelSchema) = apply { body.schema(schema) }
 
         /**
          * Sets [Builder.schema] to an arbitrary JSON value.
@@ -714,7 +714,7 @@ private constructor(
          * You should usually call [Builder.schema] with a well-typed [Schema] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun schema(schema: JsonField<Schema>) = apply { body.schema(schema) }
+        fun schema(schema: JsonField<TopLevelSchema>) = apply { body.schema(schema) }
 
         /**
          * Configuration for namespace sharding, which partitions a namespace's documents across
@@ -950,7 +950,7 @@ private constructor(
         private val patchCondition: JsonField<Filter>,
         private val patchRows: JsonField<List<Row>>,
         private val returnAffectedIds: JsonField<Boolean>,
-        private val schema: JsonField<Schema>,
+        private val schema: JsonField<TopLevelSchema>,
         private val sharding: JsonField<ShardingConfig>,
         private val upsertColumns: JsonField<Columns>,
         private val upsertCondition: JsonField<Filter>,
@@ -1008,7 +1008,9 @@ private constructor(
             @JsonProperty("return_affected_ids")
             @ExcludeMissing
             returnAffectedIds: JsonField<Boolean> = JsonMissing.of(),
-            @JsonProperty("schema") @ExcludeMissing schema: JsonField<Schema> = JsonMissing.of(),
+            @JsonProperty("schema")
+            @ExcludeMissing
+            schema: JsonField<TopLevelSchema> = JsonMissing.of(),
             @JsonProperty("sharding")
             @ExcludeMissing
             sharding: JsonField<ShardingConfig> = JsonMissing.of(),
@@ -1190,7 +1192,7 @@ private constructor(
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
          */
-        fun schema(): Optional<Schema> = schema.getOptional("schema")
+        fun schema(): Optional<TopLevelSchema> = schema.getOptional("schema")
 
         /**
          * Configuration for namespace sharding, which partitions a namespace's documents across
@@ -1381,7 +1383,7 @@ private constructor(
          *
          * Unlike [schema], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
+        @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<TopLevelSchema> = schema
 
         /**
          * Returns the raw JSON value of [sharding].
@@ -1458,7 +1460,7 @@ private constructor(
             private var patchCondition: JsonField<Filter> = JsonMissing.of()
             private var patchRows: JsonField<MutableList<Row>>? = null
             private var returnAffectedIds: JsonField<Boolean> = JsonMissing.of()
-            private var schema: JsonField<Schema> = JsonMissing.of()
+            private var schema: JsonField<TopLevelSchema> = JsonMissing.of()
             private var sharding: JsonField<ShardingConfig> = JsonMissing.of()
             private var upsertColumns: JsonField<Columns> = JsonMissing.of()
             private var upsertCondition: JsonField<Filter> = JsonMissing.of()
@@ -1813,7 +1815,7 @@ private constructor(
             }
 
             /** The schema of the attributes attached to the documents. */
-            fun schema(schema: Schema) = schema(JsonField.of(schema))
+            fun schema(schema: TopLevelSchema) = schema(JsonField.of(schema))
 
             /**
              * Sets [Builder.schema] to an arbitrary JSON value.
@@ -1822,7 +1824,7 @@ private constructor(
              * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
+            fun schema(schema: JsonField<TopLevelSchema>) = apply { this.schema = schema }
 
             /**
              * Configuration for namespace sharding, which partitions a namespace's documents across
@@ -2400,6 +2402,115 @@ private constructor(
 
         override fun toString() =
             "PatchByFilter{filters=$filters, patch=$patch, additionalProperties=$additionalProperties}"
+    }
+
+    /** The schema of the attributes attached to the documents. */
+    class Schema
+    @JsonCreator
+    private constructor(
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
+    ) {
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Schema]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Schema]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(schema: Schema) = apply {
+                additionalProperties = schema.additionalProperties.toMutableMap()
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Schema].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Schema = Schema(additionalProperties.toImmutable())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws TurbopufferInvalidDataException if any value type in this object doesn't match
+         *   its expected type.
+         */
+        fun validate(): Schema = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Schema && additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Schema{additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

@@ -2,7 +2,6 @@
 
 package com.turbopuffer.services.blocking
 
-import com.turbopuffer.client.Namespace
 import com.turbopuffer.core.ClientOptions
 import com.turbopuffer.core.RequestOptions
 import com.turbopuffer.core.checkRequired
@@ -50,7 +49,7 @@ import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class NamespaceServiceImpl internal constructor(private val clientOptions: ClientOptions) :
-    Namespace {
+    com.turbopuffer.client.Namespace {
 
     private val withRawResponse: NamespaceService.WithRawResponse by lazy {
         WithRawResponseImpl(clientOptions)
@@ -169,7 +168,7 @@ class NamespaceServiceImpl internal constructor(private val clientOptions: Clien
         withRawResponse().write(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
-        Namespace.WithRawResponse {
+        com.turbopuffer.client.Namespace.WithRawResponse {
 
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))

@@ -3,7 +3,6 @@
 package com.turbopuffer.models.namespaces
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.jsonMapper
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -28,8 +27,8 @@ internal class NamespaceWriteResponseTest {
                 )
                 .message("message")
                 .rowsAffected(0L)
-                .addDeletedId(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-                .addPatchedId(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                .addDeletedId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .addPatchedId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .performance(
                     WritePerformance.builder()
                         .serverTotalMs(0L)
@@ -41,7 +40,7 @@ internal class NamespaceWriteResponseTest {
                 .rowsPatched(0L)
                 .rowsRemaining(true)
                 .rowsUpserted(0L)
-                .addUpsertedId(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                .addUpsertedId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
 
         assertThat(namespaceWriteResponse.billing())
@@ -59,9 +58,9 @@ internal class NamespaceWriteResponseTest {
         assertThat(namespaceWriteResponse.message()).isEqualTo("message")
         assertThat(namespaceWriteResponse.rowsAffected()).isEqualTo(0L)
         assertThat(namespaceWriteResponse.deletedIds().getOrNull())
-            .containsExactly(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+            .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
         assertThat(namespaceWriteResponse.patchedIds().getOrNull())
-            .containsExactly(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+            .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
         assertThat(namespaceWriteResponse.performance())
             .contains(
                 WritePerformance.builder()
@@ -75,7 +74,7 @@ internal class NamespaceWriteResponseTest {
         assertThat(namespaceWriteResponse.rowsRemaining()).contains(true)
         assertThat(namespaceWriteResponse.rowsUpserted()).contains(0L)
         assertThat(namespaceWriteResponse.upsertedIds().getOrNull())
-            .containsExactly(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+            .containsExactly(Id.ofString("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
     }
 
     @Test
@@ -96,8 +95,8 @@ internal class NamespaceWriteResponseTest {
                 )
                 .message("message")
                 .rowsAffected(0L)
-                .addDeletedId(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
-                .addPatchedId(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                .addDeletedId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .addPatchedId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .performance(
                     WritePerformance.builder()
                         .serverTotalMs(0L)
@@ -109,7 +108,7 @@ internal class NamespaceWriteResponseTest {
                 .rowsPatched(0L)
                 .rowsRemaining(true)
                 .rowsUpserted(0L)
-                .addUpsertedId(JsonValue.from("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                .addUpsertedId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                 .build()
 
         val roundtrippedNamespaceWriteResponse =
