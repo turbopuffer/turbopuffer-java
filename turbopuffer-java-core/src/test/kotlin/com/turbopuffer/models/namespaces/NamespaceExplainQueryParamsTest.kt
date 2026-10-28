@@ -22,6 +22,7 @@ internal class NamespaceExplainQueryParamsTest {
             .consistency(
                 NamespaceExplainQueryParams.Consistency.builder()
                     .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
+                    .maxStalenessSeconds(1L)
                     .build()
             )
             .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -60,6 +61,7 @@ internal class NamespaceExplainQueryParamsTest {
                 .consistency(
                     NamespaceExplainQueryParams.Consistency.builder()
                         .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
+                        .maxStalenessSeconds(1L)
                         .build()
                 )
                 .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -87,6 +89,7 @@ internal class NamespaceExplainQueryParamsTest {
             .contains(
                 NamespaceExplainQueryParams.Consistency.builder()
                     .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
+                    .maxStalenessSeconds(1L)
                     .build()
             )
         assertThat(body.distanceMetric()).contains(DistanceMetric.COSINE_DISTANCE)

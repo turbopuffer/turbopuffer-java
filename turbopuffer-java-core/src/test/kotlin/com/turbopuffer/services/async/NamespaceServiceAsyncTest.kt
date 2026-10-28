@@ -166,6 +166,7 @@ internal class NamespaceServiceAsyncTest {
                     .consistency(
                         NamespaceMultiQueryParams.Consistency.builder()
                             .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
+                            .maxStalenessSeconds(1L)
                             .build()
                     )
                     .limit(0L)
