@@ -34,6 +34,7 @@ internal class NamespaceMultiQueryParamsTest {
             .consistency(
                 NamespaceMultiQueryParams.Consistency.builder()
                     .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
+                    .maxStalenessSeconds(1L)
                     .build()
             )
             .limit(0L)
@@ -82,6 +83,7 @@ internal class NamespaceMultiQueryParamsTest {
                 .consistency(
                     NamespaceMultiQueryParams.Consistency.builder()
                         .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
+                        .maxStalenessSeconds(1L)
                         .build()
                 )
                 .limit(0L)
@@ -116,6 +118,7 @@ internal class NamespaceMultiQueryParamsTest {
             .contains(
                 NamespaceMultiQueryParams.Consistency.builder()
                     .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
+                    .maxStalenessSeconds(1L)
                     .build()
             )
         assertThat(body.limit()).contains(NamespaceMultiQueryParams.Limit.ofInteger(0L))
