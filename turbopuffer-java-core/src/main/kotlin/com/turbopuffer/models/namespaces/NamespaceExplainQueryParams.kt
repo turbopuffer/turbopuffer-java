@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.turbopuffer.core.BaseDeserializer
 import com.turbopuffer.core.BaseSerializer
-import com.turbopuffer.core.Enum
 import com.turbopuffer.core.ExcludeMissing
 import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
@@ -337,6 +336,12 @@ private constructor(
         fun consistency(consistency: JsonField<Consistency>) = apply {
             body.consistency(consistency)
         }
+
+        /** Alias for calling [consistency] with `Consistency.ofStrong()`. */
+        fun consistencyStrong() = apply { body.consistencyStrong() }
+
+        /** Alias for calling [consistency] with `Consistency.ofEventual(eventual)`. */
+        fun consistency(eventual: Consistency.Eventual) = apply { body.consistency(eventual) }
 
         /** A function used to calculate vector similarity. */
         fun distanceMetric(distanceMetric: DistanceMetric) = apply {
@@ -1024,6 +1029,13 @@ private constructor(
                 this.consistency = consistency
             }
 
+            /** Alias for calling [consistency] with `Consistency.ofStrong()`. */
+            fun consistencyStrong() = consistency(Consistency.ofStrong())
+
+            /** Alias for calling [consistency] with `Consistency.ofEventual(eventual)`. */
+            fun consistency(eventual: Consistency.Eventual) =
+                consistency(Consistency.ofEventual(eventual))
+
             /** A function used to calculate vector similarity. */
             fun distanceMetric(distanceMetric: DistanceMetric) =
                 distanceMetric(JsonField.of(distanceMetric))
@@ -1561,148 +1573,78 @@ private constructor(
     }
 
     /** The consistency level for a query. */
+    @JsonDeserialize(using = Consistency.Deserializer::class)
+    @JsonSerialize(using = Consistency.Serializer::class)
     class Consistency
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val level: JsonField<Level>,
-        private val maxStalenessSeconds: JsonField<Long>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
+        private val strong: JsonValue? = null,
+        private val eventual: Eventual? = null,
+        private val _json: JsonValue? = null,
     ) {
 
-        @JsonCreator
-        private constructor(
-            @JsonProperty("level") @ExcludeMissing level: JsonField<Level> = JsonMissing.of(),
-            @JsonProperty("max_staleness_seconds")
-            @ExcludeMissing
-            maxStalenessSeconds: JsonField<Long> = JsonMissing.of(),
-        ) : this(level, maxStalenessSeconds, mutableMapOf())
+        /**
+         * Strong consistency. Requires a round-trip to object storage to fetch the latest writes.
+         */
+        fun strong(): Optional<JsonValue> = Optional.ofNullable(strong)
 
         /**
-         * The query's consistency level.
-         *
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
+         * Eventual consistency. Does not require a round-trip to object storage, but may not see
+         * the latest writes.
          */
-        fun level(): Optional<Level> = level.getOptional("level")
+        fun eventual(): Optional<Eventual> = Optional.ofNullable(eventual)
+
+        fun isStrong(): Boolean = strong != null
+
+        fun isEventual(): Boolean = eventual != null
 
         /**
-         * How long an eventually consistent query may reuse the node's cached view of the namespace
-         * before refreshing it from object storage. Only valid with `level: eventual`. Defaults
-         * to 60.
-         *
-         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
-         *   the server responded with an unexpected value).
+         * Strong consistency. Requires a round-trip to object storage to fetch the latest writes.
          */
-        fun maxStalenessSeconds(): Optional<Long> =
-            maxStalenessSeconds.getOptional("max_staleness_seconds")
+        fun asStrong(): JsonValue = strong.getOrThrow("strong")
 
         /**
-         * Returns the raw JSON value of [level].
-         *
-         * Unlike [level], this method doesn't throw if the JSON field has an unexpected type.
+         * Eventual consistency. Does not require a round-trip to object storage, but may not see
+         * the latest writes.
          */
-        @JsonProperty("level") @ExcludeMissing fun _level(): JsonField<Level> = level
+        fun asEventual(): Eventual = eventual.getOrThrow("eventual")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         /**
-         * Returns the raw JSON value of [maxStalenessSeconds].
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
          *
-         * Unlike [maxStalenessSeconds], this method doesn't throw if the JSON field has an
-         * unexpected type.
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.turbopuffer.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = consistency.accept(new Consistency.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitStrong(JsonValue strong) {
+         *         return Optional.of(strong.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws TurbopufferInvalidDataException if [Visitor.unknown] is not overridden in
+         *   [visitor] and the current variant is unknown.
          */
-        @JsonProperty("max_staleness_seconds")
-        @ExcludeMissing
-        fun _maxStalenessSeconds(): JsonField<Long> = maxStalenessSeconds
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Consistency]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Consistency]. */
-        class Builder internal constructor() {
-
-            private var level: JsonField<Level> = JsonMissing.of()
-            private var maxStalenessSeconds: JsonField<Long> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(consistency: Consistency) = apply {
-                level = consistency.level
-                maxStalenessSeconds = consistency.maxStalenessSeconds
-                additionalProperties = consistency.additionalProperties.toMutableMap()
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                strong != null -> visitor.visitStrong(strong)
+                eventual != null -> visitor.visitEventual(eventual)
+                else -> visitor.unknown(_json)
             }
-
-            /** The query's consistency level. */
-            fun level(level: Level) = level(JsonField.of(level))
-
-            /**
-             * Sets [Builder.level] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.level] with a well-typed [Level] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun level(level: JsonField<Level>) = apply { this.level = level }
-
-            /**
-             * How long an eventually consistent query may reuse the node's cached view of the
-             * namespace before refreshing it from object storage. Only valid with `level:
-             * eventual`. Defaults to 60.
-             */
-            fun maxStalenessSeconds(maxStalenessSeconds: Long) =
-                maxStalenessSeconds(JsonField.of(maxStalenessSeconds))
-
-            /**
-             * Sets [Builder.maxStalenessSeconds] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.maxStalenessSeconds] with a well-typed [Long] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun maxStalenessSeconds(maxStalenessSeconds: JsonField<Long>) = apply {
-                this.maxStalenessSeconds = maxStalenessSeconds
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Consistency].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Consistency =
-                Consistency(level, maxStalenessSeconds, additionalProperties.toMutableMap())
-        }
 
         private var validated: Boolean = false
 
@@ -1720,8 +1662,23 @@ private constructor(
                 return@apply
             }
 
-            level().ifPresent { it.validate() }
-            maxStalenessSeconds()
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitStrong(strong: JsonValue) {
+                        strong.let {
+                            if (it != JsonValue.from(mapOf("level" to "strong"))) {
+                                throw TurbopufferInvalidDataException(
+                                    "'strong' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+
+                    override fun visitEventual(eventual: Eventual) {
+                        eventual.validate()
+                    }
+                }
+            )
             validated = true
         }
 
@@ -1741,122 +1698,270 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (level.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (maxStalenessSeconds.asKnown().isPresent) 1 else 0)
+            accept(
+                object : Visitor<Int> {
+                    override fun visitStrong(strong: JsonValue) =
+                        strong.let {
+                            if (it == JsonValue.from(mapOf("level" to "strong"))) 1 else 0
+                        }
 
-        /** The query's consistency level. */
-        class Level @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+                    override fun visitEventual(eventual: Eventual) = eventual.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Consistency && strong == other.strong && eventual == other.eventual
+        }
+
+        override fun hashCode(): Int = Objects.hash(strong, eventual)
+
+        override fun toString(): String =
+            when {
+                strong != null -> "Consistency{strong=$strong}"
+                eventual != null -> "Consistency{eventual=$eventual}"
+                _json != null -> "Consistency{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Consistency")
+            }
+
+        companion object {
 
             /**
-             * Returns this class instance's raw value.
-             *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
+             * Strong consistency. Requires a round-trip to object storage to fetch the latest
+             * writes.
              */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+            @JvmStatic
+            fun ofStrong() = Consistency(strong = JsonValue.from(mapOf("level" to "strong")))
+
+            /**
+             * Eventual consistency. Does not require a round-trip to object storage, but may not
+             * see the latest writes.
+             */
+            @JvmStatic fun ofEventual(eventual: Eventual) = Consistency(eventual = eventual)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [Consistency] to a value of type
+         * [T].
+         */
+        interface Visitor<out T> {
+
+            /**
+             * Strong consistency. Requires a round-trip to object storage to fetch the latest
+             * writes.
+             */
+            fun visitStrong(strong: JsonValue): T
+
+            /**
+             * Eventual consistency. Does not require a round-trip to object storage, but may not
+             * see the latest writes.
+             */
+            fun visitEventual(eventual: Eventual): T
+
+            /**
+             * Maps an unknown variant of [Consistency] to a value of type [T].
+             *
+             * An instance of [Consistency] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws TurbopufferInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw TurbopufferInvalidDataException("Unknown Consistency: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Consistency>(Consistency::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Consistency {
+                val json = JsonValue.fromJsonNode(node)
+                val level = json.asObject().getOrNull()?.get("level")?.asString()?.getOrNull()
+
+                when (level) {
+                    "strong" -> {
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { Consistency(strong = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: Consistency(_json = json)
+                    }
+                    "eventual" -> {
+                        return tryDeserialize(node, jacksonTypeRef<Eventual>())?.let {
+                            Consistency(eventual = it, _json = json)
+                        } ?: Consistency(_json = json)
+                    }
+                }
+
+                return Consistency(_json = json)
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Consistency>(Consistency::class) {
+
+            override fun serialize(
+                value: Consistency,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.strong != null -> generator.writeObject(value.strong)
+                    value.eventual != null -> generator.writeObject(value.eventual)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Consistency")
+                }
+            }
+        }
+
+        /**
+         * Eventual consistency. Does not require a round-trip to object storage, but may not see
+         * the latest writes.
+         */
+        class Eventual
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val level: JsonValue,
+            private val maxStalenessSeconds: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("level") @ExcludeMissing level: JsonValue = JsonMissing.of(),
+                @JsonProperty("max_staleness_seconds")
+                @ExcludeMissing
+                maxStalenessSeconds: JsonField<Long> = JsonMissing.of(),
+            ) : this(level, maxStalenessSeconds, mutableMapOf())
+
+            /**
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("eventual")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("level") @ExcludeMissing fun _level(): JsonValue = level
+
+            /**
+             * How long the query may reuse the node's cached view of the namespace before
+             * refreshing it from object storage. Defaults to 60.
+             *
+             * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type
+             *   (e.g. if the server responded with an unexpected value).
+             */
+            fun maxStalenessSeconds(): Optional<Long> =
+                maxStalenessSeconds.getOptional("max_staleness_seconds")
+
+            /**
+             * Returns the raw JSON value of [maxStalenessSeconds].
+             *
+             * Unlike [maxStalenessSeconds], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("max_staleness_seconds")
+            @ExcludeMissing
+            fun _maxStalenessSeconds(): JsonField<Long> = maxStalenessSeconds
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
 
             companion object {
 
-                /**
-                 * Strong consistency. Requires a round-trip to object storage to fetch the latest
-                 * writes.
-                 */
-                @JvmField val STRONG = of("strong")
-
-                /**
-                 * Eventual consistency. Does not require a round-trip to object storage, but may
-                 * not see the latest writes.
-                 */
-                @JvmField val EVENTUAL = of("eventual")
-
-                @JvmStatic fun of(value: String) = Level(JsonField.of(value))
+                /** Returns a mutable builder for constructing an instance of [Eventual]. */
+                @JvmStatic fun builder() = Builder()
             }
 
-            /** An enum containing [Level]'s known values. */
-            enum class Known {
+            /** A builder for [Eventual]. */
+            class Builder internal constructor() {
+
+                private var level: JsonValue = JsonValue.from("eventual")
+                private var maxStalenessSeconds: JsonField<Long> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(eventual: Eventual) = apply {
+                    level = eventual.level
+                    maxStalenessSeconds = eventual.maxStalenessSeconds
+                    additionalProperties = eventual.additionalProperties.toMutableMap()
+                }
+
                 /**
-                 * Strong consistency. Requires a round-trip to object storage to fetch the latest
-                 * writes.
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("eventual")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
-                STRONG,
+                fun level(level: JsonValue) = apply { this.level = level }
+
                 /**
-                 * Eventual consistency. Does not require a round-trip to object storage, but may
-                 * not see the latest writes.
+                 * How long the query may reuse the node's cached view of the namespace before
+                 * refreshing it from object storage. Defaults to 60.
                  */
-                EVENTUAL,
+                fun maxStalenessSeconds(maxStalenessSeconds: Long) =
+                    maxStalenessSeconds(JsonField.of(maxStalenessSeconds))
+
+                /**
+                 * Sets [Builder.maxStalenessSeconds] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.maxStalenessSeconds] with a well-typed [Long]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun maxStalenessSeconds(maxStalenessSeconds: JsonField<Long>) = apply {
+                    this.maxStalenessSeconds = maxStalenessSeconds
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Eventual].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Eventual =
+                    Eventual(level, maxStalenessSeconds, additionalProperties.toMutableMap())
             }
-
-            /**
-             * An enum containing [Level]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [Level] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            enum class Value {
-                /**
-                 * Strong consistency. Requires a round-trip to object storage to fetch the latest
-                 * writes.
-                 */
-                STRONG,
-                /**
-                 * Eventual consistency. Does not require a round-trip to object storage, but may
-                 * not see the latest writes.
-                 */
-                EVENTUAL,
-                /**
-                 * An enum member indicating that [Level] was instantiated with an unknown value.
-                 */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            fun value(): Value =
-                when (this) {
-                    STRONG -> Value.STRONG
-                    EVENTUAL -> Value.EVENTUAL
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws TurbopufferInvalidDataException if this class instance's value is a not a
-             *   known member.
-             */
-            fun known(): Known =
-                when (this) {
-                    STRONG -> Known.STRONG
-                    EVENTUAL -> Known.EVENTUAL
-                    else -> throw TurbopufferInvalidDataException("Unknown Level: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws TurbopufferInvalidDataException if this class instance's value does not have
-             *   the expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    TurbopufferInvalidDataException("Value is not a String")
-                }
 
             private var validated: Boolean = false
 
@@ -1870,12 +1975,17 @@ private constructor(
              * @throws TurbopufferInvalidDataException if any value type in this object doesn't
              *   match its expected type.
              */
-            fun validate(): Level = apply {
+            fun validate(): Eventual = apply {
                 if (validated) {
                     return@apply
                 }
 
-                known()
+                _level().let {
+                    if (it != JsonValue.from("eventual")) {
+                        throw TurbopufferInvalidDataException("'level' is invalid, received $it")
+                    }
+                }
+                maxStalenessSeconds()
                 validated = true
             }
 
@@ -1893,40 +2003,31 @@ private constructor(
              *
              * Used for best match union deserialization.
              */
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+            @JvmSynthetic
+            internal fun validity(): Int =
+                level.let { if (it == JsonValue.from("eventual")) 1 else 0 } +
+                    (if (maxStalenessSeconds.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return other is Level && value == other.value
+                return other is Eventual &&
+                    level == other.level &&
+                    maxStalenessSeconds == other.maxStalenessSeconds &&
+                    additionalProperties == other.additionalProperties
             }
 
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
+            private val hashCode: Int by lazy {
+                Objects.hash(level, maxStalenessSeconds, additionalProperties)
             }
 
-            return other is Consistency &&
-                level == other.level &&
-                maxStalenessSeconds == other.maxStalenessSeconds &&
-                additionalProperties == other.additionalProperties
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Eventual{level=$level, maxStalenessSeconds=$maxStalenessSeconds, additionalProperties=$additionalProperties}"
         }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(level, maxStalenessSeconds, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Consistency{level=$level, maxStalenessSeconds=$maxStalenessSeconds, additionalProperties=$additionalProperties}"
     }
 
     /** Limits the documents returned by a query. */
