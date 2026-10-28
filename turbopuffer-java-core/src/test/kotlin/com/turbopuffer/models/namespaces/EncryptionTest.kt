@@ -16,7 +16,15 @@ internal class EncryptionTest {
 
     @Test
     fun ofCustomerManaged() {
-        val customerManaged = Encryption.CustomerManaged.builder().keyName("key_name").build()
+        val customerManaged =
+            Encryption.CustomerManaged.builder()
+                .keyName("key_name")
+                .encryptionContext(
+                    Encryption.CustomerManaged.EncryptionContext.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
+                .build()
 
         val encryption = Encryption.ofCustomerManaged(customerManaged)
 
@@ -29,7 +37,14 @@ internal class EncryptionTest {
         val jsonMapper = jsonMapper()
         val encryption =
             Encryption.ofCustomerManaged(
-                Encryption.CustomerManaged.builder().keyName("key_name").build()
+                Encryption.CustomerManaged.builder()
+                    .keyName("key_name")
+                    .encryptionContext(
+                        Encryption.CustomerManaged.EncryptionContext.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .build()
             )
 
         val roundtrippedEncryption =
