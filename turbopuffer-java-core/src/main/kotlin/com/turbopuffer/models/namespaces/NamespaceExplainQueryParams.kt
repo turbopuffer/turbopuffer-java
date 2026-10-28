@@ -1565,13 +1565,17 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val level: JsonField<Level>,
+        private val maxStalenessSeconds: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("level") @ExcludeMissing level: JsonField<Level> = JsonMissing.of()
-        ) : this(level, mutableMapOf())
+            @JsonProperty("level") @ExcludeMissing level: JsonField<Level> = JsonMissing.of(),
+            @JsonProperty("max_staleness_seconds")
+            @ExcludeMissing
+            maxStalenessSeconds: JsonField<Long> = JsonMissing.of(),
+        ) : this(level, maxStalenessSeconds, mutableMapOf())
 
         /**
          * The query's consistency level.
@@ -1582,11 +1586,32 @@ private constructor(
         fun level(): Optional<Level> = level.getOptional("level")
 
         /**
+         * How long an eventually consistent query may reuse the node's cached view of the namespace
+         * before refreshing it from object storage. Only valid with `level: eventual`. Defaults
+         * to 60.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun maxStalenessSeconds(): Optional<Long> =
+            maxStalenessSeconds.getOptional("max_staleness_seconds")
+
+        /**
          * Returns the raw JSON value of [level].
          *
          * Unlike [level], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("level") @ExcludeMissing fun _level(): JsonField<Level> = level
+
+        /**
+         * Returns the raw JSON value of [maxStalenessSeconds].
+         *
+         * Unlike [maxStalenessSeconds], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("max_staleness_seconds")
+        @ExcludeMissing
+        fun _maxStalenessSeconds(): JsonField<Long> = maxStalenessSeconds
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1610,11 +1635,13 @@ private constructor(
         class Builder internal constructor() {
 
             private var level: JsonField<Level> = JsonMissing.of()
+            private var maxStalenessSeconds: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(consistency: Consistency) = apply {
                 level = consistency.level
+                maxStalenessSeconds = consistency.maxStalenessSeconds
                 additionalProperties = consistency.additionalProperties.toMutableMap()
             }
 
@@ -1629,6 +1656,25 @@ private constructor(
              * value.
              */
             fun level(level: JsonField<Level>) = apply { this.level = level }
+
+            /**
+             * How long an eventually consistent query may reuse the node's cached view of the
+             * namespace before refreshing it from object storage. Only valid with `level:
+             * eventual`. Defaults to 60.
+             */
+            fun maxStalenessSeconds(maxStalenessSeconds: Long) =
+                maxStalenessSeconds(JsonField.of(maxStalenessSeconds))
+
+            /**
+             * Sets [Builder.maxStalenessSeconds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxStalenessSeconds] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxStalenessSeconds(maxStalenessSeconds: JsonField<Long>) = apply {
+                this.maxStalenessSeconds = maxStalenessSeconds
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1654,7 +1700,8 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Consistency = Consistency(level, additionalProperties.toMutableMap())
+            fun build(): Consistency =
+                Consistency(level, maxStalenessSeconds, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -1674,6 +1721,7 @@ private constructor(
             }
 
             level().ifPresent { it.validate() }
+            maxStalenessSeconds()
             validated = true
         }
 
@@ -1691,7 +1739,10 @@ private constructor(
          *
          * Used for best match union deserialization.
          */
-        @JvmSynthetic internal fun validity(): Int = (level.asKnown().getOrNull()?.validity() ?: 0)
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (level.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (maxStalenessSeconds.asKnown().isPresent) 1 else 0)
 
         /** The query's consistency level. */
         class Level @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -1864,15 +1915,18 @@ private constructor(
 
             return other is Consistency &&
                 level == other.level &&
+                maxStalenessSeconds == other.maxStalenessSeconds &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(level, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(level, maxStalenessSeconds, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Consistency{level=$level, additionalProperties=$additionalProperties}"
+            "Consistency{level=$level, maxStalenessSeconds=$maxStalenessSeconds, additionalProperties=$additionalProperties}"
     }
 
     /** Limits the documents returned by a query. */

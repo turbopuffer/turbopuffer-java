@@ -109,6 +109,7 @@ internal class NamespaceServiceTest {
                     .consistency(
                         NamespaceExplainQueryParams.Consistency.builder()
                             .level(NamespaceExplainQueryParams.Consistency.Level.STRONG)
+                            .maxStalenessSeconds(1L)
                             .build()
                     )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
@@ -191,6 +192,7 @@ internal class NamespaceServiceTest {
                     .consistency(
                         NamespaceMultiQueryParams.Consistency.builder()
                             .level(NamespaceMultiQueryParams.Consistency.Level.STRONG)
+                            .maxStalenessSeconds(1L)
                             .build()
                     )
                     .limit(0L)
@@ -240,6 +242,7 @@ internal class NamespaceServiceTest {
                     .consistency(
                         NamespaceQueryParams.Consistency.builder()
                             .level(NamespaceQueryParams.Consistency.Level.STRONG)
+                            .maxStalenessSeconds(1L)
                             .build()
                     )
                     .distanceMetric(DistanceMetric.COSINE_DISTANCE)
