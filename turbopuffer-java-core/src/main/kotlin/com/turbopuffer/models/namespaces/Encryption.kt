@@ -22,10 +22,12 @@ import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.allMaxBy
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
+import com.turbopuffer.core.toImmutable
 import com.turbopuffer.errors.TurbopufferInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** The encryption configuration for a namespace. */
 @JsonDeserialize(using = Encryption.Deserializer::class)
@@ -259,6 +261,7 @@ private constructor(
     private constructor(
         private val keyName: JsonField<String>,
         private val mode: JsonValue,
+        private val encryptionContext: JsonField<EncryptionContext>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -266,7 +269,10 @@ private constructor(
         private constructor(
             @JsonProperty("key_name") @ExcludeMissing keyName: JsonField<String> = JsonMissing.of(),
             @JsonProperty("mode") @ExcludeMissing mode: JsonValue = JsonMissing.of(),
-        ) : this(keyName, mode, mutableMapOf())
+            @JsonProperty("encryption_context")
+            @ExcludeMissing
+            encryptionContext: JsonField<EncryptionContext> = JsonMissing.of(),
+        ) : this(keyName, mode, encryptionContext, mutableMapOf())
 
         /**
          * The identifier of the CMEK key to use for encryption. For GCP, the fully-qualified
@@ -289,11 +295,32 @@ private constructor(
         @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonValue = mode
 
         /**
+         * The AWS KMS encryption context to send with every request that uses the key. Only
+         * supported on AWS, and must be enabled for your organization. Keys may not start with
+         * `tpuf:` or `aws:`.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun encryptionContext(): Optional<EncryptionContext> =
+            encryptionContext.getOptional("encryption_context")
+
+        /**
          * Returns the raw JSON value of [keyName].
          *
          * Unlike [keyName], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("key_name") @ExcludeMissing fun _keyName(): JsonField<String> = keyName
+
+        /**
+         * Returns the raw JSON value of [encryptionContext].
+         *
+         * Unlike [encryptionContext], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("encryption_context")
+        @ExcludeMissing
+        fun _encryptionContext(): JsonField<EncryptionContext> = encryptionContext
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -325,12 +352,14 @@ private constructor(
 
             private var keyName: JsonField<String>? = null
             private var mode: JsonValue = JsonValue.from("customer-managed")
+            private var encryptionContext: JsonField<EncryptionContext> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(customerManaged: CustomerManaged) = apply {
                 keyName = customerManaged.keyName
                 mode = customerManaged.mode
+                encryptionContext = customerManaged.encryptionContext
                 additionalProperties = customerManaged.additionalProperties.toMutableMap()
             }
 
@@ -362,6 +391,25 @@ private constructor(
              * supported value.
              */
             fun mode(mode: JsonValue) = apply { this.mode = mode }
+
+            /**
+             * The AWS KMS encryption context to send with every request that uses the key. Only
+             * supported on AWS, and must be enabled for your organization. Keys may not start with
+             * `tpuf:` or `aws:`.
+             */
+            fun encryptionContext(encryptionContext: EncryptionContext) =
+                encryptionContext(JsonField.of(encryptionContext))
+
+            /**
+             * Sets [Builder.encryptionContext] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.encryptionContext] with a well-typed
+             * [EncryptionContext] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun encryptionContext(encryptionContext: JsonField<EncryptionContext>) = apply {
+                this.encryptionContext = encryptionContext
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -398,6 +446,7 @@ private constructor(
                 CustomerManaged(
                     checkRequired("keyName", keyName),
                     mode,
+                    encryptionContext,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -424,6 +473,7 @@ private constructor(
                     throw TurbopufferInvalidDataException("'mode' is invalid, received $it")
                 }
             }
+            encryptionContext().ifPresent { it.validate() }
             validated = true
         }
 
@@ -444,7 +494,130 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (keyName.asKnown().isPresent) 1 else 0) +
-                mode.let { if (it == JsonValue.from("customer-managed")) 1 else 0 }
+                mode.let { if (it == JsonValue.from("customer-managed")) 1 else 0 } +
+                (encryptionContext.asKnown().getOrNull()?.validity() ?: 0)
+
+        /**
+         * The AWS KMS encryption context to send with every request that uses the key. Only
+         * supported on AWS, and must be enabled for your organization. Keys may not start with
+         * `tpuf:` or `aws:`.
+         */
+        class EncryptionContext
+        @JsonCreator
+        private constructor(
+            @com.fasterxml.jackson.annotation.JsonValue
+            private val additionalProperties: Map<String, JsonValue>
+        ) {
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [EncryptionContext].
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [EncryptionContext]. */
+            class Builder internal constructor() {
+
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(encryptionContext: EncryptionContext) = apply {
+                    additionalProperties = encryptionContext.additionalProperties.toMutableMap()
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [EncryptionContext].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): EncryptionContext =
+                    EncryptionContext(additionalProperties.toImmutable())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws TurbopufferInvalidDataException if any value type in this object doesn't
+             *   match its expected type.
+             */
+            fun validate(): EncryptionContext = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: TurbopufferInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is EncryptionContext &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "EncryptionContext{additionalProperties=$additionalProperties}"
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -454,14 +627,17 @@ private constructor(
             return other is CustomerManaged &&
                 keyName == other.keyName &&
                 mode == other.mode &&
+                encryptionContext == other.encryptionContext &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(keyName, mode, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(keyName, mode, encryptionContext, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "CustomerManaged{keyName=$keyName, mode=$mode, additionalProperties=$additionalProperties}"
+            "CustomerManaged{keyName=$keyName, mode=$mode, encryptionContext=$encryptionContext, additionalProperties=$additionalProperties}"
     }
 }
