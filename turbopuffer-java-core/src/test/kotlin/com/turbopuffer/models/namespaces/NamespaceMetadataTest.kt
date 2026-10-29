@@ -18,7 +18,16 @@ internal class NamespaceMetadataTest {
                 .approxLogicalBytes(0L)
                 .approxRowCount(0L)
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                .encryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
+                .encryption(
+                    Encryption.CustomerManaged.builder()
+                        .keyName("key_name")
+                        .encryptionContext(
+                            Encryption.CustomerManaged.EncryptionContext.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .build()
+                )
                 .indexUpToDate()
                 .schema(
                     NamespaceMetadata.Schema.builder()
@@ -65,7 +74,14 @@ internal class NamespaceMetadataTest {
         assertThat(namespaceMetadata.encryption())
             .isEqualTo(
                 Encryption.ofCustomerManaged(
-                    Encryption.CustomerManaged.builder().keyName("key_name").build()
+                    Encryption.CustomerManaged.builder()
+                        .keyName("key_name")
+                        .encryptionContext(
+                            Encryption.CustomerManaged.EncryptionContext.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .build()
                 )
             )
         assertThat(namespaceMetadata.index()).isEqualTo(NamespaceMetadata.Index.ofUpToDate())
@@ -119,7 +135,16 @@ internal class NamespaceMetadataTest {
                 .approxLogicalBytes(0L)
                 .approxRowCount(0L)
                 .createdAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
-                .encryption(Encryption.CustomerManaged.builder().keyName("key_name").build())
+                .encryption(
+                    Encryption.CustomerManaged.builder()
+                        .keyName("key_name")
+                        .encryptionContext(
+                            Encryption.CustomerManaged.EncryptionContext.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .build()
+                )
                 .indexUpToDate()
                 .schema(
                     NamespaceMetadata.Schema.builder()
