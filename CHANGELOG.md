@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.12.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.11.0...v2.12.0) (2026-10-28)
+
+
+### Features
+
+* openapi: add encryption_context to customer-managed encryption ([eedc184](https://github.com/turbopuffer/turbopuffer-java/commit/eedc1845515dcff2a2c60e98c3a695a55cd417e4))
+* Send client-generated request IDs ([#263](https://github.com/turbopuffer/turbopuffer-java/issues/263)) ([dfbce13](https://github.com/turbopuffer/turbopuffer-java/commit/dfbce13be512b8b795c245373b1d412d746892f0))
+* spec: split query consistency into strong and eventual variants ([865865e](https://github.com/turbopuffer/turbopuffer-java/commit/865865ee9c2d35ee0fa012efdcbff0c1ef03e2b0))
+* tpuf-engine: add max_staleness_seconds to eventual consistency ([9b58679](https://github.com/turbopuffer/turbopuffer-java/commit/9b5867924a54ad162393aa6cd604fc99b333bc9b))
+
+
+### Chores
+
+* keep custom code out of spec-driven generated files ([#266](https://github.com/turbopuffer/turbopuffer-java/issues/266)) ([b81ae84](https://github.com/turbopuffer/turbopuffer-java/commit/b81ae840168d5c6038eb255594dd9fbf8a5f1187))
+
 ## [2.11.0](https://github.com/turbopuffer/turbopuffer-java/compare/v2.10.0...v2.11.0) (2026-10-20)
 
 
