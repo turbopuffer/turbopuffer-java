@@ -50,6 +50,7 @@ internal class NamespaceMetadataTest {
                         .build()
                 )
                 .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .layout(NamespaceMetadata.Layout.builder().arrangeBy("arrange_by").build())
                 .pinning(
                     NamespaceMetadata.Pinning.builder()
                         .replicas(1L)
@@ -108,6 +109,8 @@ internal class NamespaceMetadataTest {
             )
         assertThat(namespaceMetadata.updatedAt())
             .isEqualTo(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+        assertThat(namespaceMetadata.layout())
+            .contains(NamespaceMetadata.Layout.builder().arrangeBy("arrange_by").build())
         assertThat(namespaceMetadata.pinning())
             .contains(
                 NamespaceMetadata.Pinning.builder()
@@ -167,6 +170,7 @@ internal class NamespaceMetadataTest {
                         .build()
                 )
                 .updatedAt(OffsetDateTime.parse("2019-12-27T18:11:19.117Z"))
+                .layout(NamespaceMetadata.Layout.builder().arrangeBy("arrange_by").build())
                 .pinning(
                     NamespaceMetadata.Pinning.builder()
                         .replicas(1L)
