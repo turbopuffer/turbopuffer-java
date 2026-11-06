@@ -655,7 +655,7 @@ import com.turbopuffer.core.JsonValue;
 import com.turbopuffer.models.namespaces.NamespaceWriteParams;
 
 NamespaceWriteParams params = NamespaceWriteParams.builder()
-    .patchByFilter(NamespaceWriteParams.PatchByFilter.builder()
+    .layout(NamespaceWriteParams.Layout.builder()
         .putAdditionalProperty("secretProperty", JsonValue.from("42"))
         .build())
     .build();
