@@ -407,7 +407,11 @@ internal class NamespaceServiceAsyncTest {
                             )
                             .build()
                     )
-                    .layout(NamespaceWriteParams.Layout.builder().arrangeBy("arrange_by").build())
+                    .layout(
+                        NamespaceWriteParams.Layout.builder()
+                            .addRankBy(JsonValue.from(mapOf<String, Any>()))
+                            .build()
+                    )
                     .patchByFilter(
                         NamespaceWriteParams.PatchByFilter.builder()
                             .filters(JsonValue.from(mapOf<String, Any>()))
