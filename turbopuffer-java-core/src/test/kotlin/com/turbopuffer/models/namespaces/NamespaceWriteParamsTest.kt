@@ -32,6 +32,11 @@ internal class NamespaceWriteParamsTest {
                     )
                     .build()
             )
+            .layout(
+                NamespaceWriteParams.Layout.builder()
+                    .addRankBy(JsonValue.from(mapOf<String, Any>()))
+                    .build()
+            )
             .patchByFilter(
                 NamespaceWriteParams.PatchByFilter.builder()
                     .filters(JsonValue.from(mapOf<String, Any>()))
@@ -112,6 +117,11 @@ internal class NamespaceWriteParamsTest {
                         )
                         .build()
                 )
+                .layout(
+                    NamespaceWriteParams.Layout.builder()
+                        .addRankBy(JsonValue.from(mapOf<String, Any>()))
+                        .build()
+                )
                 .patchByFilter(
                     NamespaceWriteParams.PatchByFilter.builder()
                         .filters(JsonValue.from(mapOf<String, Any>()))
@@ -183,6 +193,12 @@ internal class NamespaceWriteParamsTest {
                         )
                         .build()
                 )
+            )
+        assertThat(body.layout())
+            .contains(
+                NamespaceWriteParams.Layout.builder()
+                    .addRankBy(JsonValue.from(mapOf<String, Any>()))
+                    .build()
             )
         assertThat(body.patchByFilter())
             .contains(
