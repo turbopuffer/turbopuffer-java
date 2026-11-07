@@ -120,6 +120,15 @@ private constructor(
     fun encryption(): Optional<Encryption> = body.encryption()
 
     /**
+     * Experimental. How a namespace stores its documents. A change applies to documents indexed
+     * after it.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun layout(): Optional<Layout> = body.layout()
+
+    /**
      * Sets the attributes in `patch` on every document that matches `filters`.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -274,6 +283,13 @@ private constructor(
      * Unlike [encryption], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _encryption(): JsonField<Encryption> = body._encryption()
+
+    /**
+     * Returns the raw JSON value of [layout].
+     *
+     * Unlike [layout], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _layout(): JsonField<Layout> = body._layout()
 
     /**
      * Returns the raw JSON value of [patchByFilter].
@@ -577,6 +593,20 @@ private constructor(
 
         /** Alias for calling [encryption] with `Encryption.ofDefault()`. */
         fun encryptionDefault() = apply { body.encryptionDefault() }
+
+        /**
+         * Experimental. How a namespace stores its documents. A change applies to documents indexed
+         * after it.
+         */
+        fun layout(layout: Layout) = apply { body.layout(layout) }
+
+        /**
+         * Sets [Builder.layout] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.layout] with a well-typed [Layout] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun layout(layout: JsonField<Layout>) = apply { body.layout(layout) }
 
         /** Sets the attributes in `patch` on every document that matches `filters`. */
         fun patchByFilter(patchByFilter: PatchByFilter) = apply {
@@ -900,6 +930,7 @@ private constructor(
         private val disableBackpressure: JsonField<Boolean>,
         private val distanceMetric: JsonField<DistanceMetric>,
         private val encryption: JsonField<Encryption>,
+        private val layout: JsonField<Layout>,
         private val patchByFilter: JsonField<PatchByFilter>,
         private val patchByFilterAllowPartial: JsonField<Boolean>,
         private val patchColumns: JsonField<Columns>,
@@ -946,6 +977,7 @@ private constructor(
             @JsonProperty("encryption")
             @ExcludeMissing
             encryption: JsonField<Encryption> = JsonMissing.of(),
+            @JsonProperty("layout") @ExcludeMissing layout: JsonField<Layout> = JsonMissing.of(),
             @JsonProperty("patch_by_filter")
             @ExcludeMissing
             patchByFilter: JsonField<PatchByFilter> = JsonMissing.of(),
@@ -988,6 +1020,7 @@ private constructor(
             disableBackpressure,
             distanceMetric,
             encryption,
+            layout,
             patchByFilter,
             patchByFilterAllowPartial,
             patchColumns,
@@ -1096,6 +1129,15 @@ private constructor(
          *   the server responded with an unexpected value).
          */
         fun encryption(): Optional<Encryption> = encryption.getOptional("encryption")
+
+        /**
+         * Experimental. How a namespace stores its documents. A change applies to documents indexed
+         * after it.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun layout(): Optional<Layout> = layout.getOptional("layout")
 
         /**
          * Sets the attributes in `patch` on every document that matches `filters`.
@@ -1276,6 +1318,13 @@ private constructor(
         fun _encryption(): JsonField<Encryption> = encryption
 
         /**
+         * Returns the raw JSON value of [layout].
+         *
+         * Unlike [layout], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("layout") @ExcludeMissing fun _layout(): JsonField<Layout> = layout
+
+        /**
          * Returns the raw JSON value of [patchByFilter].
          *
          * Unlike [patchByFilter], this method doesn't throw if the JSON field has an unexpected
@@ -1390,6 +1439,7 @@ private constructor(
             private var disableBackpressure: JsonField<Boolean> = JsonMissing.of()
             private var distanceMetric: JsonField<DistanceMetric> = JsonMissing.of()
             private var encryption: JsonField<Encryption> = JsonMissing.of()
+            private var layout: JsonField<Layout> = JsonMissing.of()
             private var patchByFilter: JsonField<PatchByFilter> = JsonMissing.of()
             private var patchByFilterAllowPartial: JsonField<Boolean> = JsonMissing.of()
             private var patchColumns: JsonField<Columns> = JsonMissing.of()
@@ -1415,6 +1465,7 @@ private constructor(
                 disableBackpressure = body.disableBackpressure
                 distanceMetric = body.distanceMetric
                 encryption = body.encryption
+                layout = body.layout
                 patchByFilter = body.patchByFilter
                 patchByFilterAllowPartial = body.patchByFilterAllowPartial
                 patchColumns = body.patchColumns
@@ -1619,6 +1670,21 @@ private constructor(
 
             /** Alias for calling [encryption] with `Encryption.ofDefault()`. */
             fun encryptionDefault() = encryption(Encryption.ofDefault())
+
+            /**
+             * Experimental. How a namespace stores its documents. A change applies to documents
+             * indexed after it.
+             */
+            fun layout(layout: Layout) = layout(JsonField.of(layout))
+
+            /**
+             * Sets [Builder.layout] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.layout] with a well-typed [Layout] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun layout(layout: JsonField<Layout>) = apply { this.layout = layout }
 
             /** Sets the attributes in `patch` on every document that matches `filters`. */
             fun patchByFilter(patchByFilter: PatchByFilter) =
@@ -1834,6 +1900,7 @@ private constructor(
                     disableBackpressure,
                     distanceMetric,
                     encryption,
+                    layout,
                     patchByFilter,
                     patchByFilterAllowPartial,
                     patchColumns,
@@ -1873,6 +1940,7 @@ private constructor(
             disableBackpressure()
             distanceMetric().ifPresent { it.validate() }
             encryption().ifPresent { it.validate() }
+            layout().ifPresent { it.validate() }
             patchByFilter().ifPresent { it.validate() }
             patchByFilterAllowPartial()
             patchColumns().ifPresent { it.validate() }
@@ -1909,6 +1977,7 @@ private constructor(
                 (if (disableBackpressure.asKnown().isPresent) 1 else 0) +
                 (distanceMetric.asKnown().getOrNull()?.validity() ?: 0) +
                 (encryption.asKnown().getOrNull()?.validity() ?: 0) +
+                (layout.asKnown().getOrNull()?.validity() ?: 0) +
                 (patchByFilter.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (patchByFilterAllowPartial.asKnown().isPresent) 1 else 0) +
                 (patchColumns.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1935,6 +2004,7 @@ private constructor(
                 disableBackpressure == other.disableBackpressure &&
                 distanceMetric == other.distanceMetric &&
                 encryption == other.encryption &&
+                layout == other.layout &&
                 patchByFilter == other.patchByFilter &&
                 patchByFilterAllowPartial == other.patchByFilterAllowPartial &&
                 patchColumns == other.patchColumns &&
@@ -1961,6 +2031,7 @@ private constructor(
                 disableBackpressure,
                 distanceMetric,
                 encryption,
+                layout,
                 patchByFilter,
                 patchByFilterAllowPartial,
                 patchColumns,
@@ -1979,7 +2050,189 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{branchFromNamespace=$branchFromNamespace, copyFromNamespace=$copyFromNamespace, createNamespace=$createNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, sharding=$sharding, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+            "Body{branchFromNamespace=$branchFromNamespace, copyFromNamespace=$copyFromNamespace, createNamespace=$createNamespace, deleteByFilter=$deleteByFilter, deleteByFilterAllowPartial=$deleteByFilterAllowPartial, deleteCondition=$deleteCondition, deletes=$deletes, disableBackpressure=$disableBackpressure, distanceMetric=$distanceMetric, encryption=$encryption, layout=$layout, patchByFilter=$patchByFilter, patchByFilterAllowPartial=$patchByFilterAllowPartial, patchColumns=$patchColumns, patchCondition=$patchCondition, patchRows=$patchRows, returnAffectedIds=$returnAffectedIds, schema=$schema, sharding=$sharding, upsertColumns=$upsertColumns, upsertCondition=$upsertCondition, upsertRows=$upsertRows, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Experimental. How a namespace stores its documents. A change applies to documents indexed
+     * after it.
+     */
+    class Layout
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val rankBy: JsonField<List<JsonValue>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("rank_by")
+            @ExcludeMissing
+            rankBy: JsonField<List<JsonValue>> = JsonMissing.of()
+        ) : this(rankBy, mutableMapOf())
+
+        /**
+         * Stores documents in ranges of an attribute, in ascending order, so queries filtering on a
+         * narrow range of it or ranking by it skip the rest. Documents should be written in roughly
+         * ascending order of it. Must have type `int`, `uint`, `datetime` or `string`. `["id",
+         * "asc"]` resets the namespace to the default layout.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun rankBy(): Optional<List<JsonValue>> = rankBy.getOptional("rank_by")
+
+        /**
+         * Returns the raw JSON value of [rankBy].
+         *
+         * Unlike [rankBy], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonField<List<JsonValue>> = rankBy
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Layout]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Layout]. */
+        class Builder internal constructor() {
+
+            private var rankBy: JsonField<MutableList<JsonValue>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(layout: Layout) = apply {
+                rankBy = layout.rankBy.map { it.toMutableList() }
+                additionalProperties = layout.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Stores documents in ranges of an attribute, in ascending order, so queries filtering
+             * on a narrow range of it or ranking by it skip the rest. Documents should be written
+             * in roughly ascending order of it. Must have type `int`, `uint`, `datetime` or
+             * `string`. `["id", "asc"]` resets the namespace to the default layout.
+             */
+            fun rankBy(rankBy: List<JsonValue>) = rankBy(JsonField.of(rankBy))
+
+            /**
+             * Sets [Builder.rankBy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rankBy] with a well-typed `List<JsonValue>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun rankBy(rankBy: JsonField<List<JsonValue>>) = apply {
+                this.rankBy = rankBy.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [JsonValue] to [Builder.rankBy].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addRankBy(rankBy: JsonValue) = apply {
+                this.rankBy =
+                    (this.rankBy ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("rankBy", it).add(rankBy)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Layout].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Layout =
+                Layout(
+                    (rankBy ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws TurbopufferInvalidDataException if any value type in this object doesn't match
+         *   its expected type.
+         */
+        fun validate(): Layout = apply {
+            if (validated) {
+                return@apply
+            }
+
+            rankBy()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (rankBy.asKnown().getOrNull()?.size ?: 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Layout &&
+                rankBy == other.rankBy &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(rankBy, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Layout{rankBy=$rankBy, additionalProperties=$additionalProperties}"
     }
 
     /** Sets the attributes in `patch` on every document that matches `filters`. */
