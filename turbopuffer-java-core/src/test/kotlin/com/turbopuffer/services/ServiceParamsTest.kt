@@ -93,6 +93,7 @@ internal class ServiceParamsTest {
                         )
                         .build()
                 )
+                .layout(NamespaceWriteParams.Layout.builder().arrangeBy("arrange_by").build())
                 .patchByFilter(
                     NamespaceWriteParams.PatchByFilter.builder()
                         .filters(JsonValue.from(mapOf<String, Any>()))
