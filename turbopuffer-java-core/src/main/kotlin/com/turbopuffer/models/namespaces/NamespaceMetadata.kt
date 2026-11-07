@@ -20,6 +20,7 @@ import com.turbopuffer.core.JsonField
 import com.turbopuffer.core.JsonMissing
 import com.turbopuffer.core.JsonValue
 import com.turbopuffer.core.allMaxBy
+import com.turbopuffer.core.checkKnown
 import com.turbopuffer.core.checkRequired
 import com.turbopuffer.core.getOrThrow
 import com.turbopuffer.core.toImmutable
@@ -41,6 +42,7 @@ private constructor(
     private val index: JsonField<Index>,
     private val schema: JsonField<Schema>,
     private val updatedAt: JsonField<OffsetDateTime>,
+    private val layout: JsonField<Layout>,
     private val pinning: JsonField<Pinning>,
     private val readOnly: JsonField<Boolean>,
     private val sharding: JsonField<ShardingConfig>,
@@ -66,6 +68,7 @@ private constructor(
         @JsonProperty("updated_at")
         @ExcludeMissing
         updatedAt: JsonField<OffsetDateTime> = JsonMissing.of(),
+        @JsonProperty("layout") @ExcludeMissing layout: JsonField<Layout> = JsonMissing.of(),
         @JsonProperty("pinning") @ExcludeMissing pinning: JsonField<Pinning> = JsonMissing.of(),
         @JsonProperty("read_only") @ExcludeMissing readOnly: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("sharding")
@@ -79,6 +82,7 @@ private constructor(
         index,
         schema,
         updatedAt,
+        layout,
         pinning,
         readOnly,
         sharding,
@@ -140,6 +144,15 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun updatedAt(): OffsetDateTime = updatedAt.getRequired("updated_at")
+
+    /**
+     * Experimental. How a namespace stores its documents. A change applies to documents indexed
+     * after it.
+     *
+     * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun layout(): Optional<Layout> = layout.getOptional("layout")
 
     /**
      * Configuration for namespace pinning, along with the current status of the pinned namespace.
@@ -229,6 +242,13 @@ private constructor(
     fun _updatedAt(): JsonField<OffsetDateTime> = updatedAt
 
     /**
+     * Returns the raw JSON value of [layout].
+     *
+     * Unlike [layout], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("layout") @ExcludeMissing fun _layout(): JsonField<Layout> = layout
+
+    /**
      * Returns the raw JSON value of [pinning].
      *
      * Unlike [pinning], this method doesn't throw if the JSON field has an unexpected type.
@@ -290,6 +310,7 @@ private constructor(
         private var index: JsonField<Index>? = null
         private var schema: JsonField<Schema>? = null
         private var updatedAt: JsonField<OffsetDateTime>? = null
+        private var layout: JsonField<Layout> = JsonMissing.of()
         private var pinning: JsonField<Pinning> = JsonMissing.of()
         private var readOnly: JsonField<Boolean> = JsonMissing.of()
         private var sharding: JsonField<ShardingConfig> = JsonMissing.of()
@@ -304,6 +325,7 @@ private constructor(
             index = namespaceMetadata.index
             schema = namespaceMetadata.schema
             updatedAt = namespaceMetadata.updatedAt
+            layout = namespaceMetadata.layout
             pinning = namespaceMetadata.pinning
             readOnly = namespaceMetadata.readOnly
             sharding = namespaceMetadata.sharding
@@ -411,6 +433,20 @@ private constructor(
         fun updatedAt(updatedAt: JsonField<OffsetDateTime>) = apply { this.updatedAt = updatedAt }
 
         /**
+         * Experimental. How a namespace stores its documents. A change applies to documents indexed
+         * after it.
+         */
+        fun layout(layout: Layout) = layout(JsonField.of(layout))
+
+        /**
+         * Sets [Builder.layout] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.layout] with a well-typed [Layout] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun layout(layout: JsonField<Layout>) = apply { this.layout = layout }
+
+        /**
          * Configuration for namespace pinning, along with the current status of the pinned
          * namespace.
          */
@@ -499,6 +535,7 @@ private constructor(
                 checkRequired("index", index),
                 checkRequired("schema", schema),
                 checkRequired("updatedAt", updatedAt),
+                layout,
                 pinning,
                 readOnly,
                 sharding,
@@ -528,6 +565,7 @@ private constructor(
         index().validate()
         schema().validate()
         updatedAt()
+        layout().ifPresent { it.validate() }
         pinning().ifPresent { it.validate() }
         readOnly()
         sharding().ifPresent { it.validate() }
@@ -556,6 +594,7 @@ private constructor(
             (index.asKnown().getOrNull()?.validity() ?: 0) +
             (schema.asKnown().getOrNull()?.validity() ?: 0) +
             (if (updatedAt.asKnown().isPresent) 1 else 0) +
+            (layout.asKnown().getOrNull()?.validity() ?: 0) +
             (pinning.asKnown().getOrNull()?.validity() ?: 0) +
             (if (readOnly.asKnown().isPresent) 1 else 0) +
             (sharding.asKnown().getOrNull()?.validity() ?: 0)
@@ -1170,6 +1209,188 @@ private constructor(
     }
 
     /**
+     * Experimental. How a namespace stores its documents. A change applies to documents indexed
+     * after it.
+     */
+    class Layout
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val rankBy: JsonField<List<JsonValue>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("rank_by")
+            @ExcludeMissing
+            rankBy: JsonField<List<JsonValue>> = JsonMissing.of()
+        ) : this(rankBy, mutableMapOf())
+
+        /**
+         * Stores documents in ranges of an attribute, in ascending order, so queries filtering on a
+         * narrow range of it or ranking by it skip the rest. Documents should be written in roughly
+         * ascending order of it. Must have type `int`, `uint`, `datetime` or `string`. `["id",
+         * "asc"]` resets the namespace to the default layout.
+         *
+         * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
+         *   the server responded with an unexpected value).
+         */
+        fun rankBy(): Optional<List<JsonValue>> = rankBy.getOptional("rank_by")
+
+        /**
+         * Returns the raw JSON value of [rankBy].
+         *
+         * Unlike [rankBy], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("rank_by") @ExcludeMissing fun _rankBy(): JsonField<List<JsonValue>> = rankBy
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Layout]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Layout]. */
+        class Builder internal constructor() {
+
+            private var rankBy: JsonField<MutableList<JsonValue>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(layout: Layout) = apply {
+                rankBy = layout.rankBy.map { it.toMutableList() }
+                additionalProperties = layout.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Stores documents in ranges of an attribute, in ascending order, so queries filtering
+             * on a narrow range of it or ranking by it skip the rest. Documents should be written
+             * in roughly ascending order of it. Must have type `int`, `uint`, `datetime` or
+             * `string`. `["id", "asc"]` resets the namespace to the default layout.
+             */
+            fun rankBy(rankBy: List<JsonValue>) = rankBy(JsonField.of(rankBy))
+
+            /**
+             * Sets [Builder.rankBy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rankBy] with a well-typed `List<JsonValue>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun rankBy(rankBy: JsonField<List<JsonValue>>) = apply {
+                this.rankBy = rankBy.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [JsonValue] to [Builder.rankBy].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addRankBy(rankBy: JsonValue) = apply {
+                this.rankBy =
+                    (this.rankBy ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("rankBy", it).add(rankBy)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Layout].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Layout =
+                Layout(
+                    (rankBy ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws TurbopufferInvalidDataException if any value type in this object doesn't match
+         *   its expected type.
+         */
+        fun validate(): Layout = apply {
+            if (validated) {
+                return@apply
+            }
+
+            rankBy()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: TurbopufferInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (rankBy.asKnown().getOrNull()?.size ?: 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Layout &&
+                rankBy == other.rankBy &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(rankBy, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Layout{rankBy=$rankBy, additionalProperties=$additionalProperties}"
+    }
+
+    /**
      * Configuration for namespace pinning, along with the current status of the pinned namespace.
      */
     class Pinning
@@ -1700,6 +1921,7 @@ private constructor(
             index == other.index &&
             schema == other.schema &&
             updatedAt == other.updatedAt &&
+            layout == other.layout &&
             pinning == other.pinning &&
             readOnly == other.readOnly &&
             sharding == other.sharding &&
@@ -1715,6 +1937,7 @@ private constructor(
             index,
             schema,
             updatedAt,
+            layout,
             pinning,
             readOnly,
             sharding,
@@ -1725,5 +1948,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, encryption=$encryption, index=$index, schema=$schema, updatedAt=$updatedAt, pinning=$pinning, readOnly=$readOnly, sharding=$sharding, additionalProperties=$additionalProperties}"
+        "NamespaceMetadata{approxLogicalBytes=$approxLogicalBytes, approxRowCount=$approxRowCount, createdAt=$createdAt, encryption=$encryption, index=$index, schema=$schema, updatedAt=$updatedAt, layout=$layout, pinning=$pinning, readOnly=$readOnly, sharding=$sharding, additionalProperties=$additionalProperties}"
 }
