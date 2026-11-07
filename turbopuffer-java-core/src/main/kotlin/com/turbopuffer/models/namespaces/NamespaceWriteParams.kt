@@ -113,8 +113,8 @@ private constructor(
     fun encryption(): Optional<Encryption> = body.encryption()
 
     /**
-     * Experimental. How a namespace stores its documents. Can only be set on a namespace's
-     * inaugural write, and cannot be changed later.
+     * Experimental. How a namespace stores its documents. A change applies to documents indexed
+     * after it.
      *
      * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -619,8 +619,8 @@ private constructor(
         fun encryptionDefault() = apply { body.encryptionDefault() }
 
         /**
-         * Experimental. How a namespace stores its documents. Can only be set on a namespace's
-         * inaugural write, and cannot be changed later.
+         * Experimental. How a namespace stores its documents. A change applies to documents indexed
+         * after it.
          */
         fun layout(layout: Layout) = apply { body.layout(layout) }
 
@@ -1169,8 +1169,8 @@ private constructor(
         fun encryption(): Optional<Encryption> = encryption.getOptional("encryption")
 
         /**
-         * Experimental. How a namespace stores its documents. Can only be set on a namespace's
-         * inaugural write, and cannot be changed later.
+         * Experimental. How a namespace stores its documents. A change applies to documents indexed
+         * after it.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
@@ -1757,8 +1757,8 @@ private constructor(
             fun encryptionDefault() = encryption(Encryption.ofDefault())
 
             /**
-             * Experimental. How a namespace stores its documents. Can only be set on a namespace's
-             * inaugural write, and cannot be changed later.
+             * Experimental. How a namespace stores its documents. A change applies to documents
+             * indexed after it.
              */
             fun layout(layout: Layout) = layout(JsonField.of(layout))
 
@@ -2159,8 +2159,8 @@ private constructor(
     }
 
     /**
-     * Experimental. How a namespace stores its documents. Can only be set on a namespace's
-     * inaugural write, and cannot be changed later.
+     * Experimental. How a namespace stores its documents. A change applies to documents indexed
+     * after it.
      */
     class Layout
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -2179,7 +2179,8 @@ private constructor(
         /**
          * Stores documents in ranges of this attribute, ordered by it, so queries filtering on a
          * narrow range of it or ordered by it skip the rest. Documents should be written in roughly
-         * ascending order of it. Must have type `int`, `uint`, `datetime` or `string`.
+         * ascending order of it. Must have type `int`, `uint`, `datetime` or `string`. `id` resets
+         * the namespace to the default layout.
          *
          * @throws TurbopufferInvalidDataException if the JSON field has an unexpected type (e.g. if
          *   the server responded with an unexpected value).
@@ -2227,6 +2228,7 @@ private constructor(
              * Stores documents in ranges of this attribute, ordered by it, so queries filtering on
              * a narrow range of it or ordered by it skip the rest. Documents should be written in
              * roughly ascending order of it. Must have type `int`, `uint`, `datetime` or `string`.
+             * `id` resets the namespace to the default layout.
              */
             fun arrangeBy(arrangeBy: String) = arrangeBy(JsonField.of(arrangeBy))
 
